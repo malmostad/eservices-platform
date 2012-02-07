@@ -48,7 +48,7 @@ public class BonitaForm  extends BaseHstComponent {
 	        	localeStr = locale.getLanguage();
 	        }
 	        
-	        BonitaClient bc = new BonitaClient("http://localhost:58081/bonita-server-rest/", "http://localhost:58081/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
+	        BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
 	        String identityKey = bc.getFormIdentityKey("admin", "bpm");
 	        //String taskUuid = "&task=DemoSlask--1.0--1--Registrera_namn--it1--mainActivityInstance--noLoop";
 	       

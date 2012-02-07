@@ -45,7 +45,7 @@ public class BonitaStatus extends BaseHstComponent {
         }
         request.setAttribute("document",doc);
 
-        BonitaClient bc = new BonitaClient("http://localhost:58081/bonita-server-rest/", "http://localhost:58081/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
+        BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
         ArrayList<ProcessInstanceListItem> processInstances = bc.getUserInstancesList("admin");
         request.setAttribute("processInstances", processInstances);
         

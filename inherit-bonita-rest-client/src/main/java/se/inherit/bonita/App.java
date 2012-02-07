@@ -23,7 +23,7 @@ public class App
         System.out.println( "Hello World!" );
         
         //BonitaClient client = new BonitaClient();
-        BonitaClient client = new BonitaClient("http://localhost:58081/bonita-server-rest/", "http://localhost:58081/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
+        BonitaClient client = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
         
         Collection<InboxTaskItem> userTaskList = client.getUserTaskList("admin");
         
