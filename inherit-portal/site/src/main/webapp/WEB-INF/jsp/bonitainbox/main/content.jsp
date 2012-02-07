@@ -19,22 +19,19 @@
     <hst:html hippohtml="${document.html}"/>
     
     <c:if test="${not empty tasks}">
-	
-	<table> 
-		<tr>
-		   <td>proc namn</td>
-		   <td>lbl</td>
-		   <td>startad</td>
-		   <td>aktivitet</td>
-		</tr>
-	 	<c:forEach var="task" items="${tasks}">
-	 	  <tr>
-	 	  	<td>${task.processName}</td>
-	 	  	<td>${task.processLabel}</td>
-	 	  	<td>${task.createdDate}</td>
-	 	  	<td><a href="form?taskUuid=${task.taskUUID}">${task.activityLabel}</a></td>
-	 	  </tr>
-		</c:forEach>
+		<table> 
+			<tr>
+			   <td><fmt:message key="bonita.process.column.lbl"/></td>
+			   <td><fmt:message key="bonita.startDate.column.lbl"/></td>
+			   <td><fmt:message key="bonita.activity.column.lbl"/></td>
+			</tr>
+		 	<c:forEach var="task" items="${tasks}">
+		 	  <tr>
+		 	  	<td>${task.processLabel}</td>
+		 	  	<td>${task.createdDate}</td>
+		 	  	<td><a href="form?taskUuid=${task.taskUUID}">${task.activityLabel}</a></td>
+		 	  </tr>
+			</c:forEach>
 		</table>
 	</c:if>
   </c:otherwise>  

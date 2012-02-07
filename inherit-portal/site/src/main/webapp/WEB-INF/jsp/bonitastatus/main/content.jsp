@@ -17,14 +17,14 @@
     <h2>${document.title}</h2>
     <p>${document.summary}</p>
     <hst:html hippohtml="${document.html}"/>
-
+    
 	<c:if test="${not empty processInstances}">
 		<table>
 		<tr>
-		   <td>Ärende</td>
-		   <td>Status</td>
-		   <td>Startad</td>
-		   <td>Avslutad</td>
+		   <td><fmt:message key="bonita.process.column.lbl"/></td>
+		   <td><fmt:message key="bonita.status.column.lbl"/></td>
+		   <td><fmt:message key="bonita.startDate.column.lbl"/></td>
+		   <td><fmt:message key="bonita.endDate.column.lbl"/></td>
 		</tr>
 	 	<c:forEach var="item" items="${processInstances}">
 	 	  <tr>
