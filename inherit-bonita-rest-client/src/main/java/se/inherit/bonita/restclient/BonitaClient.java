@@ -64,6 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import se.inherit.bonita.domain.InboxTaskItem;
+import se.inherit.bonita.domain.ProcessDefinitionInfo;
 import se.inherit.bonita.domain.ProcessInstanceListItem;
 
 import com.thoughtworks.xstream.XStream;
@@ -81,7 +82,7 @@ public class BonitaClient {
 	
 	XStream xstream;
 	
-	HashMap<String, String> defUuid2LabelCache = new HashMap<String,String>();
+	HashMap<String, ProcessDefinitionInfo> defUuid2ProcessDefinitionInfo = new HashMap<String,ProcessDefinitionInfo>();
 	
 	public BonitaClient() {
 		this.serverBaseUrl = "http://localhost:58080/bonita-server-rest/";
@@ -107,7 +108,7 @@ public class BonitaClient {
 		XStream xstream = new XStream();
         
 		xstream.alias("set", HashSet.class);
-		//xstream.alias("Object-array", ArrayConverter.class);
+		xstream.alias("Object-array", Object[].class);
         
 		// definition api 
         xstream.alias("ProcessDefinition", ProcessDefinitionImpl.class);
@@ -119,6 +120,7 @@ public class BonitaClient {
         xstream.alias("EventProcessDefinition", EventProcessDefinitionImpl.class);
         xstream.alias("NamedElement", NamedElementImpl.class);
         xstream.alias("TransitionDefinition", TransitionDefinitionImpl.class);
+        xstream.alias("roleMapper", ConnectorDefinitionImpl.class);
         
         // runtime api
         xstream.alias("ActivityInstance", ActivityInstanceImpl.class);
@@ -142,6 +144,9 @@ public class BonitaClient {
         
         xstream.alias("LightActivityInstance", LightActivityInstanceImpl.class);
         //xstream.alias("roleMapper", ConnectorDefinitionImpl.class);
+        
+        // inherit bonita custom api
+        //xstream.alias("", type)
         
         return xstream;
 	}
@@ -195,6 +200,19 @@ public class BonitaClient {
 		}
 		return result;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public ProcessDefinitionInfo getProcessDefinitionInfo (String processDefinitionUUID) {
+		ProcessDefinitionInfo result = null;
+		String response = null;
+		String uri = customServerBaseUrl + "processDefinition/" + processDefinitionUUID;
+		response = call(uri, "admin");
+		if (response != null) {
+			result = (ProcessDefinitionInfo)xstream.fromXML(response);
+		}
+		return result;
+	}
+
 	
 
 	@SuppressWarnings("unchecked")
@@ -259,10 +277,10 @@ public class BonitaClient {
 				InboxTaskItem item = new InboxTaskItem();
 
 				//item.setProcessName(processDefinition.getName() + "--" + processDefinition.getVersion());
-				item.setProcessName("TODO!");
+				item.setProcessName(getProcessLabel(taskInstance.getProcessDefinitionUUID().getValue()).getName());
 				item.setTaskUUID(taskInstance.getUUID().getValue());
 				//item.setProcessLabel(processDefinition.getLabel());
-				item.setProcessLabel("TODO!");
+				item.setProcessLabel(getProcessLabel(taskInstance.getProcessDefinitionUUID().getValue()).getLabel());
 				item.setActivityLabel(taskInstance.getActivityLabel());
 				item.setCreatedDate(taskInstance.getCreatedDate());
 	
@@ -287,7 +305,7 @@ public class BonitaClient {
 			ProcessInstanceListItem item = new ProcessInstanceListItem();
 
 			// find out process label
-			item.setProcessLabel(getProcessLabel(pi.getProcessDefinitionUUID()));
+			item.setProcessLabel(getProcessLabel(pi.getProcessDefinitionUUID().getValue()).getLabel());
 
 			// find out process instance status
 			if (InstanceState.FINISHED.equals(pi.getInstanceState())) {
@@ -316,18 +334,16 @@ public class BonitaClient {
 		return result;
 	}
 	
-	private String getProcessLabel(ProcessDefinitionUUID processDefinitionUUID) {
-		/*
-		String result = defUuid2LabelCache.get(processDefinitionUUID.getValue());
+	private ProcessDefinitionInfo getProcessLabel(String processDefinitionUUID) {
+		
+		ProcessDefinitionInfo result = defUuid2ProcessDefinitionInfo.get(processDefinitionUUID);
 
 		if (result == null) {
-			ProcessDefinition processDefinition = getProcess(processDefinitionUUID);
-			result = processDefinition.getLabel();
-			defUuid2LabelCache.put(processDefinitionUUID.getValue(), result);
+			result = getProcessDefinitionInfo(processDefinitionUUID);
+			defUuid2ProcessDefinitionInfo.put(processDefinitionUUID, result);
 		}
-
 		return result;
-		*/
-		return "TODO!";
 	}
+	
+	
 }

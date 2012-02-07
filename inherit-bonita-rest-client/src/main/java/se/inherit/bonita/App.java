@@ -38,6 +38,8 @@ public class App
         for (LightTaskInstance task : todoList) {
         	String taskUUID = task.getUUID().getValue();
         	System.out.println("taskName:" + task.getActivityLabel() + " : " + taskUUID);
+        	
+        	System.out.println(client.getProcessDefinitionInfo(task.getProcessDefinitionUUID().getValue()));
         }   
         
         Set<ProcessInstance> instances = client.getUserInstances("admin");
@@ -49,6 +51,7 @@ public class App
         for (ProcessInstanceListItem pi : instanceListItem) {
         	System.out.println("instance list item: " + pi.getProcessLabel() + ", " + pi.getStatus());
         }
+        
         
         System.out.println("id key: " + client.getFormIdentityKey("admin", "bpm"));
         //System.out.println("id key: " + client.getStatusByUserId("admin"));

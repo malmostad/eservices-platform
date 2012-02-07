@@ -29,7 +29,6 @@ public class ProcessInstanceListItem implements Serializable {
     private Date startDate;
     private Date endDate;
     
-    
 	public ProcessInstanceListItem() {
 		
 	}
@@ -41,7 +40,6 @@ public class ProcessInstanceListItem implements Serializable {
 	public void setProcessLabel(String processLabel) {
 		this.processLabel = processLabel;
 	}
-
 
 	public String getStatus() {
 		return status;
