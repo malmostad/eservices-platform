@@ -1,20 +1,13 @@
 package se.inherit.portal.components.bonita;
 
-import java.util.Collection;
+import java.security.Principal;
 import java.util.Locale;
-import java.util.Set;
-
-import javax.security.auth.login.LoginContext;
 
 import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
-import org.ow2.bonita.facade.def.majorElement.ProcessDefinition;
-import org.ow2.bonita.light.LightTaskInstance;
-import org.ow2.bonita.util.AccessorUtil;
-import org.ow2.bonita.util.BonitaConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +22,9 @@ public class BonitaForm  extends BaseHstComponent {
 		
         HippoBean doc = getContentBean(request);
         
+        Principal principal = request.getUserPrincipal();
+        String userName = principal.getName();
+
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
                          request.getRequestContext().getResolvedSiteMapItem().getRelativeContentPath(),
@@ -49,7 +45,9 @@ public class BonitaForm  extends BaseHstComponent {
 	        }
 	        
 	        BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
-	        String identityKey = bc.getFormIdentityKey("admin", "bpm");
+	        String identityKey = bc.getFormIdentityKey(userName, "bpm");
+	        //TODO password 
+	        
 	        //String taskUuid = "&task=DemoSlask--1.0--1--Registrera_namn--it1--mainActivityInstance--noLoop";
 	       
 	        bonitaFormUrl = "http://localhost:58080/bonita/console/homepage?locale=" + localeStr + "&task=" + taskUuid + "&mode=form&identityKey=" + identityKey;
