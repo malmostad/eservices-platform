@@ -30,6 +30,7 @@ public class InboxTaskItem implements Serializable {
 	String processLabel;
 	String activityLabel;
 	Date createdDate;
+	String activityDefinitionUUID;
 	
 	public InboxTaskItem() {
 		
@@ -75,6 +76,15 @@ public class InboxTaskItem implements Serializable {
 		this.createdDate = createdDate;
 	}
 
+	public String getActivityDefinitionUUID() {
+		return activityDefinitionUUID;
+	}
+
+	public void setActivityDefinitionUUID(String activityDefinitionUUID) {
+		this.activityDefinitionUUID = activityDefinitionUUID;
+	}
+
+	
 	
 	
 	

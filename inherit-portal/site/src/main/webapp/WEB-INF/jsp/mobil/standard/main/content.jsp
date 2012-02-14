@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
-<%--@elvariable id="document" type="se.inherit.portal.beans.NewsDocument"--%>
+<%--@elvariable id="document" type="se.inherit.portal.beans.TextDocument"--%>
 
 <c:choose>
   <c:when test="${empty document}">
@@ -17,10 +17,6 @@
     <h2>${document.title}</h2>
     <p>${document.summary}</p>
     <hst:html hippohtml="${document.html}"/>
-
-	<c:if test="${not empty bonitaFormUrl}">
-		<iframe id="bonita_form" frameborder="0" scrolling="auto" src="${bonitaFormUrl}" width="100%"> </iframe>
-	</c:if>
-    
-  </c:otherwise>  
+  </c:otherwise>
 </c:choose>
+

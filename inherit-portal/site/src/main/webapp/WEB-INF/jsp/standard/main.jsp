@@ -1,8 +1,10 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 
+<hst:include ref="mainmenu"/>
+
 <div id="main">
     <div id="leftmenu">
-      <hst:include ref="leftmenu"/>
+      <hst:include ref="submenus"/>
     </div>
     <div id="content">
       <hst:include ref="content"/>

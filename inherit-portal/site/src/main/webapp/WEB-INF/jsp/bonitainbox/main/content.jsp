@@ -29,7 +29,7 @@
 		 	  <tr>
 		 	  	<td>${task.processLabel}</td>
 		 	  	<td>${task.createdDate}</td>
-		 	  	<td><a href="form?taskUuid=${task.taskUUID}">${task.activityLabel}</a></td>
+		 	  	<td><a href="form?taskUuid=${task.taskUUID}">${task.activityLabel}&activityDefinitionUUID=${task.activityDefinitionUUID}</a></td>
 		 	  </tr>
 			</c:forEach>
 		</table>

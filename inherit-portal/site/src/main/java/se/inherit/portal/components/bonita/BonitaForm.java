@@ -35,22 +35,25 @@ public class BonitaForm  extends BaseHstComponent {
         request.setAttribute("document",doc);
 
         String taskUuid = getPublicRequestParameter(request, "taskUuid");
+        String activityDefinitionUUID = getPublicRequestParameter(request, "activityDefinitionUUID");
         
         String bonitaFormUrl = "";
-        if (taskUuid != null) {
+        if (taskUuid != null && activityDefinitionUUID!=null) {
 	        String localeStr = "en";
 	        Locale locale = request.getLocale();
 	        if (locale != null) {
 	        	localeStr = locale.getLanguage();
 	        }
 	        
-	        BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
+	        BonitaClient bc = new BonitaClient("http://mobil.demo.inherit.se/bonita-server-rest/", "http://mobil.demo.inherit.se/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
 	        String identityKey = bc.getFormIdentityKey(userName, "bpm");
 	        //TODO password 
 	        
 	        //String taskUuid = "&task=DemoSlask--1.0--1--Registrera_namn--it1--mainActivityInstance--noLoop";
 	       
-	        bonitaFormUrl = "http://localhost:58080/bonita/console/homepage?locale=" + localeStr + "&task=" + taskUuid + "&mode=form&identityKey=" + identityKey;
+	        //bonitaFormUrl = "http://localhost:58080/bonita/console/homepage?locale=" + localeStr + "&task=" + taskUuid + "&mode=form&identityKey=" + identityKey;
+	        //http://host:port/webapp-name/application/BonitaApplication.html?locale=<locale>#form=<activityDefinitionUUID>$entry&task=<activityInstanceUUID>
+	        bonitaFormUrl = "http://mobil.demo.inherit.se/bonita-app/application/BonitaApplication.html?locale=" + localeStr + "#form=" + activityDefinitionUUID + "$entry&task=" + taskUuid + "&mode=form&identityKey=" + identityKey;
         }
         
         request.setAttribute("bonitaFormUrl", bonitaFormUrl);

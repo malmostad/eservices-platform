@@ -283,6 +283,7 @@ public class BonitaClient {
 				item.setProcessLabel(getProcessLabel(taskInstance.getProcessDefinitionUUID().getValue()).getLabel());
 				item.setActivityLabel(taskInstance.getActivityLabel());
 				item.setCreatedDate(taskInstance.getCreatedDate());
+				item.setActivityDefinitionUUID(taskInstance.getActivityDefinitionUUID().getValue());
 	
 				result.add(item);
 			

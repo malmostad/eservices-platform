@@ -41,15 +41,15 @@ public class BonitaStartProcessInstanceForm  extends BaseHstComponent {
         	localeStr = locale.getLanguage();
         }
 	        
-        BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
+        BonitaClient bc = new BonitaClient("http://mobil.demo.inherit.se/bonita-server-rest/", "http://mobil.demo.inherit.se/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
         String identityKey = bc.getFormIdentityKey(userName, "bpm");
         // TODO password
         
 	    //String taskUuid = "&task=DemoSlask--1.0--1--Registrera_namn--it1--mainActivityInstance--noLoop";
 	    //bonitaFormUrl = "http://localhost:58080/bonita/console/homepage?locale=" + localeStr + "&task=" + taskUuid + "&mode=form&identityKey=" + identityKey;
 	        
-        bonitaFormUrl = "http://localhost:58080/bonita/console/homepage?locale=" + localeStr + "#process=MyDemoProcess--2.0&form=MyDemoProcess--2.0$entry&mode=form&identityKey=" + identityKey;
-        
+        //bonitaFormUrl = "http://localhost:58080/bonita/console/homepage?locale=" + localeStr + "#process=MyDemoProcess--2.0&form=MyDemoProcess--2.0$entry&mode=form&identityKey=" + identityKey;
+        bonitaFormUrl = "http://mobil.demo.inherit.se/bonita-app/application/BonitaApplication.html?locale=" + localeStr + "#process=MyDemoProcess--3.0&form=MyDemoProcess--3.0$entry&mode=form&identityKey=" + identityKey;
         request.setAttribute("bonitaFormUrl", bonitaFormUrl);
        
         
