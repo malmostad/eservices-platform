@@ -19,7 +19,7 @@
     <hst:html hippohtml="${document.html}"/>
 
 	<c:if test="${not empty bonitaFormUrl}">
-		<iframe id="bonita_form" frameborder="0" scrolling="auto" src="${bonitaFormUrl}" width="100%"> </iframe>
+		<iframe id="bonita_form" frameborder="0" scrolling="auto" src="${bonitaFormUrl}"> </iframe>
 	</c:if>
     
   </c:otherwise>  
