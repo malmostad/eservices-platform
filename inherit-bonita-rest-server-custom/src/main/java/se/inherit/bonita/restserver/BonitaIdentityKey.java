@@ -38,6 +38,8 @@ public class BonitaIdentityKey extends ServerResource {
         	logger.error("Could not create a proper bonita form identity key: " + e); // instance=TestaCheckboxlist--1.0--8
         }
     	
+    	logger.error("Return identityKey: " + identityKey);
+    	
         return identityKey;
 	}
 
