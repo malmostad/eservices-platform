@@ -33,42 +33,47 @@ public class BonitaStatusByUserId extends ServerResource {
 	public String getUserInstancesList(String user) { // ArrayList<ProcessInstanceListItem>
 		ArrayList<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
 
-		Set<ProcessInstance> piList = new HashSet<ProcessInstance>();
-		LoginContext loginContext = BonitaUtil.loginWithUser(user); 
-		piList = AccessorUtil.getQueryRuntimeAPI().getUserInstances();
-		
-		for (ProcessInstance pi : piList) {
-
-			ProcessInstanceListItem item = new ProcessInstanceListItem();
-
-			// find out process label
-			item.setProcessLabel(getProcessLabel(pi.getProcessDefinitionUUID()));
-
-			// find out process instance status
-			if (InstanceState.FINISHED.equals(pi.getInstanceState())) {
-				item.setStatus("Avslutad");
-			}
-			else if (InstanceState.CANCELLED.equals(pi.getInstanceState()) || InstanceState.ABORTED.equals(pi.getInstanceState())) {
-				item.setStatus("Avbruten");
-			} 
-			else {
-				StringBuffer sb = new StringBuffer();
-				Set<TaskInstance> tasks = pi.getTasks();
-				for (TaskInstance task : tasks) {
-					if (ActivityState.READY.equals(task.getState()) || ActivityState.EXECUTING.equals(task.getState())) {
-						sb.append(task.getActivityLabel());
-					}
+		try {
+			Set<ProcessInstance> piList = new HashSet<ProcessInstance>();
+			LoginContext loginContext = BonitaUtil.loginWithUser(user); 
+			piList = AccessorUtil.getQueryRuntimeAPI().getUserInstances();
+			
+			for (ProcessInstance pi : piList) {
+	
+				ProcessInstanceListItem item = new ProcessInstanceListItem();
+	
+				// find out process label
+				item.setProcessLabel(getProcessLabel(pi.getProcessDefinitionUUID()));
+	
+				// find out process instance status
+				if (InstanceState.FINISHED.equals(pi.getInstanceState())) {
+					item.setStatus("Avslutad");
 				}
-				item.setStatus(sb.toString());
+				else if (InstanceState.CANCELLED.equals(pi.getInstanceState()) || InstanceState.ABORTED.equals(pi.getInstanceState())) {
+					item.setStatus("Avbruten");
+				} 
+				else {
+					StringBuffer sb = new StringBuffer();
+					Set<TaskInstance> tasks = pi.getTasks();
+					for (TaskInstance task : tasks) {
+						if (ActivityState.READY.equals(task.getState()) || ActivityState.EXECUTING.equals(task.getState())) {
+							sb.append(task.getActivityLabel());
+						}
+					}
+					item.setStatus(sb.toString());
+				}
+				
+				item.setEndDate(pi.getEndedDate());
+				item.setStartDate(pi.getStartedDate());
+				
+				result.add(item);
 			}
-			
-			item.setEndDate(pi.getEndedDate());
-			item.setStartDate(pi.getStartedDate());
-			
-			result.add(item);
+	
+			BonitaUtil.logoutWithUser(loginContext);
 		}
-
-		BonitaUtil.logoutWithUser(loginContext);
+		catch (Exception e) {
+			logger.error("Exception: " + e);
+		}
 
 		return result.toString();
 	}

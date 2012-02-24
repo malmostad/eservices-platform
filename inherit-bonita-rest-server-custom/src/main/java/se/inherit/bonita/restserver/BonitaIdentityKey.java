@@ -17,7 +17,7 @@ public class BonitaIdentityKey extends ServerResource {
 	
 	@Post
 	public String getBonitaIdentityKey() {
-		
+		logger.error("=====================> getBonitaIdentityKey");
 		String userId = (String)getRequestAttributes().get("userid");
 		String pwd = (String)getRequestAttributes().get("password");
 
@@ -31,8 +31,10 @@ public class BonitaIdentityKey extends ServerResource {
     		ICredentialsEncryptionAPI credEncApi = SecurityAPIFactory.getCredentialsEncryptionAPI();
             String encCred = credEncApi.encryptCredential(userId + ICredentialsEncryptionAPI.USER_CREDENTIALS_SEPARATOR + pwd);
             identityKey = credEncApi.generateTemporaryToken(encCred);
-
+            
 	        BonitaUtil.logout(loginContext);
+	        
+	        logger.error("=====================> ID key: " + identityKey);
 
     	} catch (Exception e) {
         	logger.error("Could not create a proper bonita form identity key: " + e); // instance=TestaCheckboxlist--1.0--8
