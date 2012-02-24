@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 30
+/inherit/!svn/ver/89/xjobb/xsl
+END
+titlepage_cust_fo.xml
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/inherit/!svn/ver/54/xjobb/xsl/titlepage_cust_fo.xml
+END
+titlepage_cust_fo.xsl
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/inherit/!svn/ver/54/xjobb/xsl/titlepage_cust_fo.xsl
+END
+pr_fop.xsl
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/inherit/!svn/ver/206/xjobb/xsl/pr_fop.xsl
+END
+pr_html.xsl
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/inherit/!svn/ver/206/xjobb/xsl/pr_html.xsl
+END
