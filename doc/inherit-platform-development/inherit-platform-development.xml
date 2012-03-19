@@ -204,7 +204,13 @@ mvn -P dist
       </para>
     </section>
     
-
+     <section id="apache2_front">
+       <title>Install and configure Apache2 front</title>
+       <para>
+	 sudo apt-get install apache2
+	 sudo apt-get install libapache2-mod-jk
+       </para>
+    </section>
   </section>
 </article>
 

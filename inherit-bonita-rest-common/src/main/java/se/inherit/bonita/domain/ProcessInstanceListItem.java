@@ -3,6 +3,8 @@ package se.inherit.bonita.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.thoughtworks.xstream.annotations.XStreamAlias;
+
 /*
 Copyright (C) 2011 Inherit S AB
 
@@ -20,6 +22,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+@XStreamAlias("message")
 public class ProcessInstanceListItem implements Serializable {
     
 	private static final long serialVersionUID = 1056452412993640906L;

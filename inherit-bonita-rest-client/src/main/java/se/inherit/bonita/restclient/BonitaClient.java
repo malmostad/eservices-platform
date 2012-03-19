@@ -254,10 +254,14 @@ public class BonitaClient {
 		return result;
 	}
 	
-	public String getStatusByUserId(String bonitaUser) {
-		String result = null;
+	@SuppressWarnings("unchecked")
+	public ArrayList<ProcessInstanceListItem> getStatusByUserId(String bonitaUser) {
+		 ArrayList<ProcessInstanceListItem> result = null;
 		String uri = customServerBaseUrl + "bonitaStatusByUserId/" + bonitaUser;
-		result = call(uri, bonitaUser);
+		String response = call(uri, bonitaUser);
+		if (response != null) {
+			result = (ArrayList<ProcessInstanceListItem>)xstream.fromXML(response);
+		}
 		return result;
 	}
 
