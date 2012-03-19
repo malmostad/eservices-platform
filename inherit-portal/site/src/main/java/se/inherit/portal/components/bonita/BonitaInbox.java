@@ -23,8 +23,9 @@ public class BonitaInbox  extends BaseHstComponent {
 		
         HippoBean doc = getContentBean(request);
         
-        Principal principal = request.getUserPrincipal();
-        String userName = principal.getName();
+        //Principal principal = request.getUserPrincipal();
+        //String userName = principal.getName();
+        String userName = "eva_extern";
         
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
@@ -38,7 +39,12 @@ public class BonitaInbox  extends BaseHstComponent {
         BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
        // Collection<LightTaskInstance> tasks = bc.getLightTaskListByUserId("admin", "READY");
         Collection<InboxTaskItem> tasks = bc.getUserTaskList(userName);
-        
+        if (tasks != null) {
+        	log.error("tasks count: " + tasks.size());
+        }
+        else {
+        	log.error("tasks count: no tasks");
+        }
         request.setAttribute("tasks", tasks);
         
     }

@@ -18,21 +18,25 @@
     <p>${document.summary}</p>
     <hst:html hippohtml="${document.html}"/>
     
-    <c:if test="${not empty tasks}">
-		<table> 
-			<tr>
-			   <td><fmt:message key="bonita.process.column.lbl"/></td>
-			   <td><fmt:message key="bonita.startDate.column.lbl"/></td>
-			   <td><fmt:message key="bonita.activity.column.lbl"/></td>
-			</tr>
-		 	<c:forEach var="task" items="${tasks}">
-		 	  <tr>
-		 	  	<td>${task.processLabel}</td>
-		 	  	<td>${task.createdDate}</td>
-		 	  	<td><a href="form?taskUuid=${task.taskUUID}">${task.activityLabel}&activityDefinitionUUID=${task.activityDefinitionUUID}</a></td>
-		 	  </tr>
-			</c:forEach>
-		</table>
-	</c:if>
+    		<table cellpadding="0" cellspacing="0" border="0" class="display dataTable">
+				<thead>
+					<tr>
+					   <th><fmt:message key="bonita.process.column.lbl"/></th>
+					   <th><fmt:message key="bonita.startDate.column.lbl"/></th>
+					   <th><fmt:message key="bonita.activity.column.lbl"/></th>
+					</tr>
+				</thead>
+				<tbody>
+			    <c:if test="${not empty tasks}">
+					<c:forEach var="task" items="${tasks}">
+						<tr>
+					 	  	<td>${task.processLabel}</td>
+					 	  	<td><fmt:formatDate value="${task.createdDate}" type="Date" /></td>
+							<td><a href="form?taskUuid=${task.taskUUID}&activityDefinitionUUID=${task.activityDefinitionUUID}">${task.activityLabel}</a></td>
+						</tr>
+					</c:forEach>
+				</c:if>
+				</tbody>
+			</table>    
   </c:otherwise>  
 </c:choose>

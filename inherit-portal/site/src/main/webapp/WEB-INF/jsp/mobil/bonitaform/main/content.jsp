@@ -2,5 +2,5 @@
 <%--@elvariable id="document" type="se.inherit.portal.beans.NewsDocument"--%>
 
 <c:if test="${not empty bonitaFormUrl}">
-	<iframe id="bonita_form" frameborder="0" scrolling="auto" src="${bonitaFormUrl}" width="100%"> </iframe>
+	<iframe id="bonita_form" frameborder="0" scrolling="auto" src="${bonitaFormUrl}" width="100%" height="400"> </iframe>
 </c:if>

@@ -4,8 +4,24 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <hst:headContributions categoryExcludes="scripts" />
-    <hst:link var="link" path="/css/style.css"/>
-    <link rel="stylesheet" href="${link}" type="text/css"/>
+    <link rel="stylesheet" href="<hst:link path="/css/style.css"/>" type="text/css"/>
+    <link rel="stylesheet" href="<hst:link path="/css/jquery.dataTables.css"/>" type="text/css"/>
+    <link rel="stylesheet" href="<hst:link path="css/cupertino/jquery-ui-1.8.18.custom.css"/>" type="text/css" />
+    <script type="text/javascript" src="<hst:link path="/js/jquery-1.7.1.min.js"/>"></script>
+    <script type="text/javascript" src="<hst:link path="/js/jquery-ui-1.8.18.custom.min.js"/>"></script>
+	<script src="http://datatables.net/download/build/jquery.dataTables.min.js"></script>
+	
+    <script type="text/javascript" charset="utf-8">
+			$(document).ready(function() {
+				$('.dataTable').dataTable( {
+					"bPaginate": false,
+					"bLengthChange": false,
+					"bFilter": true,
+					"bSort": true,
+					"bInfo": false,
+					"bAutoWidth": false } );
+			} );
+		</script>
   </head>
   <body>
     <hst:include ref="header"/>

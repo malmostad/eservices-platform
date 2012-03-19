@@ -23,8 +23,9 @@ public class BonitaForm  extends BaseHstComponent {
         HippoBean doc = getContentBean(request);
         
         Principal principal = request.getUserPrincipal();
-        String userName = principal.getName();
-
+        //String userName = principal.getName();
+        String userName = "eva_extern";
+        
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
                          request.getRequestContext().getResolvedSiteMapItem().getRelativeContentPath(),
@@ -53,11 +54,13 @@ public class BonitaForm  extends BaseHstComponent {
 	       
 	        //bonitaFormUrl = "http://localhost:58080/bonita/console/homepage?locale=" + localeStr + "&task=" + taskUuid + "&mode=form&identityKey=" + identityKey;
 	        //http://host:port/webapp-name/application/BonitaApplication.html?locale=<locale>#form=<activityDefinitionUUID>$entry&task=<activityInstanceUUID>
-	        bonitaFormUrl = "http://demo.inherit.se/bonita-app/application/BonitaApplication.html?locale=" + localeStr + "#form=" + activityDefinitionUUID + "$entry&task=" + taskUuid + "&mode=form&identityKey=" + identityKey;
+	        
+	        bonitaFormUrl = "http://" + request.getServerName() + "/bonita-app/application/BonitaApplication.html?locale=" + localeStr + "#form=" + activityDefinitionUUID + "$entry&task=" + taskUuid + "&mode=form&identityKey=" + identityKey;
         }
         
         request.setAttribute("bonitaFormUrl", bonitaFormUrl);
        
+        request.setAttribute("testUser", request.getRemoteUser() + principal.getName());
         
         log.error("XXXXXXXXXXXXXXXXXXXX bonitaFormUrl:" + bonitaFormUrl);
     }

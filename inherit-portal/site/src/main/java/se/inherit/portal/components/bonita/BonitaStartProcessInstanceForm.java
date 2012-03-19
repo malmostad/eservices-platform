@@ -22,8 +22,9 @@ public class BonitaStartProcessInstanceForm  extends BaseHstComponent {
 		
         HippoBean doc = getContentBean(request);
         
-        Principal principal = request.getUserPrincipal();
-        String userName = principal.getName();
+        //Principal principal = request.getUserPrincipal();
+        //String userName = principal.getName();
+        String userName = "olle_operator";
         
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
@@ -50,7 +51,7 @@ public class BonitaStartProcessInstanceForm  extends BaseHstComponent {
 	        
         //bonitaFormUrl = "http://localhost:58080/bonita/console/homepage?locale=" + localeStr + "#process=MyDemoProcess--2.0&form=MyDemoProcess--2.0$entry&mode=form&identityKey=" + identityKey;
 //        bonitaFormUrl = "http://demo.inherit.se/bonita-app/application/BonitaApplication.html?locale=" + localeStr + "#process=MyDemoProcess--3.0&form=MyDemoProcess--3.0$entry&mode=form&identityKey=" + identityKey;
-        bonitaFormUrl = "http://demo.inherit.se/bonita-app/application/BonitaApplication.html?locale=" + localeStr + "#process=MyDemoFelanmalanProcess--1.0&form=MyDemoFelanmalanProcess--1.0$entry&mode=form&identityKey=" + identityKey;
+        bonitaFormUrl = "http://" + request.getServerName() + "/bonita-app/application/BonitaApplication.html?locale=" + localeStr + "#process=Felanmalan--2.0&form=Felanmalan--2.0$entry&mode=form&identityKey=" + identityKey;
         
         
         request.setAttribute("bonitaFormUrl", bonitaFormUrl);

@@ -23,8 +23,9 @@ public class BonitaStatus extends BaseHstComponent {
 		
         HippoBean doc = getContentBean(request);
         
-        Principal principal = request.getUserPrincipal();
-        String userName = principal.getName();
+        //Principal principal = request.getUserPrincipal();
+        //String userName = principal.getName();
+        String userName = "eva_extern";
         
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 

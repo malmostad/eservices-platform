@@ -204,11 +204,16 @@ public class BonitaClient {
 	@SuppressWarnings("unchecked")
 	public ProcessDefinitionInfo getProcessDefinitionInfo (String processDefinitionUUID) {
 		ProcessDefinitionInfo result = null;
-		String response = null;
-		String uri = customServerBaseUrl + "processDefinition/" + processDefinitionUUID;
-		response = call(uri, "admin");
-		if (response != null) {
-			result = (ProcessDefinitionInfo)xstream.fromXML(response);
+		try {
+			String response = null;
+			String uri = customServerBaseUrl + "processDefinition/" + processDefinitionUUID;
+			response = call(uri, "admin");
+			if (response != null) {
+				result = (ProcessDefinitionInfo)xstream.fromXML(response);
+			}
+		}
+		catch (Exception e) {
+			log.error("Exception: " + e);
 		}
 		return result;
 	}
@@ -217,11 +222,16 @@ public class BonitaClient {
 
 	@SuppressWarnings("unchecked")
 	public Set<ProcessInstance> getUserInstances (String bonitaUser) {
-		Set<ProcessInstance> result = null;
-		String uri = serverBaseUrl + "API/queryRuntimeAPI/getUserInstances";
-		String response = call(uri, bonitaUser);
-		if (response != null) {
-			result = (Set<ProcessInstance>)xstream.fromXML(response);
+		Set<ProcessInstance> result = new HashSet<ProcessInstance>();
+		try {
+			String uri = serverBaseUrl + "API/queryRuntimeAPI/getUserInstances";
+			String response = call(uri, bonitaUser);
+			if (response != null) {
+				result = (Set<ProcessInstance>)xstream.fromXML(response);
+			}
+		}
+		catch (Exception e) {
+			log.error("Exception: " + e);
 		}
 		return result;
 	}
@@ -277,10 +287,10 @@ public class BonitaClient {
 				InboxTaskItem item = new InboxTaskItem();
 
 				//item.setProcessName(processDefinition.getName() + "--" + processDefinition.getVersion());
-				item.setProcessName(getProcessLabel(taskInstance.getProcessDefinitionUUID().getValue()).getName());
+				item.setProcessName(getProcessName(taskInstance.getProcessDefinitionUUID().getValue()));
 				item.setTaskUUID(taskInstance.getUUID().getValue());
 				//item.setProcessLabel(processDefinition.getLabel());
-				item.setProcessLabel(getProcessLabel(taskInstance.getProcessDefinitionUUID().getValue()).getLabel());
+				item.setProcessLabel(getProcessLabel(taskInstance.getProcessDefinitionUUID().getValue()));
 				item.setActivityLabel(taskInstance.getActivityLabel());
 				item.setCreatedDate(taskInstance.getCreatedDate());
 				item.setActivityDefinitionUUID(taskInstance.getActivityDefinitionUUID().getValue());
@@ -306,7 +316,7 @@ public class BonitaClient {
 			ProcessInstanceListItem item = new ProcessInstanceListItem();
 
 			// find out process label
-			item.setProcessLabel(getProcessLabel(pi.getProcessDefinitionUUID().getValue()).getLabel());
+			item.setProcessLabel(getProcessLabel(pi.getProcessDefinitionUUID().getValue()));
 
 			// find out process instance status
 			if (InstanceState.FINISHED.equals(pi.getInstanceState())) {
@@ -334,17 +344,36 @@ public class BonitaClient {
 
 		return result;
 	}
+
+	private String getProcessLabel(String processDefinitionUUID) {
+		ProcessDefinitionInfo info = getProcessDefinitionInfo(processDefinitionUUID);
+		if (info != null) {
+			return info.getLabel();
+		}
+		return "";
+	}
 	
-	private ProcessDefinitionInfo getProcessLabel(String processDefinitionUUID) {
+	private String getProcessName(String processDefinitionUUID) {
+		ProcessDefinitionInfo info = getProcessDefinitionInfo(processDefinitionUUID);
+		if (info != null) {
+			return info.getName();
+		}
+		return "";
+	}
+	
+	/*
+	private ProcessDefinitionInfo getProcessDefinitionInfo(String processDefinitionUUID) {
 		
 		ProcessDefinitionInfo result = defUuid2ProcessDefinitionInfo.get(processDefinitionUUID);
 
 		if (result == null) {
 			result = getProcessDefinitionInfo(processDefinitionUUID);
-			defUuid2ProcessDefinitionInfo.put(processDefinitionUUID, result);
+			if (result != null) {
+				defUuid2ProcessDefinitionInfo.put(processDefinitionUUID, result);
+			}
 		}
 		return result;
 	}
-	
+	*/
 	
 }

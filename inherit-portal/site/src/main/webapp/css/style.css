@@ -59,3 +59,48 @@ h1.subsite {
 @media print {
 /* print specific styling here*/
 }
+#topmenu-items {
+    margin: 0;
+/*
+      background-color: cyan;
+      border: 1px solid blue;
+*/
+/*    width: 700px;*/
+    padding: 3px 0px 3px 0px;
+
+}
+
+#topmenu-items li {
+    float: left;
+    list-style: none;
+/*
+      border: 1px solid green;
+      width: 100px;
+*/
+    padding: 0px 0px 0px 20px;
+    /* font-weight: bold; */
+    color: black;
+    text-transform: uppercase;
+    font-size: 14px;
+    text-align: center;
+}
+
+#topmenu-items li:first-child {
+    padding-left:40px;
+                    }
+#topmenu-items a {
+    color: black;
+    text-decoration: none;
+}
+
+#topmenu-items a:hover {
+    color: #fc9200;
+    text-decoration: none;
+}
+
+#topmenu-items li.selected {
+    color: #fc9200;
+    font-weight: bold;
+    /* background: url(/site/images/top_menu_selected_item.png) no-repeat center 18px; */
+}
+
