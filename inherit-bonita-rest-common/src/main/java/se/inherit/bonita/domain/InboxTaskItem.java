@@ -22,7 +22,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@XStreamAlias("message")
+@XStreamAlias("InboxTaskItem")
 public class InboxTaskItem implements Serializable {
 	
 	private static final long serialVersionUID = -6929971693624511343L;

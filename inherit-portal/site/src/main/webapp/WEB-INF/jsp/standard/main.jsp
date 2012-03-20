@@ -15,6 +15,7 @@
 			<div class="span3">
 				<hst:include ref="submenus" />
 			</div>
+			<hst:include ref="breadcrumb" />
 			<div id="content" class="span6">
 				<hst:include ref="content" />
 				<!-- the lists is a general 'slot' where items can be dropped in -->

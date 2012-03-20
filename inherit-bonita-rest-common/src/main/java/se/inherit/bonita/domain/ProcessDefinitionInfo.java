@@ -21,7 +21,7 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-@XStreamAlias("message")
+@XStreamAlias("ProcessDefinitionInfo")
 public class ProcessDefinitionInfo implements Serializable {
 	
 	private static final long serialVersionUID = 7566703293917773023L;

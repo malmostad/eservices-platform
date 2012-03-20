@@ -4,6 +4,7 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.ow2.bonita.identity.auth.UserOwner;
+import org.ow2.bonita.util.BonitaConstants;
 import org.ow2.bonita.util.SimpleCallbackHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,13 @@ public class BonitaUtil {
 			loginContext = new LoginContext("BonitaAuth",
 					new SimpleCallbackHandler(user, "bpm"));
 
+			logger.info("Login user: " + user);
+			
 			loginContext.login();
 			loginContext.logout();
 
 			logger.info("Login ok");
-
+			
 			logger.info("Login BonitaStore");
 			String restuser = "restuser";
 			String restpwd = "restbpm";

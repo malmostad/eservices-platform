@@ -3,6 +3,7 @@ package se.inherit.bonita.restclient;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -106,10 +107,18 @@ public class BonitaClient {
 
 	private XStream initXStream() {
 		XStream xstream = new XStream();
-        
+		
+		xstream.alias("Date", Date.class);
+		
 		xstream.alias("set", HashSet.class);
+		xstream.alias("list", ArrayList.class);
 		xstream.alias("Object-array", Object[].class);
         
+		xstream.alias("InboxTaskItem", InboxTaskItem.class);
+		xstream.alias("ProcessDefinitionInfo", ProcessDefinitionInfo.class);
+		xstream.alias("ProcessInstanceListItem", ProcessInstanceListItem.class);
+		
+		
 		// definition api 
         xstream.alias("ProcessDefinition", ProcessDefinitionImpl.class);
         xstream.alias("DataFieldDefinition", DataFieldDefinitionImpl.class);

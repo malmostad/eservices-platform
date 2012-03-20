@@ -30,10 +30,12 @@ public class BonitaStatusByUserId extends ServerResource {
 	HashMap<String, String> defUuid2LabelCache = new HashMap<String,String>();
 	
 	@Post
-	public ArrayList<ProcessInstanceListItem> getUserInstancesList(String user) { // ArrayList<ProcessInstanceListItem>
+	public ArrayList<ProcessInstanceListItem> getUserInstancesList() { // ArrayList<ProcessInstanceListItem>
 		ArrayList<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
 
 		try {
+			String user = (String)getRequestAttributes().get("userid");
+			
 			Set<ProcessInstance> piList = new HashSet<ProcessInstance>();
 			LoginContext loginContext = BonitaUtil.loginWithUser(user); 
 			piList = AccessorUtil.getQueryRuntimeAPI().getUserInstances();
