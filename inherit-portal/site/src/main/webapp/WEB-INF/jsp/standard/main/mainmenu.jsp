@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/xml" prefix="x"%>
 <%@ taglib uri="http://www.hippoecm.org/jsp/hst/core" prefix='hst'%>
 
-<div class="navbar span12">
+<div class="navbar">
 	<div class="navbar-inner">
 		<div class="container">
 			<a class="btn btn-navbar" data-toggle="collapse"

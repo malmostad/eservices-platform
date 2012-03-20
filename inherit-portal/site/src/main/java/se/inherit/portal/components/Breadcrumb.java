@@ -22,19 +22,16 @@ public class Breadcrumb extends BaseHstComponent {
         HippoBean doc = getContentBean(request);
         request.setAttribute("document",doc);
 
-        log.error("Breadcrumb calc");
         // breadcrumb
     	HstSiteMenu menu = request.getRequestContext().getHstSiteMenus().getSiteMenu("main");
         ArrayList<HstSiteMenuItem> breadcrumb = new ArrayList<HstSiteMenuItem>();
         List<HstSiteMenuItem> currentMenuItems = menu.getSiteMenuItems();
         boolean finished = false;
         while (currentMenuItems != null && !finished) {
-        	log.error("Breadcrumb yttre loop");
         	HstSiteMenuItem foundItem = null;
         	int N = currentMenuItems.size();
         	int index = 0;
         	while (foundItem == null && index<N) {
-        		log.error("Breadcrumb inre loop");
         		HstSiteMenuItem currentMenuItem = currentMenuItems.get(index);
 
         		if (currentMenuItem.isExpanded() || currentMenuItem.isSelected()) {
