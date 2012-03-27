@@ -43,6 +43,7 @@
     <module>inherit-bonita-rest-server-custom</module>
     <module>inherit-bonita-rest-common</module>
     <module>inherit-portal</module>
+    <module>inherit-bonita-forms-integration</module>
   </modules>
 
 	<repositories>

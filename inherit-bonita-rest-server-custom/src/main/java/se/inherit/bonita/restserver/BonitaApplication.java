@@ -14,6 +14,7 @@ public class BonitaApplication extends Application {
 		router.attach("/bonita/{userid}/{password}", BonitaIdentityKey.class); 
 		router.attach("/bonitaStatusByUserId/{userid}", BonitaStatusByUserId.class); 
 		router.attach("/processDefinition/{processDefinitionUUID}", BonitaProcessDefinition.class); 
+		router.attach("/bonitaStartProcess/{formPath}/{userid}", StartBonitaProcess.class); 
 		
 		return router;
 	}

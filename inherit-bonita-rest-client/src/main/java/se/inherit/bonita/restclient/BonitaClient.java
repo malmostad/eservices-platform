@@ -1,6 +1,8 @@
 package se.inherit.bonita.restclient;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -285,6 +287,22 @@ public class BonitaClient {
 		return result;
 	}
 
+	public String bonitaStartProcess(String formPath, String bonitaUser) {
+		String result = null; 	
+		String uri;
+		try {
+			uri = customServerBaseUrl + "bonitaStartProcess/" + URLEncoder.encode(formPath,"UTF-8") + "/" + bonitaUser;
+			String response = call(uri, bonitaUser);
+			if (response != null) {
+				result = (String)xstream.fromXML(response);
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	
 	public Collection<InboxTaskItem> getUserTaskList(String userId) {
 		Collection<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		

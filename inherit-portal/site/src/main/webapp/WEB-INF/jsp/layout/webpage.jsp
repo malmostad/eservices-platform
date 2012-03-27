@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta charset="utf-8">
@@ -20,7 +21,7 @@
 					href="<hst:link path="css/cupertino/jquery-ui-1.8.18.custom.css"/>"
 					type="text/css" />
 				<script type="text/javascript"
-					src="<hst:link path="/js/bootstrap.js"/>"></script>
+					src="<hst:link path="/js/bootstrap.js"/>"></script>  
 				<script type="text/javascript"
 					src="<hst:link path="/js/jquery-1.7.1.min.js"/>"></script>
 				<script type="text/javascript"
@@ -29,8 +30,11 @@
 					src="http://datatables.net/download/build/jquery.dataTables.min.js"></script>
 
 				<script type="text/javascript" charset="utf-8">
-					$(document).ready(function() {
-						$('.dataTable').dataTable({
+		        jQuery.noConflict();
+		        var $j = jQuery;
+
+		        $j(document).ready(function () {
+						$j('.dataTable').dataTable({
 							"bPaginate" : false,
 							"bLengthChange" : false,
 							"bFilter" : true,
@@ -39,6 +43,8 @@
 							"bAutoWidth" : false
 						});
 					});
+				
+				
 				</script>
 				<link rel="stylesheet"
 					href="<hst:link path="/css/style.css"/>" type="text/css" />
@@ -47,7 +53,11 @@
 	<div class="container-fluid">
 		<hst:include ref="header" />
 		<hst:include ref="main" />
+		
+		
 	</div>
+	
+	
 	<hst:headContributions categoryIncludes="scripts" />
 </body>
 </html>

@@ -44,7 +44,7 @@
 				<hst:link var="link" path="/search" />
 				<form action="${link}" method="POST"
 					class="navbar-search pull-right">
-					<input type="text" class="search-query" placeholder="Search"
+					<input type="text" class="search-query" placeholder="<fmt:message key="search.submit.text"/>"
 						name="query">
 				</form>
 			</div>
