@@ -16,7 +16,7 @@
 
 		<div class="hero-unit">
 			<h2>100% &Ouml;ppen k&auml;llkod! Inga hemligheter</h2>
-			<p>Vår BPMN drivna plattform för e-tjänster Powered Portal Solution from Inherit - based on multi
+			<p>V&aring;r BPMN drivna plattform f&ouml;r e-tj&auml;nster Powered Portal Solution from Inherit - based on multi
 				channel, multi language HippoCMS and Bonita Open Solution</p>
 			<!--  p> <img alt="osi_standard_logo" src="/site/images/osi_standard_logo.png" /></p -->
 			<p>
@@ -47,7 +47,7 @@
 				<div class="page-header span4">
 					<h2>Prova</h2>
 				</div>
-				<p>Detta är en standardinstallerad server med vår lösning. Registrera dig för ett demo konto.</p>
+				<p>Detta &auml;r en standardinstallerad server med v&aring;r l&ouml;sning. Registrera dig f&ouml;r ett demo konto.</p>
 
 			</div>
 
@@ -55,7 +55,7 @@
 				<div class="page-header span4">
 					<h2>Offentlig sektor</h2>
 				</div>
-				<p>Vi har ramavtal med kammarkollegiet tillsammans med vår partner Pro4u. Det innebär att offentlig sektor kan börja använda vår öppna plattform utan upphandling och avropa våra kvalificerade tjänster på lösningen efter en förnyad konkurrensutsättning.</p>
+				<p>Vi har ramavtal med kammarkollegiet tillsammans med v&aring;r partner Pro4u. Det inneb&auml;r att offentlig sektor kan b&ouml;rja anv&auml;nda v&aring;r &ouml;ppna plattform utan upphandling och avropa v&aring;ra kvalificerade tj&auml;nster p&aring; l&ouml;sningen efter en f&ouml;rnyad konkurrensuts&auml;ttning.</p>
 
 			</div>
 
@@ -64,7 +64,7 @@
 
 			<div class="span4">
 				<p>
-					<a class="btn btn-primary" href="#">Gå med</a>
+					<a class="btn btn-primary" href="#">G&aring; med</a>
 				</p>
 			</div>
 			<div class="span4">

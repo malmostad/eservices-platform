@@ -213,7 +213,7 @@ public class BonitaClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ProcessDefinitionInfo getProcessDefinitionInfo (String processDefinitionUUID) {
+	public ProcessDefinitionInfo getProcessDefinitionInfoFromBosEngine (String processDefinitionUUID) {
 		ProcessDefinitionInfo result = null;
 		try {
 			String response = null;
@@ -287,11 +287,11 @@ public class BonitaClient {
 		return result;
 	}
 
-	public String bonitaStartProcess(String formPath, String bonitaUser) {
+    public String bonitaStartProcess(String formPath, String bonitaUser, String formId, String docId) {
 		String result = null; 	
 		String uri;
 		try {
-			uri = customServerBaseUrl + "bonitaStartProcess/" + URLEncoder.encode(formPath,"UTF-8") + "/" + bonitaUser;
+			uri = customServerBaseUrl + "bonitaStartProcess/" + URLEncoder.encode(formPath,"UTF-8") + "/" + bonitaUser + "/" + formId.replaceAll("/", "____") + "/"+ docId;
 			String response = call(uri, bonitaUser);
 			if (response != null) {
 				result = (String)xstream.fromXML(response);
@@ -392,19 +392,19 @@ public class BonitaClient {
 		return "";
 	}
 	
-	/*
-	private ProcessDefinitionInfo getProcessDefinitionInfo(String processDefinitionUUID) {
+	
+	public ProcessDefinitionInfo getProcessDefinitionInfo(String processDefinitionUUID) {
 		
 		ProcessDefinitionInfo result = defUuid2ProcessDefinitionInfo.get(processDefinitionUUID);
 
 		if (result == null) {
-			result = getProcessDefinitionInfo(processDefinitionUUID);
+			result = getProcessDefinitionInfoFromBosEngine(processDefinitionUUID);
 			if (result != null) {
 				defUuid2ProcessDefinitionInfo.put(processDefinitionUUID, result);
 			}
 		}
 		return result;
 	}
-	*/
+	
 	
 }

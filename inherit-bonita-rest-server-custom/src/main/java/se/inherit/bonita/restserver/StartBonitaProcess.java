@@ -1,5 +1,8 @@
 package se.inherit.bonita.restserver;
 
+import java.util.Map;
+import java.util.HashMap;
+
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
@@ -29,7 +32,23 @@ public class StartBonitaProcess extends ServerResource {
 		String formPath = (String)getRequestAttributes().get("formPath");
 		String user = (String)getRequestAttributes().get("userid");
 
-		System.out.println("startBonitaProcess formPath=[" + formPath + "] : " + "[" + user + "]");
+		String formId = ((String)getRequestAttributes().get("formId")).replaceAll("____", "/");
+		
+		/*
+		if (formPath.startsWith("Spridning_bekampningsmedel--")) {
+			formId = "malmo/yrkesmassig-anvandning-av-bekampningsmedel";
+		}
+		if (formPath.startsWith("Franvaroanmalan--")) {
+			formId = "malmo/anmalan-av-franvaro";
+		}
+		if (formPath.startsWith("Ansokan--")) {
+			formId = "malmo/anmalan-av-franvaro";
+		}
+		*/
+		
+		String docId = (String)getRequestAttributes().get("docId");
+
+		System.out.println("startBonitaProcess formPath=[" + formPath + "] : " + "formId=[" + formId +"] docId=[" + docId + "] user=[" + user + "]");
 		
 		
 		String processDefinitionUUIDStr = formPath;
@@ -48,7 +67,11 @@ public class StartBonitaProcess extends ServerResource {
     		if  (processDefinition != null) {
     			
     			System.out.println("Starta process " + processDefinition.getUUID());
-    			ProcessInstanceUUID instanceUuid = AccessorUtil.getRuntimeAPI().instantiateProcess(processDefinition.getUUID());
+			Map<String,Object> variables = new HashMap<String, Object>();
+			variables.put("docId", docId);
+			variables.put("formId", formId);
+
+    			ProcessInstanceUUID instanceUuid = AccessorUtil.getRuntimeAPI().instantiateProcess(processDefinition.getUUID(), variables);
     			if (instanceUuid != null) {
     				result = instanceUuid.getValue();
     			}
