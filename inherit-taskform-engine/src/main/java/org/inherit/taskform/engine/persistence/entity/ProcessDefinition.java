@@ -11,9 +11,9 @@ import javax.persistence.OneToMany;
 @Entity
 public class ProcessDefinition {
 	
-	public static final int STATUS_ACTIVE = 1;
+	public static final int STATUS_ENABLED = 1;
 	public static final int STATUS_DISABLED = 2;
-	public static final int STATUS_REMOVED = 3;
+	public static final int STATUS_ARCHIVED = 3;
 	
 	@Id
 	@GeneratedValue

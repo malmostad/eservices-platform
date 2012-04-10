@@ -4,11 +4,19 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.security.auth.login.LoginContext;
+
 import org.hibernate.Session;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
+
+import org.inherit.taskform.engine.bonitautil.BonitaObjectConverter;
 import org.inherit.taskform.engine.persistence.entity.ActivityDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessDefinition;
+import org.ow2.bonita.facade.uuid.ProcessDefinitionUUID;
+import org.ow2.bonita.util.AccessorUtil;
+
+import se.inherit.bonita.restserver.BonitaUtil;
 
 public class TaskFormDb {
 	
@@ -20,19 +28,76 @@ public class TaskFormDb {
 		HibernateUtil.loadConfig();
 	}
 
-	public void saveProcessDefinition(ProcessDefinition processDefinition) {
+	/**
+	 * TODO refaktorisera senare för att få snyggare beroende
+	 */
+	public void syncDefsWithExecutionEngine() {
+		
 		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
 		
-		session.save(processDefinition);
-		
+		try {
+	    	
+    		LoginContext loginContext = BonitaUtil.login();
+
+    		Set<org.ow2.bonita.facade.def.majorElement.ProcessDefinition> procDefs;
+    		procDefs = AccessorUtil.getQueryDefinitionAPI().getProcesses();
+    		for (org.ow2.bonita.facade.def.majorElement.ProcessDefinition procDef : procDefs) {
+    			
+    			String processUuid = procDef.getUUID().getValue();
+    			ProcessDefinition pd = this.getProcessDefinitionsByUuid(session, processUuid);
+    			if (pd == null) {
+    				// new process definition
+    				pd = new ProcessDefinition();
+    				BonitaObjectConverter.convert(procDef, pd);
+    				
+    				// new process => all activites are new
+    				for (org.ow2.bonita.facade.def.majorElement.ActivityDefinition actDef : procDef.getActivities()) {
+    					ActivityDefinition ad = new ActivityDefinition();
+    					BonitaObjectConverter.convert(actDef, ad);
+    					
+    					pd.addActivityDefinition(ad);
+    				}    				
+    				
+    			}
+    			else {
+    				BonitaObjectConverter.convert(procDef, pd);
+    				
+    				for (org.ow2.bonita.facade.def.majorElement.ActivityDefinition actDef : procDef.getActivities()) {
+    					// TODO loop activities....
+    				}
+    			}
+
+    			session.beginTransaction();
+    			saveProcessDefinition(session, pd);
+    			session.getTransaction().commit();
+    		}
+            
+	        BonitaUtil.logout(loginContext);
+
+    	} catch (Exception e) {
+        	log.severe("Could not create a proper bonita form identity key: " + e); // instance=TestaCheckboxlist--1.0--8
+        } 
+		finally {
+			session.close();
+		}
+	}
+
+	
+	public void saveProcessDefinition(Session session, ProcessDefinition processDefinition) {
+		session.save(processDefinition);		
 		Set<ActivityDefinition> activityDefinitions = processDefinition.getActivityDefinitions();
-		
 		if (activityDefinitions != null) {
 			for (ActivityDefinition activityDefinition : activityDefinitions) {
 				session.save(activityDefinition);
 			}
 		}
+	}
+
+	public void saveProcessDefinition(ProcessDefinition processDefinition) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		
+		saveProcessDefinition(session, processDefinition);
 		
 		session.getTransaction().commit();
 		session.close();
@@ -77,16 +142,13 @@ public class TaskFormDb {
 
 	// TODO ändra till unik uuid
 	public ProcessDefinition getProcessDefinitionsByUuid(String uuid) {
-		List<ProcessDefinition> result = null;
+		ProcessDefinition result = null;
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
 		try {
 			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-			result = (List<ProcessDefinition>) session.createCriteria(ProcessDefinition.class)
-				    .add( Restrictions.eq("uuid", uuid) )
-				    .setFetchMode("activityDefinitions", FetchMode.JOIN)
-				    .list();
+			result = getProcessDefinitionsByUuid(session, uuid);
 		}
 		catch (Exception e) {
 			
@@ -94,8 +156,22 @@ public class TaskFormDb {
 		finally {
 			session.close();
 		}
+		return result;
+	}
+	
+	// TODO ändra till unik uuid
+	private ProcessDefinition getProcessDefinitionsByUuid(Session session, String uuid) {
+		List<ProcessDefinition> result = null;
+				
+		//result = (List<ProcessDefinition>)session.createQuery(hql).list();
+		result = (List<ProcessDefinition>) session.createCriteria(ProcessDefinition.class)
+			    .add( Restrictions.eq("uuid", uuid) )
+			    .setFetchMode("activityDefinitions", FetchMode.JOIN)
+			    .list();
+
 		return filterUniqueFromList(result);
 	}
+	
 
 	@SuppressWarnings("unchecked")
 	public List<ProcessDefinition> getProcessDefinitions() {
