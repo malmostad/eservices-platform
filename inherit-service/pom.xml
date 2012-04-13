@@ -19,6 +19,7 @@
   <modules>
     <module>inherit-bonita-client-utils</module>
     <module>inherit-service-common</module>
+    <module>inherit-taskform-engine</module>
     <module>inherit-service-core</module>
     <module>inherit-service-rest-client</module>
     <module>inherit-service-rest-server</module>
