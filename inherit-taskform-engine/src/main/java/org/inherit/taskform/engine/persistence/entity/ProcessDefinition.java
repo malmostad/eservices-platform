@@ -24,9 +24,6 @@ public class ProcessDefinition {
 	String label;
 	
 	int status;
-	
-	String formPath;
-
 		
 	
 	@OneToMany(mappedBy="processDefinition")
@@ -81,14 +78,6 @@ public class ProcessDefinition {
 		this.status = status;
 	}
 
-	public String getFormPath() {
-		return formPath;
-	}
-
-	public void setFormPath(String formPath) {
-		this.formPath = formPath;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -97,8 +86,6 @@ public class ProcessDefinition {
 				* result
 				+ ((activityDefinitions == null) ? 0 : activityDefinitions
 						.hashCode());
-		result = prime * result
-				+ ((formPath == null) ? 0 : formPath.hashCode());
 		result = prime * result + ((label == null) ? 0 : label.hashCode());
 		result = prime
 				* result
@@ -122,11 +109,6 @@ public class ProcessDefinition {
 			if (other.activityDefinitions != null)
 				return false;
 		} else if (!activityDefinitions.equals(other.activityDefinitions))
-			return false;
-		if (formPath == null) {
-			if (other.formPath != null)
-				return false;
-		} else if (!formPath.equals(other.formPath))
 			return false;
 		if (label == null) {
 			if (other.label != null)
@@ -152,8 +134,7 @@ public class ProcessDefinition {
 	public String toString() {
 		return "ProcessDefinition [processDefinitionId=" + processDefinitionId
 				+ ", uuid=" + uuid + ", label=" + label + ", status=" + status
-				+ ", formPath=" + formPath + ", activityDefinitions="
-				+ activityDefinitions + "]";
+				+ ", activityDefinitions=" + activityDefinitions + "]";
 	}
 
 

@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 @Entity
 public class ActivityDefinition {
 
+	public static final String ENTRY_UUID = "ENTRY";
+	
 	@Id
 	@GeneratedValue
 	Long activityDefinitionId;

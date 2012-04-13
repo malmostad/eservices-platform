@@ -10,13 +10,13 @@ import org.hibernate.Session;
 import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
 
+import org.inherit.bonita.client.util.BonitaUtil;
 import org.inherit.taskform.engine.bonitautil.BonitaObjectConverter;
 import org.inherit.taskform.engine.persistence.entity.ActivityDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessDefinition;
 import org.ow2.bonita.facade.uuid.ProcessDefinitionUUID;
 import org.ow2.bonita.util.AccessorUtil;
 
-import se.inherit.bonita.restserver.BonitaUtil;
 
 public class TaskFormDb {
 	
