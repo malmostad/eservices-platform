@@ -4,7 +4,6 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.ow2.bonita.identity.auth.UserOwner;
-import org.ow2.bonita.util.BonitaConstants;
 import org.ow2.bonita.util.SimpleCallbackHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,25 +1,28 @@
-package se.inherit.bonita.restserver;
+package org.inherit.service.rest.server;
 
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 
+// TODO vill minnas att beroende mot bonita-security går att få bort, kolla..., troligen använda SSO och user samt skippa identityKey
 import org.bonitasoft.console.security.server.api.ICredentialsEncryptionAPI;
 import org.bonitasoft.console.security.server.api.SecurityAPIFactory;
-import org.ow2.bonita.util.SimpleCallbackHandler;
+
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.logging.Logger;
+
+import org.inherit.bonita.client.util.BonitaUtil;
+import org.inherit.service.common.util.ParameterEncoder;
 
 public class BonitaIdentityKey extends ServerResource {
 
-	public static final Logger logger = LoggerFactory.getLogger(BonitaIdentityKey.class);
+	public static final Logger log = Logger.getLogger(BonitaIdentityKey.class.getName());
 	
 	@Post
 	public String getBonitaIdentityKey() {
-		logger.error("=====================> getBonitaIdentityKey");
-		String userId = (String)getRequestAttributes().get("userid");
-		String pwd = (String)getRequestAttributes().get("password");
+		log.severe("=====================> getBonitaIdentityKey");
+
+		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
+		String pwd = ParameterEncoder.decode((String)getRequestAttributes().get("password"));
 
 		String identityKey = null;
     	
@@ -34,13 +37,13 @@ public class BonitaIdentityKey extends ServerResource {
             
 	        BonitaUtil.logout(loginContext);
 	        
-	        logger.error("=====================> ID key: " + identityKey);
+	        log.severe("=====================> ID key: " + identityKey);
 
     	} catch (Exception e) {
-        	logger.error("Could not create a proper bonita form identity key: " + e); // instance=TestaCheckboxlist--1.0--8
+        	log.severe("Could not create a proper bonita form identity key: " + e); // instance=TestaCheckboxlist--1.0--8
         }
     	
-    	logger.error("Return identityKey: " + identityKey);
+    	log.severe("Return identityKey: " + identityKey);
     	
         return identityKey;
 	}

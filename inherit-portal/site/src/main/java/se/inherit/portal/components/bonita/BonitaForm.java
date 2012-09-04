@@ -8,6 +8,7 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +47,11 @@ public class BonitaForm  extends BaseHstComponent {
 	        	localeStr = locale.getLanguage();
 	        }
 	        
-	        BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
-	        String identityKey = bc.getFormIdentityKey(userName, "bpm");
+	        InheritServiceClient isc = new InheritServiceClient(); 
+	        String identityKey = isc.getBonitaIdentityKey(userName, "bpm");
+	        
+	        //BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
+	        //String identityKey = bc.getFormIdentityKey(userName, "bpm");
 	        //TODO password 
 	        
 	        //String taskUuid = "&task=DemoSlask--1.0--1--Registrera_namn--it1--mainActivityInstance--noLoop";

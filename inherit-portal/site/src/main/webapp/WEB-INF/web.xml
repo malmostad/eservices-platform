@@ -193,6 +193,17 @@
     <servlet-class>org.hippoecm.hst.servlet.HstPingServlet</servlet-class>
   </servlet>
 
+  <servlet>
+          <servlet-name>AuthifyServlet</servlet-name>
+          <servlet-class>se.inherit.security.jaas.authify.AuthifyServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+          <servlet-name>AuthifyServlet</servlet-name>
+          <url-pattern>/authify/*</url-pattern>
+  </servlet-mapping>
+
+
   <servlet-mapping>
     <servlet-name>BinariesServlet</servlet-name>
     <url-pattern>/binaries/*</url-pattern>

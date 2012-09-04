@@ -1,7 +1,6 @@
 package org.inherit.taskform.engine.persistence;
 
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
@@ -12,8 +11,10 @@ import org.hibernate.criterion.Restrictions;
 
 import org.inherit.bonita.client.util.BonitaUtil;
 import org.inherit.taskform.engine.bonitautil.BonitaObjectConverter;
-import org.inherit.taskform.engine.persistence.entity.ActivityDefinition;
-import org.inherit.taskform.engine.persistence.entity.ProcessDefinition;
+import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
+import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
+import org.inherit.taskform.engine.persistence.entity.StartFormDefinition;
+import org.ow2.bonita.facade.def.majorElement.ActivityDefinition.Type;
 import org.ow2.bonita.facade.uuid.ProcessDefinitionUUID;
 import org.ow2.bonita.util.AccessorUtil;
 
@@ -25,12 +26,12 @@ public class TaskFormDb {
 	//public void void addActivityFormMapping()
 	
 	public TaskFormDb() {
-		HibernateUtil.loadConfig();
+		
 	}
 
 	/**
 	 * TODO refaktorisera senare för att få snyggare beroende
-	 */
+	 
 	public void syncDefsWithExecutionEngine() {
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
@@ -52,10 +53,14 @@ public class TaskFormDb {
     				
     				// new process => all activites are new
     				for (org.ow2.bonita.facade.def.majorElement.ActivityDefinition actDef : procDef.getActivities()) {
-    					ActivityDefinition ad = new ActivityDefinition();
-    					BonitaObjectConverter.convert(actDef, ad);
-    					
-    					pd.addActivityDefinition(ad);
+    					if (actDef.isTask() && !actDef.isAutomatic()) {
+    						if (actDef.getType() == Type.Human) {
+		    					ActivityFormDefinition ad = new ActivityFormDefinition();
+		    					BonitaObjectConverter.convert(actDef, ad);
+		    					
+		    					pd.addActivityDefinition(ad);
+    						}
+    					}
     				}    				
     				
     			}
@@ -81,77 +86,140 @@ public class TaskFormDb {
 			session.close();
 		}
 	}
-
+*/
 	
-	public void saveProcessDefinition(Session session, ProcessDefinition processDefinition) {
-		session.save(processDefinition);		
-		Set<ActivityDefinition> activityDefinitions = processDefinition.getActivityDefinitions();
-		if (activityDefinitions != null) {
-			for (ActivityDefinition activityDefinition : activityDefinitions) {
-				session.save(activityDefinition);
-			}
-		}
+	
+	public StartFormDefinition getStartFormDefinition(Session session, Long id) {
+		return (StartFormDefinition)session.load(StartFormDefinition.class, id);
 	}
-
-	public void saveProcessDefinition(ProcessDefinition processDefinition) {
+	
+	public StartFormDefinition getStartFormDefinition(Long id) {
+		StartFormDefinition result = null;
 		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
+		try {
+			result = getStartFormDefinition(session, id);
+		}
+		catch (Exception e) {
+			log.severe("id=[" + id + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return result;
+	}
+	
+	public StartFormDefinition getStartFormDefinitionByFormPath(Session session, String formPath) {
+		StartFormDefinition result = null;
+		result = (StartFormDefinition) session.createCriteria(StartFormDefinition.class).add(Restrictions.eq("formPath", formPath)).uniqueResult();
+		return result;
+	}
+	
+	public StartFormDefinition getStartFormDefinitionByFormPath(String formPath) {
+		StartFormDefinition result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			result = getStartFormDefinitionByFormPath(session, formPath);
+		}
+		catch (Exception e) {
+			log.severe("formPath=[" + formPath + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return result;
+	}	
+	
+	public ProcessActivityFormInstance getProcessActivityFormInstanceById(Long id) {
+		List<ProcessActivityFormInstance> result = null;
 		
-		saveProcessDefinition(session, processDefinition);
+		Session session = HibernateUtil.getSessionFactory().openSession();
 		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
+			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+				    .add( Restrictions.eq("processActivityFormInstanceId", id) )
+				    .list();
+		}
+		catch (Exception e) {
+			log.severe("id=[" + id + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return filterUniqueProcessActivityFormInstanceFromList(result);
 	}
 
-	private ProcessDefinition filterUniqueFromList(List<ProcessDefinition> list) {
-		ProcessDefinition result = null;
+	private ProcessActivityFormInstance filterUniqueProcessActivityFormInstanceFromList(List<ProcessActivityFormInstance> list) {
+		ProcessActivityFormInstance result = null;
 		if (list != null) {
 			if (list.size() > 0 ) {
 				result = list.get(0);
 			}
 			if (list.size() > 1) {
 				log.severe("Unique value is expected");
-				for (ProcessDefinition o : list) {
+				for (ProcessActivityFormInstance o : list) {
 					log.severe(" value: " + o);
 				}
 			}
 		}
 		return result;
 	}
+
+	public void saveProcessActivityFormInstance(Session session, ProcessActivityFormInstance processActivityFormInstance) {
+		session.save(processActivityFormInstance);		
+	}
+
+
+	public void saveProcessActivityFormInstance(ProcessActivityFormInstance processActivityFormInstance) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		
+		saveProcessActivityFormInstance(session, processActivityFormInstance);
+		
+		session.getTransaction().commit();
+		session.close();
+	}
 	
-	public ProcessDefinition getProcessDefinitionsById(Long id) {
-		List<ProcessDefinition> result = null;
+	@SuppressWarnings("unchecked")
+	public List<ProcessActivityFormInstance> getPendingProcessActivityFormInstances(String userId) {
+		List<ProcessActivityFormInstance> result = null;
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
 		try {
 			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-			result = (List<ProcessDefinition>) session.createCriteria(ProcessDefinition.class)
-				    .add( Restrictions.eq("processDefinitionId", id) )
-				    .setFetchMode("activityDefinitions", FetchMode.JOIN)
+			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+					.add( Restrictions.eq("userId", userId) )  // this user is last writer
+					.add(Restrictions.isNull("submitted"))     // not submitted
 				    .list();
 		}
 		catch (Exception e) {
-			
+			log.severe("Exception in getProcessActivityFormInstances: userId="  + userId + " exception: " + e);
 		}
 		finally {
 			session.close();
 		}
-		return filterUniqueFromList(result);
+		return result;
 	}
 
-	// TODO ändra till unik uuid
-	public ProcessDefinition getProcessDefinitionsByUuid(String uuid) {
-		ProcessDefinition result = null;
+	
+	/**
+	 * Returns 
+	 * 1) Special form depending on activityDefinitionUuid and startFormDefinitionId
+	 * 2) General form for activityDefinitionUuid
+	 * 3) No form defined (return null) Probably is best fall back to use the bonita form 
+	 * @return 
+	 */
+	public ActivityFormDefinition getActivityFormDefinition(String activityDefinitionUuid, Long startFormDefinitionId) {
+		ActivityFormDefinition result = null;
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
 		try {
-			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-			result = getProcessDefinitionsByUuid(session, uuid);
+			result = getActivityFormDefinition(session, activityDefinitionUuid, startFormDefinitionId);
 		}
 		catch (Exception e) {
-			
+			log.severe("activityDefinitionUuid=[" + activityDefinitionUuid + "] startFormDefinitionId=[" + startFormDefinitionId + "] Exception: " + e);
 		}
 		finally {
 			session.close();
@@ -159,42 +227,55 @@ public class TaskFormDb {
 		return result;
 	}
 	
-	// TODO ändra till unik uuid
-	private ProcessDefinition getProcessDefinitionsByUuid(Session session, String uuid) {
-		List<ProcessDefinition> result = null;
+	@SuppressWarnings("unchecked")
+	public ActivityFormDefinition getActivityFormDefinition(Session session, String activityDefinitionUuid, Long startFormDefinitionId) {
+		List<ActivityFormDefinition> result = null;
 				
 		//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-		result = (List<ProcessDefinition>) session.createCriteria(ProcessDefinition.class)
-			    .add( Restrictions.eq("uuid", uuid) )
-			    .setFetchMode("activityDefinitions", FetchMode.JOIN)
+		result = (List<ActivityFormDefinition>) session.createCriteria(ActivityFormDefinition.class)
+			    .add( Restrictions.eq("activityDefinitionUuid", activityDefinitionUuid) )
 			    .list();
 
-		return filterUniqueFromList(result);
+		return filterUniqueActivityDefinitionFromList(result, startFormDefinitionId);
 	}
 	
-
-	@SuppressWarnings("unchecked")
-	public List<ProcessDefinition> getProcessDefinitions() {
-		List<ProcessDefinition> result = null;
+    private ActivityFormDefinition filterUniqueActivityDefinitionFromList(List<ActivityFormDefinition> list, Long startFormDefinitionId) {
+    	ActivityFormDefinition result = null;
+    	
+    	ActivityFormDefinition specialForm = null;
+		ActivityFormDefinition defaultForm = null;
 		
-		Session session = HibernateUtil.getSessionFactory().openSession();
+		if (list != null) {
+			for (ActivityFormDefinition afDef : list) {
+				if (afDef.getStartFormDefinition() == null) {
+					if (defaultForm != null) {
+						log.severe("Unique defaultForm is expected for a specific activity. ActivityDefinitionUuid=[" + 
+									defaultForm.getActivityDefinitionUuid() + "]");
+					}
+					defaultForm = afDef;
+				}
+				else {
+					if (afDef.getStartFormDefinition().getStartFormDefinitionId().equals(startFormDefinitionId)) {
+						if (defaultForm != null) {
+							log.severe("Unique specialForm is expected for a specific activity and startFormDefinitionId. ActivityDefinitionUuid=[" + 
+										defaultForm.getActivityDefinitionUuid() + "] startFormDefinitionId=[" + startFormDefinitionId + "]");
+						}
+						specialForm = afDef;
+					}
+				}
+			}
+		}
 		
-		try {
-			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-			result = (List<ProcessDefinition>) session.createCriteria(ProcessDefinition.class)
-				    .setFetchMode("activityDefinitions", FetchMode.JOIN)
-				    .list();
+		
+		if (specialForm == null) {
+			result = defaultForm;
 		}
-		catch (Exception e) {
-			
+		else {
+			result = specialForm;
 		}
-		finally {
-			session.close();
-		}
+		 
 		return result;
 	}
-	
-	
 
 	public void save(Object o) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
@@ -205,37 +286,35 @@ public class TaskFormDb {
 	}
 
 	public static void main(String args[]) {
-		ProcessDefinition pd = new ProcessDefinition();
-		pd.setLabel("Test");
-		pd.setUuid("ghjgjhgj2");
+		System.out.println("start main");
 		
-		ActivityDefinition ad = new ActivityDefinition();
-		ad.setLabel("Test");
-		ad.setUuid("ghjgjhgj");
+		ActivityFormDefinition ad = new ActivityFormDefinition();
+		ad.setFormPath("form path");
+		ad.setStartFormDefinition(null);
+		ad.setActivityDefinitionUuid("act instance uuid");
 
-		ActivityDefinition adExtra = new ActivityDefinition();
-		ad.setLabel("Test extra");
-		ad.setUuid("ghjgjhgj extra");
+		ActivityFormDefinition adExtra = new ActivityFormDefinition();
+		adExtra.setFormPath("form path extra");
+		adExtra.setStartFormDefinition(null);
+		adExtra.setActivityDefinitionUuid("act instance uuid extra");
 		
-		pd.addActivityDefinition(ad);
-
+		ProcessActivityFormInstance afi = new ProcessActivityFormInstance();
+		afi.setFormDocId("formDocIdsdfghjklkjhg");
+		afi.setFormPath("demo/form1");
+		afi.setProcessInstanceUuid("procInstanceUuidhg678578t");
+		afi.setUserId("eva_extern");
+			
 		TaskFormDb db = new TaskFormDb();
-		db.saveProcessDefinition(pd);
+		db.save(ad);
+		db.save(adExtra);
+		db.save(afi);
 		
-		List<ProcessDefinition> pafs  = db.getProcessDefinitions();
-		for (ProcessDefinition paf : pafs) {
-			System.out.println(paf);
+		List<ProcessActivityFormInstance> list = db.getPendingProcessActivityFormInstances("eva_extern");
+		for (ProcessActivityFormInstance item : list) {
+			System.out.println(item);
 		}
-
-		System.out.println("By uuid");
-		ProcessDefinition paf  = db.getProcessDefinitionsByUuid("ghjgjhgj2");
-		System.out.println(paf);
 		
-		System.out.println("By id");
-	    paf  = db.getProcessDefinitionsById(new Long(56));
-		System.out.println(paf);
-		
-		
+		System.out.println("end main");
 		
 	}
 	

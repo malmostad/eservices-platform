@@ -27,7 +27,12 @@ public class OrbeonForm  extends BaseHstComponent {
         //String userName = principal.getName();
         String userName = "eva_extern";
         
+        
+        String processActivityFormInstanceId = getPublicRequestParameter(request, "processActivityFormInstanceId");
+        String taskUuid = getPublicRequestParameter(request, "taskUuid");
+          
         if (doc == null) {
+        	
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
                          request.getRequestContext().getResolvedSiteMapItem().getRelativeContentPath(),
                          request.getRequestContext().getResolvedSiteMapItem().getPathInfo());
@@ -36,17 +41,18 @@ public class OrbeonForm  extends BaseHstComponent {
         }
         request.setAttribute("document",doc);
 
-        String docId = getPublicRequestParameter(request, "docId");
+        
         
         if (doc instanceof EServiceDocument) {
         	EServiceDocument eServiceDocument = (EServiceDocument)doc;
         	String formUrl = "";
-        	if (docId!=null && docId.trim().length()>0) {
-        		formUrl = eServiceDocument.getFormPath() + "/edit/" + docId + "?orbeon-embeddable=true";
-        	}
-        	else {
+        	// TODO
+        	//if (docId!=null && docId.trim().length()>0) {
+        	//	formUrl = eServiceDocument.getFormPath() + "/edit/" + docId + "?orbeon-embeddable=true";
+        	//}
+        	//else {
         		formUrl = eServiceDocument.getFormPath() + "/new?orbeon-embeddable=true";
-        	}
+        	//}
         	request.setAttribute("formUrl", formUrl);
         	log.error("XXXXXXXXXXXXXXXXXXXX orbeon form url:" + formUrl);
         }

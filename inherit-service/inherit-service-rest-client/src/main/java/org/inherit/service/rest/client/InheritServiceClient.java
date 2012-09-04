@@ -1,5 +1,7 @@
 package org.inherit.service.rest.client;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import org.inherit.service.common.domain.ActivityInstanceListItem;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessDefinitionInfo;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.util.ParameterEncoder;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
@@ -57,7 +60,7 @@ public class InheritServiceClient {
 	@SuppressWarnings("unchecked")
 	public ArrayList<ProcessInstanceListItem> getStatusByUserId(String bonitaUser) {
 		 ArrayList<ProcessInstanceListItem> result = null;
-		String uri = serverBaseUrl + "statusByUserId/" + bonitaUser + "?media=xml";
+		String uri = serverBaseUrl + "statusByUserId/" + ParameterEncoder.encode(bonitaUser) + "?media=xml";
 		String response = call(uri);
 		System.out.println(response);
 		if (response != null) {
@@ -66,15 +69,45 @@ public class InheritServiceClient {
 		return result;
 	}
 
+	
+	@SuppressWarnings("unchecked")
+	public String getBonitaIdentityKey(String bonitaUser, String password) {
+		String result = null;
+		String uri = serverBaseUrl + "bonitaIdentityKey/" + ParameterEncoder.encode(bonitaUser) + "/" + ParameterEncoder.encode(password) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (String)response;
+		}
+		
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public ArrayList<InboxTaskItem> getInboxByUserId(String bonitaUser) {
 		 ArrayList<InboxTaskItem> result = null;
-		String uri = serverBaseUrl + "inboxByUserId/" + bonitaUser + "?media=xml";
+		String uri = serverBaseUrl + "inboxByUserId/" + ParameterEncoder.encode(bonitaUser) + "?media=xml";
 		String response = call(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (ArrayList<InboxTaskItem>)xstream.fromXML(response);
 		}
+		return result;
+	}
+	
+	public String submitStartForm(String formPath, String docId, String userId) {
+		String result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "submitStartForm/" + ParameterEncoder.encode(formPath) + 
+					"/" + ParameterEncoder.encode(docId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		log.severe("submitStartForm uri: " + uri);
+		String response = call(uri);
+		
+		if (response != null) {
+			result = (String)response;
+		}
+		
 		return result;
 	}
 

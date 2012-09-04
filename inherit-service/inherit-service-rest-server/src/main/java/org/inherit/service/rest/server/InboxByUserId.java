@@ -1,27 +1,30 @@
 package org.inherit.service.rest.server;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.util.ParameterEncoder;
+import org.inherit.taskform.engine.TaskFormService;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
-import se.inherit.service.bonita.BonitaEngineServiceImpl;
 
 public class InboxByUserId extends ServerResource{
 
 	public static final Logger log = Logger.getLogger(InboxByUserId.class.getName());
 	
-	BonitaEngineServiceImpl engine = new BonitaEngineServiceImpl();
+	TaskFormService engine = new TaskFormService();
 	
 	@Post
-	public ArrayList<InboxTaskItem> getInboxTaskList() {
-		String userid = (String)getRequestAttributes().get("userid");
+	public List<InboxTaskItem> getInboxTaskList() {
+		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
 		
-		log.fine("REST getUserInstancesList with parameter userid=[" + userid + "]" );
+		log.fine("REST getUserInstancesList with parameter userid=[" + userId + "]" );
 		
-		return engine.getUserInbox(userid);
+		return engine.getInboxTaskItems(userId);
 	}
 }

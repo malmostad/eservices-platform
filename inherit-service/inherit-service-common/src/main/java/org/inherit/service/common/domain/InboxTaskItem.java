@@ -35,6 +35,7 @@ public class InboxTaskItem implements Serializable {
 	Long processActivityFormInstanceId;
 
 	String taskUuid;
+	String activityDefinitionUUID;
 	
 	public InboxTaskItem() {
 		
@@ -82,6 +83,16 @@ public class InboxTaskItem implements Serializable {
 		this.taskUuid = taskUuid;
 	}
 
+	
+	
+	public String getActivityDefinitionUUID() {
+		return activityDefinitionUUID;
+	}
+
+	public void setActivityDefinitionUUID(String activityDefinitionUUID) {
+		this.activityDefinitionUUID = activityDefinitionUUID;
+	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -102,6 +113,8 @@ public class InboxTaskItem implements Serializable {
 				+ ((processLabel == null) ? 0 : processLabel.hashCode());
 		result = prime * result
 				+ ((taskUuid == null) ? 0 : taskUuid.hashCode());
+		result = prime * result
+				+ ((activityDefinitionUUID == null) ? 0 : activityDefinitionUUID.hashCode());
 		return result;
 	}
 
@@ -140,6 +153,11 @@ public class InboxTaskItem implements Serializable {
 				return false;
 		} else if (!taskUuid.equals(other.taskUuid))
 			return false;
+		if (activityDefinitionUUID == null) {
+			if (other.activityDefinitionUUID != null)
+				return false;
+		} else if (!activityDefinitionUUID.equals(other.activityDefinitionUUID))
+			return false;
 		return true;
 	}
 
@@ -148,7 +166,7 @@ public class InboxTaskItem implements Serializable {
 		return "InboxTaskItem [processLabel=" + processLabel
 				+ ", activityLabel=" + activityLabel + ", activityCreated="
 				+ activityCreated + ", processActivityFormInstanceId="
-				+ processActivityFormInstanceId + ", taskUuid=" + taskUuid
+				+ processActivityFormInstanceId + ", taskUuid=" + taskUuid + ", activityDefinitionUUID=" + activityDefinitionUUID
 				+ "]";
 	}
 

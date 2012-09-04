@@ -31,8 +31,8 @@
 					<c:forEach var="task" items="${tasks}">
 						<tr>
 					 	  	<td>${task.processLabel}</td>
-					 	  	<td><fmt:formatDate value="${task.createdDate}" type="Date" /></td>
-							<td><a href="form?taskUuid=${task.taskUUID}&activityDefinitionUUID=${task.activityDefinitionUUID}">${task.activityLabel}</a></td>
+					 	  	<td><fmt:formatDate value="${task.activityCreated}" type="Date" /></td> <!-- href="form?taskUuid={task.taskUuid}&activityDefinitionUUID={task.activityDefinitionUUID}">{task.activityLabel} -->
+							<td><a href="form?taskUuid=${task.taskUuid}&activityDefinitionUUID=${task.activityDefinitionUUID}">${task.activityLabel}</a></td>
 						</tr>
 					</c:forEach>
 				</c:if>

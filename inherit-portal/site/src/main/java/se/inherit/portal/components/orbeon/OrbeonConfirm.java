@@ -8,9 +8,9 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.inherit.bonita.restclient.BonitaClient;
 import se.inherit.portal.beans.EServiceDocument;
 
 public class OrbeonConfirm extends BaseHstComponent {
@@ -46,10 +46,15 @@ public class OrbeonConfirm extends BaseHstComponent {
 		if (doc instanceof EServiceDocument) {
 			EServiceDocument eServiceDocument = (EServiceDocument) doc;
 
+			// confirm page url
 			String formUrl = eServiceDocument.getFormPath() + "/view/" + docId	+ "?orbeon-embeddable=true";
 			request.setAttribute("formUrl", formUrl);
 			log.error("XXXXXXXXXXXXXXXXXXXX orbeon confirm form url:" + formUrl);
 
+			InheritServiceClient isc = new InheritServiceClient();
+			isc.submitStartForm(eServiceDocument.getFormPath(), docId, userName);
+
+			/*
 			// starta bonita process quick and dirty. fel sätt att trigga det
 			// och fel metod att hitta process uuid
 
@@ -76,6 +81,8 @@ public class OrbeonConfirm extends BaseHstComponent {
 			
 			bc.bonitaStartProcess(puuidstr, userName, formId, docId);
 			// bc.bonitaStartProcess("Felanmalan--2.0", userName);
+			 
+			 */
 		}	
 	}
 

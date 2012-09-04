@@ -31,6 +31,7 @@ public class ProcessInstanceListItem implements Serializable {
     private String status;
     private Date startDate;
     private Date endDate;
+    private String processInstanceUuid;
     
 	public ProcessInstanceListItem() {
 		
@@ -68,6 +69,14 @@ public class ProcessInstanceListItem implements Serializable {
 		this.endDate = endDate;
 	}
 
+	public String getProcessInstanceUuid() {
+		return processInstanceUuid;
+	}
+
+	public void setProcessInstanceUuid(String processInstanceUuid) {
+		this.processInstanceUuid = processInstanceUuid;
+	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -77,6 +86,10 @@ public class ProcessInstanceListItem implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
+		result = prime
+				* result
+				+ ((processInstanceUuid == null) ? 0 : processInstanceUuid
+						.hashCode());
 		result = prime * result
 				+ ((processLabel == null) ? 0 : processLabel.hashCode());
 		result = prime * result
@@ -99,6 +112,11 @@ public class ProcessInstanceListItem implements Serializable {
 				return false;
 		} else if (!endDate.equals(other.endDate))
 			return false;
+		if (processInstanceUuid == null) {
+			if (other.processInstanceUuid != null)
+				return false;
+		} else if (!processInstanceUuid.equals(other.processInstanceUuid))
+			return false;
 		if (processLabel == null) {
 			if (other.processLabel != null)
 				return false;
@@ -119,7 +137,7 @@ public class ProcessInstanceListItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ProcessInstanceListItem [processLabel=" + processLabel
+		return "ProcessInstanceListItem [processInstanceUuid=" + processInstanceUuid + ", processLabel=" + processLabel
 				+ ", status=" + status + ", startDate=" + startDate
 				+ ", endDate=" + endDate + "]";
 	}

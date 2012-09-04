@@ -1,13 +1,15 @@
 package org.inherit.service.rest.server;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
+import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.util.ParameterEncoder;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
-import se.inherit.service.bonita.BonitaEngineServiceImpl;
 
 public class StatusByUserId extends ServerResource {
 
@@ -16,8 +18,8 @@ public class StatusByUserId extends ServerResource {
 	BonitaEngineServiceImpl engine = new BonitaEngineServiceImpl();
 	
 	@Post
-	public ArrayList<ProcessInstanceListItem> getUserInstancesList() {
-		String userid = (String)getRequestAttributes().get("userid");
+	public List<ProcessInstanceListItem> getUserInstancesList() {
+		String userid = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
 		
 		log.fine("REST getUserInstancesList with parameter userid=[" + userid + "]" );
 		

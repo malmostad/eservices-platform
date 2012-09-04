@@ -2,13 +2,14 @@ package org.inherit.taskform.engine.bonitautil;
 
 import java.util.logging.Logger;
 
-import org.inherit.taskform.engine.persistence.entity.ActivityDefinition;
-import org.inherit.taskform.engine.persistence.entity.ProcessDefinition;
+import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
+//import org.inherit.taskform.engine.persistence.entity.ProcessDefinition;
 import org.ow2.bonita.facade.def.majorElement.ProcessDefinition.ProcessState;
 
 public class BonitaObjectConverter {
 	public static final Logger log = Logger.getLogger(BonitaObjectConverter.class.getName());
 			
+	/*
 	public static void convert(org.ow2.bonita.facade.def.majorElement.ProcessDefinition boProcDef, ProcessDefinition procDef) {
 		procDef.setUuid(boProcDef.getUUID().getValue());
 		procDef.setLabel(boProcDef.getLabel());
@@ -28,8 +29,9 @@ public class BonitaObjectConverter {
 		
 	}
 	
-	public static void convert(org.ow2.bonita.facade.def.majorElement.ActivityDefinition boActDef, ActivityDefinition actDef) {
+	public static void convert(org.ow2.bonita.facade.def.majorElement.ActivityDefinition boActDef, ActivityFormDefinition actDef) {
 		actDef.setUuid(boActDef.getUUID().getValue());
 		actDef.setLabel(boActDef.getLabel());
 	}
+	*/
 }

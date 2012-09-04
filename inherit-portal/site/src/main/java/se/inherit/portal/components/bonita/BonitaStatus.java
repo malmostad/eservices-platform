@@ -8,11 +8,10 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import se.inherit.bonita.domain.ProcessInstanceListItem;
-import se.inherit.bonita.restclient.BonitaClient;
 
 public class BonitaStatus extends BaseHstComponent {
 
@@ -36,10 +35,15 @@ public class BonitaStatus extends BaseHstComponent {
         }
         request.setAttribute("document",doc);
 
+        InheritServiceClient isc = new InheritServiceClient();
+        ArrayList<ProcessInstanceListItem> processInstances = isc.getStatusByUserId(userName);
+        request.setAttribute("processInstances", processInstances);
+        
+        /*
         BonitaClient bc = new BonitaClient("http://localhost:58080/bonita-server-rest/", "http://localhost:58080/inherit-bonita-rest-server-custom-1.0-SNAPSHOT/", "restuser", "restbpm");
         ArrayList<ProcessInstanceListItem> processInstances = bc.getUserInstancesList(userName);
         request.setAttribute("processInstances", processInstances);
-        
+        */
     }
 
 }

@@ -1,9 +1,11 @@
-package se.inherit.service.bonita;
+package org.inherit.bonita.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -19,7 +21,9 @@ import org.ow2.bonita.facade.runtime.ActivityState;
 import org.ow2.bonita.facade.runtime.InstanceState;
 import org.ow2.bonita.facade.runtime.ProcessInstance;
 import org.ow2.bonita.facade.runtime.TaskInstance;
+import org.ow2.bonita.facade.uuid.ActivityInstanceUUID;
 import org.ow2.bonita.facade.uuid.ProcessDefinitionUUID;
+import org.ow2.bonita.facade.uuid.ProcessInstanceUUID;
 import org.ow2.bonita.util.AccessorUtil;
 
 public class BonitaEngineServiceImpl {
@@ -32,8 +36,8 @@ public class BonitaEngineServiceImpl {
 		
 	}
 	
-	public ArrayList<ProcessInstanceListItem> getUserInstancesList(String user) { // ArrayList<ProcessInstanceListItem>
-		ArrayList<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
+	public List<ProcessInstanceListItem> getUserInstancesList(String user) { // ArrayList<ProcessInstanceListItem>
+		List<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
 
 		try {
 			
@@ -46,6 +50,8 @@ public class BonitaEngineServiceImpl {
 	
 				ProcessInstanceListItem item = new ProcessInstanceListItem();
 	
+				item.setProcessInstanceUuid(pi.getUUID().getValue());
+				
 				// find out process label
 				item.setProcessLabel(getProcessLabel(pi.getProcessDefinitionUUID()));
 	
@@ -82,8 +88,29 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
-	public ArrayList<InboxTaskItem> getUserInbox(String userId) { // ArrayList<ProcessInstanceListItem>
-		ArrayList<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
+	public String getActivityDefintionUuid(String taskUuid) { // ArrayList<ProcessInstanceListItem>
+		String result = null;
+
+		try {
+			LoginContext loginContext = BonitaUtil.login(); 
+			ActivityInstanceUUID aiUuid = new ActivityInstanceUUID(taskUuid);
+			TaskInstance task = AccessorUtil.getQueryRuntimeAPI().getTask(aiUuid);
+
+			if (task != null) {
+				result = task.getActivityDefinitionUUID().getValue();
+			}
+			
+			BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		return result;
+	}
+
+	
+	public List<InboxTaskItem> getUserInbox(String userId) { // ArrayList<ProcessInstanceListItem>
+		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 
 		try {
 			LoginContext loginContext = BonitaUtil.login(); 
@@ -96,7 +123,8 @@ public class BonitaEngineServiceImpl {
 				taskItem.setActivityLabel(taskInstance.getActivityLabel());
 				taskItem.setProcessLabel(getProcessLabel(taskInstance.getProcessDefinitionUUID()));;
 				taskItem.setProcessActivityFormInstanceId(new Long(0)); // TODO
-				
+				taskItem.setTaskUuid(taskInstance.getUUID().getValue());
+				taskItem.setActivityDefinitionUUID(taskInstance.getActivityDefinitionUUID().getValue());
 				result.add(taskItem);
 			}
 			BonitaUtil.logout(loginContext);
@@ -105,6 +133,52 @@ public class BonitaEngineServiceImpl {
 			log.severe("Exception: " + e);
 		}
 		return result;
+	}
+	
+	/**
+	 * @param processDefinitionUUIDStr Specifies which process to start in the BPM engine. The engine will try to find latest version of process if version is omitted. (process name instead of uuid)
+	 * @param userid The user that will be logged as process initiator
+	 * @return BPM engine's processInstanceUuid that identifies the created process instance in the BPM engine
+	 */
+	public String startProcess(String processDefinitionUUIDStr, String userid) {
+			String result = null;
+			
+	    	try {
+	    	
+	    		LoginContext loginContext = BonitaUtil.loginWithUser(userid);
+
+	    		ProcessDefinition processDefinition = null;
+	    		if (processDefinitionUUIDStr!=null && processDefinitionUUIDStr.indexOf("--")>=0) {
+                    log.info("Start process with explicit version: " + processDefinitionUUIDStr);
+    	    		ProcessDefinitionUUID processDefinitionUUID = new ProcessDefinitionUUID(processDefinitionUUIDStr);
+    	    	    processDefinition = AccessorUtil.getQueryDefinitionAPI().getProcess(processDefinitionUUID);            }
+	    		else {
+	    			// no version in uuid, try to find last deployed process with processName=processDefinitionUUIDStr
+                    log.info("Start process with latest version: " + processDefinitionUUIDStr);
+                    processDefinition = AccessorUtil.getQueryDefinitionAPI().getLastProcess(processDefinitionUUIDStr);      
+	    		}
+	    		
+	    		if  (processDefinition != null) {
+	    			log.info("Start process: " + processDefinition.getUUID() + ", user: " + userid );
+	    			
+	    			Map<String,Object> variables = new HashMap<String, Object>();
+	    			//variables.put("docId", docId);
+	    			//variables.put("formId", formId);
+
+	    			ProcessInstanceUUID instanceUuid = AccessorUtil.getRuntimeAPI().instantiateProcess(processDefinition.getUUID(), variables);
+	    			if (instanceUuid != null) {
+	    				result = instanceUuid.getValue();
+	    			}
+	    		}
+	            
+		        BonitaUtil.logoutWithUser(loginContext);
+
+	    	} catch (Exception e) {
+	        	log.severe("Failed to start process: " + e); // instance=TestaCheckboxlist--1.0--8
+	        }
+	    	
+	        return result;
+		
 	}
 		
 	private String getProcessLabel(ProcessDefinitionUUID processDefinitionUUID) {

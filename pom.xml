@@ -40,12 +40,9 @@
 	</dependencies>
 	<modules>
 	  <module>inherit-service</module>
-	  <module>inherit-bonita-rest-client</module>
-	  <module>inherit-bonita-rest-server-custom</module>
-	  <module>inherit-bonita-rest-common</module>
 	  <module>inherit-portal</module>
-	  
-	</modules>
+    <module>inherit-security</module>
+  </modules>
 
 	<repositories>
 		<repository>

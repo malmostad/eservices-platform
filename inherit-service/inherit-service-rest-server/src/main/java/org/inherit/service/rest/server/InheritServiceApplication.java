@@ -3,7 +3,6 @@ package org.inherit.service.rest.server;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
-import org.restlet.ext.xstream.XstreamConverter;
 
 public class InheritServiceApplication extends Application {
 
@@ -13,12 +12,11 @@ public class InheritServiceApplication extends Application {
 		
 		router.attach("/statusByUserId/{userid}", StatusByUserId.class);
 		router.attach("/inboxByUserId/{userid}", InboxByUserId.class);
-		/* 
-		router.attach("/bonita/{userid}/{password}", BonitaIdentityKey.class); 
-		 
-		router.attach("/processDefinition/{processDefinitionUUID}", BonitaProcessDefinition.class); 
-		router.attach("/bonitaStartProcess/{formPath}/{userid}/{formId}/{docId}", StartBonitaProcess.class); 
-		*/
+		router.attach("/submitStartForm/{formPath}/{docId}/{userId}", SubmitStartForm.class); 
+
+		//TODO kolla om det går att få bort
+		router.attach("/bonitaIdentityKey/{userid}/{password}", BonitaIdentityKey.class); 
+		
 		return router;
 	}
 	 
