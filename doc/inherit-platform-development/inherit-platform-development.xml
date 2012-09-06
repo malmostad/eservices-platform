@@ -127,9 +127,101 @@ mvn clean install
     </para>
   </section>
 
+  <section id="architecture_overview">
+    <title>Source Code Overview</title>
+    <para>
+
+    </para>
+    <section id="src_inherit-portal">
+      <title>inherit-portal</title>
+      <para>
+	inherit-portal is a HippoCMS maven project with Hippo's subprojects
+	
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      inherit-portal-site
+	    </para>
+	      </listitem>
+	      <listitem>
+		<para>
+		  inherit-portal-cms
+		</para>
+	      </listitem>
+	      <listitem>
+		<para>
+		  inherit-portal-content
+		</para>
+	      </listitem>
+	</itemizedlist>	
+      </para>
+    </section>      
+
+    <section id="src_inherit-security">
+      <title>inherit-security</title>
+      <para>
+	JAAS module etc. TODO!
+      </para>
+    </section>
+
+
+    <section id="src_inherit-service">
+      <title>inherit-service</title>
+      <para>
+	Inherit Service is inherit-platform's service layer. Currently, the inherit-service-rest-server war file is the way to deploy inherit-service. inherit-service-rest-client is an implementation to integrate with Inherit Service.
+      </para>
+      
+      <section id="src_inherit-service-common">
+	<title>inherit-service-common</title>
+	<para>
+	  Contains inherit-service common classes used by the subprojects. Furhermore, this 
+	  project contains neccessary POJOs to integrate with Inherit Service.
+	</para>
+      </section>
+      
+      <section id="src_inherit-service-core">
+	<title>inherit-service-core</title>
+	<para>
+	  Implementation of core functionality  (not yet in use)
+	</para>
+      </section>
+      <section id="src_inherit-service-rest-server">
+	<title>inherit-service-rest-server</title>
+	<para>
+	  This projects builds a deployable war with a REST exposed inherit-service. 
+	  The intention is that this project only is a glue to publish 
+	  Inherit Service with a REST interface.
+	</para>
+      </section>
+      <section id="src_inherit-service-rest-client">
+	<title>inherit-service-rest-client</title>
+	<para>
+	  This is a ready to use implementation of a REST client 
+	  to call inherit-service-rest-server.
+	</para>
+      </section>
+      <section id="src_inherit-service-taskform-engine">
+	<title>inherit-service-taskform-engine</title>
+	<para>
+	  This engine keeps track on tasks to perform. Task can exist in BPM 
+	  engine and be partially filled in start forms.
+	</para>
+      </section>
+      <section id="src_inherit-service-bonita-client-utils">
+	<title>inherit-service-bonita-client-utils</title>
+	<para>
+	  Utilities to integrate with Bonita Open Solution.
+	</para>
+      </section>
+      
+    </section>
+  </section>
+
   <section>
     <title>Deploy on server</title>
     <para>
+
+TODO! OUT OF DATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     </para>
 
     <section id="server-pre-req">
@@ -207,8 +299,17 @@ mvn -P dist
      <section id="apache2_front">
        <title>Install and configure Apache2 front</title>
        <para>
+	 <programlisting>
 	 sudo apt-get install apache2
-	 sudo apt-get install libapache2-mod-jk
+	 sudo a2enmod proxy_ajp
+	 </programlisting>
+	 Create config file /etc/apache2/sites-available/XXXXXX 
+
+	 Run a2ensite and restart/reload apache2 in order to activate the site config:
+	 <programlisting>
+	   sudo a2ensite XXXXXX
+	   sudo service apache2 restart
+	 </programlisting>
        </para>
     </section>
   </section>
