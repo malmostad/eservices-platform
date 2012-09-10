@@ -10,7 +10,6 @@ import org.hibernate.FetchMode;
 import org.hibernate.criterion.Restrictions;
 
 import org.inherit.bonita.client.util.BonitaUtil;
-import org.inherit.taskform.engine.bonitautil.BonitaObjectConverter;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
 import org.inherit.taskform.engine.persistence.entity.StartFormDefinition;
