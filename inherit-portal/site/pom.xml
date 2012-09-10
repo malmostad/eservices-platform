@@ -76,12 +76,6 @@
     </dependency>
 
     <dependency>
-      <groupId>se.inherit.bonita</groupId>
-      <artifactId>inherit-bonita-rest-client</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
       <groupId>se.inherit</groupId>
       <artifactId>inherit-security</artifactId>
       <version>1.0-SNAPSHOT</version>

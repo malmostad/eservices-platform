@@ -11,8 +11,8 @@ import org.hippoecm.hst.core.component.HstResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inherit.bonita.restclient.BonitaClient;
 import se.inherit.portal.beans.EServiceDocument;
+
 
 public class OrbeonForm  extends BaseHstComponent {
 

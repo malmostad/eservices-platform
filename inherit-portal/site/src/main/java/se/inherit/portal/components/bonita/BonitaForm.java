@@ -12,8 +12,6 @@ import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.inherit.bonita.restclient.BonitaClient;
-
 public class BonitaForm  extends BaseHstComponent {
 
 	public static final Logger log = LoggerFactory.getLogger(BonitaForm.class);
