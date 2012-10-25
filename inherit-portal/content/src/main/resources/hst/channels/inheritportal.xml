@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="inheritportal">
+  <sv:property sv:name="jcr:primaryType" sv:type="Name">
+    <sv:value>hst:channel</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:uuid" sv:type="String">
+    <sv:value>20af5ca5-d6cf-4e41-845e-d579a0648e75</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:channelinfoclass" sv:type="String">
+    <sv:value>se.inherit.portal.channels.WebsiteInfo</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:name" sv:type="String">
+    <sv:value>Inherit Portal</sv:value>
+  </sv:property>
+  <sv:node sv:name="hst:channelinfo">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:channelinfo</sv:value>
+    </sv:property>
+    <sv:property sv:name="headerName" sv:type="String">
+      <sv:value>HST Website</sv:value>
+    </sv:property>
+  </sv:node>
+</sv:node>

@@ -8,3 +8,5 @@
 [inheritportal:textdocument] > inheritportal:basedocument, hippostd:relaxed
 
 [inheritportal:newsdocument] > inheritportal:basedocument, hippostd:relaxed
+
+[inheritportal:eservicedocument] > inheritportal:basedocument, hippostd:relaxed

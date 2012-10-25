@@ -1,7 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sv:node sv:name="hst:hosts" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:hosts">
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:virtualhosts</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:uuid" sv:type="String">
+    <sv:value>01828f01-b331-4de0-a2fd-05742cd6c5e8</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:channelmanagerhostgroup" sv:type="String">
+    <sv:value>dev-localhost</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:defaultcontextpath" sv:type="String">
+    <sv:value>/site</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:defaulthostname" sv:type="String">
+    <sv:value>localhost</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:homepage" sv:type="String">
+    <sv:value>root</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:locale" sv:type="String">
+    <sv:value>en_US</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:pagenotfound" sv:type="String">
+    <sv:value>error</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:prefixexclusions" sv:type="String" sv:multiple="true">
+    <sv:value>/ping/</sv:value>
+    <sv:value>/binaries/</sv:value>
+    <sv:value>/images/</sv:value>
+    <sv:value>/login/</sv:value>
+    <sv:value>/examples/</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:scheme" sv:type="String">
+    <sv:value>http</sv:value>
   </sv:property>
   <sv:property sv:name="hst:showcontextpath" sv:type="Boolean">
     <sv:value>true</sv:value>
@@ -9,29 +40,7 @@
   <sv:property sv:name="hst:showport" sv:type="Boolean">
     <sv:value>true</sv:value>
   </sv:property>
-  <sv:property sv:name="hst:prefixexclusions" sv:type="String">
-    <sv:value>/ping/</sv:value>
-    <sv:value>/binaries/</sv:value>
-    <sv:value>/images/</sv:value>
-    <sv:value>/login/</sv:value>
-    <sv:value>/examples/</sv:value>
-  </sv:property>
-  <sv:property sv:name="hst:homepage" sv:type="String">
-    <sv:value>root</sv:value>
-  </sv:property>
-  <sv:property sv:name="hst:pagenotfound" sv:type="String">
-    <sv:value>error</sv:value>
-  </sv:property>
-  <sv:property sv:name="hst:versioninpreviewheader" sv:type="Boolean">
-    <sv:value>true</sv:value>
-  </sv:property>
-  <sv:property sv:name="hst:defaultcontextpath" sv:type="String">
-    <sv:value>/site</sv:value>
-  </sv:property>
-  <sv:property sv:name="hst:channelmanagerhostgroup" sv:type="String">
-    <sv:value>dev-localhost</sv:value>
-  </sv:property>
-  <sv:property sv:name="hst:suffixexclusions" sv:type="String">
+  <sv:property sv:name="hst:suffixexclusions" sv:type="String" sv:multiple="true">
     <sv:value>.do</sv:value>
     <sv:value>.jsp</sv:value>
     <sv:value>.css</sv:value>
@@ -49,19 +58,15 @@
     <sv:value>.ftl</sv:value>
     <sv:value>.FTL</sv:value>
   </sv:property>
-  <sv:property sv:name="hst:scheme" sv:type="String">
-    <sv:value>http</sv:value>
-  </sv:property>
-  <sv:property sv:name="hst:defaulthostname" sv:type="String">
-    <sv:value>localhost</sv:value>
-  </sv:property>
-  <!-- default locale: You can override it in virtualhosts or mounts by redefining it -->
-  <sv:property sv:name="hst:locale" sv:type="String">
-    <sv:value>en_US</sv:value>
+  <sv:property sv:name="hst:versioninpreviewheader" sv:type="Boolean">
+    <sv:value>true</sv:value>
   </sv:property>
   <sv:node sv:name="dev-localhost">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:virtualhostgroup</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+      <sv:value>1903d004-5392-4637-b968-4f3cdf3ec383</sv:value>
     </sv:property>
     <sv:property sv:name="hst:cmslocation" sv:type="String">
       <sv:value>http://localhost:8080/cms</sv:value>
@@ -73,9 +78,15 @@
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>hst:virtualhost</sv:value>
       </sv:property>
+      <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>207db932-a789-4881-a56f-259446dce52d</sv:value>
+      </sv:property>
       <sv:node sv:name="hst:root">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:mount</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>6776d3f8-f911-43df-88d3-5381f7e5c7f3</sv:value>
         </sv:property>
         <sv:property sv:name="hst:channelpath" sv:type="String">
           <sv:value>/hst:hst/hst:channels/inheritportal</sv:value>
@@ -83,6 +94,175 @@
         <sv:property sv:name="hst:mountpoint" sv:type="String">
           <sv:value>/hst:hst/hst:sites/inheritportal</sv:value>
         </sv:property>
+        <sv:node sv:name="m">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:mount</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>dbe89cfc-540b-44dc-92d4-e3106d7d4082</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:channelpath" sv:type="String">
+            <sv:value>/hst:hst/hst:channels/inheritportal-mobile</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:mountpoint" sv:type="String">
+            <sv:value>/hst:hst/hst:sites/inheritportal-mobil</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+    </sv:node>
+    <sv:node sv:name="se">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:virtualhost</sv:value>
+      </sv:property>
+      <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>547e9418-554f-419c-9342-d96f8da8afb7</sv:value>
+      </sv:property>
+      <sv:node sv:name="inherit">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:virtualhost</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>750a0244-ac6e-4b7c-a602-7b4594cebe92</sv:value>
+        </sv:property>
+        <sv:node sv:name="spirel">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:virtualhost</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>87f77a78-fee0-40eb-b2d1-039c90b69259</sv:value>
+          </sv:property>
+          <sv:node sv:name="hst:root">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:mount</sv:value>
+            </sv:property>
+            <sv:property sv:name="jcr:uuid" sv:type="String">
+              <sv:value>f8dfc530-fca5-461d-9443-870dbe470e28</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:mountpoint" sv:type="String">
+              <sv:value>/hst:hst/hst:sites/inheritportal</sv:value>
+            </sv:property>
+            <sv:node sv:name="m">
+              <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:mount</sv:value>
+              </sv:property>
+              <sv:property sv:name="jcr:uuid" sv:type="String">
+                <sv:value>dd5f90db-3bbb-46e3-8efc-c1af3d820c48</sv:value>
+              </sv:property>
+              <sv:property sv:name="hst:mountpoint" sv:type="String">
+                <sv:value>/hst:hst/hst:sites/inheritportal-mobil</sv:value>
+              </sv:property>
+            </sv:node>
+          </sv:node>
+        </sv:node>
+        <sv:node sv:name="l">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:virtualhost</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>8814e265-ff37-462d-b1b0-f2117d1af56f</sv:value>
+          </sv:property>
+          <sv:node sv:name="hst:root">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:mount</sv:value>
+            </sv:property>
+            <sv:property sv:name="jcr:uuid" sv:type="String">
+              <sv:value>bbf1b547-b1f3-4445-a008-4235fa31897a</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:mountpoint" sv:type="String">
+              <sv:value>/hst:hst/hst:sites/inheritportal</sv:value>
+            </sv:property>
+            <sv:node sv:name="m">
+              <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:mount</sv:value>
+              </sv:property>
+              <sv:property sv:name="jcr:uuid" sv:type="String">
+                <sv:value>dbbd898b-0be9-4ac9-a8cd-ee413b2d1262</sv:value>
+              </sv:property>
+              <sv:property sv:name="hst:mountpoint" sv:type="String">
+                <sv:value>/hst:hst/hst:sites/inheritportal-mobil</sv:value>
+              </sv:property>
+            </sv:node>
+          </sv:node>
+        </sv:node>
+        <sv:node sv:name="demolocal">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:virtualhost</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>4730975e-8794-4878-aacf-2a98fb862552</sv:value>
+          </sv:property>
+          <sv:node sv:name="hst:root">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:mount</sv:value>
+            </sv:property>
+            <sv:property sv:name="jcr:uuid" sv:type="String">
+              <sv:value>7717e403-0467-449f-9785-e9dfbcad0133</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:mountpoint" sv:type="String">
+              <sv:value>/hst:hst/hst:sites/inheritportal</sv:value>
+            </sv:property>
+            <sv:node sv:name="m">
+              <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:mount</sv:value>
+              </sv:property>
+              <sv:property sv:name="jcr:uuid" sv:type="String">
+                <sv:value>238e3a98-7e1b-4ee2-bd1d-6d33a3651a16</sv:value>
+              </sv:property>
+              <sv:property sv:name="hst:channelpath" sv:type="String">
+                <sv:value>/hst:hst/hst:channels/inheritportal-mobile</sv:value>
+              </sv:property>
+              <sv:property sv:name="hst:mountpoint" sv:type="String">
+                <sv:value>/hst:hst/hst:sites/inheritportal-mobil</sv:value>
+              </sv:property>
+            </sv:node>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+    </sv:node>
+    <sv:node sv:name="org">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:virtualhost</sv:value>
+      </sv:property>
+      <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>1dd237a0-f385-4191-902a-f460e010c76c</sv:value>
+      </sv:property>
+      <sv:node sv:name="dyndns">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:virtualhost</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>7c37b8c9-8364-469c-84f6-fa5ba4a4bcd3</sv:value>
+        </sv:property>
+        <sv:node sv:name="svedalav">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:virtualhost</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>d3ea94e8-2ba4-4124-a58c-28010ddbf951</sv:value>
+          </sv:property>
+          <sv:node sv:name="hst:root">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:mount</sv:value>
+            </sv:property>
+            <sv:property sv:name="jcr:uuid" sv:type="String">
+              <sv:value>03f03c0f-59f7-4205-a489-4529b9a01a05</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:mountpoint" sv:type="String">
+              <sv:value>/hst:hst/hst:sites/inheritportal</sv:value>
+            </sv:property>
+            <sv:node sv:name="m">
+              <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:mount</sv:value>
+              </sv:property>
+              <sv:property sv:name="jcr:uuid" sv:type="String">
+                <sv:value>4327eed3-8a1c-481a-9ea8-9f344bc70467</sv:value>
+              </sv:property>
+              <sv:property sv:name="hst:mountpoint" sv:type="String">
+                <sv:value>/hst:hst/hst:sites/inheritportal-mobil</sv:value>
+              </sv:property>
+            </sv:node>
+          </sv:node>
+        </sv:node>
       </sv:node>
     </sv:node>
   </sv:node>

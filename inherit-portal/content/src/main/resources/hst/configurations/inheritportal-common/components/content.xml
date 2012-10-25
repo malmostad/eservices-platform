@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="content">
+  <sv:property sv:name="jcr:primaryType" sv:type="Name">
+    <sv:value>hst:component</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:uuid" sv:type="String">
+    <sv:value>e119e9ba-b1fd-424c-80c7-85424b14631b</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:componentclassname" sv:type="String">
+    <sv:value>se.inherit.portal.components.Detail</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:parameternames" sv:type="String" sv:multiple="true"/>
+  <sv:property sv:name="hst:parametervalues" sv:type="String" sv:multiple="true"/>
+  <sv:property sv:name="hst:template" sv:type="String">
+    <sv:value>standard.main.content</sv:value>
+  </sv:property>
+</sv:node>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:channel">
+  <sv:property sv:name="jcr:primaryType" sv:type="Name">
+    <sv:value>hst:channel</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:uuid" sv:type="String">
+    <sv:value>ceaf6ed1-c7ad-4b18-ae4d-c261184569af</sv:value>
+  </sv:property>
+  <sv:property sv:name="hst:channelinfoclass" sv:type="String">
+    <sv:value>se.inherit.portal.channels.SubsiteInfo</sv:value>
+  </sv:property>
+  <sv:node sv:name="hst:channelinfo">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:channelinfo</sv:value>
+    </sv:property>
+    <sv:property sv:name="headerName" sv:type="String">
+      <sv:value>HST Subsite</sv:value>
+    </sv:property>
+  </sv:node>
+</sv:node>

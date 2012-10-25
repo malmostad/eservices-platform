@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:components">
+  <sv:property sv:name="jcr:primaryType" sv:type="Name">
+    <sv:value>hst:components</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:uuid" sv:type="String">
+    <sv:value>d3f184f1-e55b-49e7-a7ee-5a08439fb323</sv:value>
+  </sv:property>
+</sv:node>

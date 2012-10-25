@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0"
-  sv:name="hst:sites">
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:sites">
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:sites</sv:value>
   </sv:property>
-  
+  <sv:property sv:name="jcr:uuid" sv:type="String">
+    <sv:value>07cc7148-5293-4acd-8876-f4db6f5aeeb9</sv:value>
+  </sv:property>
   <sv:node sv:name="inheritportal">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:site</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+      <sv:value>bf70df0c-bce8-41fc-8d59-b33a0eab043e</sv:value>
     </sv:property>
     <sv:node sv:name="hst:content">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
@@ -16,14 +20,14 @@
       <sv:property sv:name="hippo:docbase" sv:type="String">
         <sv:value>996bcac5-86cf-49b5-a7a3-16a74863e814</sv:value>
       </sv:property>
-      <sv:property sv:name="hippo:facets" sv:type="String">
+      <sv:property sv:name="hippo:facets" sv:type="String" sv:multiple="true">
         <sv:value>hippo:availability</sv:value>
       </sv:property>
-      <sv:property sv:name="hippo:values" sv:type="String">
-        <sv:value>live</sv:value>
-      </sv:property>
-      <sv:property sv:name="hippo:modes" sv:type="String">
+      <sv:property sv:name="hippo:modes" sv:type="String" sv:multiple="true">
         <sv:value>single</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:values" sv:type="String" sv:multiple="true">
+        <sv:value>live</sv:value>
       </sv:property>
     </sv:node>
   </sv:node>
@@ -31,6 +35,9 @@
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:site</sv:value>
     </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+      <sv:value>5d62b4a1-c308-4937-9bd7-e6f24123b49d</sv:value>
+    </sv:property>
     <sv:node sv:name="hst:content">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>hippo:facetselect</sv:value>
@@ -38,18 +45,65 @@
       <sv:property sv:name="hippo:docbase" sv:type="String">
         <sv:value>996bcac5-86cf-49b5-a7a3-16a74863e814</sv:value>
       </sv:property>
-      <sv:property sv:name="hippo:facets" sv:type="String">
+      <sv:property sv:name="hippo:facets" sv:type="String" sv:multiple="true">
         <sv:value>hippo:availability</sv:value>
       </sv:property>
-      <sv:property sv:name="hippo:values" sv:type="String">
-        <sv:value>preview</sv:value>
-      </sv:property>
-      <sv:property sv:name="hippo:modes" sv:type="String">
+      <sv:property sv:name="hippo:modes" sv:type="String" sv:multiple="true">
         <sv:value>single</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:values" sv:type="String" sv:multiple="true">
+        <sv:value>preview</sv:value>
       </sv:property>
     </sv:node>
   </sv:node>
-  
+  <sv:node sv:name="inheritportal-mobil">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:site</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+      <sv:value>613065a0-19f7-4de5-9b0e-7a4310803403</sv:value>
+    </sv:property>
+    <sv:node sv:name="hst:content">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippo:facetselect</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:docbase" sv:type="String">
+        <sv:value>996bcac5-86cf-49b5-a7a3-16a74863e814</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:facets" sv:type="String" sv:multiple="true">
+        <sv:value>hippo:availability</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:modes" sv:type="String" sv:multiple="true">
+        <sv:value>single</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:values" sv:type="String" sv:multiple="true">
+        <sv:value>live</sv:value>
+      </sv:property>
+    </sv:node>
+  </sv:node>
+  <sv:node sv:name="inheritportal-mobil-preview">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:site</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+      <sv:value>1d41bf30-5ecc-474a-a8bc-6b3219c1efb1</sv:value>
+    </sv:property>
+    <sv:node sv:name="hst:content">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippo:facetselect</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:docbase" sv:type="String">
+        <sv:value>996bcac5-86cf-49b5-a7a3-16a74863e814</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:facets" sv:type="String" sv:multiple="true">
+        <sv:value>hippo:availability</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:modes" sv:type="String" sv:multiple="true">
+        <sv:value>single</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:values" sv:type="String" sv:multiple="true">
+        <sv:value>preview</sv:value>
+      </sv:property>
+    </sv:node>
+  </sv:node>
 </sv:node>
-  
-  

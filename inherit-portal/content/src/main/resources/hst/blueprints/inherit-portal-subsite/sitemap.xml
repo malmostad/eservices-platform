@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sv:node sv:name="hst:sitemap" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:sitemap">
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:sitemap</sv:value>
+  </sv:property>
+  <sv:property sv:name="jcr:uuid" sv:type="String">
+    <sv:value>8acf4543-5c63-4e3b-bef9-e3240bf4baab</sv:value>
   </sv:property>
   <sv:node sv:name="root">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:sitemapitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+      <sv:value>5371ac49-d40a-46e4-a4a9-525ecabe41eb</sv:value>
     </sv:property>
     <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
       <sv:value>hst:pages/home</sv:value>

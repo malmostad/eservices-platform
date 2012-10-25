@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-release</artifactId>
-    <version>7.7.0</version>
+    <version>7.7.6</version>
   </parent>
 
   <name>Inherit portal</name>
@@ -82,6 +82,7 @@
     <!-- uncomment to enable automatic export 
     <hippoecm.export.dir>${project.basedir}/content/src/main/resources</hippoecm.export.dir>
      -->
+    <hippoecm.export.dir>${project.basedir}/content/src/main/resources</hippoecm.export.dir>
      
      <filesync.override>false</filesync.override>
      <maven.plugins.filesync.version>1.0.0</maven.plugins.filesync.version>    
