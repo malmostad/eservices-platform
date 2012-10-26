@@ -1,6 +1,5 @@
 package org.inherit.service.rest.server;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 

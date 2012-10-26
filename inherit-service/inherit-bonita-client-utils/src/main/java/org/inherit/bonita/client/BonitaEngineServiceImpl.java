@@ -2,6 +2,7 @@ package org.inherit.bonita.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,11 +13,16 @@ import java.util.logging.Logger;
 import javax.security.auth.login.LoginContext;
 
 import org.inherit.bonita.client.util.BonitaUtil;
+import org.inherit.service.common.domain.ActivityInstanceItem;
+import org.inherit.service.common.domain.ActivityInstanceLogItem;
+import org.inherit.service.common.domain.ActivityInstancePendingItem;
 import org.inherit.service.common.domain.InboxTaskItem;
+import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.ow2.bonita.facade.QueryDefinitionAPI;
 import org.ow2.bonita.facade.def.majorElement.ProcessDefinition;
 import org.ow2.bonita.facade.exception.ProcessNotFoundException;
+import org.ow2.bonita.facade.runtime.ActivityInstance;
 import org.ow2.bonita.facade.runtime.ActivityState;
 import org.ow2.bonita.facade.runtime.InstanceState;
 import org.ow2.bonita.facade.runtime.ProcessInstance;
@@ -36,6 +42,92 @@ public class BonitaEngineServiceImpl {
 		
 	}
 	
+	private void setProcessInstanceBriefProperties(ProcessInstance src, ProcessInstanceListItem dst) {
+		dst.setProcessInstanceUuid(src.getUUID().getValue());
+		
+		// find out process label
+		dst.setProcessLabel(getProcessLabel(src.getProcessDefinitionUUID()));
+
+		// find out process instance status
+		if (InstanceState.FINISHED.equals(src.getInstanceState())) {
+			dst.setStatus("Avslutad");
+		}
+		else if (InstanceState.CANCELLED.equals(src.getInstanceState()) || InstanceState.ABORTED.equals(src.getInstanceState())) {
+			dst.setStatus("Avbruten");
+		} 
+		else {
+			StringBuffer sb = new StringBuffer();
+			Set<TaskInstance> tasks = src.getTasks();
+			for (TaskInstance task : tasks) {
+				if (ActivityState.READY.equals(task.getState()) || ActivityState.EXECUTING.equals(task.getState())) {
+					sb.append(task.getActivityLabel());
+				}
+			}
+			dst.setStatus(sb.toString());
+		}
+		
+		dst.setEndDate(src.getEndedDate());
+		dst.setStartDate(src.getStartedDate());
+	}
+	
+	private void setActivityInstanceItem(ActivityInstance src, ActivityInstanceItem dst) {
+		/*
+		String activityDefinitionUuid;
+		String activityInstanceUuid;
+		String activityName;
+		String activityLabel;	
+		Date startDate;
+		String currentState;
+		Date lastStateUpdate;
+		String lastStateUpdateByUserId;
+		Date expectedEndDate;
+		int activityType;
+		*/
+		dst.setActivityDefinitionUuid(src.getActivityDefinitionUUID().getValue());
+		dst.setActivityInstanceUuid(src.getUUID().getValue());
+		dst.setActivityName(src.getActivityName());
+		dst.setActivityLabel(src.getActivityLabel());
+		dst.setStartDate(src.getStartedDate());
+		dst.setCurrentState(src.getState().name());
+		dst.setLastStateUpdate(src.getLastStateUpdate().getUpdatedDate());
+		dst.setLastStateUpdateByUserId(src.getLastStateUpdate().getUpdatedBy());
+		dst.setExpectedEndDate(src.getExpectedEndDate());
+		dst.setPriority(src.getPriority());
+		
+		// TODO set type... 
+	}
+	
+	private void setActivityInstanceLogItem(ActivityInstance src, ActivityInstanceLogItem dst) {
+		dst.setEndDate(src.getEndedDate());
+		dst.setPerformedByUserId(src.getLastStateUpdate().getUpdatedBy()); // TODO check if this is correct userid
+	}
+	
+	private void setActivityInstancePendingItem(ActivityInstance src, ActivityInstancePendingItem dst) {
+		dst.setCandidates(src.getLastAssignUpdate().getCandidates());
+		dst.setAssignedUserId(src.getLastAssignUpdate().getAssignedUserId());
+		dst.setExpectedEndDate(src.getExpectedEndDate());
+	}
+	
+	private ActivityInstanceItem createActivityInstanceListItem(ActivityInstance ai) {
+		ActivityInstanceItem result = null;
+		
+		if (ai != null) {
+			if (ai.getState().equals(ActivityState.FINISHED)) {
+				// Finished activity 
+				result = new ActivityInstanceLogItem();
+				setActivityInstanceLogItem(ai, (ActivityInstanceLogItem)result);
+			}
+			else {
+				// pending activity
+				result = new ActivityInstancePendingItem();
+				setActivityInstancePendingItem(ai, (ActivityInstancePendingItem)result);
+			}
+			setActivityInstanceItem(ai, result);
+		}
+		return result;
+	}
+
+	
 	public List<ProcessInstanceListItem> getUserInstancesList(String user) { // ArrayList<ProcessInstanceListItem>
 		List<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
 
@@ -50,31 +142,7 @@ public class BonitaEngineServiceImpl {
 	
 				ProcessInstanceListItem item = new ProcessInstanceListItem();
 	
-				item.setProcessInstanceUuid(pi.getUUID().getValue());
-				
-				// find out process label
-				item.setProcessLabel(getProcessLabel(pi.getProcessDefinitionUUID()));
-	
-				// find out process instance status
-				if (InstanceState.FINISHED.equals(pi.getInstanceState())) {
-					item.setStatus("Avslutad");
-				}
-				else if (InstanceState.CANCELLED.equals(pi.getInstanceState()) || InstanceState.ABORTED.equals(pi.getInstanceState())) {
-					item.setStatus("Avbruten");
-				} 
-				else {
-					StringBuffer sb = new StringBuffer();
-					Set<TaskInstance> tasks = pi.getTasks();
-					for (TaskInstance task : tasks) {
-						if (ActivityState.READY.equals(task.getState()) || ActivityState.EXECUTING.equals(task.getState())) {
-							sb.append(task.getActivityLabel());
-						}
-					}
-					item.setStatus(sb.toString());
-				}
-				
-				item.setEndDate(pi.getEndedDate());
-				item.setStartDate(pi.getStartedDate());
+				setProcessInstanceBriefProperties(pi, item);
 				
 				result.add(item);
 			}
@@ -85,6 +153,34 @@ public class BonitaEngineServiceImpl {
 			log.severe("Exception: " + e);
 		}
 
+		return result;
+	}
+	
+	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceUuid) {
+		ProcessInstanceDetails result = null;
+		
+		try {
+			LoginContext loginContext = BonitaUtil.login(); 
+			ProcessInstanceUUID piUuid = new ProcessInstanceUUID(processInstanceUuid);
+			ProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(piUuid);
+			
+			if (pi != null) {
+				result = new ProcessInstanceDetails();
+				setProcessInstanceBriefProperties(pi, result);
+				
+				Set<ActivityInstance> ais = pi.getActivities();
+				for (ActivityInstance ai : ais) {
+					ActivityInstanceItem item = createActivityInstanceListItem(ai);
+					result.addActivityInstanceItem(item);
+				}
+			}
+			BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		
+		
 		return result;
 	}
 	

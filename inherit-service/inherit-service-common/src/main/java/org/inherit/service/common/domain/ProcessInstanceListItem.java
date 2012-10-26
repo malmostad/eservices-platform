@@ -25,6 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @XStreamAlias("ProcessInstanceListItem")
 public class ProcessInstanceListItem implements Serializable {
     
+	// TODO byt namn på klassen
+	
 	private static final long serialVersionUID = -1985629397822454110L;
 	
 	private String processLabel;

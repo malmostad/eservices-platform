@@ -1,12 +1,9 @@
 package org.inherit.service.rest.server;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.InboxTaskItem;
-import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.util.ParameterEncoder;
 import org.inherit.taskform.engine.TaskFormService;
 import org.restlet.resource.Post;

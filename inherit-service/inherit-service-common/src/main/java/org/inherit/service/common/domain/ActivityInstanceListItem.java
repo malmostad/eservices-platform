@@ -25,6 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @XStreamAlias("ActivityInstanceListItem")
 public class ActivityInstanceListItem implements Serializable {
 
+	/**
+	 * TODO delete and replace with ActivityInstancePendingItem 
+	 */
+	
 	private static final long serialVersionUID = -4720396738012036540L;
 	
 	String activityLabel;
