@@ -30,6 +30,7 @@ import org.ow2.bonita.facade.runtime.TaskInstance;
 import org.ow2.bonita.facade.uuid.ActivityInstanceUUID;
 import org.ow2.bonita.facade.uuid.ProcessDefinitionUUID;
 import org.ow2.bonita.facade.uuid.ProcessInstanceUUID;
+import org.ow2.bonita.light.LightActivityInstance;
 import org.ow2.bonita.util.AccessorUtil;
 
 public class BonitaEngineServiceImpl {
@@ -156,24 +157,30 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
+	private ProcessInstanceDetails getProcessInstanceDetails(ProcessInstanceUUID piUuid) throws Exception {
+		ProcessInstanceDetails result = null;
+		
+		ProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(piUuid);
+		if (pi != null) {
+			result = new ProcessInstanceDetails();
+			setProcessInstanceBriefProperties(pi, result);
+			Set<ActivityInstance> ais = pi.getActivities();
+			for (ActivityInstance ai : ais) {
+				ActivityInstanceItem item = createActivityInstanceListItem(ai);
+				result.addActivityInstanceItem(item);
+			}
+		}
+		
+		return result;
+	}
+	
 	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceUuid) {
 		ProcessInstanceDetails result = null;
 		
 		try {
 			LoginContext loginContext = BonitaUtil.login(); 
 			ProcessInstanceUUID piUuid = new ProcessInstanceUUID(processInstanceUuid);
-			ProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(piUuid);
-			
-			if (pi != null) {
-				result = new ProcessInstanceDetails();
-				setProcessInstanceBriefProperties(pi, result);
-				
-				Set<ActivityInstance> ais = pi.getActivities();
-				for (ActivityInstance ai : ais) {
-					ActivityInstanceItem item = createActivityInstanceListItem(ai);
-					result.addActivityInstanceItem(item);
-				}
-			}
+			result = getProcessInstanceDetails(piUuid);
 			BonitaUtil.logout(loginContext);
 		}
 		catch (Exception e) {
@@ -183,6 +190,26 @@ public class BonitaEngineServiceImpl {
 		
 		return result;
 	}
+
+	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(String activityInstanceUuid) {
+		ProcessInstanceDetails result = null;
+		
+		try {
+			LoginContext loginContext = BonitaUtil.login(); 
+			ActivityInstanceUUID aUuid = new ActivityInstanceUUID(activityInstanceUuid);
+			LightActivityInstance lai = AccessorUtil.getQueryRuntimeAPI().getLightActivityInstance(aUuid);
+			ProcessInstanceUUID piUuid = lai.getProcessInstanceUUID(); 
+			result = getProcessInstanceDetails(piUuid);
+			BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		
+		
+		return result;
+	}
+
 	
 	public String getActivityDefintionUuid(String taskUuid) { // ArrayList<ProcessInstanceListItem>
 		String result = null;

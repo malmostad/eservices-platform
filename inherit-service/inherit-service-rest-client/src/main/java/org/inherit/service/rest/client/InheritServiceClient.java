@@ -9,9 +9,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceListItem;
+import org.inherit.service.common.domain.ActivityInstanceLogItem;
+import org.inherit.service.common.domain.ActivityInstancePendingItem;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessDefinitionInfo;
+import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.util.ParameterEncoder;
 import org.restlet.Client;
@@ -54,6 +58,11 @@ public class InheritServiceClient {
 		xstream.alias("ProcessInstanceListItem", ProcessInstanceListItem.class);
 		xstream.alias("ActivityInstanceListItem", ActivityInstanceListItem.class);
 		
+		xstream.alias("ProcessInstanceDetails", ProcessInstanceDetails.class);
+		xstream.alias("ActivityInstanceItem", ActivityInstanceItem.class);
+		xstream.alias("ActivityInstanceLogItem", ActivityInstanceLogItem.class);
+		xstream.alias("ActivityInstancePendingItem", ActivityInstancePendingItem.class);
+		
 		return xstream;
 	}
 	
@@ -78,6 +87,32 @@ public class InheritServiceClient {
 		System.out.println(response);
 		if (response != null) {
 			result = (String)response;
+		}
+		
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ProcessInstanceDetails getProcessInstanceDetailByUuid(String processInstanceUuid) {
+		ProcessInstanceDetails result = null;
+		String uri = serverBaseUrl + "processInstanceDetailsByUuid/" + ParameterEncoder.encode(processInstanceUuid) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (ProcessInstanceDetails)xstream.fromXML(response);
+		}
+		
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ProcessInstanceDetails getProcessInstanceDetailByActivityInstanceUuid(String activityInstanceUuid) {
+		ProcessInstanceDetails result = null;
+		String uri = serverBaseUrl + "processInstanceDetailsByActivityInstanceUuid/" + ParameterEncoder.encode(activityInstanceUuid) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (ProcessInstanceDetails)xstream.fromXML(response);
 		}
 		
 		return result;
