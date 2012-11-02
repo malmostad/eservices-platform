@@ -13,12 +13,4 @@
     <Parameter name="hst-config-properties" value="file:${catalina.base}/conf/hst.properties" override="false"/>
     -->
 
-	<Resource name="bean/ServerConfigFactory" auth="Container"
-	         type="se.inherit.security.jaas.authify.ServerConfigBean"
-	         factory="org.apache.naming.factory.BeanFactory"
-	         host="127.0.0.1"
-	         port="8080"
-	         authifyLandingPage="LandingLoginPage"
-	         authifyAppId="2d5641ba818cafbe4b00ef2e86092202"
-	         authifySecretKey="62413a2e5b522bb5fce7826975b56a33"/>
 </Context>

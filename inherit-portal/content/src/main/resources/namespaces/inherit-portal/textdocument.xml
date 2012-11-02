@@ -124,6 +124,7 @@
         <sv:value>hippo:harddocument</sv:value>
         <sv:value>hippotranslation:translated</sv:value>
       </sv:property>
+      <sv:property sv:name="hippo:availability" sv:type="String"/>
       <sv:property sv:name="jcr:uuid" sv:type="String">
         <sv:value>2500e5f2-f473-431d-9b67-0d9c15d40abf</sv:value>
       </sv:property>
@@ -134,7 +135,7 @@
         <sv:value>inheritportal-textdocument-prototype-id</sv:value>
       </sv:property>
       <sv:property sv:name="hippostd:state" sv:type="String">
-        <sv:value>unpublished</sv:value>
+        <sv:value>draft</sv:value>
       </sv:property>
       <sv:property sv:name="hippostd:stateSummary" sv:type="String">
         <sv:value>new</sv:value>

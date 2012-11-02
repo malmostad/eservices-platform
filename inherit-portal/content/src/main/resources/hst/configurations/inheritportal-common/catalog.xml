@@ -3,22 +3,13 @@
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:catalog</sv:value>
   </sv:property>
-  <sv:property sv:name="jcr:uuid" sv:type="String">
-    <sv:value>c192c759-4300-448b-a49f-ab1705da8327</sv:value>
-  </sv:property>
   <sv:node sv:name="inheritportal-catalog">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:containeritempackage</sv:value>
     </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>7a801bac-a6b7-48e8-823e-2d57fa341ed1</sv:value>
-    </sv:property>
     <sv:node sv:name="list">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>hst:containeritemcomponent</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>24df86d6-968c-4e5d-bbdf-fba27f46d8af</sv:value>
       </sv:property>
       <sv:property sv:name="hst:componentclassname" sv:type="String">
         <sv:value>se.inherit.portal.components.ListView</sv:value>

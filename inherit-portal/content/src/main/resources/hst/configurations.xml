@@ -3,52 +3,628 @@
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:configurations</sv:value>
   </sv:property>
-  <sv:property sv:name="jcr:uuid" sv:type="String">
-    <sv:value>e171189e-452d-4a20-906a-fca51d259b3b</sv:value>
-  </sv:property>
   <sv:node sv:name="hst:default">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
     </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>8438f815-23cb-408d-a335-6c107a66698e</sv:value>
-    </sv:property>
+    <sv:node sv:name="hst:sitemap">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemap</sv:value>
+      </sv:property>
+    </sv:node>
+    <sv:node sv:name="hst:pages">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:pages</sv:value>
+      </sv:property>
+    </sv:node>
+    <sv:node sv:name="hst:components">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:components</sv:value>
+      </sv:property>
+    </sv:node>
+    <sv:node sv:name="hst:templates">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:templates</sv:value>
+      </sv:property>
+    </sv:node>
+    <sv:node sv:name="hst:sitemenus">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemenus</sv:value>
+      </sv:property>
+    </sv:node>
+    <sv:node sv:name="hst:sitemapitemhandlers">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemapitemhandlers</sv:value>
+      </sv:property>
+    </sv:node>
+    <sv:node sv:name="hst:catalog">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:catalog</sv:value>
+      </sv:property>
+    </sv:node>
   </sv:node>
   <sv:node sv:name="inheritportal-subsite-common">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
-    </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>c29a9009-3761-4cc1-9138-d6bb0e405f88</sv:value>
-    </sv:property>
-  </sv:node>
-  <sv:node sv:name="inheritportal">
-    <sv:property sv:name="jcr:primaryType" sv:type="Name">
-      <sv:value>hst:configuration</sv:value>
-    </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>8dd3f732-377d-4a44-8aa2-07cd08f6c1df</sv:value>
-    </sv:property>
-    <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
-      <sv:value>../inheritportal-common</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="inheritportal-common">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
     </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>00e102c6-94e1-49f0-b288-4a99ca21ecb4</sv:value>
-    </sv:property>
   </sv:node>
-  <sv:node sv:name="inheritportal-mobil">
+  <sv:node sv:name="inheritportal">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
     </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>0194e388-773e-4214-8f1c-238e13edde1b</sv:value>
+    <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
+      <sv:value>../inheritportal-common</sv:value>
+      <sv:value>../mycases-common</sv:value>
+      <sv:value>../mycases-web</sv:value>
+    </sv:property>
+    <sv:node sv:name="hst:sitemap">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemap</sv:value>
+      </sv:property>
+      <sv:node sv:name="root">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+          <sv:value>hst:pages/home</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+          <sv:value>common/homepage</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="about">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+          <sv:value>hst:pages/textpage</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+          <sv:value>common/about-us</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="news">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+          <sv:value>hst:pages/newsoverview</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+          <sv:value>news</sv:value>
+        </sv:property>
+        <sv:node sv:name="_any_.html">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/newspage</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/${1}</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="_any_">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/newsoverview</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/${1}</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="search">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+          <sv:value>hst:pages/search</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="_any_">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+          <sv:value>hst:pages/pagenotfound</sv:value>
+        </sv:property>
+      </sv:node>
+    </sv:node>
+    <sv:node sv:name="hst:sitemenus">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemenus</sv:value>
+      </sv:property>
+      <sv:node sv:name="main">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenu</sv:value>
+        </sv:property>
+        <sv:node sv:name="home">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemenuitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+            <sv:value>root</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="about">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemenuitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+            <sv:value>about</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="news">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemenuitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+            <sv:value>news</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+    </sv:node>
+    <sv:node sv:name="hst:pages">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:pages</sv:value>
+      </sv:property>
+      <sv:node sv:name="search">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencecomponent" sv:type="String">
+          <sv:value>hst:pages/standard</sv:value>
+        </sv:property>
+        <sv:node sv:name="main">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:component</sv:value>
+          </sv:property>
+          <sv:node sv:name="content">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:component</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:referencecomponent" sv:type="String">
+              <sv:value>hst:components/search</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="overview">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencecomponent" sv:type="String">
+          <sv:value>hst:pages/standard</sv:value>
+        </sv:property>
+        <sv:node sv:name="main">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:component</sv:value>
+          </sv:property>
+          <sv:node sv:name="content">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:component</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:referencecomponent" sv:type="String">
+              <sv:value>hst:components/overview</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="textpage">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencecomponent" sv:type="String">
+          <sv:value>hst:pages/standard</sv:value>
+        </sv:property>
+        <sv:node sv:name="main">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:component</sv:value>
+          </sv:property>
+          <sv:node sv:name="content">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:component</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:referencecomponent" sv:type="String">
+              <sv:value>hst:components/content</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="newsoverview">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencecomponent" sv:type="String">
+          <sv:value>hst:pages/overview</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="home">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencecomponent" sv:type="String">
+          <sv:value>hst:pages/standard</sv:value>
+        </sv:property>
+        <sv:node sv:name="main">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:component</sv:value>
+          </sv:property>
+          <sv:node sv:name="content">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:component</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:referencecomponent" sv:type="String">
+              <sv:value>hst:components/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:template" sv:type="String">
+              <sv:value>home.main.content</sv:value>
+            </sv:property>
+          </sv:node>
+          <sv:node sv:name="lists">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:containercomponent</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentclassname" sv:type="String">
+              <sv:value>org.hippoecm.hst.pagecomposer.builtin.components.StandardContainerComponent</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:xtype" sv:type="String">
+              <sv:value>HST.UnorderedList</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="newspage">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencecomponent" sv:type="String">
+          <sv:value>hst:pages/standard</sv:value>
+        </sv:property>
+        <sv:node sv:name="main">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:component</sv:value>
+          </sv:property>
+          <sv:node sv:name="content">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:component</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:referencecomponent" sv:type="String">
+              <sv:value>hst:components/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:template" sv:type="String">
+              <sv:value>news.main.content</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="pagenotfound">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencecomponent" sv:type="String">
+          <sv:value>hst:pages/standard</sv:value>
+        </sv:property>
+        <sv:node sv:name="main">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:component</sv:value>
+          </sv:property>
+          <sv:node sv:name="content">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:component</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:referencecomponent" sv:type="String">
+              <sv:value>hst:components/notfound</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="standard">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:template" sv:type="String">
+          <sv:value>layout.webpage</sv:value>
+        </sv:property>
+        <sv:node sv:name="header">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:component</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:referencecomponent" sv:type="String">
+            <sv:value>hst:components/header</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="main">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:component</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:template" sv:type="String">
+            <sv:value>standard.main</sv:value>
+          </sv:property>
+          <sv:node sv:name="leftmenu">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:component</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:referencecomponent" sv:type="String">
+              <sv:value>hst:components/leftmenu</sv:value>
+            </sv:property>
+          </sv:node>
+          <sv:node sv:name="right">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hst:component</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:template" sv:type="String">
+              <sv:value>standard.main.right</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+    </sv:node>
+    <sv:node sv:name="hst:components">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:components</sv:value>
+      </sv:property>
+      <sv:node sv:name="content">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentclassname" sv:type="String">
+          <sv:value>se.inherit.portal.components.Detail</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:template" sv:type="String">
+          <sv:value>standard.main.content</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="header">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentclassname" sv:type="String">
+          <sv:value>se.inherit.portal.components.Header</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:template" sv:type="String">
+          <sv:value>standard.header</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="leftmenu">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentclassname" sv:type="String">
+          <sv:value>se.inherit.portal.components.LeftMenu</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:template" sv:type="String">
+          <sv:value>standard.main.leftmenu</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="notfound">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentclassname" sv:type="String">
+          <sv:value>se.inherit.portal.components.NotFound</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:template" sv:type="String">
+          <sv:value>notfound.main.content</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="search">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentclassname" sv:type="String">
+          <sv:value>se.inherit.portal.components.Search</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:template" sv:type="String">
+          <sv:value>search.main.content</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="overview">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:component</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentclassname" sv:type="String">
+          <sv:value>se.inherit.portal.components.Overview</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:template" sv:type="String">
+          <sv:value>overview.main.content</sv:value>
+        </sv:property>
+      </sv:node>
+    </sv:node>
+    <sv:node sv:name="hst:templates">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:templates</sv:value>
+      </sv:property>
+      <sv:node sv:name="home.main.content">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/home/main/content.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="layout.webpage">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/layout/webpage.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="news.main.content">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/news/main/content.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="notfound.main.content">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/notfound/main/content.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="overview.main.content">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/overview/main/content.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="search.main.content">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/search/main/content.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="standard.header">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/standard/header.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="standard.main">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/standard/main.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="standard.main.leftmenu">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/standard/main/leftmenu.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="standard.main.right">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/standard/main/right.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="standard.main.content">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/standard/main/content.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="standard.main.list">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:template</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:renderpath" sv:type="String">
+          <sv:value>jsp/standard/main/list.jsp</sv:value>
+        </sv:property>
+      </sv:node>
+    </sv:node>
+    <sv:node sv:name="hst:catalog">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:catalog</sv:value>
+      </sv:property>
+      <sv:node sv:name="inheritportal-catalog">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:containeritempackage</sv:value>
+        </sv:property>
+        <sv:node sv:name="list">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:containeritemcomponent</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentclassname" sv:type="String">
+            <sv:value>se.inherit.portal.components.ListView</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:iconpath" sv:type="String">
+            <sv:value>images/catalog-list.png</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:label" sv:type="String">
+            <sv:value>List</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:parameternames" sv:type="String" sv:multiple="true">
+            <sv:value>title</sv:value>
+            <sv:value>pageSize</sv:value>
+            <sv:value>sortBy</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:parametervalues" sv:type="String" sv:multiple="true">
+            <sv:value>List</sv:value>
+            <sv:value>3</sv:value>
+            <sv:value>inheritportal:date</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:template" sv:type="String">
+            <sv:value>standard.main.list</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:xtype" sv:type="String">
+            <sv:value>HST.Item</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+    </sv:node>
+  </sv:node>
+  <sv:node sv:name="mycases-common">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-web">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-mobile">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-internal-web">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
     </sv:property>
     <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
+      <sv:value>../malmo-internal-common</sv:value>
+      <sv:value>../mycases-web</sv:value>
+      <sv:value>../mycases-common</sv:value>
+      <sv:value>../inheritportal-common</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-internal-common">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-external-common">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-external-web">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
+      <sv:value>../malmo-external-common</sv:value>
+      <sv:value>../mycases-web</sv:value>
+      <sv:value>../mycases-common</sv:value>
       <sv:value>../inheritportal-common</sv:value>
     </sv:property>
   </sv:node>

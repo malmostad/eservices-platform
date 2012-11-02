@@ -39,22 +39,21 @@
 
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-addon-hst-configuration-editor-frontend</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
-      <artifactId>hippo-addon-hst-configuration-editor-repository</artifactId>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-addon-channel-manager-frontend</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-addon-channel-manager-repository</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.onehippo.cms7</groupId>
+      <artifactId>hippo-addon-automatic-export-repository</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.onehippo.cms7</groupId>
+      <artifactId>hippo-addon-automatic-export-frontend</artifactId>
     </dependency>
 
     <dependency>
@@ -84,6 +83,13 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
+          <archive>
+            <manifestEntries>
+              <Hippo-Release-Version>${hippo.release.version}</Hippo-Release-Version>
+              <Project-Version>${project.version}</Project-Version>
+              <Project-Build>${buildNumber}</Project-Build>
+            </manifestEntries>
+          </archive>
           <overlays>
             <overlay>
               <groupId>org.onehippo.cms7</groupId>

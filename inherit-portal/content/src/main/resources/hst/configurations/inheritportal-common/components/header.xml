@@ -3,9 +3,6 @@
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:component</sv:value>
   </sv:property>
-  <sv:property sv:name="jcr:uuid" sv:type="String">
-    <sv:value>3429e0c3-0234-4b9b-9721-1f56768be459</sv:value>
-  </sv:property>
   <sv:property sv:name="hst:componentclassname" sv:type="String">
     <sv:value>se.inherit.portal.components.Header</sv:value>
   </sv:property>

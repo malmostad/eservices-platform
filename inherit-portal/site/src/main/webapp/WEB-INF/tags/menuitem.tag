@@ -5,24 +5,35 @@
 
 <%@ attribute name="siteMenuItem" type="org.hippoecm.hst.core.sitemenu.HstSiteMenuItem" rtexprvalue="true" required="true"%>
 
+<!--  modifierad tag för malmö (baserat på hippo genererad) -->
+<c:set var="link">
+   	<c:choose>
+     		<c:when test="${not empty siteMenuItem.externalLink}">${siteMenuItem.externalLink}</c:when>
+     		<c:otherwise><hst:link link="${siteMenuItem.hstLink}"/></c:otherwise>
+   	</c:choose>
+</c:set>
+
 <c:choose>
   <c:when test="${siteMenuItem.selected}">
-    <b><c:out value="${siteMenuItem.name}"/></b>
+  	
+  		<c:choose>
+  			<c:when test="${siteMenuItem.expanded and not empty siteMenuItem.childMenuItems}">
+  			<li class="selected no-children active inbranch"><a href="${link}"><c:out value="${siteMenuItem.name}"/></a>
+			  <ul>
+			    <c:forEach var="child" items="${siteMenuItem.childMenuItems}">
+			        <tag:menuitem siteMenuItem="${child}"/>
+			    </c:forEach>
+			  </ul>
+			</li>
+			</c:when>
+			<c:otherwise>
+				<li class="selected no-children active"><a href="${link}"><c:out value="${siteMenuItem.name}"/></a></li>
+			</c:otherwise>
+		</c:choose>	
+  
   </c:when>
   <c:otherwise>
-    <hst:link var="link" link="${siteMenuItem.hstLink}"/>
-    <c:if test="${empty link}">
-      <c:set var="link" value="${siteMenuItem.externalLink}"/>
-    </c:if>
-    <a href="${link}"><c:out value="${siteMenuItem.name}"/></a>
+  	<li><a href="${link}"><c:out value="${siteMenuItem.name}"/></a></li>
   </c:otherwise>
 </c:choose>
-<c:if test="${siteMenuItem.expanded and not empty siteMenuItem.childMenuItems}">
-  <ul>
-    <c:forEach var="child" items="${siteMenuItem.childMenuItems}">
-      <li>
-        <tag:menuitem siteMenuItem="${child}"/>
-      </li>
-    </c:forEach>
-  </ul>
-</c:if>
+

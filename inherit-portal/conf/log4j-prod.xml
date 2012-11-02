@@ -74,6 +74,10 @@
     <level value="info"/>
     <appender-ref ref="audit"/>
   </logger>
+  <logger additivity="false" name="org.onehippo.audit">
+    <level value="info"/>
+    <appender-ref ref="audit"/>
+  </logger>
 
   <!-- Site logging -->
   <logger additivity="false" name="org.hippoecm.hst">

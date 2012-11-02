@@ -3,15 +3,9 @@
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:sitemap</sv:value>
   </sv:property>
-  <sv:property sv:name="jcr:uuid" sv:type="String">
-    <sv:value>b643ed53-cfee-4ca7-9617-c379439ed50c</sv:value>
-  </sv:property>
   <sv:node sv:name="root">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:sitemapitem</sv:value>
-    </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>1a1fbd37-1f11-4e4e-b8ec-a9bd1005fbe0</sv:value>
     </sv:property>
     <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
       <sv:value>hst:pages/home</sv:value>
@@ -24,9 +18,6 @@
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:sitemapitem</sv:value>
     </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>95ab86fd-b705-45bd-91df-a11980163397</sv:value>
-    </sv:property>
     <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
       <sv:value>hst:pages/textpage</sv:value>
     </sv:property>
@@ -38,9 +29,6 @@
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:sitemapitem</sv:value>
     </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>0e557734-ebf6-49e6-9645-b7ffee52df99</sv:value>
-    </sv:property>
     <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
       <sv:value>hst:pages/newsoverview</sv:value>
     </sv:property>
@@ -50,9 +38,6 @@
     <sv:node sv:name="_any_.html">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>9c25f3ed-50d9-48bf-80f0-33b1b2f8f4c1</sv:value>
       </sv:property>
       <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
         <sv:value>hst:pages/newspage</sv:value>
@@ -64,9 +49,6 @@
     <sv:node sv:name="_any_">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>dc783060-1596-44fa-9616-e758eb62b12c</sv:value>
       </sv:property>
       <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
         <sv:value>hst:pages/newsoverview</sv:value>
@@ -80,9 +62,6 @@
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:sitemapitem</sv:value>
     </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>5f816161-d2a4-44c7-8b16-b676591f145e</sv:value>
-    </sv:property>
     <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
       <sv:value>hst:pages/search</sv:value>
     </sv:property>
@@ -91,179 +70,8 @@
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:sitemapitem</sv:value>
     </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>f0ec1da6-719c-459f-9893-768cfb0d0d10</sv:value>
-    </sv:property>
     <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
       <sv:value>hst:pages/pagenotfound</sv:value>
     </sv:property>
-  </sv:node>
-  <sv:node sv:name="bonita">
-    <sv:property sv:name="jcr:primaryType" sv:type="Name">
-      <sv:value>hst:sitemapitem</sv:value>
-    </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>bdc66f11-8335-437f-86f4-90c311b4b9c2</sv:value>
-    </sv:property>
-    <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-      <sv:value>hst:pages/textpage</sv:value>
-    </sv:property>
-    <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-      <sv:value>bonita</sv:value>
-    </sv:property>
-    <sv:property sv:name="hst:roles" sv:type="String" sv:multiple="true">
-      <sv:value>admin</sv:value>
-    </sv:property>
-    <sv:node sv:name="form">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>fdaf0567-4db4-465e-b653-1da21a5c442d</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-        <sv:value>hst:pages/bonitaform</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-        <sv:value>${parent}/form</sv:value>
-      </sv:property>
-    </sv:node>
-    <sv:node sv:name="inbox">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>2474b604-6316-4ed4-9277-e60e2858d9f9</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-        <sv:value>hst:pages/bonitainbox</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-        <sv:value>${parent}/inbox</sv:value>
-      </sv:property>
-    </sv:node>
-    <sv:node sv:name="status">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>a385b5ed-f825-442c-8c88-aced2b0ceffc</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-        <sv:value>hst:pages/bonitastatus</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-        <sv:value>${parent}/status</sv:value>
-      </sv:property>
-    </sv:node>
-    <sv:node sv:name="startDemoProc">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>5be4a3ac-ba83-46bf-9e23-03794c18280c</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-        <sv:value>hst:pages/bonitastartinstanceform</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-        <sv:value>${parent}/start-process-instance/mydemoprocess</sv:value>
-      </sv:property>
-    </sv:node>
-    <sv:node sv:name="start">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>573c958f-ba79-43b7-bcbf-b16e25fc94d9</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-        <sv:value>hst:pages/formoverview</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-        <sv:value>${parent}/start</sv:value>
-      </sv:property>
-      <sv:node sv:name="_default_">
-        <sv:property sv:name="jcr:primaryType" sv:type="Name">
-          <sv:value>hst:sitemapitem</sv:value>
-        </sv:property>
-        <sv:property sv:name="jcr:uuid" sv:type="String">
-          <sv:value>661c09c8-472b-413f-8b7f-605c03842f24</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-          <sv:value>hst:pages/formoverview</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-          <sv:value>${parent}/${1}</sv:value>
-        </sv:property>
-        <sv:node sv:name="_default_">
-          <sv:property sv:name="jcr:primaryType" sv:type="Name">
-            <sv:value>hst:sitemapitem</sv:value>
-          </sv:property>
-          <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>ab9a3ed9-a20e-4dae-85af-6854f93b2761</sv:value>
-          </sv:property>
-          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-            <sv:value>hst:pages/orbeonform</sv:value>
-          </sv:property>
-          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-            <sv:value>${parent}/${2}</sv:value>
-          </sv:property>
-          <sv:node sv:name="confirm">
-            <sv:property sv:name="jcr:primaryType" sv:type="Name">
-              <sv:value>hst:sitemapitem</sv:value>
-            </sv:property>
-            <sv:property sv:name="jcr:uuid" sv:type="String">
-              <sv:value>39427be7-4faa-4701-a08e-8e2f6e307b6b</sv:value>
-            </sv:property>
-            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-              <sv:value>hst:pages/orbeonconfirm</sv:value>
-            </sv:property>
-            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-              <sv:value>${parent}</sv:value>
-            </sv:property>
-          </sv:node>
-        </sv:node>
-      </sv:node>
-    </sv:node>
-  </sv:node>
-  <sv:node sv:name="dibs">
-    <sv:property sv:name="jcr:primaryType" sv:type="Name">
-      <sv:value>hst:sitemapitem</sv:value>
-    </sv:property>
-    <sv:property sv:name="jcr:uuid" sv:type="String">
-      <sv:value>450ff4e8-cbfa-4b6a-bfab-0c9b776e2fc6</sv:value>
-    </sv:property>
-    <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-      <sv:value>dibs</sv:value>
-    </sv:property>
-    <sv:node sv:name="accept">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>038044a3-69ef-43ff-96e1-6d9870a62941</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-        <sv:value>hst:pages/dibsaccept</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-        <sv:value>${parent}/accept</sv:value>
-      </sv:property>
-    </sv:node>
-    <sv:node sv:name="pay">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hst:sitemapitem</sv:value>
-      </sv:property>
-      <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>af2ac8d3-1b4a-488e-822b-2e97b545b709</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-        <sv:value>hst:pages/dibspay</sv:value>
-      </sv:property>
-      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-        <sv:value>${parent}/pay</sv:value>
-      </sv:property>
-    </sv:node>
   </sv:node>
 </sv:node>
