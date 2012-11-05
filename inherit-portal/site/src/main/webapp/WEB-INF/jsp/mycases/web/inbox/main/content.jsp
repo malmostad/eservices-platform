@@ -21,9 +21,9 @@
     		<table cellpadding="0" cellspacing="0" border="0" class="display dataTable">
 				<thead>
 					<tr>
-					   <th><fmt:message key="bonita.process.column.lbl"/></th>
-					   <th><fmt:message key="bonita.startDate.column.lbl"/></th>
-					   <th><fmt:message key="bonita.activity.column.lbl"/></th>
+					   <th><fmt:message key="mycases.process.column.lbl"/></th>
+					   <th><fmt:message key="mycases.startDate.column.lbl"/></th>
+					   <th><fmt:message key="mycases.activity.column.lbl"/></th>
 					</tr>
 				</thead>
 				<tbody>

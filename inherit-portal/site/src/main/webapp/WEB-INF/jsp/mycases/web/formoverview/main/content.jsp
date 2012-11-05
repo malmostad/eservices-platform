@@ -16,29 +16,57 @@
 			</hst:element>
 			<hst:headContribution keyHint="headTitle" element="${headTitle}" />
 		</c:if>
- 
-		<section id="news-overview">
+<table class="e-services">
+  <thead>
+    <tr>
+      <th id="case-name"><fmt:message key="mycases.service.lbl"/></th>
+      <th id="case-description" colspan="3"><fmt:message key="mycases.select.lbl"/></th>      
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+    	<th colspan="4">TODO Katalognamn från JCR som namn på f&ouml;rvaltningen</th>
+    </tr>
 
-			<c:forEach var="item" items="${result.hippoBeans}">
+   <c:forEach var="item" items="${result.hippoBeans}">
 
-				<div class="page-header">
-					<h3>
-						${item.title}
-					</h3>
-				</div>
-				<div class="row-fluid">
-					<div class="span8">
-						<p>${item.summary}</p>
-					</div>
-					<div class="span4">
-						<hst:link var="link" hippobean="${item}" />
-						<a href="${link}">e-tj&auml;nst <i class="icon-chevron-right"></i></a>
-					</div>
-				</div>
-
-			</c:forEach>
-
-			<!--if there are pages on the request, they will be printed by the tag:pages -->
-			<tag:pages pages="${pages}" page="${page}" />
-	</c:otherwise>
+		<tr>
+	      <td headers="case-name">
+	         ${item.title}
+	      </td>
+	      <td class="select">
+	      	 <c:if test="${not empty item.pdfUrl}">
+	      	   <a href="${item.pdfUrl}" title="öppnas i nytt fönster)" rel="external">PDF
+	      	    <c:if test="${not empty pdfIcon and not empty pdfIcon.original}"> 
+                    <hst:link var="pdfIconSrc" hippobean="${pdfIcon.original}"/>
+                    <h1><img src="${pdfIconSrc}" width="${pdfIcon.original.width}" height="${pdfIcon.original.height}" />
+                 </c:if>
+	      	 </c:if>
+	      </td>
+	      <td>
+	         <c:if test="${not empty item.wordUrl}">
+	      	   <a href="${item.wordUrl}" title="öppnas i nytt fönster)" rel="external">Word
+ 				  <c:if test="${not empty wordIcon and not empty wordIcon.original}"> 
+                    <hst:link var="wordIconSrc" hippobean="${wordIcon.original}"/>
+                    <h1><img src="${wordIconSrc}" width="${wordIcon.original.width}" height="${wordIcon.original.height}" />
+                  </c:if>	      	   
+               </a>
+	      	 </c:if>
+	      </td>
+	      <td>
+	         <c:if test="${not empty item.formPath}">
+	            <hst:link var="link" hippobean="${item}" />
+				<a href="${link}">e-tj&auml;nst</a>
+			 </c:if>
+	      </td>
+	    </tr>
+        <tr>
+          <td colspan=4>
+             <p>${item.summary}</p>
+          </td>
+        </tr>
+	</c:forEach>          
+</tbody>
+</table>
+</c:otherwise>
 </c:choose>
