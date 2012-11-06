@@ -16,6 +16,7 @@ import org.inherit.bonita.client.util.BonitaUtil;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
 import org.inherit.service.common.domain.ActivityInstancePendingItem;
+import org.inherit.service.common.domain.CommentFeedItem;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
@@ -24,6 +25,7 @@ import org.ow2.bonita.facade.def.majorElement.ProcessDefinition;
 import org.ow2.bonita.facade.exception.ProcessNotFoundException;
 import org.ow2.bonita.facade.runtime.ActivityInstance;
 import org.ow2.bonita.facade.runtime.ActivityState;
+import org.ow2.bonita.facade.runtime.Comment;
 import org.ow2.bonita.facade.runtime.InstanceState;
 import org.ow2.bonita.facade.runtime.ProcessInstance;
 import org.ow2.bonita.facade.runtime.TaskInstance;
@@ -41,6 +43,32 @@ public class BonitaEngineServiceImpl {
 	
 	public BonitaEngineServiceImpl() {
 		
+	}
+	
+	private CommentFeedItem loadCommentFeedItem(Comment comment) {
+		CommentFeedItem result = new CommentFeedItem();
+		if (comment.getActivityUUID() != null) {
+			result.setActivityInstanceUuid(comment.getActivityUUID().getValue());
+		}
+		result.setMessage(comment.getMessage());
+		if (comment.getInstanceUUID() != null) {
+			result.setProcessInstanceUuid(comment.getInstanceUUID().getValue());
+		}
+		result.setTimeStamp(comment.getDate());
+		result.setUserId(comment.getUserId());
+		return result;
+	}
+	
+	private void setProcessInstanceCommentFeed(ProcessInstance src, ProcessInstanceListItem dst) {
+		List<CommentFeedItem> commentFeed = new ArrayList<CommentFeedItem>();
+		List<Comment> comments = src.getCommentFeed();
+		if (comments != null) {
+			for (Comment comment : comments) {
+				CommentFeedItem item = loadCommentFeedItem(comment);
+				commentFeed.add(item);
+			}
+		}
+		dst.setCommentFeed(commentFeed);
 	}
 	
 	private void setProcessInstanceBriefProperties(ProcessInstance src, ProcessInstanceListItem dst) {
@@ -69,21 +97,10 @@ public class BonitaEngineServiceImpl {
 		
 		dst.setEndDate(src.getEndedDate());
 		dst.setStartDate(src.getStartedDate());
+		dst.setStartedBy(src.getStartedBy());
 	}
 	
 	private void setActivityInstanceItem(ActivityInstance src, ActivityInstanceItem dst) {
-		/*
-		String activityDefinitionUuid;
-		String activityInstanceUuid;
-		String activityName;
-		String activityLabel;	
-		Date startDate;
-		String currentState;
-		Date lastStateUpdate;
-		String lastStateUpdateByUserId;
-		Date expectedEndDate;
-		int activityType;
-		*/
 		dst.setActivityDefinitionUuid(src.getActivityDefinitionUUID().getValue());
 		dst.setActivityInstanceUuid(src.getUUID().getValue());
 		dst.setActivityName(src.getActivityName());
@@ -94,6 +111,15 @@ public class BonitaEngineServiceImpl {
 		dst.setLastStateUpdateByUserId(src.getLastStateUpdate().getUpdatedBy());
 		dst.setExpectedEndDate(src.getExpectedEndDate());
 		dst.setPriority(src.getPriority());
+		
+		TaskInstance task = src.getTask();
+		if (task != null) {
+			dst.setStartedBy(task.getStartedBy());
+		}
+		else {
+			dst.setStartedBy("SYSTEM");
+		}
+		
 		
 		// TODO set type... 
 	}
@@ -169,6 +195,7 @@ public class BonitaEngineServiceImpl {
 				ActivityInstanceItem item = createActivityInstanceListItem(ai);
 				result.addActivityInstanceItem(item);
 			}
+			setProcessInstanceCommentFeed(pi, result);
 		}
 		
 		return result;

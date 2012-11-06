@@ -19,14 +19,6 @@
       <sv:value>jsp/mycases/web/status/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
-  <sv:node sv:name="casedetail.main.content">
-    <sv:property sv:name="jcr:primaryType" sv:type="Name">
-      <sv:value>hst:template</sv:value>
-    </sv:property>
-    <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/casedetail/main/content.jsp</sv:value>
-    </sv:property>
-  </sv:node>
   <sv:node sv:name="form.main.content">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:template</sv:value>
@@ -49,6 +41,14 @@
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
       <sv:value>jsp/mycases/web/formoverview/main/content.jsp</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="processinstancedetail.main.content">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/mycases/web/processinstancedetail/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
 </sv:node>

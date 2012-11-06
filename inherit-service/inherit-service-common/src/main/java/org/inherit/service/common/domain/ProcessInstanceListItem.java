@@ -2,6 +2,7 @@ package org.inherit.service.common.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -32,8 +33,11 @@ public class ProcessInstanceListItem implements Serializable {
 	private String processLabel;
     private String status;
     private Date startDate;
+    private String startedBy;
     private Date endDate;
     private String processInstanceUuid;
+    
+    private List<CommentFeedItem> commentFeed;
     
 	public ProcessInstanceListItem() {
 		
@@ -62,6 +66,14 @@ public class ProcessInstanceListItem implements Serializable {
 	public void setStartDate(Date startDate) {
 		this.startDate = startDate;
 	}
+	
+	public String getStartedBy() {
+		return startedBy;
+	}
+
+	public void setStartedBy(String startedBy) {
+		this.startedBy = startedBy;
+	}
 
 	public Date getEndDate() {
 		return endDate;
@@ -83,10 +95,20 @@ public class ProcessInstanceListItem implements Serializable {
 		return serialVersionUID;
 	}
 
+	public List<CommentFeedItem> getCommentFeed() {
+		return commentFeed;
+	}
+
+	public void setCommentFeed(List<CommentFeedItem> commentFeed) {
+		this.commentFeed = commentFeed;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result
+				+ ((commentFeed == null) ? 0 : commentFeed.hashCode());
 		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
 		result = prime
 				* result
@@ -96,6 +118,8 @@ public class ProcessInstanceListItem implements Serializable {
 				+ ((processLabel == null) ? 0 : processLabel.hashCode());
 		result = prime * result
 				+ ((startDate == null) ? 0 : startDate.hashCode());
+		result = prime * result
+				+ ((startedBy == null) ? 0 : startedBy.hashCode());
 		result = prime * result + ((status == null) ? 0 : status.hashCode());
 		return result;
 	}
@@ -109,6 +133,11 @@ public class ProcessInstanceListItem implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ProcessInstanceListItem other = (ProcessInstanceListItem) obj;
+		if (commentFeed == null) {
+			if (other.commentFeed != null)
+				return false;
+		} else if (!commentFeed.equals(other.commentFeed))
+			return false;
 		if (endDate == null) {
 			if (other.endDate != null)
 				return false;
@@ -129,6 +158,11 @@ public class ProcessInstanceListItem implements Serializable {
 				return false;
 		} else if (!startDate.equals(other.startDate))
 			return false;
+		if (startedBy == null) {
+			if (other.startedBy != null)
+				return false;
+		} else if (!startedBy.equals(other.startedBy))
+			return false;
 		if (status == null) {
 			if (other.status != null)
 				return false;
@@ -139,9 +173,13 @@ public class ProcessInstanceListItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ProcessInstanceListItem [processInstanceUuid=" + processInstanceUuid + ", processLabel=" + processLabel
+		return "ProcessInstanceListItem [processLabel=" + processLabel
 				+ ", status=" + status + ", startDate=" + startDate
-				+ ", endDate=" + endDate + "]";
+				+ ", startedBy=" + startedBy + ", endDate=" + endDate
+				+ ", processInstanceUuid=" + processInstanceUuid
+				+ ", commentFeed=" + commentFeed + "]";
 	}
+
+
 
 }

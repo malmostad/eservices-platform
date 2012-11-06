@@ -32,7 +32,7 @@ public class MalmoInternalHeader extends BaseHstComponent {
         
         String mastHead = UrlUtil.loadFromUrl(MAST_HEAD_URL);
         log.error("mastHead=" + mastHead);
-        request.setAttribute("mastHead", mastHead);
+        request.setAttribute("mastHead", mastHead.replaceAll("//komin.malmo.se/assets-2.0/img/komin-logo.png", "http://www.malmo.se/assets-2.0/img/komin-logo.png"));
 		
     }
 

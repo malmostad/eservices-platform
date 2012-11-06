@@ -1,18 +1,15 @@
 package org.inherit.service.rest.client;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.inherit.service.common.domain.ActivityInstanceItem;
-import org.inherit.service.common.domain.ActivityInstanceListItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
 import org.inherit.service.common.domain.ActivityInstancePendingItem;
+import org.inherit.service.common.domain.CommentFeedItem;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessDefinitionInfo;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
@@ -56,7 +53,7 @@ public class InheritServiceClient {
 		xstream.alias("InboxTaskItem", InboxTaskItem.class);
 		xstream.alias("ProcessDefinitionInfo", ProcessDefinitionInfo.class);
 		xstream.alias("ProcessInstanceListItem", ProcessInstanceListItem.class);
-		xstream.alias("ActivityInstanceListItem", ActivityInstanceListItem.class);
+		xstream.alias("CommentFeedItem", CommentFeedItem.class);
 		
 		xstream.alias("ProcessInstanceDetails", ProcessInstanceDetails.class);
 		xstream.alias("ActivityInstanceItem", ActivityInstanceItem.class);
@@ -79,7 +76,6 @@ public class InheritServiceClient {
 	}
 
 	
-	@SuppressWarnings("unchecked")
 	public String getBonitaIdentityKey(String bonitaUser, String password) {
 		String result = null;
 		String uri = serverBaseUrl + "bonitaIdentityKey/" + ParameterEncoder.encode(bonitaUser) + "/" + ParameterEncoder.encode(password) + "?media=xml";
@@ -92,7 +88,6 @@ public class InheritServiceClient {
 		return result;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public ProcessInstanceDetails getProcessInstanceDetailByUuid(String processInstanceUuid) {
 		ProcessInstanceDetails result = null;
 		String uri = serverBaseUrl + "processInstanceDetailsByUuid/" + ParameterEncoder.encode(processInstanceUuid) + "?media=xml";
@@ -105,7 +100,6 @@ public class InheritServiceClient {
 		return result;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public ProcessInstanceDetails getProcessInstanceDetailByActivityInstanceUuid(String activityInstanceUuid) {
 		ProcessInstanceDetails result = null;
 		String uri = serverBaseUrl + "processInstanceDetailsByActivityInstanceUuid/" + ParameterEncoder.encode(activityInstanceUuid) + "?media=xml";

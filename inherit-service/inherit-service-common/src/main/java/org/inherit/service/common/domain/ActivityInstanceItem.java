@@ -43,6 +43,7 @@ public abstract class ActivityInstanceItem implements Serializable {
 	String currentState;
 	Date lastStateUpdate;
 	String lastStateUpdateByUserId;
+	String startedBy;
 	Date expectedEndDate;
 	int activityType;
 	int priority;
@@ -95,6 +96,12 @@ public abstract class ActivityInstanceItem implements Serializable {
 	public void setLastStateUpdateByUserId(String lastStateUpdateByUserId) {
 		this.lastStateUpdateByUserId = lastStateUpdateByUserId;
 	}
+	public String getStartedBy() {
+		return startedBy;
+	}
+	public void setStartedBy(String startedBy) {
+		this.startedBy = startedBy;
+	}
 	public Date getExpectedEndDate() {
 		return expectedEndDate;
 	}
@@ -113,7 +120,6 @@ public abstract class ActivityInstanceItem implements Serializable {
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -141,10 +147,14 @@ public abstract class ActivityInstanceItem implements Serializable {
 				* result
 				+ ((lastStateUpdateByUserId == null) ? 0
 						: lastStateUpdateByUserId.hashCode());
+		result = prime * result + priority;
 		result = prime * result
 				+ ((startDate == null) ? 0 : startDate.hashCode());
+		result = prime * result
+				+ ((startedBy == null) ? 0 : startedBy.hashCode());
 		return result;
 	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -197,13 +207,21 @@ public abstract class ActivityInstanceItem implements Serializable {
 		} else if (!lastStateUpdateByUserId
 				.equals(other.lastStateUpdateByUserId))
 			return false;
+		if (priority != other.priority)
+			return false;
 		if (startDate == null) {
 			if (other.startDate != null)
 				return false;
 		} else if (!startDate.equals(other.startDate))
 			return false;
+		if (startedBy == null) {
+			if (other.startedBy != null)
+				return false;
+		} else if (!startedBy.equals(other.startedBy))
+			return false;
 		return true;
 	}
+	
 	@Override
 	public String toString() {
 		return "ActivityInstanceItem [activityDefinitionUuid="
@@ -213,9 +231,9 @@ public abstract class ActivityInstanceItem implements Serializable {
 				+ startDate + ", currentState=" + currentState
 				+ ", lastStateUpdate=" + lastStateUpdate
 				+ ", lastStateUpdateByUserId=" + lastStateUpdateByUserId
-				+ ", expectedEndDate=" + expectedEndDate
-				+ ", activityType=" + activityType + "]";
+				+ ", startedBy=" + startedBy + ", expectedEndDate="
+				+ expectedEndDate + ", activityType=" + activityType
+				+ ", priority=" + priority + "]";
 	}
-	
 	
 }

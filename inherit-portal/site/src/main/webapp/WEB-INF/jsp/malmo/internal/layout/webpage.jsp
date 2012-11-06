@@ -8,15 +8,15 @@
     <link rel="stylesheet" href="${link}" type="text/css"/>
 
 	<!--  Malmö internal services assets-2.0 begin -->    
-    <link href="http://komin.malmo.se/assets-2.0/css/internal-core.css" rel="stylesheet" type="text/css" media="all" />
-	<link href="http://komin.malmo.se/assets-2.0/jquery/malmo-theme.css" rel="stylesheet" type="text/css" media="all" />
-	<link href="http://komin.malmo.se/assets-2.0/css/malmo-print.css" rel="stylesheet" type="text/css" media="print" />
-	<!--[if lt IE 7]><link href="http://komin.malmo.se/assets-2.0/css/malmo-ie-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->
-	<!--[if IE 7]><link href="http://komin.malmo.se/assets-2.0/css/malmo-ie7-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->
-	<link rel="shortcut icon" href="http://komin.malmo.se/assets-2.0/img/malmo-favicon.ico" type="image/x-icon" />
-	<script src="http://komin.malmo.se/assets-2.0/jquery/jquery.js" type="text/javascript"></script>
-	<script src="http://komin.malmo.se/assets-2.0/js/malmo.js" type="text/javascript"></script>
-	<script src="http://komin.malmo.se/assets-2.0/js/internal.js" type="text/javascript"></script>
+    <link href="http://www.malmo.se/assets-2.0/css/internal-core.css" rel="stylesheet" type="text/css" media="all" />
+	<link href="http://www.malmo.se/assets-2.0/jquery/malmo-theme.css" rel="stylesheet" type="text/css" media="all" />
+	<link href="http://www.malmo.se/assets-2.0/css/malmo-print.css" rel="stylesheet" type="text/css" media="print" />
+	<!--[if lt IE 7]><link href="http://www.malmo.se/assets-2.0/css/malmo-ie-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->
+	<!--[if IE 7]><link href="http://www.malmo.se/assets-2.0/css/malmo-ie7-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->
+	<link rel="shortcut icon" href="http://www.malmo.se/assets-2.0/img/malmo-favicon.ico" type="image/x-icon" />
+	<script src="http://www.malmo.se/assets-2.0/jquery/jquery.js" type="text/javascript"></script>
+	<script src="http://www.malmo.se/assets-2.0/js/malmo.js" type="text/javascript"></script>
+	<script src="http://www.malmo.se/assets-2.0/js/internal.js" type="text/javascript"></script>
 	<!--  Malmö assets-2.0 end -->    
     
   </head>

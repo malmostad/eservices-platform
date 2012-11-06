@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="casedetail">
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="processinstancedetail">
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:component</sv:value>
   </sv:property>
   <sv:property sv:name="hst:componentclassname" sv:type="String">
-    <sv:value>se.inherit.portal.components.mycases.CaseDetail</sv:value>
+    <sv:value>se.inherit.portal.components.mycases.ProcessInstanceDetail</sv:value>
   </sv:property>
   <sv:property sv:name="hst:template" sv:type="String">
-    <sv:value>casedetail.main.content</sv:value>
+    <sv:value>processinstancedetail.main.content</sv:value>
   </sv:property>
 </sv:node>
