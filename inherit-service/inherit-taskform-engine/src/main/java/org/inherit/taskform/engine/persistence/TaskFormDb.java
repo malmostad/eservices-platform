@@ -128,6 +128,26 @@ public class TaskFormDb {
 		return result;
 	}	
 	
+	public ProcessActivityFormInstance getProcessActivityFormInstanceByActivityInstanceUuid(String activityInstanceUuid) {
+		List<ProcessActivityFormInstance> result = null;
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		try {
+			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
+			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+				    .add( Restrictions.eq("activityInstanceUuid", activityInstanceUuid) )
+				    .list();
+		}
+		catch (Exception e) {
+			log.severe("activityInstanceUuid=[" + activityInstanceUuid + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return filterUniqueProcessActivityFormInstanceFromList(result);
+	}
+	
 	public ProcessActivityFormInstance getProcessActivityFormInstanceById(Long id) {
 		List<ProcessActivityFormInstance> result = null;
 		
@@ -148,6 +168,55 @@ public class TaskFormDb {
 		return filterUniqueProcessActivityFormInstanceFromList(result);
 	}
 
+	public ProcessActivityFormInstance getProcessStartFormInstanceById(String processInstanceUuid) {
+		ProcessActivityFormInstance result = null;
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		result = getProcessStartFormInstanceById(session, processInstanceUuid);
+		
+		session.close();
+		
+		return result;
+	}
+
+	public ProcessActivityFormInstance getProcessStartFormInstanceById(Session session, String processInstanceUuid) {
+		List<ProcessActivityFormInstance> result = null;
+				
+		try {
+			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
+			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+				    .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) )
+				    .add( Restrictions.isNull("activityInstanceUuid"))
+				    .list();
+		}
+		catch (Exception e) {
+			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
+		}
+
+		return filterUniqueProcessActivityFormInstanceFromList(result);
+	}
+
+	public ProcessActivityFormInstance getProcessActivityFormInstanceByFormDocId(String formDocId) {
+		ProcessActivityFormInstance result = null;
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		try {
+			result = (ProcessActivityFormInstance) session.createCriteria(ProcessActivityFormInstance.class)
+				    .add( Restrictions.eq("formDocId", formDocId) ).uniqueResult();
+				   
+		}
+		catch (Exception e) {
+			log.severe("formDocId=[" + formDocId + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return result;
+	}
+
+
 	private ProcessActivityFormInstance filterUniqueProcessActivityFormInstanceFromList(List<ProcessActivityFormInstance> list) {
 		ProcessActivityFormInstance result = null;
 		if (list != null) {
@@ -161,11 +230,12 @@ public class TaskFormDb {
 				}
 			}
 		}
+		log.severe("===> result=" + result);
 		return result;
 	}
 
 	public void saveProcessActivityFormInstance(Session session, ProcessActivityFormInstance processActivityFormInstance) {
-		session.save(processActivityFormInstance);		
+		session.saveOrUpdate(processActivityFormInstance);		
 	}
 
 
@@ -202,6 +272,22 @@ public class TaskFormDb {
 	}
 
 	
+	public StartFormDefinition getStartFormDefinition(String activityDefinitionUuid, String processInstanceUuid) {
+		StartFormDefinition result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		ProcessActivityFormInstance startForm = getProcessStartFormInstanceById(session, processInstanceUuid);
+		log.severe("startForm=" + startForm);
+		if (startForm != null) {
+			String startFormPath = startForm.getFormPath();
+			log.severe("startFormPath=" + startFormPath);
+			result = getStartFormDefinitionByFormPath(session, startFormPath);
+		}
+		session.close();
+		log.severe("result=" + result);
+		return result;
+	}
+	
+	
 	/**
 	 * Returns 
 	 * 1) Special form depending on activityDefinitionUuid and startFormDefinitionId
@@ -214,6 +300,7 @@ public class TaskFormDb {
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
+		log.severe("==> activityDefinitionUuid=" + activityDefinitionUuid + ", startFormDefinitionId=" + startFormDefinitionId);
 		try {
 			result = getActivityFormDefinition(session, activityDefinitionUuid, startFormDefinitionId);
 		}
@@ -225,7 +312,7 @@ public class TaskFormDb {
 		}
 		return result;
 	}
-	
+		
 	@SuppressWarnings("unchecked")
 	public ActivityFormDefinition getActivityFormDefinition(Session session, String activityDefinitionUuid, Long startFormDefinitionId) {
 		List<ActivityFormDefinition> result = null;
@@ -237,6 +324,50 @@ public class TaskFormDb {
 
 		return filterUniqueActivityDefinitionFromList(result, startFormDefinitionId);
 	}
+	
+	public ActivityFormDefinition getActivityFormDefinitionByFormPath(Session session, String formPath) {
+		ActivityFormDefinition result = null;
+		result = (ActivityFormDefinition) session.createCriteria(ActivityFormDefinition.class).add(Restrictions.eq("formPath", formPath)).uniqueResult();
+		return result;
+	}
+	
+	public ActivityFormDefinition getActivityFormDefinitionByFormPath(String formPath) {
+		ActivityFormDefinition result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			result = getActivityFormDefinitionByFormPath(session, formPath);
+		}
+		catch (Exception e) {
+			log.severe("formPath=[" + formPath + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return result;
+	}	
+	
+	/* depends on start form
+	public ActivityFormDefinition getActivityFormDefinitionByActivityDefinitionUuid(Session session, String activityDefinitionUuid) {
+		ActivityFormDefinition result = null;
+		result = (ActivityFormDefinition) session.createCriteria(ActivityFormDefinition.class).add(Restrictions.eq("activityDefinitionUuid", activityDefinitionUuid)).uniqueResult();
+		return result;
+	}
+	
+	public ActivityFormDefinition getActivityFormDefinitionByActivityDefinitionUuid(String activityDefinitionUuid) {
+		ActivityFormDefinition result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			result = getActivityFormDefinitionByFormPath(session, activityDefinitionUuid);
+		}
+		catch (Exception e) {
+			log.severe("activityDefinitionUuid=[" + activityDefinitionUuid + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return result;
+	}	
+	*/
 	
     private ActivityFormDefinition filterUniqueActivityDefinitionFromList(List<ActivityFormDefinition> list, Long startFormDefinitionId) {
     	ActivityFormDefinition result = null;
@@ -265,6 +396,8 @@ public class TaskFormDb {
 			}
 		}
 		
+		log.severe("====> specialForm=" + specialForm);
+		log.severe("====> defaultForm=" + defaultForm);
 		
 		if (specialForm == null) {
 			result = defaultForm;
@@ -287,32 +420,40 @@ public class TaskFormDb {
 	public static void main(String args[]) {
 		System.out.println("start main");
 		
-		ActivityFormDefinition ad = new ActivityFormDefinition();
-		ad.setFormPath("form path");
-		ad.setStartFormDefinition(null);
-		ad.setActivityDefinitionUuid("act instance uuid");
+		
+		// initialize db with demo data
+		
+		StartFormDefinition spridning = new StartFormDefinition();
+		spridning.setFormPath("start/demo-ansokan");
+		spridning.setProcessDefinitionUuid("Spridning_bekampningsmedel");
+		
+		ActivityFormDefinition granskaAnsokan = new ActivityFormDefinition();
+		granskaAnsokan.setFormPath("Demo/Granska_ansokan");
+		granskaAnsokan.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Granska_ansokan");
+		granskaAnsokan.setStartFormDefinition(null);
 
-		ActivityFormDefinition adExtra = new ActivityFormDefinition();
-		adExtra.setFormPath("form path extra");
-		adExtra.setStartFormDefinition(null);
-		adExtra.setActivityDefinitionUuid("act instance uuid extra");
+		ActivityFormDefinition remissA = new ActivityFormDefinition();
+		remissA.setFormPath("Demo/Remissyttrande");
+		remissA.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Remissyttrande_A");
+		remissA.setStartFormDefinition(null);
 		
-		ProcessActivityFormInstance afi = new ProcessActivityFormInstance();
-		afi.setFormDocId("formDocIdsdfghjklkjhg");
-		afi.setFormPath("demo/form1");
-		afi.setProcessInstanceUuid("procInstanceUuidhg678578t");
-		afi.setUserId("eva_extern");
-			
+		ActivityFormDefinition remissB = new ActivityFormDefinition();
+		remissB.setFormPath("Demo/Remissyttrande");
+		remissB.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Remissyttrande_B");
+		remissB.setStartFormDefinition(null);
+				
+		ActivityFormDefinition decision = new ActivityFormDefinition();
+		decision.setFormPath("Demo/Beslut");
+		decision.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Beslut");
+		decision.setStartFormDefinition(null);
+				
 		TaskFormDb db = new TaskFormDb();
-		db.save(ad);
-		db.save(adExtra);
-		db.save(afi);
-		
-		List<ProcessActivityFormInstance> list = db.getPendingProcessActivityFormInstances("eva_extern");
-		for (ProcessActivityFormInstance item : list) {
-			System.out.println(item);
-		}
-		
+		db.save(spridning);
+		db.save(granskaAnsokan);
+		db.save(remissA);
+		db.save(remissB);
+		db.save(decision);
+				
 		System.out.println("end main");
 		
 	}

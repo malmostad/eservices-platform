@@ -30,7 +30,7 @@
 				<tbody>
 					<c:forEach var="item" items="${processInstances}">
 						<tr>
-							<td>${item.processLabel}</td>
+							<td><a href="processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">${item.processLabel}</a></td>
 							<td>${item.status}</td>
 							<td><fmt:formatDate value="${item.startDate}" type="Date" /></td>
 							<td><fmt:formatDate value="${item.endDate}" type="Date" /></td>

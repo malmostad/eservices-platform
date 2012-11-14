@@ -2,7 +2,6 @@ package org.inherit.bonita.client;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +42,22 @@ public class BonitaEngineServiceImpl {
 	
 	public BonitaEngineServiceImpl() {
 		
+	}
+	
+	public boolean executeTask(String activityInstanceUuid, String userId) {
+		boolean successful = false;
+		ActivityInstanceUUID activityInstanceUUID = new ActivityInstanceUUID(activityInstanceUuid);
+
+		try {
+			LoginContext loginContext = BonitaUtil.loginWithUser(userId); 
+			AccessorUtil.getRuntimeAPI().executeTask(activityInstanceUUID, false);
+			successful = true;
+			BonitaUtil.logoutWithUser(loginContext);
+		} catch (Exception e) {
+			log.severe("Could not execute task: " + e);
+		}
+
+		return successful;
 	}
 	
 	private CommentFeedItem loadCommentFeedItem(Comment comment) {
@@ -101,6 +116,8 @@ public class BonitaEngineServiceImpl {
 	}
 	
 	private void setActivityInstanceItem(ActivityInstance src, ActivityInstanceItem dst) {
+		dst.setProcessDefinitionUuid(src.getProcessDefinitionUUID().getValue());
+		dst.setProcessInstanceUuid(src.getProcessInstanceUUID().getValue());
 		dst.setActivityDefinitionUuid(src.getActivityDefinitionUUID().getValue());
 		dst.setActivityInstanceUuid(src.getUUID().getValue());
 		dst.setActivityName(src.getActivityName());
@@ -135,10 +152,11 @@ public class BonitaEngineServiceImpl {
 		dst.setExpectedEndDate(src.getExpectedEndDate());
 	}
 	
-	private ActivityInstanceItem createActivityInstanceListItem(ActivityInstance ai) {
+	private ActivityInstanceItem createActivityInstanceItem(ActivityInstance ai) {
 		ActivityInstanceItem result = null;
 		
 		if (ai != null) {
+			log.severe("BPMN activity uuid: " + ai.getActivityInstanceId() + " label=" + ai.getActivityLabel());
 			if (ai.getState().equals(ActivityState.FINISHED)) {
 				// Finished activity 
 				result = new ActivityInstanceLogItem();
@@ -151,6 +169,23 @@ public class BonitaEngineServiceImpl {
 			}
 			setActivityInstanceItem(ai, result);
 		}
+		return result;
+	}
+	
+	public ActivityInstanceItem getActivityInstanceItem(String activityInstanceUuid) {
+		ActivityInstanceItem result = null;
+		try {
+			log.severe("activityInstanceUuid=" + activityInstanceUuid);
+			LoginContext loginContext = BonitaUtil.login(); 
+			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+			
+			ActivityInstance ai = AccessorUtil.getQueryRuntimeAPI().getActivityInstance(activityUUID);
+			result = this.createActivityInstanceItem(ai);
+			BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}		
 		return result;
 	}
 
@@ -192,7 +227,7 @@ public class BonitaEngineServiceImpl {
 			setProcessInstanceBriefProperties(pi, result);
 			Set<ActivityInstance> ais = pi.getActivities();
 			for (ActivityInstance ai : ais) {
-				ActivityInstanceItem item = createActivityInstanceListItem(ai);
+				ActivityInstanceItem item = createActivityInstanceItem(ai);
 				result.addActivityInstanceItem(item);
 			}
 			setProcessInstanceCommentFeed(pi, result);
@@ -258,6 +293,29 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 
+	public String getProcessInstanceUuid(String taskUuid) { 
+		String result = null;
+
+		try {
+			LoginContext loginContext = BonitaUtil.login(); 
+			ActivityInstanceUUID aiUuid = new ActivityInstanceUUID(taskUuid);
+			TaskInstance task = AccessorUtil.getQueryRuntimeAPI().getTask(aiUuid);
+
+			if (task != null) {
+				result = task.getProcessInstanceUUID().getValue();
+			}
+			
+			BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		return result;
+	}
+
+	public String getProcessLabel(String processDefinitionUuid) {
+		return getProcessLabel(new ProcessDefinitionUUID(processDefinitionUuid));
+	}
 	
 	public List<InboxTaskItem> getUserInbox(String userId) { // ArrayList<ProcessInstanceListItem>
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();

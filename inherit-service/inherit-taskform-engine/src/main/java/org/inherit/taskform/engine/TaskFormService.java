@@ -8,7 +8,11 @@ import java.util.logging.Logger;
 
 import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.ActivityFormInfo;
+import org.inherit.service.common.domain.ActivityInstanceItem;
+import org.inherit.service.common.domain.ActivityInstanceLogItem;
+import org.inherit.service.common.domain.ActivityInstancePendingItem;
 import org.inherit.service.common.domain.InboxTaskItem;
+import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.taskform.engine.persistence.TaskFormDb;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
@@ -59,29 +63,37 @@ public class TaskFormService {
 			if (form != null) {
 				// partial filled not submitted form exist for task	
 				// assign id to inbox item that can be used later to edit/view existing form
-				item.setProcessActivityFormInstanceId(form.getProcessActivityFormInstanceId());
+				item.setProcessActivityFormInstanceId(form.getProcessActivityFormInstanceId());	
+				item.setEditFormUrl(form.calcEditUrl());
 				forms.remove(form);
 			}
 			else {
-				// ProcessActivityFormInstance written by another user?
-				
-				// TODO
+				// no one has opened this activity form yet
+				// i.e. no ProcessActivityFormInstance has been stored in database so far
 			}
 		}
 		
-		// append partially filled "start forms" that will start a process if submitted
+		// append partially filled forms
 		for (ProcessActivityFormInstance partForm : forms.values()) {
-			if (partForm.getProcessActivityFormInstanceId() == null && partForm.getProcessInstanceUuid() == null) {
+			if (partForm.getProcessInstanceUuid() == null) {
+				// partially filled start form that will start a process if submitted
+				
+				StartFormDefinition startForm = taskFormDb.getStartFormDefinitionByFormPath(partForm.getFormPath());
+				String processLabel = bonitaClient.getProcessLabel(startForm.getProcessDefinitionUuid());
+				
+				
 				InboxTaskItem partItem = new InboxTaskItem();
 				partItem.setActivityCreated(null); //TODO fill with timestamp 
-				partItem.setActivityLabel("TODO activity label");
+				partItem.setActivityLabel("START");
 				partItem.setProcessActivityFormInstanceId(partForm.getProcessActivityFormInstanceId());
-				partItem.setProcessLabel("TODO process label");
+				partItem.setProcessLabel(processLabel);
 				
 				inbox.add(partItem);
 			}
 			else {
-				log.warning("This partial filled form is associated to a process/task instance but is not associated to an active task in user's inbox: " + partForm );
+				// there is a partially filled form associated to this user but the corresponding BPMN 
+				// activity is no longer associated to this user
+				log.info("This partial filled form is associated to a process/task instance but is not associated to an active task in user's inbox: " + partForm );
 			}
 		}
 		
@@ -89,8 +101,39 @@ public class TaskFormService {
 		return inbox;
 	}
 	
+	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceUuid) {
+		ProcessInstanceDetails details = bonitaClient.getProcessInstanceDetails(processInstanceUuid);
+		appendTaskFormServiceData(details);
+		return details;
+	}
+	
+	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(String activityInstanceUuid) {
+		ProcessInstanceDetails details = bonitaClient.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid);
+		appendTaskFormServiceData(details);
+		return details;
+	}
+	
+	private void appendTaskFormServiceData(ProcessInstanceDetails details) {
+		if (details != null) {
+			for (ActivityInstancePendingItem pendingItem : details.getPending()) {
+				// pending activity => set edit url if ProcessActivityFormInstance is initialized
+				ProcessActivityFormInstance activity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(pendingItem.getActivityInstanceUuid());
+				if (activity != null) {
+					pendingItem.setFormUrl(activity.calcEditUrl());
+				}
+			}
+			for (ActivityInstanceLogItem logItem : details.getActivityLog()) {
+				ProcessActivityFormInstance activity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(logItem.getActivityInstanceUuid());
+				// log item => set view url
+				if (activity != null) {
+					logItem.setFormUrl(activity.calcViewUrl());
+				}
+			}
+		}
+	}
+
 	public String submitStartForm(String formPath, String docId, String userId) {
-		
+		log.severe("formPath=[" + formPath + "] docId=[" + docId + "] userId=[" + userId + "]" );
 		// lookup the process this start form is configured to start.
 		StartFormDefinition startFormDef = taskFormDb.getStartFormDefinitionByFormPath(formPath);
 		String processDefinitionUUIDStr = startFormDef.getProcessDefinitionUuid();
@@ -98,9 +141,10 @@ public class TaskFormService {
 		// start the process
 		String processInstanceUuid = bonitaClient.startProcess(processDefinitionUUIDStr, userId);
 		
-		// store the activity 
+		// store the start activity 
 		ProcessActivityFormInstance activity = new ProcessActivityFormInstance();
 		activity.setFormDocId(docId);
+		activity.setStartFormDefinition(startFormDef);
 		activity.setFormPath(formPath);
 		activity.setProcessInstanceUuid(processInstanceUuid);
 		activity.setSubmitted(new Date());
@@ -109,6 +153,91 @@ public class TaskFormService {
 		
 		return processInstanceUuid;
 	}
+	
+	
+	private void apppendTaskFormServiceData (ActivityInstanceItem item, ProcessActivityFormInstance activityFormInstance) {
+		if (item instanceof ActivityInstanceLogItem) {
+			item.setFormUrl(activityFormInstance.calcViewUrl());
+		}
+		else {
+			item.setFormUrl(activityFormInstance.calcEditUrl());
+		}
+	}
+	
+	public ActivityInstanceItem getActivityInstanceItem(String activityInstanceUuid, String userId) {
+		ActivityInstanceItem result = null;
+		ProcessActivityFormInstance formInstance = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(activityInstanceUuid);
+		
+		if (formInstance == null) {
+			result = this.initializeActivityForm(activityInstanceUuid, userId);
+		}
+		else {
+			result = bonitaClient.getActivityInstanceItem(activityInstanceUuid);
+			apppendTaskFormServiceData(result, formInstance);
+		}
+		return result;
+	}
+	
+	private ActivityInstanceItem initializeActivityForm(String activityInstanceUuid, String userId) {
+		String formEditUrl = null;
+		ActivityInstanceItem activity = bonitaClient.getActivityInstanceItem(activityInstanceUuid);
+		
+		log.severe("===> activity=" + activity);
+		StartFormDefinition startFormDefinition = taskFormDb.getStartFormDefinition(activity.getActivityDefinitionUuid(), activity.getProcessInstanceUuid());
+		log.severe("===> startFormDefinition=" + startFormDefinition);
+		ActivityFormDefinition activityFormDefinition = null;
+		Long startFormId = null;
+		if (startFormDefinition != null) {
+			startFormId = startFormDefinition.getStartFormDefinitionId();
+		}
+		log.severe("===> activityInstanceUuid=" + activityInstanceUuid + ", startFormId=" + startFormId + ", userId=" + userId);
+		activityFormDefinition = taskFormDb.getActivityFormDefinition(activity.getActivityDefinitionUuid(), startFormId);
+		
+		// generate a type 4 UUID
+		String docId = java.util.UUID.randomUUID().toString();
+		
+		// store the start activity 
+		ProcessActivityFormInstance activityInstance = new ProcessActivityFormInstance();
+		activityInstance.setFormDocId(docId);
+		activityInstance.setStartFormDefinition(startFormDefinition);
+		activityInstance.setFormPath(activityFormDefinition.getFormPath());
+		activityInstance.setProcessInstanceUuid(activity.getProcessInstanceUuid());
+		activityInstance.setActivityInstanceUuid(activity.getActivityInstanceUuid());
+		activityInstance.setUserId(userId);
+		taskFormDb.saveProcessActivityFormInstance(activityInstance);
+		
+		apppendTaskFormServiceData(activity, activityInstance);
+		return activity;
+	}
+	
+	/**
+	 * submit form
+	 * @param docId
+	 * @param userId
+	 * @return confirmation form viewUrl. null if submission fails.
+	 */
+	public String submitActivityForm(String docId, String userId) {
+		String viewUrl = null;
+		ProcessActivityFormInstance activity = taskFormDb.getProcessActivityFormInstanceByFormDocId(docId);
+		
+		if (activity == null) {
+			log.severe("This should never happen :) cannot find activity with docId=[" + docId + "]" + " userId=[" + userId + "]");
+		}
+		else {			
+			Date tstamp = new Date();
+			activity.setSubmitted(tstamp);
+			activity.setUserId(userId);
+			
+			if(bonitaClient.executeTask(activity.getActivityInstanceUuid(), userId)) {
+				// if task in BPM engine is executed succussfull 
+				// => update status of ProcessActivityFormInstance to submitted 
+				taskFormDb.saveProcessActivityFormInstance(activity);
+				viewUrl = activity.calcViewUrl();
+			}
+		}
+		return viewUrl;
+	}
+	
 	
 	/*
 	public ActivityFormInfo getFormPathInfo(String processDefinitionUuid, String processActivityFormInstanceIdStr, String taskUuid) {

@@ -36,6 +36,8 @@ public class InboxTaskItem implements Serializable {
 
 	String taskUuid;
 	String activityDefinitionUUID;
+
+	String editFormUrl;
 	
 	public InboxTaskItem() {
 		
@@ -82,8 +84,6 @@ public class InboxTaskItem implements Serializable {
 	public void setTaskUuid(String taskUuid) {
 		this.taskUuid = taskUuid;
 	}
-
-	
 	
 	public String getActivityDefinitionUUID() {
 		return activityDefinitionUUID;
@@ -91,6 +91,14 @@ public class InboxTaskItem implements Serializable {
 
 	public void setActivityDefinitionUUID(String activityDefinitionUUID) {
 		this.activityDefinitionUUID = activityDefinitionUUID;
+	}
+	
+	public String getEditFormUrl() {
+		return editFormUrl;
+	}
+
+	public void setEditFormUrl(String editFormUrl) {
+		this.editFormUrl = editFormUrl;
 	}
 
 	public static long getSerialversionuid() {
@@ -103,8 +111,14 @@ public class InboxTaskItem implements Serializable {
 		int result = 1;
 		result = prime * result
 				+ ((activityCreated == null) ? 0 : activityCreated.hashCode());
+		result = prime
+				* result
+				+ ((activityDefinitionUUID == null) ? 0
+						: activityDefinitionUUID.hashCode());
 		result = prime * result
 				+ ((activityLabel == null) ? 0 : activityLabel.hashCode());
+		result = prime * result
+				+ ((editFormUrl == null) ? 0 : editFormUrl.hashCode());
 		result = prime
 				* result
 				+ ((processActivityFormInstanceId == null) ? 0
@@ -113,8 +127,6 @@ public class InboxTaskItem implements Serializable {
 				+ ((processLabel == null) ? 0 : processLabel.hashCode());
 		result = prime * result
 				+ ((taskUuid == null) ? 0 : taskUuid.hashCode());
-		result = prime * result
-				+ ((activityDefinitionUUID == null) ? 0 : activityDefinitionUUID.hashCode());
 		return result;
 	}
 
@@ -132,10 +144,20 @@ public class InboxTaskItem implements Serializable {
 				return false;
 		} else if (!activityCreated.equals(other.activityCreated))
 			return false;
+		if (activityDefinitionUUID == null) {
+			if (other.activityDefinitionUUID != null)
+				return false;
+		} else if (!activityDefinitionUUID.equals(other.activityDefinitionUUID))
+			return false;
 		if (activityLabel == null) {
 			if (other.activityLabel != null)
 				return false;
 		} else if (!activityLabel.equals(other.activityLabel))
+			return false;
+		if (editFormUrl == null) {
+			if (other.editFormUrl != null)
+				return false;
+		} else if (!editFormUrl.equals(other.editFormUrl))
 			return false;
 		if (processActivityFormInstanceId == null) {
 			if (other.processActivityFormInstanceId != null)
@@ -153,11 +175,6 @@ public class InboxTaskItem implements Serializable {
 				return false;
 		} else if (!taskUuid.equals(other.taskUuid))
 			return false;
-		if (activityDefinitionUUID == null) {
-			if (other.activityDefinitionUUID != null)
-				return false;
-		} else if (!activityDefinitionUUID.equals(other.activityDefinitionUUID))
-			return false;
 		return true;
 	}
 
@@ -166,10 +183,9 @@ public class InboxTaskItem implements Serializable {
 		return "InboxTaskItem [processLabel=" + processLabel
 				+ ", activityLabel=" + activityLabel + ", activityCreated="
 				+ activityCreated + ", processActivityFormInstanceId="
-				+ processActivityFormInstanceId + ", taskUuid=" + taskUuid + ", activityDefinitionUUID=" + activityDefinitionUUID
-				+ "]";
+				+ processActivityFormInstanceId + ", taskUuid=" + taskUuid
+				+ ", activityDefinitionUUID=" + activityDefinitionUUID
+				+ ", editFormUrl=" + editFormUrl + "]";
 	}
 
-
-	
 }

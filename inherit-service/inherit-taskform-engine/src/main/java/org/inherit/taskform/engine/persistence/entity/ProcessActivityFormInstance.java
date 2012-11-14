@@ -3,6 +3,7 @@ package org.inherit.taskform.engine.persistence.entity;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -22,6 +23,13 @@ public class ProcessActivityFormInstance {
 	String processInstanceUuid;
 	
 	/**
+	 * If not null, this is a start form instance
+	 */
+	@ManyToOne
+    @JoinColumn(name="startFormDefinitionId", nullable=true)
+	StartFormDefinition startFormDefinition;
+	
+	/**
 	 * if null, this is a start form
 	 */
 	String activityInstanceUuid;
@@ -29,11 +37,13 @@ public class ProcessActivityFormInstance {
 	/**
 	 * Data id that holds filled in form data
 	 */
+	@Column(unique=true, nullable=false)
 	String formDocId;
 	
 	/**
 	 * Form path to form definition
 	 */
+	@Column(nullable=false)
 	String formPath;
 	
 	/**
@@ -44,6 +54,7 @@ public class ProcessActivityFormInstance {
 	/**
 	 * The last writer to this instance
 	 */
+	@Column(nullable=false)
 	String userId;
 
 	public ProcessActivityFormInstance() {
@@ -83,8 +94,6 @@ public class ProcessActivityFormInstance {
 		this.formDocId = formDocId;
 	}
 
-	
-
 	public String getFormPath() {
 		return formPath;
 	}
@@ -108,6 +117,26 @@ public class ProcessActivityFormInstance {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
+	
+	public StartFormDefinition getStartFormDefinition() {
+		return startFormDefinition;
+	}
+
+	public void setStartFormDefinition(StartFormDefinition startFormDefinition) {
+		this.startFormDefinition = startFormDefinition;
+	}
+
+	public String calcEditUrl() {
+		return getFormPath() + "/edit/" + getFormDocId() + "?orbeon-embeddable=true";
+	}
+
+	public String calcViewUrl() {
+		return getFormPath() + "/view/" + getFormDocId() + "?orbeon-embeddable=true";
+	}
+
+	public String calcPdfUrl() {
+		return getFormPath() + "/pdf/" + getFormDocId() + "?orbeon-embeddable=true";
+	}
 
 	@Override
 	public int hashCode() {
@@ -128,6 +157,10 @@ public class ProcessActivityFormInstance {
 		result = prime
 				* result
 				+ ((processInstanceUuid == null) ? 0 : processInstanceUuid
+						.hashCode());
+		result = prime
+				* result
+				+ ((startFormDefinition == null) ? 0 : startFormDefinition
 						.hashCode());
 		result = prime * result
 				+ ((submitted == null) ? 0 : submitted.hashCode());
@@ -170,6 +203,11 @@ public class ProcessActivityFormInstance {
 				return false;
 		} else if (!processInstanceUuid.equals(other.processInstanceUuid))
 			return false;
+		if (startFormDefinition == null) {
+			if (other.startFormDefinition != null)
+				return false;
+		} else if (!startFormDefinition.equals(other.startFormDefinition))
+			return false;
 		if (submitted == null) {
 			if (other.submitted != null)
 				return false;
@@ -187,13 +225,12 @@ public class ProcessActivityFormInstance {
 	public String toString() {
 		return "ProcessActivityFormInstance [processActivityFormInstanceId="
 				+ processActivityFormInstanceId + ", processInstanceUuid="
-				+ processInstanceUuid + ", activityInstanceUuid="
+				+ processInstanceUuid + ", startFormDefinition="
+				+ startFormDefinition + ", activityInstanceUuid="
 				+ activityInstanceUuid + ", formDocId=" + formDocId
 				+ ", formPath=" + formPath + ", submitted=" + submitted
 				+ ", userId=" + userId + "]";
 	}
 
-	
-	
 	
 }
