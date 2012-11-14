@@ -60,11 +60,11 @@
 			 </c:if>
 	      </td>
 	    </tr>
-        <tr>
+        <!-- tr>
           <td colspan=4>
              <p>${item.summary}</p>
           </td>
-        </tr>
+        </tr-->
 	</c:forEach>          
 </tbody>
 </table>
