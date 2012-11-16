@@ -45,30 +45,27 @@ public class Form  extends BaseHstComponent {
         }
         request.setAttribute("document",doc);
  
-        String formUrl = null;
+        ActivityInstanceItem activity = null;
         if (taskUuid != null && taskUuid.trim().length()>0) {
         	// specific BPMN engine activity instance is requested
-        	ActivityInstanceItem activity = isc.getActivityInstanceItem(taskUuid, userName);
-            formUrl = activity.getFormUrl();
+        	activity = isc.getActivityInstanceItem(taskUuid, userName);
         } 
         else {
-        	// no activity is specified. Use content path to find a start form.
-        	// todo create startforminstance to make partial save possibly 
-        	// kanske bara ha en "osubmittad" instans per formulär???
-	        if (doc instanceof EServiceDocument) {
+        	if (processActivityFormInstanceId != null && processActivityFormInstanceId.trim().length()>0) {
+        		// specific taskFormDb ProcessActivityFormInstance is requested
+        		activity = isc.getStartActivityInstanceItem(processActivityFormInstanceId);
+        	}
+        	else if (doc instanceof EServiceDocument) {
+	        	// no activity is specified. Use content path to find a start form.
 	        	EServiceDocument eServiceDocument = (EServiceDocument)doc;
-	        	
-	        	// TODO
-	        	//if (docId!=null && docId.trim().length()>0) {
-	        	//	formUrl = eServiceDocument.getFormPath() + "/edit/" + docId + "?orbeon-embeddable=true";
-	        	//}
-	        	//else {
-	        		formUrl = eServiceDocument.getFormPath() + "/new?orbeon-embeddable=true";
-	        	//}
+	        	// look up existing form (docId) if partially saved form exist
+	        	// otherwise create new form
+	        	activity = isc.getStartActivityInstanceItem(eServiceDocument.getFormPath(), userName);
 	        }
         }
-    	request.setAttribute("formUrl", formUrl);
-    	log.error("XXXXXXXXXXXXXXXXXXXX form url:" + formUrl);
+    	request.setAttribute("activity", activity);
+    	
+    	log.error("XXXXXXXXXXXXXXXXXXXX form activity:" + activity);
 
 	}
 }

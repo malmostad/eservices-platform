@@ -36,8 +36,6 @@ public class InboxTaskItem implements Serializable {
 
 	String taskUuid;
 	String activityDefinitionUUID;
-
-	String editFormUrl;
 	
 	public InboxTaskItem() {
 		
@@ -94,11 +92,14 @@ public class InboxTaskItem implements Serializable {
 	}
 	
 	public String getEditFormUrl() {
-		return editFormUrl;
-	}
-
-	public void setEditFormUrl(String editFormUrl) {
-		this.editFormUrl = editFormUrl;
+		String result = null;
+		if (getProcessActivityFormInstanceId() != null) {
+			result = "form?processActivityFormInstanceId=" +  getProcessActivityFormInstanceId();
+		}
+		else if (getTaskUuid() != null) {
+			result = "form?taskUuid=" + getTaskUuid();				
+		}
+		return result;
 	}
 
 	public static long getSerialversionuid() {
@@ -117,8 +118,6 @@ public class InboxTaskItem implements Serializable {
 						: activityDefinitionUUID.hashCode());
 		result = prime * result
 				+ ((activityLabel == null) ? 0 : activityLabel.hashCode());
-		result = prime * result
-				+ ((editFormUrl == null) ? 0 : editFormUrl.hashCode());
 		result = prime
 				* result
 				+ ((processActivityFormInstanceId == null) ? 0
@@ -154,11 +153,6 @@ public class InboxTaskItem implements Serializable {
 				return false;
 		} else if (!activityLabel.equals(other.activityLabel))
 			return false;
-		if (editFormUrl == null) {
-			if (other.editFormUrl != null)
-				return false;
-		} else if (!editFormUrl.equals(other.editFormUrl))
-			return false;
 		if (processActivityFormInstanceId == null) {
 			if (other.processActivityFormInstanceId != null)
 				return false;
@@ -184,8 +178,7 @@ public class InboxTaskItem implements Serializable {
 				+ ", activityLabel=" + activityLabel + ", activityCreated="
 				+ activityCreated + ", processActivityFormInstanceId="
 				+ processActivityFormInstanceId + ", taskUuid=" + taskUuid
-				+ ", activityDefinitionUUID=" + activityDefinitionUUID
-				+ ", editFormUrl=" + editFormUrl + "]";
+				+ ", activityDefinitionUUID=" + activityDefinitionUUID + "]";
 	}
 
 }

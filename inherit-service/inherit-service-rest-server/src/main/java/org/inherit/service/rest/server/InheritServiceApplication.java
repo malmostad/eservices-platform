@@ -18,6 +18,9 @@ public class InheritServiceApplication extends Application {
 		router.attach("/processInstanceDetailsByActivityInstanceUuid/{activityInstanceUuid}", ProcessInstanceDetailByActivityInstanceUuid.class); 
 		
 		router.attach("/getActivityInstanceItem/{activityInstanceUuid}/{userId}", ActivityInstanceItemByActivityInstanceUuid.class);
+		router.attach("/getStartActivityInstanceItem/{formPath}/{userId}", StartActivityInstanceItemByFormPath.class);
+		router.attach("/getStartActivityInstanceItemById/{processActivityFormInstanceId}", StartActivityInstanceItemById.class);
+		
 		//TODO kolla om det går att få bort
 		router.attach("/bonitaIdentityKey/{userid}/{password}", BonitaIdentityKey.class); 
 		

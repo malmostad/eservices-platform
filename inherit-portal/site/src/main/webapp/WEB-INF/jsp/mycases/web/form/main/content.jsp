@@ -13,13 +13,13 @@
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
 
-
-	<script type="text/javascript" charset="utf-8">
+	
+	<c:if test="${not empty activity}">
+    	<script type="text/javascript" charset="utf-8">
 		        jQuery.noConflict();
 		        var $j = jQuery;
-
 		        $j(document).ready(function () {
-		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${formUrl}", function(data) {
+		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
 		                if (typeof ORBEON != "undefined") { 
 		                    if (!document.all) {
 		                        ORBEON.xforms.Init.document(); 
@@ -27,9 +27,10 @@
 		                } 
 		        	    }); 
 					});
-				
-				
-				</script>
+		</script>
+    </c:if>
+    
+	
 				
 	<div class="row-fluid">
 		<div class="span12">
@@ -39,12 +40,3 @@
     
   </c:otherwise>  
 </c:choose>
-
-<c:choose>
-  <c:when test="${empty processInstanceDetails}">
-  	Ingen historia
-  </c:when>
-  <c:otherwise>
-    <h1>${processInstanceDetails.processInstanceUuid}</h1>
-  </c:otherwise>
- </c:choose>

@@ -136,6 +136,37 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public ActivityInstanceItem getStartActivityInstanceItem(String formPath, String userId) {
+		ActivityInstanceItem result = null;
+		String uri = serverBaseUrl + "getStartActivityInstanceItem/" + ParameterEncoder.encode(formPath) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (ActivityInstanceItem)xstream.fromXML(response);
+		}
+		
+		return result;
+	}
+
+	public ActivityInstanceItem getStartActivityInstanceItem(String processActivityFormInstanceId) {
+		ActivityInstanceItem result = null;
+		String uri = serverBaseUrl + "getStartActivityInstanceItemById/" + ParameterEncoder.encode(processActivityFormInstanceId) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (ActivityInstanceItem)xstream.fromXML(response);
+		}
+		return result;
+	}
+
+	public ActivityInstanceItem getStartActivityInstanceItem(Long processActivityFormInstanceId) {
+		ActivityInstanceItem result = null;
+		if (processActivityFormInstanceId != null) {
+			result = getStartActivityInstanceItem(processActivityFormInstanceId.toString());
+		}
+		return result;
+	}
+	
 	public String submitStartForm(String formPath, String docId, String userId) {
 		String result = null;
 		String uri;

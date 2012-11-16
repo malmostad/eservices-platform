@@ -137,6 +137,10 @@ public class ProcessActivityFormInstance {
 	public String calcPdfUrl() {
 		return getFormPath() + "/pdf/" + getFormDocId() + "?orbeon-embeddable=true";
 	}
+	
+	public boolean isStartForm() {
+		return (activityInstanceUuid == null);
+	}
 
 	@Override
 	public int hashCode() {
