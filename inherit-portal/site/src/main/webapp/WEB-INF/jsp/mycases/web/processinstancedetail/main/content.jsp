@@ -1,8 +1,33 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="document" type="se.inherit.portal.beans.NewsDocument"--%>
 
-<h1><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
+<script type="text/javascript" charset="utf-8">
+		        jQuery.noConflict();
+		        var $j = jQuery;
+		        $j(document).ready(function () {
+		        	$j("#procLogDetail tr:odd").addClass("odd");
+		            $j("#procLogDetail tr:not(.odd)").hide();
+		            $j("#procLogDetail tr:first-child").show();
+		            
+		            $j("#procLogDetail tr.odd").click(function(){
+			        var nextRow =  $j(this).next("tr");
 
+			        $j(nextRow).find("div").load("<fmt:message key="orbeonbase.portal.url"/>start/demo-ansokan/view/2c6613f5-fef9-43f2-8b32-297c9e201e24?orbeon-embeddable=true", function(data) {
+				                if (typeof ORBEON != "undefined") { 
+				                    if (!document.all) {
+				                        ORBEON.xforms.Init.document(); 
+				                    } 
+				                } 
+				        	    }
+						); 
+		                $j(nextRow).toggle();
+		                $j(this).find(".arrow").toggleClass("up");
+			            });
+					});
+		        
+		</script>
+		
+<h1><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
 
 <c:choose>
   <c:when test="${empty processInstanceDetails}">
@@ -78,7 +103,7 @@
 	
   	 <h2><fmt:message key="mycases.activityLog.lbl"/></h2>   
   	 <p>
-		 <table class="display dataTable">
+		 <table id="procLogDetail" class="display dataTable">
 			<thead>
 				<tr>
 				   <th><fmt:message key="mycases.activity.column.lbl"/></th>
@@ -96,6 +121,11 @@
 				 	  	<td><fmt:formatDate value="${logItem.endDate}" type="Both" /></td>
 						<td>${logItem.performedByUserId}</td>
 					</tr>
+					<tr>
+					  <td colspan="4">
+					     <div class="xform">Loading activity details...please wait...</div>
+					  </td>
+					</tr>
 				</c:forEach>
 				<tr>
 				 	  	<td><fmt:message key="mycases.caseStarted.lbl"/></td>
@@ -103,6 +133,12 @@
 				 	  	<td></td>
 						<td>${processInstanceDetails.startedBy}</td>
 				</tr>
+				<tr>
+				  <td colspan="4">
+				     <div class="xform">Loading activity details...please wait...</div>
+				  </td>
+				</tr>
+				
 				
 			</c:if>
 			</tbody>
