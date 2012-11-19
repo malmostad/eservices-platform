@@ -124,12 +124,72 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public ActivityInstanceItem getActivityInstanceItem(String activityInstanceUuid, String userId) {
+		ActivityInstanceItem result = null;
+		String uri = serverBaseUrl + "getActivityInstanceItem/" + ParameterEncoder.encode(activityInstanceUuid) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (ActivityInstanceItem)xstream.fromXML(response);
+		}
+		
+		return result;
+	}
+	
+	public ActivityInstanceItem getStartActivityInstanceItem(String formPath, String userId) {
+		ActivityInstanceItem result = null;
+		String uri = serverBaseUrl + "getStartActivityInstanceItem/" + ParameterEncoder.encode(formPath) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (ActivityInstanceItem)xstream.fromXML(response);
+		}
+		
+		return result;
+	}
+
+	public ActivityInstanceItem getStartActivityInstanceItem(String processActivityFormInstanceId) {
+		ActivityInstanceItem result = null;
+		String uri = serverBaseUrl + "getStartActivityInstanceItemById/" + ParameterEncoder.encode(processActivityFormInstanceId) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (ActivityInstanceItem)xstream.fromXML(response);
+		}
+		return result;
+	}
+
+	public ActivityInstanceItem getStartActivityInstanceItem(Long processActivityFormInstanceId) {
+		ActivityInstanceItem result = null;
+		if (processActivityFormInstanceId != null) {
+			result = getStartActivityInstanceItem(processActivityFormInstanceId.toString());
+		}
+		return result;
+	}
+	
 	public String submitStartForm(String formPath, String docId, String userId) {
 		String result = null;
 		String uri;
 		
 		uri = serverBaseUrl + "submitStartForm/" + ParameterEncoder.encode(formPath) + 
 					"/" + ParameterEncoder.encode(docId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		log.severe("submitStartForm uri: " + uri);
+		String response = call(uri);
+		
+		if (response != null) {
+			result = (String)response;
+		}
+		
+		return result;
+	}
+
+	public String submitForm(String docId, String userId) {
+		String result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "submitForm/" 
+				+ ParameterEncoder.encode(docId) + "/" 
+				+ ParameterEncoder.encode(userId) + "?media=xml";
 		log.severe("submitStartForm uri: " + uri);
 		String response = call(uri);
 		

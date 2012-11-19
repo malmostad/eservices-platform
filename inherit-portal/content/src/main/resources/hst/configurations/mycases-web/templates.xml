@@ -51,4 +51,12 @@
       <sv:value>jsp/mycases/web/processinstancedetail/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
+  <sv:node sv:name="formwithdetails.main.content">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/mycases/web/formwithdetails/main/content.jsp</sv:value>
+    </sv:property>
+  </sv:node>
 </sv:node>

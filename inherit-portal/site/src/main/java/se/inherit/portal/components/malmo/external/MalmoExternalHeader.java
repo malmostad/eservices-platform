@@ -31,7 +31,7 @@ public class MalmoExternalHeader extends BaseHstComponent {
         }
         
         String mastHead = UrlUtil.loadFromUrl(MAST_HEAD_URL);
-        log.error("mastHead=" + mastHead);
+        //log.error("mastHead=" + mastHead);
         request.setAttribute("mastHead", mastHead);
 		
     }

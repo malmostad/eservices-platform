@@ -1,6 +1,7 @@
 package se.inherit.portal.components.mycases;
 
 import java.security.Principal;
+import java.util.Date;
 import java.util.Locale;
 
 import org.hippoecm.hst.component.support.bean.BaseHstComponent;
@@ -36,28 +37,38 @@ public class Confirm extends BaseHstComponent {
 							.getRelativeContentPath(), request
 							.getRequestContext().getResolvedSiteMapItem()
 							.getPathInfo());
-			response.setStatus(404);
-			return;
+			//response.setStatus(404);
+			//return;
 		}
 
 		request.setAttribute("document", doc);
-
 		String docId = getPublicRequestParameter(request, "docId");
-
-		if (doc instanceof EServiceDocument) {
-			EServiceDocument eServiceDocument = (EServiceDocument) doc;
-
-			// confirm page url
-			String formUrl = eServiceDocument.getFormPath() + "/view/" + docId	+ "?orbeon-embeddable=true";
-			request.setAttribute("formUrl", formUrl);
+		
+		InheritServiceClient isc = new InheritServiceClient();
+		
+		String viewUrl = isc.submitForm(docId, userName);
+		request.setAttribute("formUrl", viewUrl);
+		
+		if (viewUrl==null) {
+			// render a fail url???
 			
-			// TODO remove later
-			log.error("==============> orbeon confirm form url:" + formUrl);
+			// this can be removed later on, only when start form not is initialized before....
+			if (doc instanceof EServiceDocument) {
+				EServiceDocument eServiceDocument = (EServiceDocument) doc;
 
-			InheritServiceClient isc = new InheritServiceClient();
-			isc.submitStartForm(eServiceDocument.getFormPath(), docId, userName);
+				// confirm page url
+				String formUrl = eServiceDocument.getFormPath() + "/view/" + docId	+ "?orbeon-embeddable=true";
+				request.setAttribute("formUrl", formUrl);
+				
+				// TODO remove later
+				log.error("==============> orbeon confirm form url:" + formUrl);
 
-		}	
+				isc.submitStartForm(eServiceDocument.getFormPath(), docId, userName);
+
+			}	
+		}
+		
+		
 	}
 
 }

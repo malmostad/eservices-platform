@@ -22,7 +22,7 @@
     
   </head>
   <body>
-  	<div class="wrap-all">
+  	<div class="wrap-all-expanding">
     
     <hst:include ref="header"/>
     <hst:include ref="main"/>

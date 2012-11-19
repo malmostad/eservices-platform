@@ -30,9 +30,9 @@ public class HibernateUtil {
 		    .setProperty("hibernate.connection.url", " jdbc:postgresql://localhost/InheritPlatform")
 		    .setProperty("hibernate.connection.username", "inherit")
 		    .setProperty("hibernate.connection.password", "inh3rit")
-		    .setProperty("hibernate.hbm2ddl.auto", "create")
+//		    .setProperty("hibernate.hbm2ddl.auto", "create")
+//		    .setProperty("hibernate.hbm2ddl.auto", "update")
 		    .setProperty("show_sql", "true");
-//		    .setProperty("hibernate.hbm2ddl.auto", "update");
 		    
 			
 		    sessionFactory = cfg.buildSessionFactory();

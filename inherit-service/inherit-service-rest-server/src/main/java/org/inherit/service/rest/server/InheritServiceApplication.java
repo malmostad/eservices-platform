@@ -13,8 +13,13 @@ public class InheritServiceApplication extends Application {
 		router.attach("/statusByUserId/{userid}", StatusByUserId.class);
 		router.attach("/inboxByUserId/{userid}", InboxByUserId.class);
 		router.attach("/submitStartForm/{formPath}/{docId}/{userId}", SubmitStartForm.class);
+		router.attach("/submitForm/{docId}/{userId}", SubmitForm.class);
 		router.attach("/processInstanceDetailsByUuid/{processInstanceUuid}", ProcessInstanceDetailByUuid.class); 
 		router.attach("/processInstanceDetailsByActivityInstanceUuid/{activityInstanceUuid}", ProcessInstanceDetailByActivityInstanceUuid.class); 
+		
+		router.attach("/getActivityInstanceItem/{activityInstanceUuid}/{userId}", ActivityInstanceItemByActivityInstanceUuid.class);
+		router.attach("/getStartActivityInstanceItem/{formPath}/{userId}", StartActivityInstanceItemByFormPath.class);
+		router.attach("/getStartActivityInstanceItemById/{processActivityFormInstanceId}", StartActivityInstanceItemById.class);
 		
 		//TODO kolla om det går att få bort
 		router.attach("/bonitaIdentityKey/{userid}/{password}", BonitaIdentityKey.class); 
