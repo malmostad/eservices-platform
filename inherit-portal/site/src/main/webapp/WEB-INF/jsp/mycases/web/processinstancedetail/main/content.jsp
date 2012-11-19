@@ -10,9 +10,10 @@
 		            $j("#procLogDetail tr:first-child").show();
 		            
 		            $j("#procLogDetail tr.odd").click(function(){
+		           	var url = $j(this).children('td').eq(0).children('a').attr('href');
 			        var nextRow =  $j(this).next("tr");
-
-			        $j(nextRow).find("div").load("<fmt:message key="orbeonbase.portal.url"/>start/demo-ansokan/view/2c6613f5-fef9-43f2-8b32-297c9e201e24?orbeon-embeddable=true", function(data) {
+					
+			        $j(nextRow).find("div").load("<fmt:message key="orbeonbase.portal.url"/>" + $url, function(data) {
 				                if (typeof ORBEON != "undefined") { 
 				                    if (!document.all) {
 				                        ORBEON.xforms.Init.document(); 
@@ -116,7 +117,7 @@
 		    <c:if test="${not empty processInstanceDetails.activityLog}">
 				<c:forEach var="logItem" items="${processInstanceDetails.activityLog}">
 					<tr>
-				 	  	<td>${logItem.activityLabel}</td>
+				 	  	<td><a href="${logItem.viewUrl}">${logItem.activityLabel}</a></td>
 				 	  	<td><fmt:formatDate value="${logItem.startDate}" type="Both" /></td>
 				 	  	<td><fmt:formatDate value="${logItem.endDate}" type="Both" /></td>
 						<td>${logItem.performedByUserId}</td>
