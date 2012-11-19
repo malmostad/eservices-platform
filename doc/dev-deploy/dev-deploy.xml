@@ -7,15 +7,15 @@
 <article lang="en">
   <articleinfo>
     <title>
-      Inherit platform development
+      PAWAP: Process Aware Web Application Platform
     </title>
 
-    <titleabbrev>Inherit platform development</titleabbrev>
+    <titleabbrev>PAWAP</titleabbrev>
 
-    <subtitle>How to setup development environment, build and deploy</subtitle>
+    <subtitle>Description, Development and Deployment</subtitle>
 
     <pubdate>
-      2012-02-24
+      2012-11-08
     </pubdate>
 
     <authorgroup>
@@ -26,292 +26,1273 @@
 	  <orgname>Inherit S AB</orgname>
 	</affiliation>
       </author>
+
+      <author>
+	<firstname>Roland</firstname>
+	<surname>Hedayat</surname>
+	<affiliation>
+	  <orgname>Inherit S AB</orgname>
+	</affiliation>
+      </author>
     </authorgroup>
-    
   </articleinfo>
 
   <abstract>
     <title>Abstract</title>
     <para>
-      How to setup the inherit-platform development environment, build and deploy
+      This document describes PAWAP (Even if this is a palindrome, we are in
+      urgent search of a more catching name!!!...suggestions welcome) &mdash;
+      a <emphasis>Process-Aware Web Application Platform</emphasis>. The
+      platform is an assembly and integration of several open source software
+      products and components. It is designed to facilitate the creation of
+      <emphasis>Business process driven</emphasis> web applications, that is,
+      the class of applications that are <emphasis>driven by the instantiation
+      and execution of an underlying "executable business process"</emphasis>.
+    </para>
+
+    <para>
+      A driving idea behind the plaform design has been the principle of
+      "separation of concerns". We describe how this principle has motivated
+      the creation of the platform itself, and how it has affected the main
+      underlying design principles.
+    </para>
+
+    <para>
+      We present an overview of the functionality and features of the platform
+      and its architectural composition.  Furthermore, the document provides
+      Appendices with detailed instructions for setting up the development
+      environment and for the deployment of the platform to a suitable
+      production environment.
     </para>
   </abstract>
-
+  
   <?custom-pagebreak?>
 
-  <section id="pre-requirements">
-    <title>Pre-requirements</title>
-
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    Installed Java JDK 1.6 (this guide is written/tested with 1.6.0_26 x64 at Ubuntu 11.10 x64). Verify that the JAVA_HOME is set by adding it to .bashrc for instance. 
-<programlisting>
-export JAVA_HOME=/usr/lib/jvm/java-6-sun
-</programlisting>
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Maven 2.2.1 (mvn) 
-	  </para>
-	</listitem>
-
-	<listitem>
-	  <para>
-	    Eclipse with m2eclipse maven plugin
-	  </para>
-	</listitem>
-
-       </itemizedlist>
-
-
-
-      
-  </section>
-  
-  <section id="resolve_dependencies">
-    <title>Resolve dependencies</title>
+  <section id="s.intro">
+    <title>Introduction</title>
     <para>
+      This document aims at explaining the ideas behind <emphasis>The
+      Process-Aware Web Application Platform</emphasis>, (PAWAP), its inner
+      workings as well as its setup and configuration. In order to explain the
+      term <emphasis>"process-aware"</emphasis>, we first define the
+      terms "Business Process", "Business Process Model" and "Executable
+      Business Process".
+    </para>
+
+    <para>
+      A Business Process is a collaborative effort by participants wihthin an
+      organisation, aiming at satisfying a particular goal. The "operands" of
+      the effort are resources within the organisation, either immaterial
+      (data/information) or material.
+    </para>
+
+    <para>
+      The collaborative effort can be partitioned into a set of tasks. This
+      subdivision might be iterated down to an arbitray level, guided by
+      experience and common sense. The various tasks are performed by various
+      actors in the organisation. A task might be automatic, in which case the
+      actor is an automaton (e.g. computer or robot). Otherwise it is a manual
+      task, performed by a person or by a group of persons. The rules for
+      assigning the actors to the task is part of the business process, and
+      determined by the task itself, and by rules determined by the
+      organisation structure.
+    </para>
+
+    <para>
+      In order to understand a complex phenomenon, we humans tend to break it
+      down into parts (analysis), and then build it up again (synthesis).
+      Since a business process is not a tangible phenomenon which we can build
+      in itself, we can only build a representation of it &mdash; a model.
+      Business Process Modeling (BPM) is the activity of identifying,
+      analysing and creating representations of processes of an enterprise.
+      The aim of this is to better understand the processes of the
+      organisation in order to improve their quality and efficiency.
+    </para>
+
+    <para>
+      An "executable business process" is the result of creating a model of a
+      "real" business process in a specialised, formal process description
+      language which can be <emphasis>translated</emphasis> into a form
+      suitable for computer execution. To execute the model implies,
+      informally stated, to identify the task to be performed and to assign it
+      to the adequate actor, whether a human participant in the task, or a
+      computer.
+    </para>
+
+    <para>
+      A web application is <emphasis>business process-aware</emphasis> if
+      there is an underlying software component &mdash; a <emphasis>Business
+      Process Engine</emphasis> &mdash; which <emphasis>emulates</emphasis> a
+      business process and performs (amongst others), the following services
+      to the web application:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Determination of the current task list
+	</para>
+
+	<para>
+	  The process engine provides information about which tasks that might
+	  be started. If there is more than one task, this means that there is
+	  no particular ordering among them, they might be executed in
+	  parallel.
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Actor selection
+	</para>
+
+	<para>
+	  Assignment of candidate actors to the task(s), according to business
+	  rules
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Task Synchronisation
+	</para>
+
+	<para>
+	  Coordinating tasks by waiting for particular tasks to complete
+	  before proceeding to other tasks within the process process
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Task scheduling
+	</para>
+
+	<para>
+	  Starting tasks at a given time
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      The <emphasis>Process-Aware Web Application Platform</emphasis>, PAWAP,
+      provides the integration of a set of open source software products and
+      tools to facilitate the construction of "<emphasis>business
+      process-aware</emphasis>" web applications, applications using the
+      services or a process engine to coordinate multi user work at multiple
+      locations.
+    </para>
+
+    <para>
+      PAWAP is a "<emphasis>true open source</emphasis>" platform, that is,
+      all the software is licensed under an open source licence as defined by
+      <xref linkend="gle.osi"/>. This is not only because we are convinced of
+      the superiority of the Open Source Development paradigm, but because the
+      integration of complex software artifacts is generally less hard when
+      the software is open, that is, when they are open for inspection and
+      modification.
+    </para>
+
+    <para>
+      In the next section an overview of the system is provided, and how the
+      principle of "separation of concerns" has governed the architecture and
+      choice of components and products.
+    </para>
+  </section>
+
+  <section id="s.oipp-overview">
+    <title>Overview</title>
+
+<!--=================================================================
+    Architectural pattern, 
+    division of labour, 
+    forms engine, 
+    webapp toolkit
+    content repository.
+    separation of concerns
+    navigational interactions
+    process-based interactions
+    data input interactions
+=====================================================================-->
+
+    <para>
+      Combining Solid Open Source Software Solutions
+    </para>
+
+    <section id="s.oipp-overview.combining">
+      <title>A platform for building Business Process Aware Web Applications</title>
+      <para>
+	In this paper we adopt the following definition of a Process-Aware
+	Information System (PAIS): a software system that manages and executes
+	operational processes involving people, applications, and/or
+	information sources on the basis of process models [24]. Although not
+	explicitly stated in this definition, it should be noted that the
+	process models mentioned are usually represented in some graphical
+	language, e.g., a Petri-net-like notation. The models are typically
+	in- stantiated multiple times (e.g., for every customer order) and
+	every instance is handled in a predefined way (possibly with
+	variations).
+      </para>
+
+      <para>
+	In most cases the flow of operations for an application is built into
+	the application logic itself. If that logic needs to be changed, the
+	application must be modified and in some cased rebuilt.
+      </para>
+
+      <para>
+	We present here a framework where the flow of operations is guided by
+	a separate artifact, an instance of a <emphasis>business process
+	model</emphasis>. 
+
+
+      </para>
+    </section>
+
+    <section id="s.oipp-overview.bonita">
+      <title>Executable Business Process Engine</title>
+      <para>
+	Bonita BPM
+      </para>
+    </section>
+
+    <section id="s.oipp-overview.hippo">
+      <title>Content Repository and Web Development Toolkit</title>
+      <para>
+	Hippo CMS
+      </para>
+    </section>
+
+    <section id="s.oipp-overview.orbeon">
+      <title>State of the art Web Forms</title>
+      <para>
+	<ulink url="http://www.orbeon.com">Orbeon Forms</ulink> is an open
+	source, standard-based web forms solution. The product includes the
+	tool <emphasis>Form Builder</emphasis> a WYSIWYG browser-based
+	authoring tool for building state of the art web forms and
+	<emphasis>Form Runner</emphasis>, a runtime environment for the
+	deployment, integration and execution of large numbers of complex
+	forms.
+      </para>
+
+      <para>
+	Orbeon Forms is based on the <xref linkend="gle.xforms"/> standard
+	which it provides a server side implementation of, and uses <xref
+	linkend="gle.ajax"/> technologies, with no need for additional
+	client-side software or plugins.
+      </para>
+
+      <section id="s.teknisk-beskr">
+	<title>Teknisk beskrivning</title>
+	<section id="s.teknisk-beskr.arkitektur">
+	  <title>Arkitektur</title>
+	  <para>
+	    Formulärlösningen bygger på en <xref linkend="gle.xrx"/> (<xref
+	    linkend="gle.xforms"/>,<xref linkend="gle.rest"/> and <xref
+	    linkend="gle.xquery"/>) architecture.
+	  </para>
+	</section>
+      </section>
+    </section>
+
+    <section id="s.oipp-overview-architecture">
+      <title>System Overview</title>
+      <figure id="im-human-comm">
+	<title>The process and Forms engines working in concert with the CMS </title>
+	<mediaobject>
+	  <imageobject>
+	    <imagedata scale="40" fileref="images/arch-overview.svg"/>
+	  </imageobject>
+	  <!--
+	      <caption>
+	      <para>..
+	      </para>
+	      </caption>
+	  -->
+	</mediaobject>
+      </figure>
+
+      <para>
+      </para>
+    </section>
+
+    <section id="s.oipp-overview.added-value">
+      <title>The Added Value</title>
+      <para>
+      </para>
+    </section>
+  </section>
+
+  <section id="s.dev-env">
+    <title>Development Environment</title>
+    <para>
+      This section describes how to set up an environment ready for
+      development. This implies setting up the development tools, the server
+      suite and the program components that are necessary for the development,
+      building and testing of the process-aware applications built on the
+      platform. It does not describe the development process itself when using
+      the platform, this is done in <xref linkend="app-dev-on-oipp"/>.
     </para>
     
-    <section id="resolve_dep_bonita_identity">
-      <title>Bonita security-server</title>
-      <para>
-	There is no maven repository with Bonita security-server. Either install required jars in local maven repository or build bonita bonita-console, bonita-connectors and bonita-runtime (see Howto build Bonita)
-      </para>
-    </section>
-  </section>
+    <section id="s.dev-env.tools">
+      <title>Development Tools</title>
 
-  <section id="checkout_code">
-    <title>Get the source code</title>
-    <para>
- <programlisting>
-cd ~/inherit/workspace/
-git clone gitosis@pluto.inherit.se:inherit-platform.git
- </programlisting>
-    </para>
-  </section>
+      <section id="s.dev-env.tools.java">
+	<title>
+	  Java
+	</title>
 
-  <section id="build_inherit_platform">
-    <title>Build Inherit Platform</title>
-    <para>
-      <programlisting>
-cd inherit-platform
-mvn clean install
-      </programlisting>
-    </para>
-  </section>
-
-  <section id="import_eclipse">
-    <title>Import project to eclipse</title>
-    <para>
-      <itemizedlist>
-	<listitem>
-	  <para>
-	    Start Eclipse and choose menu "File->Import...".
-	  </para>
-	</listitem>
-	<listitem>
-	  <para>
-	    Select "Maven->Existing Maven Projects" and click next.
-	  </para>
-	</listitem>
-	<listitem>
-	  <para>
-	    Select root directory "inherit-platform" and finish import.
-	  </para>
-	</listitem>
-      </itemizedlist>
-    </para>
-  </section>
-
-  <section id="architecture_overview">
-    <title>Source Code Overview</title>
-    <para>
-
-    </para>
-    <section id="src_inherit-portal">
-      <title>inherit-portal</title>
-      <para>
-	inherit-portal is a HippoCMS maven project with Hippo's subprojects
+	<para>
+	  PAWAP is developed and runs in a Server Side Java (JEE)
+	  Ecosystem.
+	</para>
 	
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      inherit-portal-site
-	    </para>
-	      </listitem>
-	      <listitem>
-		<para>
-		  inherit-portal-cms
-		</para>
-	      </listitem>
-	      <listitem>
-		<para>
-		  inherit-portal-content
-		</para>
-	      </listitem>
-	</itemizedlist>	
-      </para>
-    </section>      
-
-    <section id="src_inherit-security">
-      <title>inherit-security</title>
-      <para>
-	JAAS module etc. TODO!
-      </para>
-    </section>
-
-
-    <section id="src_inherit-service">
-      <title>inherit-service</title>
-      <para>
-	Inherit Service is inherit-platform's service layer. Currently, the inherit-service-rest-server war file is the way to deploy inherit-service. inherit-service-rest-client is an implementation to integrate with Inherit Service.
-      </para>
-      
-      <section id="src_inherit-service-common">
-	<title>inherit-service-common</title>
 	<para>
-	  Contains inherit-service common classes used by the subprojects. Furhermore, this 
-	  project contains neccessary POJOs to integrate with Inherit Service.
-	</para>
-      </section>
-      
-      <section id="src_inherit-service-core">
-	<title>inherit-service-core</title>
-	<para>
-	  Implementation of core functionality  (not yet in use)
-	</para>
-      </section>
-      <section id="src_inherit-service-rest-server">
-	<title>inherit-service-rest-server</title>
-	<para>
-	  This projects builds a deployable war with a REST exposed inherit-service. 
-	  The intention is that this project only is a glue to publish 
-	  Inherit Service with a REST interface.
-	</para>
-      </section>
-      <section id="src_inherit-service-rest-client">
-	<title>inherit-service-rest-client</title>
-	<para>
-	  This is a ready to use implementation of a REST client 
-	  to call inherit-service-rest-server.
-	</para>
-      </section>
-      <section id="src_inherit-service-taskform-engine">
-	<title>inherit-service-taskform-engine</title>
-	<para>
-	  This engine keeps track on tasks to perform. Task can exist in BPM 
-	  engine and be partially filled in start forms.
-	</para>
-      </section>
-      <section id="src_inherit-service-bonita-client-utils">
-	<title>inherit-service-bonita-client-utils</title>
-	<para>
-	  Utilities to integrate with Bonita Open Solution.
-	</para>
-      </section>
-      
-    </section>
-  </section>
-
-  <section>
-    <title>Deploy on server</title>
-    <para>
-
-TODO! OUT OF DATE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    </para>
-
-    <section id="server-pre-req">
-      <title>Server pre-requirements</title>
-      <para>
-      </para>
-      <section id="server-pre-req-bos">
-	<title>Running BOS server</title>
-	<para>
-	  Running BOS server with Inherit's additional REST services
+	  The JDK (Java Development Kit) used is <ulink
+	  url="http://www.oracle.com/technetwork/java/javase/overview/index.html">Oracle
+	  JDK version 1.6</ulink>. Make sure this JDK is installed on your
+	  machine, and verify that the environment variable JAVA_HOME is set,
+	  either system wide, or by adding it to the appropriate init script,
+	  e.g.:
 	  <programlisting>
-scp -P 2212 adminherit@pluto.inherit.se:_
-./inherit-platform-server-components/inherit-platform-BOS-5.6.1-Tomcat-6.0.33.tgz .
-
-tar xzf inherit-platform-BOS-5.6.1-Tomcat-6.0.33.tgz
-cd BOS-5.6.1-Tomcat-6.0.33/bin
-./starup.sh
-./tail -f ../logs/catalina.out
+	    export JAVA_HOME=/usr/lib/jvm/java-6-sun
 	  </programlisting>
 	</para>
+
+	<note>
+	  <simpara>
+	    The licensing of this JDK is not open source compatible. Some
+	    of the program components of PAWAP require the Oracle JDK
+	    rather than OpenJDK) (We expect this problem to be solved in
+	    the near future, when all components are expected to be
+	    compatible with <ulink url="http://openjdk.java.net/">OpenJDK
+	    7</ulink>
+	  </simpara>
+	</note>
+
       </section>
-      <section id="server-pre-req-hippo-jcr">
-	<title>Hippo content repository</title>
+
+      <section id="s.dev-env.tools.mvn">
+	<title>
+	  Apache Maven 
+	</title>
 	<para>
-	  Download latest version of inherit-portal's content repository.
- <programlisting>
-scp -P 2212 adminherit@pluto.inherit.se:_
-./inherit-platform-server-components/jcr-inherit-portal.tgz .
-tar xzf jcr-inherit-portal.tgz
-</programlisting>
+	  <ulink url="http://maven.apache.org/">Apache Maven</ulink> is used for
+	  managing the build and testing environment. The platform is built
+	  using Maven 2.2.1, and Maven must be installed on the development
+	  machine.
+	</para>
+      </section>
+
+      <section id="s.dev-env.tools.eclipse">
+	<title>
+	  Eclipse
+	</title>
+	<para>
+	  <ulink url="http://www.eclipse.org">Eclipse</ulink> is used as <xref
+	  linkend="gle.ide"/>. Eclipse comes in many different pre packaged
+	  bundles. Choose the bundle: <ulink
+	  url="http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/junosr1">Eclipse
+	  IDE for Java EE Developers</ulink>.
+	</para>
+
+	<para>
+	  The Eclipse development environment is integrated with Maven through
+	  the Maven plugin <ulink
+	  url="http://www.eclipse.org/m2e/">m2e</ulink> (Maven 2 Eclipse
+	  Integration). For installation information, refer to the <ulink
+	  url="http://www.eclipse.org/m2e/download/">Eclipse Maven Plugin
+	  Download Site</ulink>.
+	</para>
+      </section>
+
+      <section id="s.dev-enc.tools.git">
+	<title>
+	  Source code repository and version/configuration management
+	</title>
+
+	<para>
+	  For this purpose, <ulink url="http://git-scm.com/">GIT
+	  (v. 1.7.9.5)</ulink> is used. The source code repository is located
+	  at: pluto.inherit.se:inherit-platform.git Cf. <xref
+	  linkend="s.checkout.code"/> for instructions on how to check out the
+	  source code of PAWAP.
 	</para>
       </section>
     </section>
-    
-    <section id="deploy_local_dev_server">
-      <title>Deploy on local developer server</title>
+
+    <section id="s.dev-env.bos">
+      <title>Download, configure and start the Process Engine</title>
+
+      <!-- 
+	   TODO: include config ow REST services in the description below
+	   <para>
+	   Running BOS server with Inherit's additional REST services
+	   <programlisting>
+	   scp -P 2212 adminherit@pluto.inherit.se:_
+	   ./inherit-platform-server-components/inherit-platform-BOS-5.6.1-Tomcat-6.0.33.tgz .
+	   tar xzf inherit-platform-BOS-5.6.1-Tomcat-6.0.33.tgz
+	   cd BOS-5.6.1-Tomcat-6.0.33/bin
+	   ./starup.sh
+	   ./tail -f ../logs/catalina.out
+	   </programlisting>
+	   </para>
+      -->
+
       <para>
+	The process engine acts as the central coordinator when the
+	process-aware  applications are running. It keeps track of the tasks of the
+	various process instances, and allocates those that are ready for
+	execution to the appropirate users (or groups of users belonging to
+	different roles). The development environment needs a running process
+	engine for developing and testing the process-aware web
+	applications. The process engine is accessed via a <xref
+	linkend="gle.rest"/> interface.
+      </para>
+
+      <para>
+	The following steps describes how to install and configure the process
+	engine with <xref linkend="gle.postgresql"/> as back-end.
+      </para>
+
+    </section>
+
+    <section id="s.dev-env.orbeon">
+      <title>Install, configure and start Orbeon Forms</title>
+      <!-- 
+	   TODO:...
+      -->
+
+      <para>
+	The forms engine is accessed via a <xref
+	linkend="gle.rest"/> interface.
+      </para>
+
+      <para>
+	The following steps describes how to install and configure the forms
+	engine Orbeon with <xref linkend="gle.existdb"/> as back-end.
+      </para>
+
+      <section id="s.dev-env.orbeon-prereq">
+	<title>Prerequisites</title>
+	<para>
+	  Download bundle from <ulink url="">Orbeon download area</ulink>. The
+	  downloaded file is ...
+	</para>
+      </section>
+
+      <section id="s.dev-env.orbeon-install">
+	<title>Installation</title>
+	<para>
+	  Perform the base install of Orbeon Forms as explained in the
+	  <ulink
+	      url="http://wiki.orbeon.com/forms/doc/developer-guide/admin/installing">Orbeon
+	  Forms Wiki</ulink>
+	</para>
+
+	<para>
+	  Perform the initial checks and preparations and go on to the section
+	  for installing on Apache Tomcat. The base installation consists
+	  mainly of extracting the downloaded orbeon.jar file to the directory
+	  $TOMCAT_HOME/webapps
+	</para>
+
+	<para>
+	  The result is a directory, webapps/orbeon.
+	</para>
+
+	<para>
+	  Configuring Orbeon consists mainly of defining or overriding
+	  configuration properties according to <ulink
+	  url="http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties">the
+	  the section of configuration proerties</ulink> in the Orbeon Forms
+	  Developer's Guide.
+	</para>
+
+	<para>
+	  In the directory
+	  $TOMCAT_HOME/webapps/orbeon/WEB-INF/resources/config, there is a
+	  file properties-local.xml. This file is for definition of new
+	  properties or overrriding standard values of predefined
+	  properties. The properties in this file are explained, where not
+	  obvious, in a comment immediately preceding the comment.
+	</para>
+      </section>
+
+      <section id="s.dev-env.orbeon-existdb">
+	<title>Configure the Exist database</title>
+	<para>
+	  To configure Orbeon for use with the <xref linkend="gle.existdb"/>,
+	  follow the <ulink
+	  url="http://wiki.orbeon.com/forms/doc/developer-guide/exist-configuration">instructions</ulink>
+	  Orbeon in the Orbeon Forms Developer's Guide.
+	</para>
+      </section>
+
+      <section id="s.dev-env.orbeon-start">
+	<title>Start server</title>
+	<para>
+	  Now server is ready to be started by running
+	  $CATALINA_HOME/bin/startup.sh
+	</para>
+      </section>
+    </section>
+
+    <section id="s.checkout.code">
+      <title>Check out the source code</title>
+      <para>
+	Assuming that the Eclipse workspace resides in $HOME/workspace, go to
+	that directory and check out the code:
 	<programlisting>
-cd inherit-platform
-mvn clean install
-cp inherit-bonita-rest-server-custom/target/inherit-bonita-rest-server-custom-1.0-SNAPSHOT.war PATH_TO_BOS_SERVER/webapps
-cd inherit-portal
-mvn -P cargo.run -Drepo.path=/your/path/to/jcr-inherit-portal
+	  cd ~/workspace/
+	  git clone gitosis@pluto.inherit.se:inherit-platform.git
 	</programlisting>
       </para>
     </section>
-    
-    <section id="deploy_public_demo_server">
-      <title>Deploy on public Demo server</title>
-      <para>
-	<programlisting>
-cd inherit-platform
-mvn clean install
-cd inherit-portal
-mvn -P dist
-	</programlisting>
-      </para>
+
+    <section id="s.import.eclipse">
+      <title>Import project to Eclipse</title>
       <para>
 	<itemizedlist>
 	  <listitem>
 	    <para>
-	      Copy inherit-platform/inherit-bonita-rest-server-custom/target/inherit-bonita-rest-server-custom-1.0-SNAPSHOT.war
-	      to demo-vm's /opt/inherit-platform/BOS-5.6.1-Tomcat-6.0.33/webapps/
+	      Start Eclipse and choose menu "File->Import...".
 	    </para>
 	  </listitem>
+
 	  <listitem>
 	    <para>
-	      tar xzf inherit-platform/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz to demo vm's /opt/inherit-platform/apache-tomcat-6.0.35 
+	      Select "Maven->Existing Maven Projects" and click next.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Select root directory "inherit-platform" and finish import.
 	    </para>
 	  </listitem>
 	</itemizedlist>
       </para>
     </section>
-    
-     <section id="apache2_front">
-       <title>Install and configure Apache2 front</title>
-       <para>
-	 <programlisting>
-	 sudo apt-get install apache2
-	 sudo a2enmod proxy_ajp
-	 </programlisting>
-	 Create config file /etc/apache2/sites-available/XXXXXX 
 
-	 Run a2ensite and restart/reload apache2 in order to activate the site config:
-	 <programlisting>
-	   sudo a2ensite XXXXXX
-	   sudo service apache2 restart
-	 </programlisting>
-       </para>
+    <section id="s.build_inherit.platform">
+      <title>Build PAWAP</title>
+      <para>
+	The previous step created a directory, inherit-platform, relative to
+	the Eclipse workspace ($HOME/workspace). Issue the following commands:
+	<programlisting>
+	  cd inherit-platform
+	  mvn clean install
+	</programlisting>
+      </para>
+    </section>
+
+    <section id="s.architecture.overview">
+      <title>Source Code Overview</title>
+      <para>
+
+      </para>
+      <section id="s.src.inherit-portal">
+	<title>inherit-portal</title>
+	<para>
+	  inherit-portal is a HippoCMS maven project with Hippo's subprojects
+	  
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		inherit-portal-site
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		inherit-portal-cms
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		inherit-portal-content
+	      </para>
+	    </listitem>
+	  </itemizedlist>	
+	</para>
+      </section>      
+
+      <section id="s.src.inherit.security">
+	<title>inherit-security</title>
+	<para>
+	  JAAS module etc. TODO!
+	</para>
+      </section>
+
+
+      <section id="s.src.inherit.service">
+	<title>inherit-service</title>
+	<para>
+	  Inherit Service is inherit-platform's service layer. Currently, the
+	  inherit-service-rest-server war file is the way to deploy
+	  inherit-service. inherit-service-rest-client is an implementation to
+	  integrate with Inherit Service.
+	</para>
+	
+	<section id="s.src.inherit.service-common">
+	  <title>inherit-service-common</title>
+	  <para>
+	    Contains inherit-service common classes used by the
+	    subprojects. Furhermore, this project contains neccessary POJOs to
+	    integrate with Inherit Service.
+	  </para>
+	</section>
+	
+	<section id="s.src.inherit.service-core">
+	  <title>inherit-service-core</title>
+	  <para>
+	    Implementation of core functionality (not yet in use)
+	  </para>
+	</section>
+
+	<section id="s.src.inherit.service-rest-server">
+	  <title>inherit-service-rest-server</title>
+	  <para>
+	    This projects builds a deployable war with a REST exposed
+	    inherit-service.  The intention is that this project only is a glue
+	    to publish Inherit Service with a REST interface.
+	  </para>
+	</section>
+
+	<section id="s.src.inherit.service-rest-client">
+	  <title>inherit-service-rest-client</title>
+	  <para>
+	    This is a ready to use implementation of a REST client 
+	    to call inherit-service-rest-server.
+	  </para>
+	</section>
+
+	<section id="s.src.inherit.service-taskform-engine">
+	  <title>inherit-service-taskform-engine</title>
+	  <para>
+	    This engine keeps track on tasks to perform. Task can exist in BPM 
+	    engine and be partially filled in start forms.
+	  </para>
+	</section>
+
+	<section id="s.src.inherit.service-bonita-client-utils">
+	  <title>inherit-service-bonita-client-utils</title>
+	  <para>
+	    Utilities to integrate with Bonita Open Solution.
+	  </para>
+	</section>
+      </section>
     </section>
   </section>
-</article>
 
+  <section>
+    <title>Production Deployment</title>
+    <section id="s.server.pre-req">
+      <title>Server prerequisites</title>
+
+      <section id="s.server.pre-req-hippo-jcr">
+	<title>Hippo content repository</title>
+	<para>
+	  Download latest version of inherit-portal's content repository.
+	</para>
+
+	<programlisting>
+	  scp -P 2212 adminherit@pluto.inherit.se:_
+	  ./inherit-platform-server-components/jcr-inherit-portal.tgz .
+	  tar xzf jcr-inherit-portal.tgz
+	</programlisting>
+      </section>
+    </section>
+    
+    <section id="s.deploy_local_dev.server">
+      <title>Deploy on local developer server</title>
+      <programlisting>
+	cd inherit-platform
+	mvn clean install
+	cp inherit-bonita-rest-server-custom/target/inherit-bonita-rest-server-custom-1.0-SNAPSHOT.war PATH_TO_BOS_SERVER/webapps
+	cd inherit-portal
+	mvn -P cargo.run -Drepo.path=/your/path/to/jcr-inherit-portal
+      </programlisting>
+    </section>
+    
+    <section id="s.deploy_public_demo.server">
+      <title>Deploy on public Demo server</title>
+      <programlisting>
+	cd inherit-platform
+	mvn clean install
+	cd inherit-portal
+	mvn -P dist
+      </programlisting>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Copy
+	    inherit-platform/inherit-bonita-rest-server-custom/target/inherit-bonita-rest-server-custom-1.0-SNAPSHOT.war
+	    to demo-vm's
+	    /opt/inherit-platform/BOS-5.6.1-Tomcat-6.0.33/webapps/
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    tar xzf inherit-platform/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz to demo vm's /opt/inherit-platform/apache-tomcat-6.0.35 
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </section>
+    
+    <section id="s.apache2.front">
+      <title>Install and configure Apache2 front</title>
+      <programlisting>
+	sudo apt-get install apache2
+	sudo a2enmod proxy_ajp
+      </programlisting>
+
+      <para>
+	Create config file /etc/apache2/sites-available/XXXXXX Run a2ensite
+	and restart/reload apache2 in order to activate the site config:
+      </para>
+
+      <programlisting>
+	sudo a2ensite XXXXXX
+	sudo service apache2 restart
+      </programlisting>
+    </section>
+  </section>
+  
+  <glossary id="glossary">
+    <glossentry id="gle.ajax">
+      <glossterm><acronym>AJAX</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink
+	      url="http://en.wikipedia.org/wiki/Ajax_(programming)">Ajax</ulink>
+	  is an acronym for Asynchronous JavaScript and XML. It is a set of
+	  client-side web development techniques used on the to create
+	  responsive web applications. The main idea is to let interaction
+	  with a web page trigger asynchronous calls to the server with a
+	  local focus on the web page, and to update only the parts of the web
+	  page that are affected when the result arrives. In the meantime the
+	  user can iteract with the web page. The result is a more responsive
+	  user experience.
+	</para>
+	<para>
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="bib.bpmn2">
+      <glossterm>BPMN 2.0</glossterm>
+      <!--TODO-->
+      <glossdef>
+	<para>
+	  <ulink url="http://www.omg.org/spec/BPMN/2.0/">
+	    Business Process Model and Notation (BPMN) Version 2.0
+	    </ulink>. Standard maintained by <xref linkend="gle.omg"/>.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.existdb">
+      <glossterm>eXist-db</glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://www.exist-db.org/">eXist-db</ulink> is an open
+	  source database management system built using XML technology. It
+	  stores XML data according to the XML data model and features
+	  efficient, index-based XQuery processing.
+	</para>
+
+	<para>
+	  It implements the majority of the SQL:2008 standard, is
+	  ACID-compliant, is fully transactional , has extensible data types,
+	  operators, index methods, functions, aggregates, procedural
+	  languages, and has a large number of extensions written by third
+	  parties.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.ide">
+      <glossterm><acronym>IDE</acronym></glossterm>
+      <glossdef>
+	<para>
+	  Integrated Development Environment
+	</para>
+	<para>
+	  Programming tool aimed at enhancing programming productivity by
+	  tying together other tools in the programming tool chain such as
+	  syntax sensitive program editors, compilers and debuggers.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.mvc">
+      <glossterm>MVC</glossterm>
+      <glossdef>
+	<!--TODO-->
+	<para>
+	  <ulink url="http://www.postgresql.org/">MVC</ulink>
+	  Model/View/Controller
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.omg">
+      <glossterm><acronym>OMG</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://www.omg.org">Object Management Group</ulink>
+	</para>
+	<para>
+	  An industry consortium aimed at setting standards for modelling and
+	  distributed object oriented technology. The de facto standard for OO
+	  design, UML, is managed by OMG, as well as the Model Driven
+	  Architecture initiative.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.osi">
+      <glossterm><acronym>OSI</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://opensource.org/">Open Source Initiative</ulink>
+	</para>
+	<para>
+	  The Open Source Initiative (OSI) is a non-profit corporation with
+	  global scope formed to educate about and advocate for the benefits
+	  of open source. It also acts as a standards body, maintaining the
+	  <ulink url="http://opensource.org/osd/">Open Source Definition</ulink>
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.postgresql">
+      <glossterm>PostgreSQL</glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://www.postgresql.org/">PostgreSQL</ulink> is an
+	  advanced object-relational database management system (ORDBMS)
+	  available for many platforms. It is free and open source software.
+	</para>
+
+	<para>
+	  It implements the majority of the SQL:2008 standard, is
+	  ACID-compliant, is fully transactional , has extensible data types,
+	  operators, index methods, functions, aggregates, procedural
+	  languages, and has a large number of extensions written by third
+	  parties.
+	</para>
+      </glossdef>
+    </glossentry>
+
+
+    <glossentry id="gle.rest">
+      <glossterm><acronym>REST</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <!-- TODO references, urls -->
+	  REpresentational State Transfer
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.w3c">
+      <glossterm><acronym>W3C</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://www.w3.org">World Wide Web Consortium</ulink>
+	</para>
+	<para>
+	  The World Wide Web Consortium (W3C) is an international community
+	  that develops open Web standards to ensure the long-term growth of
+	  the Web. The consortium maintains the central standards driving the
+	  web, such as HTTP, HTML, and also those defining the <ulink
+	  url="http://www.w3.org/2001/sw/">Semantic Web</ulink>.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.xforms">
+      <glossterm><acronym>Xforms</acronym></glossterm>
+      <glossdef>
+	<para>
+	  XForms is an XML format for the specification of a data processing
+	  model for XML data and user interface(s) for the XML data, such as
+	  web forms. XForms is intended to be integrated into other markup
+	  languages, such as XHTML, ODF or SVG.
+	</para>
+
+	<para>
+	  XForms was designed to be the next generation of HTML / XHTML forms,
+	  but can also be used in a standalone manner or with presentation
+	  languages other than XHTML to describe a user interface and a set of
+	  common data manipulation tasks.
+	</para>
+
+	<para>	
+	  The creators of XForms have adopted an <xref linkend="gle.mvc"/>
+	  approach. The model consists of one or more XForms models describing
+	  form data, constraints upon that data, and submissions. The view
+	  describes what controls appear in the form, how they are grouped
+	  together, and what data they are bound to. CSS can be used to
+	  describe a form's appearance.
+	</para>
+
+	<para>
+	  Among the feature highlights of XForms are
+
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		strong data type validation
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		form component reuse
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		elimination of unnecessary round-trips to the server
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		device independence
+	      </para>
+	    </listitem>
+	    <listitem>
+	      <para>
+		reduction of the need for scripting
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+
+	<para>
+	  The original XForms specification became an official <ulink
+	  url="http://www.w3.org">W3C</ulink> Recommendation in 2003, while
+	  <xref linkend="bib.xforms1-1"/>, which introduced a
+	  number of improvements, reached the same status in 2009. A further
+	  improved version, <ulink url="http://www.w3.org/TR/xforms20/">XForms
+	  2.0</ulink> is forthcoming.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.xquery">
+      <glossterm><acronym>XQuery</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <!--TODO-->
+	</para>
+	<para>
+	  The original XQuery specification became an official <ulink
+	  url="http://www.w3.org">W3C</ulink> Recommendation in 2003, while
+	  <xref linkend="bib.xforms1-1"/> XForms 1.1, which introduced a number of improvements, reached the
+	  same status in 2009.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.xrx">
+      <glossterm><acronym>XRX</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <!--TODO-->
+	</para>
+
+	<para>
+	  XRX is ...
+	</para>
+
+      </glossdef>
+    </glossentry>
+  </glossary>
+
+  <bibliography id="sec.bibliography">
+    <title>Bibliografi</title>
+    
+    <biblioentry id="bib.xforms1-1">
+      <abbrev id="bib.xforms.abbrev">XForms 1.1</abbrev>
+
+      <authorgroup>
+	<author><othername>World Wide Web Consortium</othername></author>
+	<editor>
+	  <firstname>John
+	  </firstname>
+	  <surname>Boyer</surname>
+	  <affiliation>
+	    <orgname>IBM
+	    </orgname>
+	  </affiliation>
+	</editor>
+      </authorgroup>
+
+      <pubdate>2009</pubdate>
+      <title>
+	<ulink url="http://www.w3.org/TR/xforms11/">XForms 1.1 W3C
+	Recommendation</ulink>
+      </title>
+    </biblioentry>
+    
+    <biblioentry id="bib.xpath">
+      <abbrev id="bib.xpath.abbrev">XPath</abbrev>
+
+      <authorgroup>
+	<author><othername>World Wide Web Consortium</othername></author>
+	<editor>
+	  <firstname></firstname>
+	  <surname></surname>
+	  <affiliation>
+	    <orgname></orgname>
+	  </affiliation>
+	</editor>
+      </authorgroup>
+      
+      <pubdate>2010</pubdate>
+      <title>
+	<ulink url="http://www.w3.org/TR/xpath20/">
+	  XPath 2.0 W3C Recommendation
+	</ulink>
+      </title>
+    </biblioentry>
+
+    <biblioentry id="bib.xquery">
+      <abbrev id="bib.xquery.abbrev">XQuery</abbrev>
+
+      <authorgroup>
+	<author><othername>World Wide Web Consortium</othername></author>
+	<editor>
+	  <firstname></firstname>
+	  <surname></surname>
+	  <affiliation>
+	    <orgname></orgname>
+	  </affiliation>
+	</editor>
+      </authorgroup>
+      
+      <pubdate>2010</pubdate>
+      <title>
+	<ulink url="http://www.w3.org/TR/xquery/">
+	  XQuery 1.0: An XML Query Language (Second Edition)
+	</ulink>
+      </title>
+    </biblioentry>
+
+  </bibliography>
+
+  <appendix id="app.bos-config">
+    <title>
+      Installation and Configuration of BOS-Tomcat bundle with PostgreSQL
+    </title>
+
+    <para>
+      ...
+    </para>
+
+    <section id="app.s.bos-config.download">
+      <title>Download Tomcat/Bonita bundle</title>
+      <para>
+	Download bundle from <ulink
+	url="http://www.bonitasoft.com/products/BPM_downloads/all">Bonita
+	download area</ulink>. The downloaded file is zip-compressed.
+      </para>
+      <para>
+	Unzip into directory of choice. Set global variables CATALINA_HOME
+	and CATALINA_BASE to this directory .  <!-- TODO (this might not be
+	necessary, try it out)-->.  This is done in the script
+	<programlisting>
+	  bin/setcatalina_home.sh
+	</programlisting>
+	which in turn is read from a modified
+	<programlisting>
+	  bin/startup.sh
+	</programlisting>
+      </para>
+    </section>
+
+    <section id="app.s.bos-config.postgresql-data-sources">
+      <title>Changes to Data Source Configuration</title>
+      <para>
+	The default data source configuration uses the file based DBMS H2.
+	To change this to PostgreSQL, locate $CATALINA_HOME/conf/context.xml
+	and apply the following changes to this file:
+      </para>
+
+      <para>	
+	Comment out default Resource tags (configured for use with H2)  with name
+      </para>
+
+      <para>
+	<programlisting>
+	  "bonita/default/history" and
+	  "bonita/default/journal"
+	</programlisting>
+	and replace with the following resources:
+	<programlisting>
+	  &lt;Resource name="bonita/default/history"  
+	  auth="Container"  
+	  type="javax.sql.DataSource" 
+	  maxActive="100"  
+	  minIdle="10"  
+	  maxWait="10000"  
+	  initialSize="1" 
+	  maxPoolSize="15" 
+	  minPoolSize="3"
+	  maxConnectionAge="0"
+	  maxIdleTime="1800"
+	  maxIdleTimeExcessConnections="120"
+	  idleConnectionTestPeriod="30"
+	  acquireIncrement="3"
+	  testConnectionOnCheckout="true"
+	  removeAbandoned="true" 
+	  logAbandoned="true" 
+	  username="bonita" 
+	  password="bpm"
+	  driverClassName="org.postgresql.Driver"
+	  url="jdbc:postgresql://localhost:5432/bonita_history?dontTrackOpenResources=true"/&gt;
+
+	  &lt;Resource name="bonita/default/journal"  
+	  auth="Container"  
+	  type="javax.sql.DataSource" 
+	  maxActive="100"  
+	  minIdle="10"  
+	  maxWait="10000"  
+	  initialSize="1" 
+	  maxPoolSize="15" 
+	  minPoolSize="3"
+	  maxConnectionAge="0"
+	  maxIdleTime="1800"
+	  maxIdleTimeExcessConnections="120"
+	  idleConnectionTestPeriod="30"
+	  acquireIncrement="3"
+	  testConnectionOnCheckout="true"
+	  removeAbandoned="true" 
+	  logAbandoned="true" 
+	  username="bonita" 
+	  password="bpm"
+	  driverClassName="org.postgresql.Driver" 
+	  url="jdbc:postgresql://localhost:5432/bonita_journal?dontTrackOpenResources=true"/&gt;
+	</programlisting>
+      </para>
+    </section>
+
+    <section id="s.app.bos-config.postgresql-bonita-server">
+      <title>Changes to bonita server property files</title>
+      <para>
+	Locate the directory $CATALINA_HOME/bonita/server/default.  In this
+	directory, there are two property files, bonita-journal.properties,
+	and bonita-history.properties that need changes in order to work
+	with PostgreSQL.
+      </para>
+
+      <para>
+	In bonita-journal.properties, apply the following patch:
+      </para>
+
+      <para>
+	<programlisting>
+	  17c17
+	  &lt; hibernate.dialect                        org.hibernate.dialect.H2Dialect
+	  ---
+	  &gt; # hibernate.dialect                        org.hibernate.dialect.H2Dialect
+	  20c20,25
+	  &lt; bonita.hibernate.interceptor             org.ow2.bonita.env.interceptor.H2DescNullFirstInterceptor
+	  ---
+	  &gt; # bonita.hibernate.interceptor             org.ow2.bonita.env.interceptor.H2DescNullFirstInterceptor
+	  &gt; 
+	  &gt; # POSTGRESQL 
+	  &gt; hibernate.dialect org.hibernate.dialect.PostgreSQLDialect
+	  &gt; hibernate.connection.driver_class org.postgresql.Driver 
+	  &gt; hibernate.connection.url jdbc:postgresql://localhost:5432/bonita_history
+	</programlisting>
+      </para>
+
+      <para>
+	In bonita-history.properties, apply the following (actually same) patch:
+      </para>
+      <para>
+	<programlisting>
+	  17c17
+	  &lt; hibernate.dialect                        org.hibernate.dialect.H2Dialect
+	  ---
+	  &gt; # hibernate.dialect                        org.hibernate.dialect.H2Dialect
+	  20c20,25
+	  &lt; bonita.hibernate.interceptor             org.ow2.bonita.env.interceptor.H2DescNullFirstInterceptor
+	  ---
+	  &gt; # bonita.hibernate.interceptor             org.ow2.bonita.env.interceptor.H2DescNullFirstInterceptor
+	  &gt; 
+	  &gt; # POSTGRESQL 
+	  &gt; hibernate.dialect org.hibernate.dialect.PostgreSQLDialect
+	  &gt; hibernate.connection.driver_class org.postgresql.Driver 
+	  &gt; hibernate.connection.url jdbc:postgresql://localhost:5432/bonita_history
+	</programlisting>
+      </para>
+    </section>
+
+    <section id="s.app.bos-config.postgresql">
+      <title>PostgreSQL Configuration</title>
+      <para>
+	Create user bonita with all rights, and with password according to settings in
+	<xref linkend="app.s.bos-config.postgresql-data-sources"/>.
+      </para>
+    </section>
+
+    <section id="s.app.bos-config.postgresql.jdbc-driver">
+      <title>Install PostgreSQL JDBC driver</title>
+      <para>
+	Locate or download postgresql-9.1-901.jdbc4.jar or later and copy
+	into $CATALINA_HOME/lib
+      </para>
+    </section>
+
+    <section id="s.app.bos-config.tomcat-postgres-start">
+      <title>Start server</title>
+      <para>
+	Now server is ready to be started by running
+	$CATALINA_HOME/bin/startup.sh
+      </para>
+    </section>
+  </appendix>
+
+  <appendix id="app-dev-on-oipp">
+    <title>
+      Development on PAWAP
+    </title>
+
+    <para>
+      ...
+    </para>
+
+    <section id="s.app.xxx">
+      <title>Xxx</title>
+
+      <para>
+	...
+      </para>
+    </section>
+  </appendix>
+
+  <appendix id="app.dev.oipp">
+    <title>
+      Further Development of PAWAP
+    </title>
+
+    <para>
+      ...
+    </para>
+
+    <section id="s.yyy">
+      <title>Yyy</title>
+
+      <para>
+	...
+      </para>
+    </section>
+  </appendix>
+</article>
