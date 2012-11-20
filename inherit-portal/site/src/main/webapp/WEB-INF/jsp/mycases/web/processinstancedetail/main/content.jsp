@@ -1,8 +1,34 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="document" type="se.inherit.portal.beans.NewsDocument"--%>
 
+<script type="text/javascript" charset="utf-8">
+		        jQuery.noConflict();
+		        var $j = jQuery;
+		        $j(document).ready(function () {
+		        	$j("#procLogDetail tr:odd").addClass("odd");
+		            $j("#procLogDetail tr:not(.odd)").hide();
+		            $j("#procLogDetail tr:first-child").show();
+		            
+		            $j("#procLogDetail tr.odd").click(function(){
+		           	var url = $j(this).children('td').eq(0).children('a').attr('href');
+			        var nextRow =  $j(this).next("tr");
+					
+			        $j(nextRow).find("div").load("<fmt:message key="orbeonbase.portal.url"/>" + $url, function(data) {
+				                if (typeof ORBEON != "undefined") { 
+				                    if (!document.all) {
+				                        ORBEON.xforms.Init.document(); 
+				                    } 
+				                } 
+				        	    }
+						); 
+		                $j(nextRow).toggle();
+		                $j(this).find(".arrow").toggleClass("up");
+			            });
+					});
+		        
+		</script>
+		
 <h1><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
-
 
 <c:choose>
   <c:when test="${empty processInstanceDetails}">
@@ -78,7 +104,7 @@
 	
   	 <h2><fmt:message key="mycases.activityLog.lbl"/></h2>   
   	 <p>
-		 <table class="display dataTable">
+		 <table id="procLogDetail" class="display dataTable">
 			<thead>
 				<tr>
 				   <th><fmt:message key="mycases.activity.column.lbl"/></th>
@@ -91,10 +117,15 @@
 		    <c:if test="${not empty processInstanceDetails.activityLog}">
 				<c:forEach var="logItem" items="${processInstanceDetails.activityLog}">
 					<tr>
-				 	  	<td>${logItem.activityLabel}</td>
+				 	  	<td><a href="${logItem.viewUrl}">${logItem.activityLabel}</a></td>
 				 	  	<td><fmt:formatDate value="${logItem.startDate}" type="Both" /></td>
 				 	  	<td><fmt:formatDate value="${logItem.endDate}" type="Both" /></td>
 						<td>${logItem.performedByUserId}</td>
+					</tr>
+					<tr>
+					  <td colspan="4">
+					     <div class="xform">Loading activity details...please wait...</div>
+					  </td>
 					</tr>
 				</c:forEach>
 				<tr>
@@ -103,6 +134,12 @@
 				 	  	<td></td>
 						<td>${processInstanceDetails.startedBy}</td>
 				</tr>
+				<tr>
+				  <td colspan="4">
+				     <div class="xform">Loading activity details...please wait...</div>
+				  </td>
+				</tr>
+				
 				
 			</c:if>
 			</tbody>
