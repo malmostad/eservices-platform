@@ -71,12 +71,23 @@
   <section id="s.intro">
     <title>Introduction</title>
     <para>
-      This document aims at explaining the ideas behind <emphasis>The
-      Process-Aware Web Application Platform</emphasis>, (PAWAP), its inner
-      workings as well as its setup and configuration. In order to explain the
-      term <emphasis>"process-aware"</emphasis>, we first define the
-      terms "Business Process", "Business Process Model" and "Executable
-      Business Process".
+      The <emphasis>Process-Aware Web Application Platform</emphasis>, PAWAP,
+      provides the integration of a set of open source software products and
+      tools to facilitate the construction of "<emphasis>business
+      process-aware</emphasis>" web applications, that is, applications using
+      the services of a <emphasis>business process engine</emphasis> to
+      coordinate multi user work at multiple locations.
+    </para>
+    
+    <para>
+      This document explains the ideas which have guided the design of PAWAP,
+      its inner workings as well as its setup and configuration.
+    </para>
+
+    <para>
+      In order to explain the term <emphasis>"process-aware"</emphasis>, we
+      first define the terms "Business Process", "Business Process Model" and
+      "Executable Business Process".
     </para>
 
     <para>
@@ -90,44 +101,58 @@
       The collaborative effort can be partitioned into a set of tasks. This
       subdivision might be iterated down to an arbitray level, guided by
       experience and common sense. The various tasks are performed by various
-      actors in the organisation. A task might be automatic, in which case the
-      actor is an automaton (e.g. computer or robot). Otherwise it is a manual
-      task, performed by a person or by a group of persons. The rules for
-      assigning the actors to the task is part of the business process, and
-      determined by the task itself, and by rules determined by the
-      organisation structure.
+      <emphasis>actors</emphasis>. An actor can be a person or a group of
+      persons, or it can be an <emphasis>automaton</emphasis> (e.g. a computer
+      or a robot). If the actor is an automaton, the task is called an
+      automatic task or a service task. Otherwise it is called a manual task.
+      The rules for assigning the actors to the task is part of the business
+      process, and determined by the task itself, and by rules determined by
+      the organisation structure.
     </para>
 
     <para>
       In order to understand a complex phenomenon, we humans tend to break it
-      down into parts (analysis), and then build it up again (synthesis).
-      Since a business process is not a tangible phenomenon which we can build
-      in itself, we can only build a representation of it &mdash; a model.
+      down into parts (<emphasis>analysis</emphasis>), and then build it up
+      again (<emphasis>synthesis</emphasis>).  Since a business process is not
+      a tangible phenomenon which we can build in itself, we can only build a
+      representation of it &mdash; a <emphasis>model</emphasis>.
+    </para>
+
+    <para>
       Business Process Modeling (BPM) is the activity of identifying,
       analysing and creating representations of processes of an enterprise.
-      The aim of this is to better understand the processes of the
+      The aim of this activity is to better understand the processes of the
       organisation in order to improve their quality and efficiency.
     </para>
 
     <para>
-      An "executable business process" is the result of creating a model of a
-      "real" business process in a specialised, formal process description
-      language which can be <emphasis>translated</emphasis> into a form
-      suitable for computer execution. To execute the model implies,
-      informally stated, to identify the task to be performed and to assign it
-      to the adequate actor, whether a human participant in the task, or a
-      computer.
+      If the modeling is performed using a <emphasis>dedicated formal process
+      modeling language</emphasis> which can be translated into a form
+      suitable for computer execution, we can make the business processes
+      "executable".  To execute the model implies, informally stated, to
+      deploy the executable process model on a computer system, and start an
+      execution of it. The execution identifies the correct ordering of the
+      tasks to be performed, and assigns each task to the adequate actor,
+      whether a human participant, or a computer.
+    </para>
+
+    <para>
+      Thus, we have a round trip in the analysis/modeling/execution cycle:
+      First we study the reality (the existing process), we create an adequate
+      "copy" of it (the executable model) and finally we apply that model to a
+      computer to "force" the "real" process to perform like the model.
     </para>
 
     <para>
       A web application is <emphasis>business process-aware</emphasis> if
       there is an underlying software component &mdash; a <emphasis>Business
-      Process Engine</emphasis> &mdash; which <emphasis>emulates</emphasis> a
-      business process and performs (amongst others), the following services
-      to the web application:
+      Process Engine</emphasis> &mdash; which supports a business process by
+      ensuring that it conforms to the process model. It performs (amongst
+      others), the following services to the web application:
     </para>
 
-    <itemizedlist>
+    <itemizedlist id="il.process-engine-services">
+      <title>Process Engine: Services</title>
       <listitem>
 	<para>
 	  Determination of the current task list
@@ -175,130 +200,259 @@
     </itemizedlist>
 
     <para>
-      The <emphasis>Process-Aware Web Application Platform</emphasis>, PAWAP,
-      provides the integration of a set of open source software products and
-      tools to facilitate the construction of "<emphasis>business
-      process-aware</emphasis>" web applications, applications using the
-      services or a process engine to coordinate multi user work at multiple
-      locations.
-    </para>
-
-    <para>
-      PAWAP is a "<emphasis>true open source</emphasis>" platform, that is,
-      all the software is licensed under an open source licence as defined by
-      <xref linkend="gle.osi"/>. This is not only because we are convinced of
-      the superiority of the Open Source Development paradigm, but because the
-      integration of complex software artifacts is generally less hard when
-      the software is open, that is, when they are open for inspection and
-      modification.
-    </para>
-
-    <para>
-      In the next section an overview of the system is provided, and how the
-      principle of "separation of concerns" has governed the architecture and
-      choice of components and products.
+      In the next section, we describe the central principles which have
+      governed the system architecture, and some essential requirements
+      derived from these principles. We describe the choice of components, and
+      provide an overview of the system.
     </para>
   </section>
 
-  <section id="s.oipp-overview">
-    <title>Overview</title>
-
-<!--=================================================================
-    Architectural pattern, 
-    division of labour, 
-    forms engine, 
-    webapp toolkit
-    content repository.
-    separation of concerns
-    navigational interactions
-    process-based interactions
-    data input interactions
-=====================================================================-->
-
-    <para>
-      Combining Solid Open Source Software Solutions
-    </para>
-
-    <section id="s.oipp-overview.combining">
-      <title>A platform for building Business Process Aware Web Applications</title>
+  <section id="s.pawap.overview">
+    <title>System Overview</title>
+    <!--=================================================================
+	Architectural pattern, 
+	forms engine, 
+	webapp toolkit,
+	content repository,
+	separation of concerns,
+	navigational interactions,
+	process-based interactions,
+	data input interactions,
+	=====================================================================-->
+    <section id="s.pawap.design-principles">
+      <title>Design Principles</title>
       <para>
-	In this paper we adopt the following definition of a Process-Aware
-	Information System (PAIS): a software system that manages and executes
-	operational processes involving people, applications, and/or
-	information sources on the basis of process models [24]. Although not
-	explicitly stated in this definition, it should be noted that the
-	process models mentioned are usually represented in some graphical
-	language, e.g., a Petri-net-like notation. The models are typically
-	in- stantiated multiple times (e.g., for every customer order) and
-	every instance is handled in a predefined way (possibly with
-	variations).
+	In designing PAWAP, we have strived to follow the architectural
+	principles of <xref linkend="gle.separation-of-concerns"/> and <xref
+	linkend="gle.loose-coupling"/>. Together these principles promote the
+	creation of a modular system, a highly desirable property in that it:
       </para>
 
-      <para>
-	In most cases the flow of operations for an application is built into
-	the application logic itself. If that logic needs to be changed, the
-	application must be modified and in some cased rebuilt.
-      </para>
-
-      <para>
-	We present here a framework where the flow of operations is guided by
-	a separate artifact, an instance of a <emphasis>business process
-	model</emphasis>. 
-
-
-      </para>
-    </section>
-
-    <section id="s.oipp-overview.bonita">
-      <title>Executable Business Process Engine</title>
-      <para>
-	Bonita BPM
-      </para>
-    </section>
-
-    <section id="s.oipp-overview.hippo">
-      <title>Content Repository and Web Development Toolkit</title>
-      <para>
-	Hippo CMS
-      </para>
-    </section>
-
-    <section id="s.oipp-overview.orbeon">
-      <title>State of the art Web Forms</title>
-      <para>
-	<ulink url="http://www.orbeon.com">Orbeon Forms</ulink> is an open
-	source, standard-based web forms solution. The product includes the
-	tool <emphasis>Form Builder</emphasis> a WYSIWYG browser-based
-	authoring tool for building state of the art web forms and
-	<emphasis>Form Runner</emphasis>, a runtime environment for the
-	deployment, integration and execution of large numbers of complex
-	forms.
-      </para>
-
-      <para>
-	Orbeon Forms is based on the <xref linkend="gle.xforms"/> standard
-	which it provides a server side implementation of, and uses <xref
-	linkend="gle.ajax"/> technologies, with no need for additional
-	client-side software or plugins.
-      </para>
-
-      <section id="s.teknisk-beskr">
-	<title>Teknisk beskrivning</title>
-	<section id="s.teknisk-beskr.arkitektur">
-	  <title>Arkitektur</title>
+      <itemizedlist>
+	<listitem>
 	  <para>
-	    Formulärlösningen bygger på en <xref linkend="gle.xrx"/> (<xref
-	    linkend="gle.xforms"/>,<xref linkend="gle.rest"/> and <xref
-	    linkend="gle.xquery"/>) architecture.
+	    Simplifies system maintenance
 	  </para>
-	</section>
+	</listitem>
+	<listitem>
+	  <para>
+	    Enables the choice of "best of breed" components
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Substitutability: Reduces lock-in to a particular component/product
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    Simplifies integration with other components/products
+	  </para>
+	</listitem>
+      </itemizedlist>
+    </section>
+
+    <section id="s.pawap.requirements">
+      <title>Requirements</title>
+      <para>
+	We here postulate some non functional requirements at the highermost
+	level. They apply to the external open source components and products
+	as well as the components that are built internally as part of the
+	platform.
+      </para>
+
+      <section id="s.pawap.requirements.openstd">
+	<title>Open Standards</title>
+	<para>
+	  The external and internal software components shall be based on, or
+	  use relevant <ulink url="http://opensource.org/osr">Open</ulink>
+	  Standards.
+	</para>
+	<para>
+	  The term "standard" is often used as synonym for "common", or
+	  "frequently used", often referring to closed, proprietary software.
+	  Since the whole point of establishing a "standard" is
+	  interoperability, it is important to ensure that the relevant
+	  standards are also <emphasis>open</emphasis>, and not discriminatory
+	  towards open source software, as <ulink
+	  url="http://opensource.org/osr">defined</ulink> by <xref
+	  linkend="gle.osi"/>.
+	</para>
+      </section>
+
+      <section id="s.pawap.requirements.oss">
+	<title>Open Source</title>
+	<para>
+	  PAWAP shall be and remain an "<emphasis>true open source</emphasis>"
+	  platform. All the external software must be licensed under an open
+	  source licence as defined by <xref linkend="gle.osi"/>. The internal
+	  software will be licensed under <xref linkend="gle.agpl"/>, an open
+	  source licence as defined by <xref linkend="gle.gnu"/>
+	</para>
+
+	<para>
+	  The reasons for this choice are the following:
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Proven, efficient development paradigm
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Reduces integration effort
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Public sector friendly
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Accelerated development through community building and re-use
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </section>
+
+      <section id="s.pawap.requirements.arch">
+	<title>Modular Architecture, Exposed API</title>
+	<para>
+	  For the same reasons as presented in <xref
+	  linkend="s.pawap.design-principles"/>, it is desirable that the
+	  external software itself is modular, with sound and comprehensive
+	  open API's according to good practices.
+	</para>
+      </section>
+
+      <section id="s.pawap.requirements.mature">
+	<title>Mature, High Quality Products with Active Communities</title>
+	<para>
+	  We want the PAWAP itself to be Enterprise-grade and to become widely
+	  used and with an active community. It must then possess properties
+	  such as quality, scaleability and stability. It is necessary to
+	  expect the same from the included external software. In addition to
+	  the requirements listed above, we favour the following properties
+	  from our dependent, external software:
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Quality (Documentation, release procedures etc.)
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Scaleability
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Stability, Maturity
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Active User Community (Mailing lists, Fora, Wikis)
+	    </para>
+	  </listitem>
+	</itemizedlist>
       </section>
     </section>
 
-    <section id="s.oipp-overview-architecture">
-      <title>System Overview</title>
+    <section id="s.pawap.parts">
+      <title>The Parts</title>
+      <para>
+	So, which are the "concerns" of a "Process Aware Web Application
+	Platform"?
+      </para>
+
+      <para>
+	As the name suggests, we need the functionality enabling "process
+	awareness". That means that we need a component that performs the
+	services as described in <xref linkend="il.process-engine-services"/>,
+	that is, an <emphasis>executable business process engine</emphasis>.
+      </para>
+
+      <para>
+	Furhtermore, an executable process is often fed with data through
+	human interaction with a web form. For that purpose, we need a
+	<emphasis>Forms Engine</emphasis>.
+      </para>
+
+      <para>
+	Finally, we need a solid framework for building webbapps with features
+	for handling content, multiple channels, languages etc: a
+	<emphasis>Web Application Platform</emphasis>.
+      </para>
+
+      <section id="s.pawap.overview.bonita">
+	<title>Executable Business Process Engine</title>
+	  <para>
+	    Enabling the services making the web application "process-aware"
+	  </para>
+	<para>
+	  Bonita BPM...
+	</para>
+      </section>
+
+      <section id="s.pawap.overview.orbeon">
+	<title>State of the art Web Forms</title>
+	  <para>
+	  </para>
+	<para>
+	  <ulink url="http://www.orbeon.com">Orbeon Forms</ulink> is an open
+	  source, standard-based web forms solution. The product features a
+	  responsive, high performance and flexible forms engine, readily
+	  integrateable with other software components. It includes the tool
+	  <emphasis>Form Builder</emphasis>, a <xref linkend="gle.wysiwyg"/>
+	  browser-based authoring tool for building state of the art web forms
+	  and <emphasis>Form Runner</emphasis>, a runtime environment for the
+	  deployment, integration and execution of large numbers of complex
+	  forms.
+	</para>
+
+	<para>
+	  Orbeon Forms is based on the <xref linkend="gle.xforms"/> standard
+	  which it provides a server side implementation of, and uses <xref
+	  linkend="gle.ajax"/> technologies, with no need for additional
+	  client-side software or plugins.
+	</para>
+
+	<para>
+	  The forms engine is built upon an  <xref linkend="gle.xrx"/> (<xref
+	  linkend="gle.xforms"/>,<xref linkend="gle.rest"/> and <xref
+	  linkend="gle.xquery"/>) architecture.
+	</para>
+      </section>
+
+      <section id="s.pawap.overview.hippo">
+	<title>Content Repository and Web Development Toolkit</title>
+
+	<para>
+	  A solid platform suitable for the design of high performance content
+	  based web applications
+	</para>
+	<para>
+	  Hippo CMS...
+	</para>
+      </section>
+    </section>
+
+    <section id="s.pawap.overview-architecture">
+      <title>The Big Picture</title>
       <figure id="im-human-comm">
-	<title>The process and Forms engines working in concert with the CMS </title>
+	<title>The process and Forms engines working in concert with the CMS</title>
 	<mediaobject>
 	  <imageobject>
 	    <imagedata scale="40" fileref="images/arch-overview.svg"/>
@@ -316,9 +470,12 @@
       </para>
     </section>
 
-    <section id="s.oipp-overview.added-value">
+    <section id="s.pawap.overview.added-value">
       <title>The Added Value</title>
       <para>
+	In most cases the flow of operations for an application is built into
+	the application logic itself. If that logic needs to be changed, the
+	application must be modified and in some cased rebuilt.
       </para>
     </section>
   </section>
@@ -326,101 +483,15 @@
   <section id="s.dev-env">
     <title>Development Environment</title>
     <para>
+      <!-- TODO -->
       This section describes how to set up an environment ready for
       development. This implies setting up the development tools, the server
       suite and the program components that are necessary for the development,
       building and testing of the process-aware applications built on the
-      platform. It does not describe the development process itself when using
-      the platform, this is done in <xref linkend="app-dev-on-oipp"/>.
+      platform. A brief howto-guide for the development of web applications on
+      the platform is provided in... <xref linkend="s.app-dev-on-pawap"/>.
     </para>
     
-    <section id="s.dev-env.tools">
-      <title>Development Tools</title>
-
-      <section id="s.dev-env.tools.java">
-	<title>
-	  Java
-	</title>
-
-	<para>
-	  PAWAP is developed and runs in a Server Side Java (JEE)
-	  Ecosystem.
-	</para>
-	
-	<para>
-	  The JDK (Java Development Kit) used is <ulink
-	  url="http://www.oracle.com/technetwork/java/javase/overview/index.html">Oracle
-	  JDK version 1.6</ulink>. Make sure this JDK is installed on your
-	  machine, and verify that the environment variable JAVA_HOME is set,
-	  either system wide, or by adding it to the appropriate init script,
-	  e.g.:
-	  <programlisting>
-	    export JAVA_HOME=/usr/lib/jvm/java-6-sun
-	  </programlisting>
-	</para>
-
-	<note>
-	  <simpara>
-	    The licensing of this JDK is not open source compatible. Some
-	    of the program components of PAWAP require the Oracle JDK
-	    rather than OpenJDK) (We expect this problem to be solved in
-	    the near future, when all components are expected to be
-	    compatible with <ulink url="http://openjdk.java.net/">OpenJDK
-	    7</ulink>
-	  </simpara>
-	</note>
-
-      </section>
-
-      <section id="s.dev-env.tools.mvn">
-	<title>
-	  Apache Maven 
-	</title>
-	<para>
-	  <ulink url="http://maven.apache.org/">Apache Maven</ulink> is used for
-	  managing the build and testing environment. The platform is built
-	  using Maven 2.2.1, and Maven must be installed on the development
-	  machine.
-	</para>
-      </section>
-
-      <section id="s.dev-env.tools.eclipse">
-	<title>
-	  Eclipse
-	</title>
-	<para>
-	  <ulink url="http://www.eclipse.org">Eclipse</ulink> is used as <xref
-	  linkend="gle.ide"/>. Eclipse comes in many different pre packaged
-	  bundles. Choose the bundle: <ulink
-	  url="http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/junosr1">Eclipse
-	  IDE for Java EE Developers</ulink>.
-	</para>
-
-	<para>
-	  The Eclipse development environment is integrated with Maven through
-	  the Maven plugin <ulink
-	  url="http://www.eclipse.org/m2e/">m2e</ulink> (Maven 2 Eclipse
-	  Integration). For installation information, refer to the <ulink
-	  url="http://www.eclipse.org/m2e/download/">Eclipse Maven Plugin
-	  Download Site</ulink>.
-	</para>
-      </section>
-
-      <section id="s.dev-enc.tools.git">
-	<title>
-	  Source code repository and version/configuration management
-	</title>
-
-	<para>
-	  For this purpose, <ulink url="http://git-scm.com/">GIT
-	  (v. 1.7.9.5)</ulink> is used. The source code repository is located
-	  at: pluto.inherit.se:inherit-platform.git Cf. <xref
-	  linkend="s.checkout.code"/> for instructions on how to check out the
-	  source code of PAWAP.
-	</para>
-      </section>
-    </section>
-
     <section id="s.dev-env.bos">
       <title>Download, configure and start the Process Engine</title>
 
@@ -455,87 +526,6 @@
 	engine with <xref linkend="gle.postgresql"/> as back-end.
       </para>
 
-    </section>
-
-    <section id="s.dev-env.orbeon">
-      <title>Install, configure and start Orbeon Forms</title>
-      <!-- 
-	   TODO:...
-      -->
-
-      <para>
-	The forms engine is accessed via a <xref
-	linkend="gle.rest"/> interface.
-      </para>
-
-      <para>
-	The following steps describes how to install and configure the forms
-	engine Orbeon with <xref linkend="gle.existdb"/> as back-end.
-      </para>
-
-      <section id="s.dev-env.orbeon-prereq">
-	<title>Prerequisites</title>
-	<para>
-	  Download bundle from <ulink url="">Orbeon download area</ulink>. The
-	  downloaded file is ...
-	</para>
-      </section>
-
-      <section id="s.dev-env.orbeon-install">
-	<title>Installation</title>
-	<para>
-	  Perform the base install of Orbeon Forms as explained in the
-	  <ulink
-	      url="http://wiki.orbeon.com/forms/doc/developer-guide/admin/installing">Orbeon
-	  Forms Wiki</ulink>
-	</para>
-
-	<para>
-	  Perform the initial checks and preparations and go on to the section
-	  for installing on Apache Tomcat. The base installation consists
-	  mainly of extracting the downloaded orbeon.jar file to the directory
-	  $TOMCAT_HOME/webapps
-	</para>
-
-	<para>
-	  The result is a directory, webapps/orbeon.
-	</para>
-
-	<para>
-	  Configuring Orbeon consists mainly of defining or overriding
-	  configuration properties according to <ulink
-	  url="http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties">the
-	  the section of configuration proerties</ulink> in the Orbeon Forms
-	  Developer's Guide.
-	</para>
-
-	<para>
-	  In the directory
-	  $TOMCAT_HOME/webapps/orbeon/WEB-INF/resources/config, there is a
-	  file properties-local.xml. This file is for definition of new
-	  properties or overrriding standard values of predefined
-	  properties. The properties in this file are explained, where not
-	  obvious, in a comment immediately preceding the comment.
-	</para>
-      </section>
-
-      <section id="s.dev-env.orbeon-existdb">
-	<title>Configure the Exist database</title>
-	<para>
-	  To configure Orbeon for use with the <xref linkend="gle.existdb"/>,
-	  follow the <ulink
-	  url="http://wiki.orbeon.com/forms/doc/developer-guide/exist-configuration">instructions</ulink>
-	  Orbeon in the Orbeon Forms Developer's Guide.
-	</para>
-      </section>
-
-      <section id="s.dev-env.orbeon-start">
-	<title>Start server</title>
-	<para>
-	  Now server is ready to be started by running
-	  $CATALINA_HOME/bin/startup.sh
-	</para>
-      </section>
     </section>
 
     <section id="s.checkout.code">
@@ -587,101 +577,11 @@
       </para>
     </section>
 
-    <section id="s.architecture.overview">
-      <title>Source Code Overview</title>
+    <section id="s.app-dev-on-pawap">
+      <title>Development on PAWAP</title>
       <para>
-
+	...
       </para>
-      <section id="s.src.inherit-portal">
-	<title>inherit-portal</title>
-	<para>
-	  inherit-portal is a HippoCMS maven project with Hippo's subprojects
-	  
-	  <itemizedlist>
-	    <listitem>
-	      <para>
-		inherit-portal-site
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-		inherit-portal-cms
-	      </para>
-	    </listitem>
-	    <listitem>
-	      <para>
-		inherit-portal-content
-	      </para>
-	    </listitem>
-	  </itemizedlist>	
-	</para>
-      </section>      
-
-      <section id="s.src.inherit.security">
-	<title>inherit-security</title>
-	<para>
-	  JAAS module etc. TODO!
-	</para>
-      </section>
-
-
-      <section id="s.src.inherit.service">
-	<title>inherit-service</title>
-	<para>
-	  Inherit Service is inherit-platform's service layer. Currently, the
-	  inherit-service-rest-server war file is the way to deploy
-	  inherit-service. inherit-service-rest-client is an implementation to
-	  integrate with Inherit Service.
-	</para>
-	
-	<section id="s.src.inherit.service-common">
-	  <title>inherit-service-common</title>
-	  <para>
-	    Contains inherit-service common classes used by the
-	    subprojects. Furhermore, this project contains neccessary POJOs to
-	    integrate with Inherit Service.
-	  </para>
-	</section>
-	
-	<section id="s.src.inherit.service-core">
-	  <title>inherit-service-core</title>
-	  <para>
-	    Implementation of core functionality (not yet in use)
-	  </para>
-	</section>
-
-	<section id="s.src.inherit.service-rest-server">
-	  <title>inherit-service-rest-server</title>
-	  <para>
-	    This projects builds a deployable war with a REST exposed
-	    inherit-service.  The intention is that this project only is a glue
-	    to publish Inherit Service with a REST interface.
-	  </para>
-	</section>
-
-	<section id="s.src.inherit.service-rest-client">
-	  <title>inherit-service-rest-client</title>
-	  <para>
-	    This is a ready to use implementation of a REST client 
-	    to call inherit-service-rest-server.
-	  </para>
-	</section>
-
-	<section id="s.src.inherit.service-taskform-engine">
-	  <title>inherit-service-taskform-engine</title>
-	  <para>
-	    This engine keeps track on tasks to perform. Task can exist in BPM 
-	    engine and be partially filled in start forms.
-	  </para>
-	</section>
-
-	<section id="s.src.inherit.service-bonita-client-utils">
-	  <title>inherit-service-bonita-client-utils</title>
-	  <para>
-	    Utilities to integrate with Bonita Open Solution.
-	  </para>
-	</section>
-      </section>
     </section>
   </section>
 
@@ -702,17 +602,6 @@
 	  tar xzf jcr-inherit-portal.tgz
 	</programlisting>
       </section>
-    </section>
-    
-    <section id="s.deploy_local_dev.server">
-      <title>Deploy on local developer server</title>
-      <programlisting>
-	cd inherit-platform
-	mvn clean install
-	cp inherit-bonita-rest-server-custom/target/inherit-bonita-rest-server-custom-1.0-SNAPSHOT.war PATH_TO_BOS_SERVER/webapps
-	cd inherit-portal
-	mvn -P cargo.run -Drepo.path=/your/path/to/jcr-inherit-portal
-      </programlisting>
     </section>
     
     <section id="s.deploy_public_demo.server">
@@ -762,6 +651,16 @@
   </section>
   
   <glossary id="glossary">
+    <glossentry id="gle.agpl">
+      <glossterm><acronym>GNU Affero GPL</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink
+	      url="http://www.gnu.org/licenses/agpl-3.0.html">AGPL...</ulink>
+	</para>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="gle.ajax">
       <glossterm><acronym>AJAX</acronym></glossterm>
       <glossdef>
@@ -782,9 +681,9 @@
       </glossdef>
     </glossentry>
 
+<!--
     <glossentry id="bib.bpmn2">
       <glossterm>BPMN 2.0</glossterm>
-      <!--TODO-->
       <glossdef>
 	<para>
 	  <ulink url="http://www.omg.org/spec/BPMN/2.0/">
@@ -793,6 +692,7 @@
 	</para>
       </glossdef>
     </glossentry>
+-->
 
     <glossentry id="gle.existdb">
       <glossterm>eXist-db</glossterm>
@@ -814,6 +714,16 @@
       </glossdef>
     </glossentry>
 
+    <glossentry id="gle.gnu">
+      <glossterm><acronym>GNU</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink
+	      url="http://www.gnu.org/">GNU...</ulink>
+	</para>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="gle.ide">
       <glossterm><acronym>IDE</acronym></glossterm>
       <glossdef>
@@ -828,13 +738,22 @@
       </glossdef>
     </glossentry>
 
+    <glossentry id="gle.loose-coupling">
+      <glossterm>Loose Coupling</glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://en.wikipedia.org/wiki/Loose_coupling">Loose Coupling</ulink>
+	  ...
+	</para>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="gle.mvc">
       <glossterm>MVC</glossterm>
       <glossdef>
-	<!--TODO-->
 	<para>
-	  <ulink url="http://www.postgresql.org/">MVC</ulink>
-	  Model/View/Controller
+	  <ulink url="http://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller">MVC</ulink>
+	  Model/View/Controller...
 	</para>
       </glossdef>
     </glossentry>
@@ -899,6 +818,17 @@
       </glossdef>
     </glossentry>
 
+    <glossentry id="gle.separation-of-concerns">
+      <glossterm>SoC</glossterm>
+      <glossdef>
+	<para>
+	  <ulink
+	      url="http://en.wikipedia.org/wiki/Separation_of_concerns">Separation
+	  of Concerns</ulink>...
+	</para>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="gle.w3c">
       <glossterm><acronym>W3C</acronym></glossterm>
       <glossdef>
@@ -915,14 +845,27 @@
       </glossdef>
     </glossentry>
 
+    <glossentry id="gle.wysiwyg">
+      <glossterm><acronym>WYSIWYG</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://en.wikipedia.org/wiki/WYSIWYG">What You See Is
+	  What You Get</ulink>: A user interface for designing layouts that
+	  that presents to the user a view that closely resembles the end
+	  result.
+	</para>
+      </glossdef>
+    </glossentry>
+
     <glossentry id="gle.xforms">
       <glossterm><acronym>Xforms</acronym></glossterm>
       <glossdef>
 	<para>
-	  XForms is an XML format for the specification of a data processing
-	  model for XML data and user interface(s) for the XML data, such as
-	  web forms. XForms is intended to be integrated into other markup
-	  languages, such as XHTML, ODF or SVG.
+	  <xref linkend="bib.xforms1-1"/> is an XML format for the
+	  specification of a data processing model for XML data and user
+	  interface(s) for the XML data, such as web forms. XForms is intended
+	  to be integrated into other markup languages, such as XHTML, ODF or
+	  SVG.
 	</para>
 
 	<para>
@@ -1007,7 +950,7 @@
 	</para>
 
 	<para>
-	  XRX is ...
+	  XForms/REST/XQuery...
 	</para>
 
       </glossdef>
@@ -1016,6 +959,30 @@
 
   <bibliography id="sec.bibliography">
     <title>Bibliografi</title>
+    
+    <biblioentry id="bib.bpmn2">
+      <abbrev id="bib.bpmn2.abbrev">BPMN 2.0</abbrev>
+
+      <authorgroup>
+	<author><othername>OMG</othername></author>
+	<editor>
+	  <firstname>
+	  </firstname>
+	  <surname></surname>
+	  <affiliation>
+	    <orgname>
+	    </orgname>
+	  </affiliation>
+	</editor>
+      </authorgroup>
+      
+      <pubdate>2011</pubdate>
+      <title>
+	<ulink url="http://www.omg.org/spec/BPMN/2.0/">
+	  Business Process Model and Notation (BPMN) Version 2.0
+	</ulink>
+      </title>
+    </biblioentry>
     
     <biblioentry id="bib.xforms1-1">
       <abbrev id="bib.xforms.abbrev">XForms 1.1</abbrev>
@@ -1085,6 +1052,93 @@
     </biblioentry>
 
   </bibliography>
+
+    <appendix id="app.dev-tools">
+    <title>Development Tools</title>
+
+    <section id="s.dev-tools.java">
+      <title>
+	Java
+      </title>
+
+      <para>
+	PAWAP is developed and runs in a Server Side Java (JEE)
+	Ecosystem.
+      </para>
+      
+      <para>
+	The JDK (Java Development Kit) used is <ulink
+	url="http://www.oracle.com/technetwork/java/javase/overview/index.html">Oracle
+	JDK version 1.6</ulink>. Make sure this JDK is installed on your
+	machine, and verify that the environment variable JAVA_HOME is set,
+	either system wide, or by adding it to the appropriate init script,
+	e.g.:
+	<programlisting>
+	  export JAVA_HOME=/usr/lib/jvm/java-6-sun
+	</programlisting>
+      </para>
+
+      <note>
+	<simpara>
+	  The licensing of this JDK is not open source compatible. Some
+	  of the program components of PAWAP require the Oracle JDK
+	  rather than OpenJDK) (We expect this problem to be solved in
+	  the near future, when all components are expected to be
+	  compatible with <ulink url="http://openjdk.java.net/">OpenJDK
+	  7</ulink>
+	</simpara>
+      </note>
+
+    </section>
+
+    <section id="s.dev-tools.mvn">
+      <title>
+	Apache Maven 
+      </title>
+      <para>
+	<ulink url="http://maven.apache.org/">Apache Maven</ulink> is used for
+	managing the build and testing environment. The platform is built
+	using Maven 2.2.1, and Maven must be installed on the development
+	machine.
+      </para>
+    </section>
+
+    <section id="s.dev-tools.eclipse">
+      <title>
+	Eclipse
+      </title>
+      <para>
+	<ulink url="http://www.eclipse.org">Eclipse</ulink> is used as <xref
+	linkend="gle.ide"/>. Eclipse comes in many different pre packaged
+	bundles. Choose the bundle: <ulink
+	url="http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/junosr1">Eclipse
+	IDE for Java EE Developers</ulink>.
+      </para>
+
+      <para>
+	The Eclipse development environment is integrated with Maven through
+	the Maven plugin <ulink
+	url="http://www.eclipse.org/m2e/">m2e</ulink> (Maven 2 Eclipse
+	Integration). For installation information, refer to the <ulink
+	url="http://www.eclipse.org/m2e/download/">Eclipse Maven Plugin
+	Download Site</ulink>.
+      </para>
+    </section>
+
+    <section id="s.dev-tools.git">
+      <title>
+	Source code repository and version/configuration management
+      </title>
+
+      <para>
+	For this purpose, <ulink url="http://git-scm.com/">GIT
+	(v. 1.7.9.5)</ulink> is used. The source code repository is located
+	at: pluto.inherit.se:inherit-platform.git Cf. <xref
+	linkend="s.checkout.code"/> for instructions on how to check out the
+	source code of PAWAP.
+      </para>
+    </section>
+  </appendix>
 
   <appendix id="app.bos-config">
     <title>
@@ -1260,39 +1314,177 @@
     </section>
   </appendix>
 
-  <appendix id="app-dev-on-oipp">
-    <title>
-      Development on PAWAP
-    </title>
+  <appendix id="app.orbeon">
+    <title>Install, configure and start Orbeon Forms</title>
+    <!-- 
+	 TODO:...
+    -->
 
     <para>
-      ...
+      The forms engine is accessed via a <xref
+      linkend="gle.rest"/> interface.
     </para>
 
-    <section id="s.app.xxx">
-      <title>Xxx</title>
+    <para>
+      The following steps describes how to install and configure the forms
+      engine Orbeon with <xref linkend="gle.existdb"/> as back-end.
+    </para>
+
+    <section id="app.s.orbeon-prereq">
+      <title>Prerequisites</title>
+      <para>
+	Download bundle from <ulink url="">Orbeon download area</ulink>. The
+	downloaded file is ...
+      </para>
+    </section>
+
+    <section id="app.s.orbeon-install">
+      <title>Installation</title>
+      <para>
+	Perform the base install of Orbeon Forms as explained in the
+	<ulink
+	    url="http://wiki.orbeon.com/forms/doc/developer-guide/admin/installing">Orbeon
+	Forms Wiki</ulink>
+      </para>
 
       <para>
-	...
+	Perform the initial checks and preparations and go on to the section
+	for installing on Apache Tomcat. The base installation consists
+	mainly of extracting the downloaded orbeon.jar file to the directory
+	$TOMCAT_HOME/webapps
+      </para>
+
+      <para>
+	The result is a directory, webapps/orbeon.
+      </para>
+
+      <para>
+	Configuring Orbeon consists mainly of defining or overriding
+	configuration properties according to <ulink
+	url="http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties">the
+	the section of configuration proerties</ulink> in the Orbeon Forms
+	Developer's Guide.
+      </para>
+
+      <para>
+	In the directory
+	$TOMCAT_HOME/webapps/orbeon/WEB-INF/resources/config, there is a
+	file properties-local.xml. This file is for definition of new
+	properties or overrriding standard values of predefined
+	properties. The properties in this file are explained, where not
+	obvious, in a comment immediately preceding the comment.
+      </para>
+    </section>
+
+    <section id="app.s.orbeon-existdb">
+      <title>Configure the Exist database</title>
+      <para>
+	To configure Orbeon for use with the <xref linkend="gle.existdb"/>,
+	follow the <ulink
+	url="http://wiki.orbeon.com/forms/doc/developer-guide/exist-configuration">instructions</ulink>
+	Orbeon in the Orbeon Forms Developer's Guide.
+      </para>
+    </section>
+
+    <section id="app.s.orbeon-start">
+      <title>Start server</title>
+      <para>
+	Now server is ready to be started by running
+	$CATALINA_HOME/bin/startup.sh
       </para>
     </section>
   </appendix>
 
-  <appendix id="app.dev.oipp">
-    <title>
-      Further Development of PAWAP
-    </title>
-
-    <para>
-      ...
-    </para>
-
-    <section id="s.yyy">
-      <title>Yyy</title>
-
+  <appendix id="app.souce-code-overview">
+    <title>Source Code Overview</title>
+    <section id="app.s.src-inherit-portal">
+      <title>inherit-portal</title>
       <para>
-	...
+	inherit-portal is a HippoCMS maven project with Hippo's subprojects
+	
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      inherit-portal-site
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      inherit-portal-cms
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      inherit-portal-content
+	    </para>
+	  </listitem>
+	</itemizedlist>	
       </para>
+    </section>      
+
+    <section id="app.s.src-inherit-security">
+      <title>inherit-security</title>
+      <para>
+	JAAS module etc. TODO!
+      </para>
+    </section>
+
+    <section id="app.s.src-inherit-service">
+      <title>inherit-service</title>
+      <para>
+	Inherit Service is inherit-platform's service layer. Currently, the
+	inherit-service-rest-server war file is the way to deploy
+	inherit-service. inherit-service-rest-client is an implementation to
+	integrate with Inherit Service.
+      </para>
+      
+      <section id="app.s.src.inherit-service-common">
+	<title>inherit-service-common</title>
+	<para>
+	  Contains inherit-service common classes used by the
+	  subprojects. Furhermore, this project contains neccessary POJOs to
+	  integrate with Inherit Service.
+	</para>
+      </section>
+      
+      <section id="app.s.src.inherit-service-core">
+	<title>inherit-service-core</title>
+	<para>
+	  Implementation of core functionality (not yet in use)
+	</para>
+      </section>
+
+      <section id="app.s.src.inherit-service-rest-server">
+	<title>inherit-service-rest-server</title>
+	<para>
+	  This projects builds a deployable war with a REST exposed
+	  inherit-service.  The intention is that this project only is a glue
+	  to publish Inherit Service with a REST interface.
+	</para>
+      </section>
+
+      <section id="app.s.src.inherit-service-rest-client">
+	<title>inherit-service-rest-client</title>
+	<para>
+	  This is a ready to use implementation of a REST client 
+	  to call inherit-service-rest-server.
+	</para>
+      </section>
+
+      <section id="app.s.src.inherit-service-taskform-engine">
+	<title>inherit-service-taskform-engine</title>
+	<para>
+	  This engine keeps track on tasks to perform. Task can exist in BPM 
+	  engine and be partially filled in start forms.
+	</para>
+      </section>
+
+      <section id="app.s.src.inherit-service-bonita-client-utils">
+	<title>inherit-service-bonita-client-utils</title>
+	<para>
+	  Utilities to integrate with Bonita Open Solution.
+	</para>
+      </section>
     </section>
   </appendix>
 </article>
