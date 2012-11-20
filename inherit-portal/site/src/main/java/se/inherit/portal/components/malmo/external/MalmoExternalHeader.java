@@ -2,7 +2,8 @@ package se.inherit.portal.components.malmo.external;
 
 
 import se.inherit.portal.channels.WebsiteInfo;
-import org.hippoecm.hst.component.support.bean.BaseHstComponent;
+import se.inherit.portal.components.mycases.UserSessionHeader;
+
 import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
@@ -11,7 +12,7 @@ import org.inherit.service.common.util.UrlUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MalmoExternalHeader extends BaseHstComponent {
+public class MalmoExternalHeader extends UserSessionHeader {
 
     public static final Logger log = LoggerFactory.getLogger(MalmoExternalHeader.class);
 
@@ -19,6 +20,7 @@ public class MalmoExternalHeader extends BaseHstComponent {
     
     @Override
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
+    	super.doBeforeRender(request, response);
         final Mount mount = request.getRequestContext().getResolvedMount().getMount();
         
         // TODO replace with Malmo internal channel info

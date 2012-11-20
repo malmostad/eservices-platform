@@ -9,16 +9,15 @@ import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProcessInstanceDetail extends BaseHstComponent {
+public class ProcessInstanceDetail extends MyCasesBaseComponent {
 
 	public static final Logger log = LoggerFactory.getLogger(ProcessInstanceDetail.class);
 
 	@Override
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
-		// TODO SSO SAML JAAS
-		// Principal principal = request.getUserPrincipal();
-		// String userName = principal.getName();
+		
+		String userName = getUserName(request);
 
 		String processInstanceUuid = getPublicRequestParameter(request,
 				"processInstanceUuid");

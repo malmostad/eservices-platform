@@ -93,7 +93,7 @@ public class InboxTaskItem implements Serializable {
 	
 	public String getEditFormUrl() {
 		String result = null;
-		if (getProcessActivityFormInstanceId() != null) {
+		if (getProcessActivityFormInstanceId() != null && getProcessActivityFormInstanceId().longValue()>0) {
 			result = "form?processActivityFormInstanceId=" +  getProcessActivityFormInstanceId();
 		}
 		else if (getTaskUuid() != null) {

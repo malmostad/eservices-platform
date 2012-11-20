@@ -10,21 +10,23 @@
 		            $j("#procLogDetail tr:first-child").show();
 		            
 		            $j("#procLogDetail tr.odd").click(function(){
-		           	var url = $j(this).children('td').eq(0).children('a').attr('href');
-			        var nextRow =  $j(this).next("tr");
-					
-			        $j(nextRow).find("div").load("<fmt:message key="orbeonbase.portal.url"/>" + $url, function(data) {
-				                if (typeof ORBEON != "undefined") { 
-				                    if (!document.all) {
-				                        ORBEON.xforms.Init.document(); 
-				                    } 
-				                } 
-				        	    }
-						); 
-		                $j(nextRow).toggle();
-		                $j(this).find(".arrow").toggleClass("up");
-			            });
-					});
+			           	var url = $j(this).children('td').eq(0).children('a').attr('href');
+			           	if (typeof(url) !== 'undefined' && url.length>0) {
+				            var nextRow =  $j(this).next("tr");
+							
+					        $j(nextRow).find("div").load("<fmt:message key="orbeonbase.portal.url"/>" + url, function(data) {
+						                if (typeof ORBEON != "undefined") { 
+						                    if (!document.all) {
+						                        ORBEON.xforms.Init.document(); 
+						                    } 
+						                } 
+						        	    }
+								); 
+				                $j(nextRow).toggle();
+				                $j(this).find(".arrow").toggleClass("up");
+			            }
+		            });
+				});
 		        
 		</script>
 		

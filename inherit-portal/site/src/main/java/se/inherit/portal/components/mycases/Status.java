@@ -13,7 +13,7 @@ import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Status extends BaseHstComponent {
+public class Status extends MyCasesBaseComponent {
 
 	public static final Logger log = LoggerFactory.getLogger(Inbox.class);
 	
@@ -21,11 +21,7 @@ public class Status extends BaseHstComponent {
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
 		
         HippoBean doc = getContentBean(request);
-        
-        // TODO SSO SAML JAAS
-        //Principal principal = request.getUserPrincipal();
-        //String userName = principal.getName();
-        String userName = "eva_extern";
+        String userName = getUserName(request);
         
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 

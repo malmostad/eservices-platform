@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.inherit.portal.beans.EServiceDocument;
 
-public class Confirm extends BaseHstComponent {
+public class Confirm extends MyCasesBaseComponent {
 
 	public static final Logger log = LoggerFactory
 			.getLogger(Confirm.class);
@@ -25,10 +25,7 @@ public class Confirm extends BaseHstComponent {
 
 		HippoBean doc = getContentBean(request);
 
-        // TODO SSO SAML JAAS
-        //Principal principal = request.getUserPrincipal();
-        //String userName = principal.getName();
-		String userName = "eva_extern";
+		String userName = getUserName(request);
 
 		if (doc == null) {
 			log.warn(
