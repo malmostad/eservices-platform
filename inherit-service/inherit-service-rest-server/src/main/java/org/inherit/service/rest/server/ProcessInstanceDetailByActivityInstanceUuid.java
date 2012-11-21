@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.util.ParameterEncoder;
+import org.inherit.taskform.engine.TaskFormService;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
@@ -13,7 +14,7 @@ public class ProcessInstanceDetailByActivityInstanceUuid extends ServerResource 
 
 	public static final Logger log = Logger.getLogger(ProcessInstanceDetailByActivityInstanceUuid.class.getName());
 	
-	BonitaEngineServiceImpl engine = new BonitaEngineServiceImpl();
+	TaskFormService engine = new TaskFormService();
 	
 	@Post
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance() {

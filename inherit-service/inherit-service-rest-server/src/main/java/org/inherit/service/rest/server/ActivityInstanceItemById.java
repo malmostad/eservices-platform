@@ -9,14 +9,14 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
 
-public class StartActivityInstanceItemById extends ServerResource {
+public class ActivityInstanceItemById extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(StartActivityInstanceItemById.class.getName());
+	public static final Logger log = Logger.getLogger(ActivityInstanceItemById.class.getName());
 	
 	TaskFormService engine = new TaskFormService();
 	
 	@Post
-	public ActivityInstanceItem getStartActivityInstanceItemByFormPath() {
+	public ActivityInstanceItem getActivityInstanceItemByFormPath() {
 		String processActivityFormInstanceId = ParameterEncoder.decode((String)getRequestAttributes().get("processActivityFormInstanceId"));
 		log.fine("REST call with parameter processActivityFormInstanceId=[" + processActivityFormInstanceId + "]" );
 		
@@ -25,7 +25,7 @@ public class StartActivityInstanceItemById extends ServerResource {
 		Long id = null;
 		try {
 			id = Long.decode(processActivityFormInstanceId);
-			result = engine.getStartActivityInstanceItem(id);
+			result = engine.getActivityInstanceItem(id);
 		}
 		catch (NumberFormatException nfe) {
 			log.info("processActivityFormInstanceId=[" + processActivityFormInstanceId + "] is not a valid id");

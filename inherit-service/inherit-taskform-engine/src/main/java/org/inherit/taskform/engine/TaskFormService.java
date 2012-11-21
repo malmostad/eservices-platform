@@ -138,7 +138,9 @@ public class TaskFormService {
 				ProcessActivityFormInstance activity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(logItem.getActivityInstanceUuid());
 				// log item => set view url
 				if (activity != null) {
-					logItem.setFormUrl(activity.calcViewUrl());
+					String viewUrl = activity.calcViewUrl();
+					logItem.setFormUrl(viewUrl);
+					logItem.setViewUrl(viewUrl);
 				}
 			}
 		}
@@ -190,11 +192,16 @@ public class TaskFormService {
 		return result;
 	}
 	 
-	public ActivityInstanceItem getStartActivityInstanceItem(Long processActivityFormInstanceId) {
+	public ActivityInstanceItem getActivityInstanceItem(Long processActivityFormInstanceId) {
 		ActivityInstanceItem result = null;
 		ProcessActivityFormInstance formInstance = taskFormDb.getProcessActivityFormInstanceById(processActivityFormInstanceId);		
 		if (formInstance != null) {
-			result = getStartFormActivityInstancePendingItem(formInstance.getFormDocId());
+			if (formInstance.isStartForm()) {
+				result = getStartFormActivityInstancePendingItem(formInstance.getFormDocId());
+			}
+			else {
+				result = bonitaClient.getActivityInstanceItem(formInstance.getActivityInstanceUuid());
+			}
 			apppendTaskFormServiceData(result, formInstance);
 		}
 		return result;
@@ -222,9 +229,6 @@ public class TaskFormService {
 	private ActivityInstancePendingItem processActivityFormInstance2ActivityInstancePendingItem(ProcessActivityFormInstance src) {
 		ActivityInstancePendingItem dst = new ActivityInstancePendingItem();
 		dst.setProcessDefinitionUuid(src.getStartFormDefinition().getProcessDefinitionUuid());
-		dst.setProcessInstanceUuid(null);
-		dst.setActivityDefinitionUuid(null);
-		dst.setActivityInstanceUuid(null);
 		dst.setActivityName("StartCaseTODO");
 		dst.setActivityLabel("Starta ärende TODO");
 		dst.setStartDate(null);
@@ -237,6 +241,11 @@ public class TaskFormService {
 		dst.setAssignedUserId(src.getUserId());
 		dst.setExpectedEndDate(null);
 		dst.setFormUrl(src.calcEditUrl());
+		
+		dst.setProcessInstanceUuid(null);
+		dst.setActivityInstanceUuid(null);
+		dst.setActivityDefinitionUuid(null);
+		
 		return dst;
 	}
 

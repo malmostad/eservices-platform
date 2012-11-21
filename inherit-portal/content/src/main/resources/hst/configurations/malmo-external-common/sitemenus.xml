@@ -7,7 +7,7 @@
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:sitemenu</sv:value>
     </sv:property>
-    <sv:node sv:name="Blanketter">
+    <sv:node sv:name="Blanketter &amp; Tjänster">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>hst:sitemenuitem</sv:value>
       </sv:property>

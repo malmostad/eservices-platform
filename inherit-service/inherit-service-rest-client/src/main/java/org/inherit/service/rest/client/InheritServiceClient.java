@@ -148,9 +148,9 @@ public class InheritServiceClient {
 		return result;
 	}
 
-	public ActivityInstanceItem getStartActivityInstanceItem(String processActivityFormInstanceId) {
+	public ActivityInstanceItem getActivityInstanceItem(String processActivityFormInstanceId) {
 		ActivityInstanceItem result = null;
-		String uri = serverBaseUrl + "getStartActivityInstanceItemById/" + ParameterEncoder.encode(processActivityFormInstanceId) + "?media=xml";
+		String uri = serverBaseUrl + "getActivityInstanceItemById/" + ParameterEncoder.encode(processActivityFormInstanceId) + "?media=xml";
 		String response = call(uri);
 		System.out.println(response);
 		if (response != null) {
@@ -162,7 +162,7 @@ public class InheritServiceClient {
 	public ActivityInstanceItem getStartActivityInstanceItem(Long processActivityFormInstanceId) {
 		ActivityInstanceItem result = null;
 		if (processActivityFormInstanceId != null) {
-			result = getStartActivityInstanceItem(processActivityFormInstanceId.toString());
+			result = getActivityInstanceItem(processActivityFormInstanceId.toString());
 		}
 		return result;
 	}

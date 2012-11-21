@@ -30,7 +30,11 @@
 		</script>
     </c:if>
     
-	
+    <if test="${not empty guide}">
+		<h1>${guide.title}</h1>
+		<p>${guide.summary}</p>
+		<hst:html hippohtml="${guide.html}"/>
+	</if>
 				
 	<div class="row-fluid">
 		<div class="span12">

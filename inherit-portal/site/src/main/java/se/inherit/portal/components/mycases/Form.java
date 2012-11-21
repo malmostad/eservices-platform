@@ -1,15 +1,12 @@
 package se.inherit.portal.components.mycases;
 
-import java.security.Principal;
-import java.util.Locale;
 
-import org.hippoecm.hst.component.support.bean.BaseHstComponent;
+import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inherit.service.common.domain.ActivityInstanceItem;
-import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import se.inherit.portal.beans.EServiceDocument;
 
 
-public class Form  extends BaseHstComponent {
+public class Form extends MyCasesBaseComponent {
 
 	public static final Logger log = LoggerFactory.getLogger(Form.class);
 	
@@ -26,11 +23,10 @@ public class Form  extends BaseHstComponent {
 		
         HippoBean doc = getContentBean(request);
         
-        // TODO SSO SAML JAAS
-        //Principal principal = request.getUserPrincipal();
-        //String userName = principal.getName();
-        String userName = "eva_extern";
+        String userName = getUserName(request);
         
+        
+        log.error("=================> user: " + request.getUserPrincipal());
         InheritServiceClient isc = new InheritServiceClient();
         
         String processActivityFormInstanceId = getPublicRequestParameter(request, "processActivityFormInstanceId");
@@ -53,7 +49,7 @@ public class Form  extends BaseHstComponent {
         else {
         	if (processActivityFormInstanceId != null && processActivityFormInstanceId.trim().length()>0) {
         		// specific taskFormDb ProcessActivityFormInstance is requested
-        		activity = isc.getStartActivityInstanceItem(processActivityFormInstanceId);
+        		activity = isc.getActivityInstanceItem(processActivityFormInstanceId);
         	}
         	else if (doc instanceof EServiceDocument) {
 	        	// no activity is specified. Use content path to find a start form.
@@ -65,6 +61,27 @@ public class Form  extends BaseHstComponent {
         }
     	request.setAttribute("activity", activity);
     	
+    	HippoBean guide = null;
+    	if (activity != null && doc != null) {
+    		String piUuid = activity.getProcessDefinitionUuid();
+    		String aiUuid = activity.getActivityDefinitionUuid();
+    		
+    		if (piUuid != null && aiUuid != null) {
+    		
+	    		String guidePath = "/content/documents/inheritportal/mycases/processes/" + piUuid.toLowerCase() + "/" + aiUuid.toLowerCase();
+	    		log.error("xxxxxxxxxxxxxxxxx guide path: " + guidePath );
+	    		
+	    		try {
+					guide = (HippoBean) getObjectBeanManager(request).getObject(guidePath);
+				} catch (ObjectBeanManagerException e) {
+					// TODO Auto-generated catch block
+					log.error("Error while searching for activity guide with path=[" + guidePath + "] Exception: " + e);
+				}
+    		}
+    	}
+    	request.setAttribute("guide", guide);
+    	
+    	log.error("XXXXXXXXXXXXXXXXXXXX guide:" + guide);
     	log.error("XXXXXXXXXXXXXXXXXXXX form activity:" + activity);
 
 	}
