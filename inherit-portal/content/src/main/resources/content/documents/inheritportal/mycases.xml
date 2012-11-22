@@ -671,6 +671,98 @@
         </sv:node>
       </sv:node>
     </sv:node>
+    <sv:node sv:name="demo-bjorn">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippo:handle</sv:value>
+      </sv:property>
+      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+        <sv:value>hippo:hardhandle</sv:value>
+        <sv:value>hippo:translated</sv:value>
+      </sv:property>
+      <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>325df3ce-cb7c-4a02-8c92-adfe395c6cba</sv:value>
+      </sv:property>
+      <sv:node sv:name="demo-bjorn">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>inheritportal:eservicedocument</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+          <sv:value>hippo:harddocument</sv:value>
+          <sv:value>hippotranslation:translated</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>bff1c867-ba3c-489d-a841-7f675f10845e</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
+          <sv:value>live</sv:value>
+          <sv:value>preview</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippo:related___pathreference" sv:type="String">
+          <sv:value>mycases/startforms/demo-bjorn</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostd:holder" sv:type="String">
+          <sv:value>admin</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostd:state" sv:type="String">
+          <sv:value>published</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostd:stateSummary" sv:type="String">
+          <sv:value>live</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
+          <sv:value>admin</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostdpubwf:creationDate" sv:type="Date">
+          <sv:value>2012-11-21T13:09:39.121+01:00</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
+          <sv:value>2012-11-21T13:10:33.488+01:00</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
+          <sv:value>admin</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
+          <sv:value>2012-11-21T13:10:37.982+01:00</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippotranslation:id" sv:type="String">
+          <sv:value>c5a2e249-8ca5-4cca-9c03-6de479a35995</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippotranslation:locale" sv:type="String">
+          <sv:value>en</sv:value>
+        </sv:property>
+        <sv:property sv:name="inheritportal:formpath" sv:type="String">
+          <sv:value/>
+        </sv:property>
+        <sv:property sv:name="inheritportal:pdfurl" sv:type="String">
+          <sv:value>http://malmo.se/download/18.6e1be7ef13514d6cfcc800016988/Anm%C3%A4lan+om+f%C3%B6rs%C3%A4ljning+av+folk%C3%B6l+och+tobaksvarorMSSR120109.pdf</sv:value>
+        </sv:property>
+        <sv:property sv:name="inheritportal:summary" sv:type="String">
+          <sv:value>formulär för att visa något</sv:value>
+        </sv:property>
+        <sv:property sv:name="inheritportal:title" sv:type="String">
+          <sv:value>Björn Demo</sv:value>
+        </sv:property>
+        <sv:property sv:name="inheritportal:wordurl" sv:type="String">
+          <sv:value/>
+        </sv:property>
+        <sv:node sv:name="hippotranslation:translations">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hippotranslation:translations</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="hippo:translation">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippo:translation</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippo:language" sv:type="String">
+          <sv:value/>
+        </sv:property>
+        <sv:property sv:name="hippo:message" sv:type="String">
+          <sv:value>Demo Björn</sv:value>
+        </sv:property>
+      </sv:node>
+    </sv:node>
   </sv:node>
   <sv:node sv:name="form">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
@@ -969,7 +1061,7 @@
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>c912e541-1a7c-4201-8b23-4bd898edeb1e</sv:value>
+            <sv:value>bccba803-0527-4ed4-87a3-f84905271934</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -994,13 +1086,13 @@
             <sv:value>2012-11-20T13:54:13.361+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2012-11-20T18:33:31.889+01:00</sv:value>
+            <sv:value>2012-11-21T13:34:43.460+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2012-11-20T18:33:36.142+01:00</sv:value>
+            <sv:value>2012-11-21T13:34:46.637+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>965d232e-ff5e-435f-b686-796af6a2f1f6</sv:value>
@@ -1043,7 +1135,7 @@
 &lt;li&gt;och en tredje sak &lt;/li&gt;
 &lt;/ol&gt;
 
-&lt;p&gt;Därefter bla bla&lt;/p&gt;
+&lt;p&gt;Därefter bla bla lite annat&lt;/p&gt;
 
 &lt;/body&gt;
 &lt;/html&gt;</sv:value>
