@@ -218,7 +218,7 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
-	private ProcessInstanceDetails getProcessInstanceDetails(ProcessInstanceUUID piUuid) throws Exception {
+	private ProcessInstanceDetails getProcessInstanceDetailsByUuid(ProcessInstanceUUID piUuid) throws Exception {
 		ProcessInstanceDetails result = null;
 		
 		ProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(piUuid);
@@ -242,7 +242,7 @@ public class BonitaEngineServiceImpl {
 		try {
 			LoginContext loginContext = BonitaUtil.login(); 
 			ProcessInstanceUUID piUuid = new ProcessInstanceUUID(processInstanceUuid);
-			result = getProcessInstanceDetails(piUuid);
+			result = getProcessInstanceDetailsByUuid(piUuid);
 			BonitaUtil.logout(loginContext);
 		}
 		catch (Exception e) {
@@ -261,7 +261,7 @@ public class BonitaEngineServiceImpl {
 			ActivityInstanceUUID aUuid = new ActivityInstanceUUID(activityInstanceUuid);
 			LightActivityInstance lai = AccessorUtil.getQueryRuntimeAPI().getLightActivityInstance(aUuid);
 			ProcessInstanceUUID piUuid = lai.getProcessInstanceUUID(); 
-			result = getProcessInstanceDetails(piUuid);
+			result = getProcessInstanceDetailsByUuid(piUuid);
 			BonitaUtil.logout(loginContext);
 		}
 		catch (Exception e) {

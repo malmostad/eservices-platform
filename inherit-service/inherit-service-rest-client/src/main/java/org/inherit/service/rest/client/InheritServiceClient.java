@@ -74,19 +74,6 @@ public class InheritServiceClient {
 		}
 		return result;
 	}
-
-	
-	public String getBonitaIdentityKey(String bonitaUser, String password) {
-		String result = null;
-		String uri = serverBaseUrl + "bonitaIdentityKey/" + ParameterEncoder.encode(bonitaUser) + "/" + ParameterEncoder.encode(password) + "?media=xml";
-		String response = call(uri);
-		System.out.println(response);
-		if (response != null) {
-			result = (String)response;
-		}
-		
-		return result;
-	}
 	
 	public ProcessInstanceDetails getProcessInstanceDetailByUuid(String processInstanceUuid) {
 		ProcessInstanceDetails result = null;
