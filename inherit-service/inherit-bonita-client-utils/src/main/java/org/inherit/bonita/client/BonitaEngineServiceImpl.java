@@ -190,7 +190,7 @@ public class BonitaEngineServiceImpl {
 	}
 
 	
-	public List<ProcessInstanceListItem> getUserInstancesList(String user) { // ArrayList<ProcessInstanceListItem>
+	public List<ProcessInstanceListItem> getUserInstancesList(String user) {
 		List<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
 
 		try {

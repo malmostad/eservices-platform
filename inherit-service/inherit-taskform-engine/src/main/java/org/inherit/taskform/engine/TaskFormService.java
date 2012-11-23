@@ -3,24 +3,20 @@ package org.inherit.taskform.engine;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.hibernate.mapping.Set;
 import org.inherit.bonita.client.BonitaEngineServiceImpl;
-import org.inherit.service.common.domain.ActivityFormInfo;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
 import org.inherit.service.common.domain.ActivityInstancePendingItem;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
+import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.taskform.engine.persistence.TaskFormDb;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
 import org.inherit.taskform.engine.persistence.entity.StartFormDefinition;
-import org.ow2.bonita.facade.runtime.ActivityInstance;
-import org.ow2.bonita.facade.runtime.TaskInstance;
 
 public class TaskFormService {
 	
@@ -346,4 +342,9 @@ public class TaskFormService {
 		return viewUrl;
 	}
 		
+	public List<ProcessInstanceListItem> getUserInstancesList(String user) { 
+		List<ProcessInstanceListItem> result = bonitaClient.getUserInstancesList(user);
+		return result;
+	}
+	
 }

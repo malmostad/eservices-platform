@@ -2,7 +2,6 @@ package org.inherit.service.rest.server;
 
 import java.util.logging.Logger;
 
-import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.util.ParameterEncoder;
 import org.inherit.taskform.engine.TaskFormService;

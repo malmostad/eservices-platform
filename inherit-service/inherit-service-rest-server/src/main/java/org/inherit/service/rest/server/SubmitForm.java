@@ -1,6 +1,5 @@
 package org.inherit.service.rest.server;
 
-import java.util.Date;
 import java.util.logging.Logger;
 
 import org.inherit.service.common.util.ParameterEncoder;
