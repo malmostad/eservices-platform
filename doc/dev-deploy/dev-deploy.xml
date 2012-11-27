@@ -15,7 +15,7 @@
     <subtitle>Description, Development and Deployment</subtitle>
 
     <pubdate>
-      2012-11-08
+      2012-11-23
     </pubdate>
 
     <authorgroup>
@@ -41,8 +41,8 @@
     <title>Abstract</title>
     <para>
       This document describes PAWAP (Even if this is a palindrome, we are in
-      urgent search of a more catching name!!!...suggestions welcome) &mdash;
-      a <emphasis>Process-Aware Web Application Platform</emphasis>. The
+      search of a more catching name... suggestions are welcome) &mdash; a
+      <emphasis>Process-Aware Web Application Platform</emphasis>. The
       platform is an assembly and integration of several open source software
       products and components. It is designed to facilitate the creation of
       <emphasis>Business process driven</emphasis> web applications, that is,
@@ -119,10 +119,10 @@
     </para>
 
     <para>
-      Business Process Modeling (BPM) is the activity of identifying,
-      analysing and creating representations of processes of an enterprise.
-      The aim of this activity is to better understand the processes of the
-      organisation in order to improve their quality and efficiency.
+      Business Process Modeling is the activity of identifying, analysing and
+      creating representations of processes of an enterprise.  The aim of this
+      activity is to better understand the processes of the organisation in
+      order to improve their quality and efficiency.
     </para>
 
     <para>
@@ -253,7 +253,7 @@
     </section>
 
     <section id="s.pawap.requirements">
-      <title>Requirements</title>
+      <title>Non Functional Requirements</title>
       <para>
 	We here postulate some non functional requirements at the highermost
 	level. They apply to the external open source components and products
@@ -286,8 +286,11 @@
 	  PAWAP shall be and remain an "<emphasis>true open source</emphasis>"
 	  platform. All the external software must be licensed under an open
 	  source licence as defined by <xref linkend="gle.osi"/>. The internal
-	  software will be licensed under <xref linkend="gle.agpl"/>, an open
-	  source licence as defined by <xref linkend="gle.gnu"/>
+	  software will be licensed under <xref linkend="gle.agpl"/>, an
+	  open source licence as defined by <xref linkend="gle.gnu"/>. The
+	  external software products/components are licensed under <xref
+	  linkend="gle.gplv2"/>, <xref linkend="gle.lgplv2"/> and
+	  <xref linkend="gle.alv2"/> licenses.
 	</para>
 
 	<para>
@@ -371,82 +374,157 @@
     </section>
 
     <section id="s.pawap.parts">
-      <title>The Parts</title>
+      <title>The Parts, Requirements and Chosen Components</title>
       <para>
 	So, which are the "concerns" of a "Process Aware Web Application
-	Platform"?
+	Platform"? We need:
       </para>
 
-      <para>
-	As the name suggests, we need the functionality enabling "process
-	awareness". That means that we need a component that performs the
-	services as described in <xref linkend="il.process-engine-services"/>,
-	that is, an <emphasis>executable business process engine</emphasis>.
-      </para>
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    An Executable Process Engine
+	  </para>
+	</listitem>
 
-      <para>
-	Furhtermore, an executable process is often fed with data through
-	human interaction with a web form. For that purpose, we need a
-	<emphasis>Forms Engine</emphasis>.
-      </para>
+	<listitem>
+	  <para>
+	    A flexible and highly configurable web application framework
+	  </para>
+	</listitem>
 
-      <para>
-	Finally, we need a solid framework for building webbapps with features
-	for handling content, multiple channels, languages etc: a
-	<emphasis>Web Application Platform</emphasis>.
-      </para>
+	<listitem>
+	  <para>
+	    "Best of Breed" Forms Engine
+	  </para>
+	</listitem>
+      </itemizedlist>
 
       <section id="s.pawap.overview.bonita">
 	<title>Executable Business Process Engine</title>
-	  <para>
-	    Enabling the services making the web application "process-aware"
-	  </para>
-	<para>
-	  Bonita BPM...
-	</para>
-      </section>
 
-      <section id="s.pawap.overview.orbeon">
-	<title>State of the art Web Forms</title>
-	  <para>
-	  </para>
 	<para>
-	  <ulink url="http://www.orbeon.com">Orbeon Forms</ulink> is an open
-	  source, standard-based web forms solution. The product features a
-	  responsive, high performance and flexible forms engine, readily
-	  integrateable with other software components. It includes the tool
-	  <emphasis>Form Builder</emphasis>, a <xref linkend="gle.wysiwyg"/>
-	  browser-based authoring tool for building state of the art web forms
-	  and <emphasis>Form Runner</emphasis>, a runtime environment for the
-	  deployment, integration and execution of large numbers of complex
-	  forms.
+	  As the name suggests, we need the functionality enabling "process
+	  awareness" by performing the services as described in <xref
+	  linkend="il.process-engine-services"/>. This component must expose
+	  comprehensive API's, be robust, performant, scaleable and
+	  standards compliant.
 	</para>
 
 	<para>
-	  Orbeon Forms is based on the <xref linkend="gle.xforms"/> standard
-	  which it provides a server side implementation of, and uses <xref
-	  linkend="gle.ajax"/> technologies, with no need for additional
-	  client-side software or plugins.
+	  We have chosen <ulink url="http://www.bonitasoft.com">Bonita Open
+	  Solution</ulink> (BOS). The product is a <xref linkend="bib.bpmn2"/>
+	  compliant <xref linkend="gle.bpm"/>-system featuring
 	</para>
 
-	<para>
-	  The forms engine is built upon an  <xref linkend="gle.xrx"/> (<xref
-	  linkend="gle.xforms"/>,<xref linkend="gle.rest"/> and <xref
-	  linkend="gle.xquery"/>) architecture.
-	</para>
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      An interactive tool for modeling BPMN 2 diagrams
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      A Process engine accessible through a REST-API
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      User interfaces for the execution and administration of business
+	      processes.
+	    </para>
+	  </listitem>
+	</itemizedlist>
       </section>
 
       <section id="s.pawap.overview.hippo">
-	<title>Content Repository and Web Development Toolkit</title>
+	<title>Web Application Framework</title>
 
 	<para>
-	  A solid platform suitable for the design of high performance content
-	  based web applications
+	  The collaborative activities that constitute the processes are
+	  naturally distributed over distinct physical locations. Supporting
+	  <emphasis>location</emphasis> distribution comes by itself with
+	  the web. On the other hand, the User Interface of the same process
+	  backed application will be distributed over many
+	  <emphasis>channels</emphasis> (traditional web, mobile web,
+	  intranet, possibly multi lingual channels, etc.). Multi channel
+	  support is a distuinguishing factor for the web application
+	  framework.
 	</para>
+
 	<para>
-	  Hippo CMS...
+	  <emphasis>Hippo CMS</emphasis> is is an open-source Content
+	  Management System (<xref linkend="gle.cms"/>) with a content
+	  repository and functions for Data Interchange based on open
+	  standars. It features a comprehensive Web Development Toolkit.
 	</para>
+
+	<para>	
+	  The project was initiated and is maintained by the Duch company
+	  <ulink url="http://www.onehippo.com">Hippo</ulink>. It is aimed at
+	  at the needs of medium to large organisations for managing content
+	  for (adapted) distribution on multiple channels like
+	</para>
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Web sites
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Mobile sites
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Intranets
+	    </para>
+	  </listitem>
+	</itemizedlist>
       </section>
+    </section>
+
+    <section id="s.pawap.overview.orbeon">
+      <title>State of the art Web Forms</title>
+
+      <para>
+      </para>
+
+      <para>
+	The manual process activities are mainly forms driven. The forms must
+	be easy to use, easy to modify and with good functionality for
+	efficient data validation and for accessibility adaptation.
+      </para>
+
+      <para>
+	<ulink url="http://www.orbeon.com">Orbeon Forms</ulink> is an open
+	source, standard-based web forms solution. The product features a
+	responsive, high performance and flexible forms engine, readily
+	integrateable with other software components. It includes the tool
+	<emphasis>Form Builder</emphasis>, a <xref linkend="gle.wysiwyg"/>
+	browser-based authoring tool for building state of the art web forms
+	and <emphasis>Form Runner</emphasis>, a runtime environment for the
+	deployment, integration and execution of large numbers of complex
+	forms.
+      </para>
+
+      <para>
+	Orbeon Forms is based on the <xref linkend="gle.xforms"/> standard
+	which it provides a server side implementation of, and uses <xref
+	linkend="gle.ajax"/> technologies, with no need for additional
+	client-side software or plugins.
+      </para>
+
+      <para>
+	The forms engine is built upon an  <xref linkend="gle.xrx"/> (<xref
+	linkend="gle.xforms"/>,<xref linkend="gle.rest"/> and <xref
+	linkend="gle.xquery"/>) architecture.
+      </para>
     </section>
 
     <section id="s.pawap.overview-architecture">
@@ -471,11 +549,28 @@
     </section>
 
     <section id="s.pawap.overview.added-value">
-      <title>The Added Value</title>
+      <title>The Added Value of a Powerful Combination</title>
+
       <para>
-	In most cases the flow of operations for an application is built into
-	the application logic itself. If that logic needs to be changed, the
-	application must be modified and in some cased rebuilt.
+	We have highlighted some essential requirements and functions
+	necessary for the assembly of a productive,
+	<emphasis>process-aware</emphasis> and web based application
+	platform. Furhtermore, we have identified open source products that
+	matches these requirements.
+      </para>
+
+      <para>
+	Integration of these components/products constitutes an produtive
+	platform for the creation of process-aware, flexible and adaptable web
+	applications.
+      </para>
+
+      <para>
+	When improving the processes in the natural BPM development cycle, in
+	most cases the process diagram can be redeployed while web application
+	logic can be left totally unmodified. In other cases the process might
+	be left unmodified, while functionality in the web application is
+	changed (e.g. addition of new channel).
       </para>
     </section>
   </section>
@@ -485,13 +580,59 @@
     <para>
       <!-- TODO -->
       This section describes how to set up an environment ready for
-      development. This implies setting up the development tools, the server
-      suite and the program components that are necessary for the development,
-      building and testing of the process-aware applications built on the
-      platform. A brief howto-guide for the development of web applications on
-      the platform is provided in... <xref linkend="s.app-dev-on-pawap"/>.
+      development:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Installation and configuration of run time environment and
+	  development tools
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Installation and configuration of databases: <xref
+	  linkend="gle.postgresql"/> and <xref linkend="gle.existdb"/>
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Installation of the Process and Forms Engines
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Bootstrapping Hippo CMS installation, Check out and installation of 
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Check out and installation of source code
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      A brief howto-guide for the development of web applications on the
+      platform is provided in... <xref linkend="s.app-dev-on-pawap"/>.
     </para>
     
+    <section id="s.dev-env.prereq">
+      <title>Prerequisites</title>
+      <para>
+	Certain tools are mandatory for development on PAWAP. These include
+	the Java Development Kit, Apache Maven, Eclipse IDE and Git. For
+	preparing the development environment, follow the steps in
+	<xref linkend="app.dev-rt-comp"/>.
+      </para>
+
+    </section>
+
     <section id="s.dev-env.bos">
       <title>Download, configure and start the Process Engine</title>
 
@@ -522,10 +663,23 @@
       </para>
 
       <para>
-	The following steps describes how to install and configure the process
-	engine with <xref linkend="gle.postgresql"/> as back-end.
+	<xref linkend="app.bos-config"/> describes how to install and
+	configure the process engine with PostgreSQL as back-end.
+      </para>
+    </section>
+
+    <section id="s.dev-env.orbeon">
+      <title>Download, configure and start the Forms Engine</title>
+      <para>
+	The forms engine is the main data collection component for the human
+	tasks of the busines process. Dedicated forms are presented when
+	starting a new process, and in general for each human task.
       </para>
 
+      <para>
+	<xref linkend="app.orbeon"/> describes how to install and configure
+	the forms engine.
+      </para>
     </section>
 
     <section id="s.checkout.code">
@@ -570,11 +724,11 @@
       <para>
 	The previous step created a directory, inherit-platform, relative to
 	the Eclipse workspace ($HOME/workspace). Issue the following commands:
-	<programlisting>
-	  cd inherit-platform
-	  mvn clean install
-	</programlisting>
       </para>
+      <programlisting>
+	cd inherit-platform
+	mvn clean install
+      </programlisting>
     </section>
 
     <section id="s.app-dev-on-pawap">
@@ -585,27 +739,71 @@
     </section>
   </section>
 
-  <section>
+  <section id="s.prod-depl">
     <title>Production Deployment</title>
-    <section id="s.server.pre-req">
-      <title>Server prerequisites</title>
+    <para>
+      This section describes how to set up an environment ready for
+      production. This implies:
+    </para>
 
-      <section id="s.server.pre-req-hippo-jcr">
-	<title>Hippo content repository</title>
+    <itemizedlist>
+      <listitem>
 	<para>
-	  Download latest version of inherit-portal's content repository.
+	  Installation and configuration of run time environment
 	</para>
+      </listitem>
 
-	<programlisting>
-	  scp -P 2212 adminherit@pluto.inherit.se:_
-	  ./inherit-platform-server-components/jcr-inherit-portal.tgz .
-	  tar xzf jcr-inherit-portal.tgz
-	</programlisting>
-      </section>
+      <listitem>
+	<para>
+	  Installation of the Process and Forms Engines
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Hippo CMS and Content Repository installation
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Check out and installation of source code
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <section id="s.prod-depl.prereq">
+      <title>Prerequisites</title>
+      <para>
+	In the production environment we need the Java Development Kit, and
+	Apache Maven.  In order to install these, follow the corresponding
+	steps in <xref linkend="s.dev-rt-comp.java"/>, <xref
+	linkend="s.dev-rt-comp.mvn"/>.
+      </para>
     </section>
-    
-    <section id="s.deploy_public_demo.server">
-      <title>Deploy on public Demo server</title>
+
+    <section id="s.prod-depl.bos">
+      <title>Download, configure and start the Process and Forms Engines</title>
+
+      <para>
+	The installation is the same as for the develpment server: <xref
+	linkend="app.bos-config"/> and 	<xref linkend="app.orbeon"/> respectively. 
+      </para>
+    </section>
+    <section id="s.server.pre-req-hippo-jcr">
+      <title>Hippo content repository</title>
+      <para>
+	Download latest version of inherit-portal's content repository.
+      </para>
+
+      <programlisting>
+	scp -P 2212 adminherit@pluto.inherit.se:_
+	./inherit-platform-server-components/jcr-inherit-portal.tgz .
+	tar xzf jcr-inherit-portal.tgz
+      </programlisting>
+    </section>
+    <section id="s.deploy.server">
+      <title>Deploy on Server</title>
       <programlisting>
 	cd inherit-platform
 	mvn clean install
@@ -648,19 +846,10 @@
 	sudo service apache2 restart
       </programlisting>
     </section>
-  </section>
-  
-  <glossary id="glossary">
-    <glossentry id="gle.agpl">
-      <glossterm><acronym>GNU Affero GPL</acronym></glossterm>
-      <glossdef>
-	<para>
-	  <ulink
-	      url="http://www.gnu.org/licenses/agpl-3.0.html">AGPL...</ulink>
-	</para>
-      </glossdef>
-    </glossentry>
 
+  </section>
+
+  <glossary id="glossary">
     <glossentry id="gle.ajax">
       <glossterm><acronym>AJAX</acronym></glossterm>
       <glossdef>
@@ -681,21 +870,42 @@
       </glossdef>
     </glossentry>
 
-<!--
-    <glossentry id="bib.bpmn2">
-      <glossterm>BPMN 2.0</glossterm>
+    <glossentry id="gle.bpm">
+      <glossterm><acronym>BPM</acronym></glossterm>
       <glossdef>
 	<para>
-	  <ulink url="http://www.omg.org/spec/BPMN/2.0/">
-	    Business Process Model and Notation (BPMN) Version 2.0
-	    </ulink>. Standard maintained by <xref linkend="gle.omg"/>.
+	  <ulink url="http://en.wikipedia.org/wiki/Business_process_management">
+	    Business Process Management
+	  </ulink>
+	</para>
+	
+	<para>
+	  A method whereby business processes are under continuous improvement
+	  by undergoing a life cycle of design, modeling, execution,
+	  monitoring and optimization. BPM can also include tools for
+	  <emphasis>simulating</emphasis> processes &mdash; a method for "dry
+	  running" processes based on estimated (and/or previously collected
+	  input data) in order to analyze process performance.
 	</para>
       </glossdef>
     </glossentry>
--->
+
+    <glossentry id="gle.cms">
+      <glossterm><acronym>CMS</acronym></glossterm>
+      <glossdef>
+	<para>
+	  A 
+	  <ulink url="http://en.wikipedia.org/wiki/Content_management_system">
+	    Content management System</ulink> is a software system for
+	    structuring, creating, editing and publishing <emphasis>digital
+	    content</emphasis>. It also normally features function for
+	    collaborative (work flow) and user administration.
+	</para>
+      </glossdef>
+    </glossentry>
 
     <glossentry id="gle.existdb">
-      <glossterm>eXist-db</glossterm>
+      <glossterm>exist-db</glossterm>
       <glossdef>
 	<para>
 	  <ulink url="http://www.exist-db.org/">eXist-db</ulink> is an open
@@ -734,6 +944,56 @@
 	  Programming tool aimed at enhancing programming productivity by
 	  tying together other tools in the programming tool chain such as
 	  syntax sensitive program editors, compilers and debuggers.
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.agpl">
+      <glossterm><acronym>AGPL</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink
+	      url="http://www.gnu.org/licenses/agpl-3.0.html">GNU Affero GPL
+	  </ulink>
+	  ...
+	</para>
+      </glossdef>
+    </glossentry>
+
+
+    <glossentry id="gle.alv2">
+      <glossterm><acronym>APL</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://www.apache.org/licenses/LICENSE-2.0">
+	    Apache License, Version 2.0
+	  </ulink>
+	  ...
+	</para>
+      </glossdef>
+    </glossentry>
+
+
+    <glossentry id="gle.gplv2">
+      <glossterm><acronym>GPLv2</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://www.gnu.org/licenses/gpl-2.0.html">
+	    GNU General Public License, version 2
+	  </ulink>
+	  ...
+	</para>
+      </glossdef>
+    </glossentry>
+
+    <glossentry id="gle.lgplv2">
+      <glossterm><acronym>LGPLv2</acronym></glossterm>
+      <glossdef>
+	<para>
+	  <ulink url="http://www.gnu.org/licenses/lgpl-2.1.html">
+	    GNU Lesser General Public License, version 2.1
+	  </ulink>
+	  ...
 	</para>
       </glossdef>
     </glossentry>
@@ -1053,10 +1313,10 @@
 
   </bibliography>
 
-    <appendix id="app.dev-tools">
-    <title>Development Tools</title>
+  <appendix id="app.dev-rt-comp">
+    <title>Development and Runtime Components</title>
 
-    <section id="s.dev-tools.java">
+    <section id="s.dev-rt-comp.java">
       <title>
 	Java
       </title>
@@ -1091,7 +1351,40 @@
 
     </section>
 
-    <section id="s.dev-tools.mvn">
+    <section id="s.dev-rt-comp.posgtresql">
+      <title>
+	PostgreSQL
+      </title>
+      <para>
+      </para>
+
+      <section id="s.dev-rt-comp.posgtresql.install">
+	<title>
+	  Installation
+	</title>
+	<para>
+	  Ubuntu Server 12.04:
+	</para>
+	<programlisting>
+	  apt-get install postgresql-9.1
+	</programlisting>
+      </section>
+
+      <section id="s.dev-rt-comp.posgtresql.config">
+	<title>
+	  Configuration
+	</title>
+	<para>
+	  ...
+	</para>
+	  <!--
+	      <programlisting></programlisting>
+	  -->
+      </section>
+
+    </section>
+
+    <section id="s.dev-rt-comp.mvn">
       <title>
 	Apache Maven 
       </title>
@@ -1103,7 +1396,7 @@
       </para>
     </section>
 
-    <section id="s.dev-tools.eclipse">
+    <section id="s.dev-rt-comp.eclipse">
       <title>
 	Eclipse
       </title>
@@ -1125,7 +1418,7 @@
       </para>
     </section>
 
-    <section id="s.dev-tools.git">
+    <section id="s.dev-rt-comp.git">
       <title>
 	Source code repository and version/configuration management
       </title>
@@ -1157,16 +1450,21 @@
 	download area</ulink>. The downloaded file is zip-compressed.
       </para>
       <para>
-	Unzip into directory of choice. Set global variables CATALINA_HOME
-	and CATALINA_BASE to this directory .  <!-- TODO (this might not be
-	necessary, try it out)-->.  This is done in the script
+	Unzip into directory of choice. If the global variables CATALINA_HOME
+	and CATALINA_BASE are not set, they will be set to this directory. If
+	for some reason one wants to override these default values, this is
+	done in the script
 	<programlisting>
 	  bin/setcatalina_home.sh
 	</programlisting>
-	which in turn is read from a modified
+	which in turn is read from
 	<programlisting>
 	  bin/startup.sh
 	</programlisting>
+      </para>
+
+      <para>
+	Configure the port number the server will be running on to 58080.
       </para>
     </section>
 
@@ -1389,6 +1687,10 @@
     <section id="app.s.orbeon-start">
       <title>Start server</title>
       <para>
+	Configure the port number of the server to 48080.
+      </para>
+
+      <para>
 	Now server is ready to be started by running
 	$CATALINA_HOME/bin/startup.sh
       </para>
@@ -1474,8 +1776,8 @@
       <section id="app.s.src.inherit-service-taskform-engine">
 	<title>inherit-service-taskform-engine</title>
 	<para>
-	  This engine keeps track on tasks to perform. Task can exist in BPM 
-	  engine and be partially filled in start forms.
+	  This engine keeps track of tasks to perform. A task can exist in the BPM 
+	  engine and be partially filled in start forms...
 	</para>
       </section>
 
