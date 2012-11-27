@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
 import org.inherit.service.common.domain.ActivityInstancePendingItem;
+import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
@@ -28,6 +30,17 @@ public class TaskFormService {
 	public TaskFormService() {
 		taskFormDb = new TaskFormDb();
 		bonitaClient = new BonitaEngineServiceImpl();
+	}
+	
+	/**
+	 * 
+	 * @param userId
+	 * @param remainingDays atRisk activities is calculated as the number of activities that will be overdue within remainingDays
+	 * @return
+	 */
+	public DashOpenActivities getDashOpenActivitiesByUserId(String userId, int remainingDays) {
+		DashOpenActivities result = bonitaClient.getDashOpenActivitiesByUserId(userId, remainingDays);
+		return result;
 	}
 	
 	/**
@@ -343,7 +356,7 @@ public class TaskFormService {
 	}
 		
 	public List<ProcessInstanceListItem> getUserInstancesList(String user) { 
-		List<ProcessInstanceListItem> result = bonitaClient.getUserInstancesList(user);
+		List<ProcessInstanceListItem> result = bonitaClient.getProcessInstancesStartedBy(user);
 		return result;
 	}
 	
