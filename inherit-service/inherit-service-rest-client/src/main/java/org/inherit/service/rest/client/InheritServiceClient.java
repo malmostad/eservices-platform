@@ -10,6 +10,7 @@ import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
 import org.inherit.service.common.domain.ActivityInstancePendingItem;
 import org.inherit.service.common.domain.CommentFeedItem;
+import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessDefinitionInfo;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
@@ -59,6 +60,7 @@ public class InheritServiceClient {
 		xstream.alias("ActivityInstanceItem", ActivityInstanceItem.class);
 		xstream.alias("ActivityInstanceLogItem", ActivityInstanceLogItem.class);
 		xstream.alias("ActivityInstancePendingItem", ActivityInstancePendingItem.class);
+		xstream.alias("DashOpenActivities", DashOpenActivities.class);
 		
 		return xstream;
 	}
@@ -186,7 +188,30 @@ public class InheritServiceClient {
 		
 		return result;
 	}
-
+	
+	public DashOpenActivities getDashOpenActivitiesByUserId(String userid, String remainingDays) {
+		DashOpenActivities result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getDashOpenActivitiesByUserId/" 
+				+ ParameterEncoder.encode(userid) + "/" 
+				+ ParameterEncoder.encode(remainingDays) + "?media=xml";
+		log.severe("getDashOpenActivitiesByUserId uri: " + uri);
+		String response = call(uri);
+		
+		if (response != null) {
+			result = (DashOpenActivities)xstream.fromXML(response);
+		}
+		
+		return result;
+	}
+	
+	public DashOpenActivities getDashOpenActivitiesByUserId(String userid, int remainingDays) {
+		DashOpenActivities result = null;
+		result = getDashOpenActivitiesByUserId(userid, Integer.toString(remainingDays));
+		return result;
+	}
+	
 	private String call(String uri) {
 		String result = null;
 		try {

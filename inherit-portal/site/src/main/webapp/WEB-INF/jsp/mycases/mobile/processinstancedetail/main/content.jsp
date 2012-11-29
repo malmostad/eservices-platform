@@ -131,7 +131,7 @@
 					</tr>
 				</c:forEach>
 				<tr>
-				 	  	<td><fmt:message key="mycases.caseStarted.lbl"/></td>
+				 	  	<td><a href="${processInstanceDetails.startActivity.viewUrl}"><fmt:message key="mycases.caseStarted.lbl"/></a></td>
 				 	  	<td><fmt:formatDate value="${processInstanceDetails.startDate}" type="Both" /></td>
 				 	  	<td></td>
 						<td>${processInstanceDetails.startedBy}</td>

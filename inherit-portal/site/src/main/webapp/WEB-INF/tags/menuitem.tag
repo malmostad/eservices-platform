@@ -18,7 +18,7 @@
   	
   		<c:choose>
   			<c:when test="${siteMenuItem.expanded and not empty siteMenuItem.childMenuItems}">
-  			<li class="selected no-children active inbranch"><a href="${link}"><c:out value="${siteMenuItem.name}"/></a>
+  			<li class="selected active inbranch"><a href="${link}"><c:out value="${siteMenuItem.name}"/></a>
 			  <ul>
 			    <c:forEach var="child" items="${siteMenuItem.childMenuItems}">
 			        <tag:menuitem siteMenuItem="${child}"/>

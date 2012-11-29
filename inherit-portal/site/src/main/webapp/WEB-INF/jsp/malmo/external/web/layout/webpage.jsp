@@ -18,11 +18,12 @@
 	<script src="http://www.malmo.se/assets-2.0/js/malmo.js" type="text/javascript"></script>
 	<script src="http://www.malmo.se/assets-2.0/js/external.js" type="text/javascript"></script>
 	<script src="http://s7.addthis.com/js/250/addthis_widget.js" type="text/javascript"></script> 
-	<!--  Malmö assets-2.0 end -->    
+	<!--  Malmö assets-2.0 end -->   
+	<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> 
     
   </head>
   <body>
-  	<div class="wrap-all-expanding">
+  	<div class="wrap-all">
     
     <hst:include ref="header"/>
     <hst:include ref="main"/>

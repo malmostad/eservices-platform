@@ -152,7 +152,25 @@ public class TaskFormService {
 					logItem.setViewUrl(viewUrl);
 				}
 			}
+			
+			details.setStartActivity(getStartFormActivityInstanceLogItem(details.getProcessInstanceUuid()));
 		}
+	}
+	
+	public ActivityInstanceLogItem getStartFormActivityInstanceLogItem(String processInstanceUuid) {
+		ActivityInstanceLogItem result = null;
+		
+		if (processInstanceUuid != null) {
+			
+			ProcessActivityFormInstance startActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
+			if (startActivity != null) {
+				result = new ActivityInstanceLogItem();
+				result.setViewUrl(startActivity.calcViewUrl());
+				result.setFormUrl(startActivity.calcViewUrl());
+			}
+		}
+		
+		return result;
 	}
 
 	public String submitStartForm(String formPath, String docId, String userId) {

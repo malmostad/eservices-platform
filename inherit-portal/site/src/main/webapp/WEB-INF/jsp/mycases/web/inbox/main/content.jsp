@@ -18,7 +18,7 @@
     <p>${document.summary}</p>
     <hst:html hippohtml="${document.html}"/>
     
-    		<table cellpadding="0" cellspacing="0" border="0" class="display dataTable">
+    		<table width="100%" cellpadding="0" cellspacing="0" border="0" class="display dataTable">
 				<thead>
 					<tr>
 					   <th><fmt:message key="mycases.process.column.lbl"/></th>

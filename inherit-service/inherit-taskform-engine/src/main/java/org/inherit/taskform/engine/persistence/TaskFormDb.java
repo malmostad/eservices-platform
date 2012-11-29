@@ -77,6 +77,27 @@ public class TaskFormDb {
 		}
 		return filterUniqueProcessActivityFormInstanceFromList(result);
 	}
+
+	public ProcessActivityFormInstance getStartProcessActivityFormInstanceByProcessInstanceUuid(String processInstanceUuid) {
+		List<ProcessActivityFormInstance> result = null;
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		try {
+			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+				    .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) // identifies the start form
+				    .add( Restrictions.isNull("activityInstanceUuid")) // only start forms
+				    .add( Restrictions.isNotNull("submitted")) // only submitted forms
+				    .list();
+		}
+		catch (Exception e) {
+			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return filterUniqueProcessActivityFormInstanceFromList(result);
+	}
 	
 	public ProcessActivityFormInstance getProcessActivityFormInstanceByActivityInstanceUuid(String activityInstanceUuid) {
 		List<ProcessActivityFormInstance> result = null;

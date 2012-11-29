@@ -18,7 +18,7 @@
 		<hst:html hippohtml="${document.html}" />
 
 		<c:if test="${not empty processInstances}">
-			<table class="display dataTable">
+			<table class="display dataTable" width="100%" >
 				<thead>
 					<tr>
 						<th><fmt:message key="mycases.process.column.lbl" /></th>

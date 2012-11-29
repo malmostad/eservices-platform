@@ -26,11 +26,20 @@ public class ProcessInstanceDetails extends ProcessInstanceListItem {
 
 	private static final long serialVersionUID = 5176472811760050085L;
 
+	private ActivityInstanceLogItem startActivity = null;
 	private List<ActivityInstanceLogItem> activityLog = new ArrayList<ActivityInstanceLogItem>();
 	private List<ActivityInstancePendingItem> pending = new ArrayList<ActivityInstancePendingItem>();
 	
 	public ProcessInstanceDetails() {
 		
+	}
+	
+	public ActivityInstanceLogItem getStartActivity() {
+		return startActivity;
+	}
+
+	public void setStartActivity(ActivityInstanceLogItem startActivity) {
+		this.startActivity = startActivity;
 	}
 
 	public List<ActivityInstanceLogItem> getActivityLog() {
@@ -57,8 +66,6 @@ public class ProcessInstanceDetails extends ProcessInstanceListItem {
 			activityLog.add((ActivityInstanceLogItem)item);
 		}
 	}
-	
-	
 
 	@Override
 	public int hashCode() {
@@ -67,6 +74,8 @@ public class ProcessInstanceDetails extends ProcessInstanceListItem {
 		result = prime * result
 				+ ((activityLog == null) ? 0 : activityLog.hashCode());
 		result = prime * result + ((pending == null) ? 0 : pending.hashCode());
+		result = prime * result
+				+ ((startActivity == null) ? 0 : startActivity.hashCode());
 		return result;
 	}
 
@@ -89,15 +98,18 @@ public class ProcessInstanceDetails extends ProcessInstanceListItem {
 				return false;
 		} else if (!pending.equals(other.pending))
 			return false;
+		if (startActivity == null) {
+			if (other.startActivity != null)
+				return false;
+		} else if (!startActivity.equals(other.startActivity))
+			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "ProcessInstanceDetails [activityLog=" + activityLog
-				+ ", pending=" + pending
-				+ " " + super.toString() + "]";
+		return "ProcessInstanceDetails [startActivity=" + startActivity
+				+ ", activityLog=" + activityLog + ", pending=" + pending + "]";
 	}
-	
 	
 }
