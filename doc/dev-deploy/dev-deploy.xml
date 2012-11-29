@@ -537,6 +537,10 @@
 	  </imageobject>
 	  <!--
 	      <caption>
+	      <para>
+	      The forms engine is accessed via a <xref
+	      linkend="gle.rest"/> interface.
+	      </para>
 	      <para>..
 	      </para>
 	      </caption>
@@ -741,15 +745,17 @@
 
   <section id="s.prod-depl">
     <title>Production Deployment</title>
-    <para>
+
+   <para>
       This section describes how to set up an environment ready for
-      production. This implies:
+      production. This implies installing the necessary run time and server
+      components:
     </para>
 
     <itemizedlist>
       <listitem>
 	<para>
-	  Installation and configuration of run time environment
+	  Installation and setup of Java run time environment
 	</para>
       </listitem>
 
@@ -767,18 +773,42 @@
 
       <listitem>
 	<para>
+	  Install and configure Apache2 Reverse Proxy
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
 	  Check out and installation of source code
 	</para>
       </listitem>
     </itemizedlist>
 
+    <!--
+	<para>
+	PAWAP is developed and runs in a Server Side Java (JEE)
+	Ecosystem.
+	</para>
+      
+	BOS-5.9-Tomcat-6.0.35 
+	hippo-tomcat-6.0.36
+	orbeon-tomcat-6.0.36
+	inherit-portal
+	inherit-service
+	inherit-security
+    -->
+
     <section id="s.prod-depl.prereq">
       <title>Prerequisites</title>
       <para>
-	In the production environment we need the Java Development Kit, and
-	Apache Maven.  In order to install these, follow the corresponding
-	steps in <xref linkend="s.dev-rt-comp.java"/>, <xref
-	linkend="s.dev-rt-comp.mvn"/>.
+	In the production environment we need the Java Development Kit In
+	order to install these, follow the corresponding steps in <xref
+	linkend="s.dev-rt-comp.java"/>.
+
+	<!--
+	  ROL: Actually, we only need the JRE?  , and Apache Maven.  <xref
+	  linkend="s.dev-rt-comp.mvn"/>.
+        -->
       </para>
     </section>
 
@@ -802,6 +832,7 @@
 	tar xzf jcr-inherit-portal.tgz
       </programlisting>
     </section>
+
     <section id="s.deploy.server">
       <title>Deploy on Server</title>
       <programlisting>
@@ -830,7 +861,7 @@
     </section>
     
     <section id="s.apache2.front">
-      <title>Install and configure Apache2 front</title>
+      <title>Install and configure Apache2 Reverse Proxy</title>
       <programlisting>
 	sudo apt-get install apache2
 	sudo a2enmod proxy_ajp
@@ -1322,11 +1353,6 @@
       </title>
 
       <para>
-	PAWAP is developed and runs in a Server Side Java (JEE)
-	Ecosystem.
-      </para>
-      
-      <para>
 	The JDK (Java Development Kit) used is <ulink
 	url="http://www.oracle.com/technetwork/java/javase/overview/index.html">Oracle
 	JDK version 1.6</ulink>. Make sure this JDK is installed on your
@@ -1335,7 +1361,54 @@
 	e.g.:
 	<programlisting>
 	  export JAVA_HOME=/usr/lib/jvm/java-6-sun
+     Ubuntu GNU/Linux 12.04 LTS (Precise Pangolin) released. I wanted to manually install the Sun JDK 6 and 7 on Ubuntu.
+     
+     Installing Sun JDK 6 on Ubuntu 12.04:
+     Download the sun jdk 6 bin from here:
+       http://www.oracle.com/technetwork/java/javase/downloads/
+     
+     Assume root permissions: sudo -s / &lt;password&gt;
+     
+     Make the bin file executeable:
+     
+     chmod +x jdk-6u37-linux-x64.bin
+     
+     Extract the bin file:
+     ./jdk-6u37-linux-x64.bin
+     
+     This creates a subdirectory: jdk1.6.0_37
+     
+     mkdir /usr/lib/jvm
+     
+     mv jdk1.6.0_37 /usr/lib/jvm
+     
+     Symlink to generic name (we use this in update alternatives, in order to make
+     more robust against minor version changes
+     
+     ln -s jdk1.6.0_37 java-6-sun  
+     
+     Install new java source in system:
+     
+     update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-6-sun/bin/javac 1
+     update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-6-sun/bin/java 1
+     update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/java-6-sun/bin/javaws 1
+     
+     Choose default java:
+     update-alternatives --config javac
+     update-alternatives --config java
+     update-alternatives --config javaws
+     
+     java version test:
+     java -version
+     
+     Verify the symlinks all point to the new java location:
+     ls -la /etc/alternatives/java*
+     
+     set JAVA_HOME in /etc/environment:
+     
+     JAVA_HOME=/usr/lib/jvm/java-6-sun
 	</programlisting>
+
       </para>
 
       <note>
@@ -1375,11 +1448,37 @@
 	  Configuration
 	</title>
 	<para>
-	  ...
+	  Prepare PostgreSQL for Bonita
 	</para>
-	  <!--
-	      <programlisting></programlisting>
-	  -->
+	<para>
+	  After the initial install of the database, change user to postgresql
+	  and issue the the following commands:
+	</para>
+
+	<programlisting>
+	    createuser -D -A -P bonita
+	    createdb -O bonita bonita_history
+	    createdb -O bonita bonita_journal
+	</programlisting>
+
+	<para>
+	  Prepare PostgreSQL for Inherit Platform
+	</para>
+	<para>
+	  Still as unix user postgresql and issue the the following;
+	</para>
+
+	<programlisting>
+	    createuser -D -A -P inherit
+	    createdb -O inherit InheritPlatform
+	    psql -n InheritPlatform &lt;  &lt;ipldump.sql&gt;
+	</programlisting>
+
+	<para>
+	  Assuming &lt;ipldump.sql&gt; is the file name of a dump of the
+	  bootstrap database of the Inherit platform, the database
+	  InheritPlatform is now ready for usage with Orbeon Forms and Bonita.
+	</para>
       </section>
 
     </section>
@@ -1394,6 +1493,12 @@
 	using Maven 2.2.1, and Maven must be installed on the development
 	machine.
       </para>
+      <para>
+	Installation on Ubuntu server 12.04:
+      </para>
+      <programlisting>
+	sudo apt-get install maven
+      </programlisting>
     </section>
 
     <section id="s.dev-rt-comp.eclipse">
@@ -1613,16 +1718,7 @@
   </appendix>
 
   <appendix id="app.orbeon">
-    <title>Install, configure and start Orbeon Forms</title>
-    <!-- 
-	 TODO:...
-    -->
-
-    <para>
-      The forms engine is accessed via a <xref
-      linkend="gle.rest"/> interface.
-    </para>
-
+    <title>Installation and Configuration of Orbeon Forms</title>
     <para>
       The following steps describes how to install and configure the forms
       engine Orbeon with <xref linkend="gle.existdb"/> as back-end.
@@ -1631,35 +1727,34 @@
     <section id="app.s.orbeon-prereq">
       <title>Prerequisites</title>
       <para>
+	Create a Tomcat instance for hosting Orbeon in a directory
+	(e.g. /opt/inherit-platform/orbeon-tomcat-6.0.36/) that we will call
+	TOMCAT_ORBEON_HOME.
+      </para>
+
+      <para>
 	Download bundle from <ulink url="">Orbeon download area</ulink>. The
-	downloaded file is ...
+	downloaded file is XXX... 
       </para>
     </section>
 
     <section id="app.s.orbeon-install">
       <title>Installation</title>
       <para>
-	Perform the base install of Orbeon Forms as explained in the
-	<ulink
-	    url="http://wiki.orbeon.com/forms/doc/developer-guide/admin/installing">Orbeon
-	Forms Wiki</ulink>
+	Perform the base install of Orbeon Forms as explained in the <ulink
+	url="http://wiki.orbeon.com/forms/doc/developer-guide/admin/installing">Orbeon
+	Forms Wiki</ulink>.  Perform the initial checks and preparations as
+	described in that document and proceed to the section for installing
+	on Apache Tomcat. The base installation consists essentially of
+	extracting the downloaded orbeon.war file from XXX to the directory
+	$TOMCAT_ORBEON_HOME/webapps, and then to configure it.  The result is
+	a directory, $TOMCAT_ORBEON_HOME/webapps/orbeon.
       </para>
 
       <para>
-	Perform the initial checks and preparations and go on to the section
-	for installing on Apache Tomcat. The base installation consists
-	mainly of extracting the downloaded orbeon.jar file to the directory
-	$TOMCAT_HOME/webapps
-      </para>
-
-      <para>
-	The result is a directory, webapps/orbeon.
-      </para>
-
-      <para>
-	Configuring Orbeon consists mainly of defining or overriding
-	configuration properties according to <ulink
-	url="http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties">the
+	Configuring Orbeon consists of defining or overriding configuration
+	properties according to <ulink
+	url="http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties">,
 	the section of configuration proerties</ulink> in the Orbeon Forms
 	Developer's Guide.
       </para>
