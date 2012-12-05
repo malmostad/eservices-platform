@@ -32,6 +32,10 @@ public class ProcessInstanceDetail extends MyCasesBaseComponent {
 			piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activityInstanceUuid);
 		}
 		request.setAttribute("processInstanceDetails", piDetails);
+		
+		if (piDetails != null && piDetails.getTimeline() != null) {
+			request.setAttribute("timelineByDay", piDetails.getTimeline().getTimelineByDay());
+		}
 
 	}
 }

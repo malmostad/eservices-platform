@@ -37,7 +37,7 @@ public class ProcessInstanceListItem implements Serializable {
     private Date endDate;
     private String processInstanceUuid;
     
-    private List<CommentFeedItem> commentFeed;
+   // private List<CommentFeedItem> commentFeed;
     
 	public ProcessInstanceListItem() {
 		
@@ -95,20 +95,11 @@ public class ProcessInstanceListItem implements Serializable {
 		return serialVersionUID;
 	}
 
-	public List<CommentFeedItem> getCommentFeed() {
-		return commentFeed;
-	}
-
-	public void setCommentFeed(List<CommentFeedItem> commentFeed) {
-		this.commentFeed = commentFeed;
-	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((commentFeed == null) ? 0 : commentFeed.hashCode());
 		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
 		result = prime
 				* result
@@ -133,11 +124,6 @@ public class ProcessInstanceListItem implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ProcessInstanceListItem other = (ProcessInstanceListItem) obj;
-		if (commentFeed == null) {
-			if (other.commentFeed != null)
-				return false;
-		} else if (!commentFeed.equals(other.commentFeed))
-			return false;
 		if (endDate == null) {
 			if (other.endDate != null)
 				return false;
@@ -176,8 +162,7 @@ public class ProcessInstanceListItem implements Serializable {
 		return "ProcessInstanceListItem [processLabel=" + processLabel
 				+ ", status=" + status + ", startDate=" + startDate
 				+ ", startedBy=" + startedBy + ", endDate=" + endDate
-				+ ", processInstanceUuid=" + processInstanceUuid
-				+ ", commentFeed=" + commentFeed + "]";
+				+ ", processInstanceUuid=" + processInstanceUuid + "]";
 	}
 
 

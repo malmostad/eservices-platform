@@ -5,25 +5,22 @@
 		        jQuery.noConflict();
 		        var $j = jQuery;
 		        $j(document).ready(function () {
-		        	$j("#procLogDetail tr:odd").addClass("odd");
-		            $j("#procLogDetail tr:not(.odd)").hide();
-		            $j("#procLogDetail tr:first-child").show();
 		            
-		            $j("#procLogDetail tr.odd").click(function(){
-			           	var url = $j(this).children('td').eq(0).children('a').attr('href');
+		            $j("li.logItemDetails").click(function(){
+			           	var url = $j(this).children("a.viewForm").attr('href');
 			           	if (typeof(url) !== 'undefined' && url.length>0) {
-				            var nextRow =  $j(this).next("tr");
-							
-					        $j(nextRow).find("div").load("<fmt:message key="orbeonbase.portal.url"/>" + url, function(data) {
+				            var divItemLi = $j(this).next();
+							var divElem = $j(divItemLi).find("div");
+							$j(divElem).load("<fmt:message key="orbeonbase.portal.url"/>" + url, function(data) {
 						                if (typeof ORBEON != "undefined") { 
 						                    if (!document.all) {
 						                        ORBEON.xforms.Init.document(); 
 						                    } 
 						                } 
-						        	    }
+						        	}
 								); 
-				                $j(nextRow).toggle();
-				                $j(this).find(".arrow").toggleClass("up");
+				        	
+				               
 			            }
 		            });
 				});
@@ -79,75 +76,19 @@
 		</table>
 	</p>    
 	
-	<h2><fmt:message key="mycases.commentFeed.lbl"/></h2>   
- 	<p>
-		 <table class="display dataTable">
-			<thead>
-				<tr>
-				   <th><fmt:message key="mycases.timestamp.column.lbl"/></th>
-				   <th><fmt:message key="mycases.userId.column.lbl"/></th>
-				   <th><fmt:message key="mycases.message.column.lbl"/></th>
-				</tr>
-			</thead>
-			<tbody>
-		    <c:if test="${not empty processInstanceDetails.commentFeed}">
-				<c:forEach var="comment" items="${processInstanceDetails.commentFeed}">
-					<tr>
-				 	  	<td><fmt:formatDate value="${comment.timeStamp}" type="Both" /></td>
-				 	  	</td>
-						<td>${comment.userId}</td>
-						<td>${comment.message}</td>
-					</tr>
-				</c:forEach>
-			</c:if>
-			</tbody>
-		</table>
-	</p>    
-	
-  	 <h2><fmt:message key="mycases.activityLog.lbl"/></h2>   
-  	 <p>
-		 <table id="procLogDetail" class="display dataTable">
-			<thead>
-				<tr>
-				   <th><fmt:message key="mycases.activity.column.lbl"/></th>
-				   <th><fmt:message key="mycases.startDate.column.lbl"/></th>
-				   <th><fmt:message key="mycases.endDate.column.lbl"/></th>
-				   <th><fmt:message key="mycases.performedBy.column.lbl"/></th>
-				</tr>
-			</thead>
-			<tbody>
-		    <c:if test="${not empty processInstanceDetails.activityLog}">
-				<c:forEach var="logItem" items="${processInstanceDetails.activityLog}">
-					<tr>
-				 	  	<td><a href="${logItem.viewUrl}">${logItem.activityLabel}</a></td>
-				 	  	<td><fmt:formatDate value="${logItem.startDate}" type="Both" /></td>
-				 	  	<td><fmt:formatDate value="${logItem.endDate}" type="Both" /></td>
-						<td>${logItem.performedByUserId}</td>
-					</tr>
-					<tr>
-					  <td colspan="4">
-					     <div class="xform">Loading activity details...please wait...</div>
-					  </td>
-					</tr>
-				</c:forEach>
-				<tr>
-				 	  	<td><a href="${processInstanceDetails.startActivity.viewUrl}"><fmt:message key="mycases.caseStarted.lbl"/></a></td>
-				 	  	<td><fmt:formatDate value="${processInstanceDetails.startDate}" type="Both" /></td>
-				 	  	<td></td>
-						<td>${processInstanceDetails.startedBy}</td>
-				</tr>
-				<tr>
-				  <td colspan="4">
-				     <div class="xform">Loading activity details...please wait...</div>
-				  </td>
-				</tr>
-
-				
-				
-			</c:if>
-			</tbody>
-		</table>    
-	</p>
+  	    
+  	 <h2><fmt:message key="mycases.timeline.lbl"/></h2>
+  	 <ul>
+	 <c:if test="${not empty timelineByDay}">
+		<c:forEach var="dayEntry" items="${timelineByDay}">
+			<h3><fmt:formatDate value="${dayEntry.key}" type="Date"/></h3>
+			<c:forEach var="logItem" items="${dayEntry.value}">
+					<li class="logItemDetails"><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;<a class="viewForm" href="${logItem.viewUrl}"></a>${logItem.briefDescription}&nbsp;(${logItem.userId})</li>
+					<li><div class="xform"></div></li>
+			</c:forEach>
+		</c:forEach>
+	 </c:if>
+	 </ul>
     
   </c:otherwise>
  </c:choose>

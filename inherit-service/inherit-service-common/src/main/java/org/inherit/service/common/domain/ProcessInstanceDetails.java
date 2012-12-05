@@ -26,30 +26,13 @@ public class ProcessInstanceDetails extends ProcessInstanceListItem {
 
 	private static final long serialVersionUID = 5176472811760050085L;
 
-	private ActivityInstanceLogItem startActivity = null;
-	private List<ActivityInstanceLogItem> activityLog = new ArrayList<ActivityInstanceLogItem>();
 	private List<ActivityInstancePendingItem> pending = new ArrayList<ActivityInstancePendingItem>();
+	private Timeline timeline = new Timeline();
 	
 	public ProcessInstanceDetails() {
 		
 	}
 	
-	public ActivityInstanceLogItem getStartActivity() {
-		return startActivity;
-	}
-
-	public void setStartActivity(ActivityInstanceLogItem startActivity) {
-		this.startActivity = startActivity;
-	}
-
-	public List<ActivityInstanceLogItem> getActivityLog() {
-		return activityLog;
-	}
-
-	public void setActivityLog(List<ActivityInstanceLogItem> activityLog) {
-		this.activityLog = activityLog;
-	}
-
 	public List<ActivityInstancePendingItem> getPending() {
 		return pending;
 	}
@@ -63,19 +46,25 @@ public class ProcessInstanceDetails extends ProcessInstanceListItem {
 			pending.add((ActivityInstancePendingItem)item);
 		}
 		else if (item instanceof ActivityInstanceLogItem) {
-			activityLog.add((ActivityInstanceLogItem)item);
+			timeline.add((ActivityInstanceLogItem)item);
 		}
+	}
+
+	public Timeline getTimeline() {
+		return timeline;
+	}
+
+	public void setTimeline(Timeline timeline) {
+		this.timeline = timeline;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ ((activityLog == null) ? 0 : activityLog.hashCode());
 		result = prime * result + ((pending == null) ? 0 : pending.hashCode());
 		result = prime * result
-				+ ((startActivity == null) ? 0 : startActivity.hashCode());
+				+ ((timeline == null) ? 0 : timeline.hashCode());
 		return result;
 	}
 
@@ -88,28 +77,24 @@ public class ProcessInstanceDetails extends ProcessInstanceListItem {
 		if (getClass() != obj.getClass())
 			return false;
 		ProcessInstanceDetails other = (ProcessInstanceDetails) obj;
-		if (activityLog == null) {
-			if (other.activityLog != null)
-				return false;
-		} else if (!activityLog.equals(other.activityLog))
-			return false;
 		if (pending == null) {
 			if (other.pending != null)
 				return false;
 		} else if (!pending.equals(other.pending))
 			return false;
-		if (startActivity == null) {
-			if (other.startActivity != null)
+		if (timeline == null) {
+			if (other.timeline != null)
 				return false;
-		} else if (!startActivity.equals(other.startActivity))
+		} else if (!timeline.equals(other.timeline))
 			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "ProcessInstanceDetails [startActivity=" + startActivity
-				+ ", activityLog=" + activityLog + ", pending=" + pending + "]";
+		return "ProcessInstanceDetails [pending=" + pending + ", timeline="
+				+ timeline + "]";
 	}
+
 	
 }

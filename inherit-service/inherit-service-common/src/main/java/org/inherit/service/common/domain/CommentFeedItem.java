@@ -6,13 +6,13 @@ import java.util.Date;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XStreamAlias("CommentFeedItem")
-public class CommentFeedItem implements Serializable {
+public class CommentFeedItem implements Serializable, TimelineItem {
 	
 	private static final long serialVersionUID = 7249719404625798791L;
 	
 	String processInstanceUuid;
 	String activityInstanceUuid;
-	Date timeStamp;
+	Date timestamp;
 	String message;
 	String userId;
 	
@@ -36,12 +36,8 @@ public class CommentFeedItem implements Serializable {
 		this.activityInstanceUuid = activityInstanceUuid;
 	}
 
-	public Date getTimeStamp() {
-		return timeStamp;
-	}
-
-	public void setTimeStamp(Date timeStamp) {
-		this.timeStamp = timeStamp;
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public String getMessage() {
@@ -74,7 +70,7 @@ public class CommentFeedItem implements Serializable {
 				+ ((processInstanceUuid == null) ? 0 : processInstanceUuid
 						.hashCode());
 		result = prime * result
-				+ ((timeStamp == null) ? 0 : timeStamp.hashCode());
+				+ ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
 		return result;
 	}
@@ -103,10 +99,10 @@ public class CommentFeedItem implements Serializable {
 				return false;
 		} else if (!processInstanceUuid.equals(other.processInstanceUuid))
 			return false;
-		if (timeStamp == null) {
-			if (other.timeStamp != null)
+		if (timestamp == null) {
+			if (other.timestamp != null)
 				return false;
-		} else if (!timeStamp.equals(other.timeStamp))
+		} else if (!timestamp.equals(other.timestamp))
 			return false;
 		if (userId == null) {
 			if (other.userId != null)
@@ -120,8 +116,31 @@ public class CommentFeedItem implements Serializable {
 	public String toString() {
 		return "CommentFeedItem [processInstanceUuid=" + processInstanceUuid
 				+ ", activityInstanceUuid=" + activityInstanceUuid
-				+ ", timeStamp=" + timeStamp + ", message=" + message
+				+ ", timeStamp=" + timestamp + ", message=" + message
 				+ ", userId=" + userId + "]";
+	}
+
+	@Override
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	@Override
+	public int getType() {
+		// TODO Auto-generated method stub
+		return TimelineItem.TYPE_COMMENT;
+	}
+
+	@Override
+	public String getBriefDescription() {
+		// TODO Auto-generated method stub
+		return message;
+	}
+
+	@Override
+	public String getViewUrl() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

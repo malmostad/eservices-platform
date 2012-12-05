@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
 @XStreamAlias("ActivityInstanceLogItem")
-public class ActivityInstanceLogItem extends ActivityInstanceItem {
+public class ActivityInstanceLogItem extends ActivityInstanceItem implements TimelineItem {
 	
 	private static final long serialVersionUID = 4136625617508159625L;
 	
@@ -54,8 +54,6 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem {
 	public void setViewUrl(String viewUrl) {
 		this.viewUrl = viewUrl;
 	}
-	
-	
 	
 	@Override
 	public int hashCode() {
@@ -102,6 +100,27 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem {
 				+ ", viewUrl=" + viewUrl
 				+ " " + super.toString() +   "]";
 	}
-
 	
+	/* implement TimeLineItem */
+	
+	@Override
+	public Date getTimestamp() {
+		return endDate;
+	}
+	@Override
+	public int getType() {
+		return TimelineItem.TYPE_FINISHED;
+	}
+	@Override
+	public String getBriefDescription() {
+		return activityLabel;
+	}
+	@Override
+	public String getUserId() {
+		// TODO Auto-generated method stub
+		return this.getPerformedByUserId();
+	}
+	
+	
+
 }

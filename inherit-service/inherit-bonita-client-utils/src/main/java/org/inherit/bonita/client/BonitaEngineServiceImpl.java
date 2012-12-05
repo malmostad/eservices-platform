@@ -304,21 +304,20 @@ public class BonitaEngineServiceImpl {
 		if (comment.getInstanceUUID() != null) {
 			result.setProcessInstanceUuid(comment.getInstanceUUID().getValue());
 		}
-		result.setTimeStamp(comment.getDate());
+		result.setTimestamp(comment.getDate());
 		result.setUserId(comment.getUserId());
 		return result;
 	}
 	
-	private void loadProcessInstanceCommentFeed(ProcessInstance src, ProcessInstanceListItem dst) {
+	private void loadProcessInstanceCommentFeed(ProcessInstance src, ProcessInstanceDetails dst) {
 		List<CommentFeedItem> commentFeed = new ArrayList<CommentFeedItem>();
 		List<Comment> comments = src.getCommentFeed();
 		if (comments != null) {
 			for (Comment comment : comments) {
 				CommentFeedItem item = loadCommentFeedItem(comment);
-				commentFeed.add(item);
+				dst.getTimeline().add(item);
 			}
 		}
-		dst.setCommentFeed(commentFeed);
 	}
 	
 	private void loadProcessInstanceBriefProperties(LightProcessInstance src, ProcessInstanceListItem dst) {

@@ -15,6 +15,7 @@ import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.domain.TimelineItem;
 import org.inherit.taskform.engine.persistence.TaskFormDb;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
@@ -143,17 +144,21 @@ public class TaskFormService {
 					pendingItem.setFormUrl(activity.calcEditUrl());
 				}
 			}
-			for (ActivityInstanceLogItem logItem : details.getActivityLog()) {
-				ProcessActivityFormInstance activity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(logItem.getActivityInstanceUuid());
-				// log item => set view url
-				if (activity != null) {
-					String viewUrl = activity.calcViewUrl();
-					logItem.setFormUrl(viewUrl);
-					logItem.setViewUrl(viewUrl);
+			
+			for (TimelineItem timelineItem : details.getTimeline().getItems()) {
+				if (timelineItem instanceof ActivityInstanceLogItem) {
+				  ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)timelineItem;
+					ProcessActivityFormInstance activity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(logItem.getActivityInstanceUuid());
+					// log item => set view url
+					if (activity != null) {
+						String viewUrl = activity.calcViewUrl();
+						logItem.setFormUrl(viewUrl);
+						logItem.setViewUrl(viewUrl);
+					}
 				}
 			}
-			
-			details.setStartActivity(getStartFormActivityInstanceLogItem(details.getProcessInstanceUuid()));
+			ActivityInstanceLogItem startLogItem = getStartFormActivityInstanceLogItem(details.getProcessInstanceUuid());
+			details.getTimeline().addAndSort(startLogItem);
 		}
 	}
 	
@@ -167,6 +172,9 @@ public class TaskFormService {
 				result = new ActivityInstanceLogItem();
 				result.setViewUrl(startActivity.calcViewUrl());
 				result.setFormUrl(startActivity.calcViewUrl());
+				result.setEndDate(startActivity.getSubmitted());
+				result.setActivityLabel(startActivity.getFormPath());
+				result.setPerformedByUserId(startActivity.getUserId());
 			}
 		}
 		
