@@ -76,23 +76,27 @@ public class Timeline {
 		
 		Date keyDay = null;
 		List<TimelineItem> dayItems = null;
-		for (TimelineItem item : items) {
-			if (item.getTimestamp()==null) {
-				log.severe("Timestamp in TimelineItem is not expected to be null: " + item);
-			}
-			else {
-				if (keyDay==null || !DateUtils.isSameDay(keyDay, item.getTimestamp())) {
-					// new day in Map => create new day in map and a new list for that day
-					keyDay = DateUtils.truncate(item.getTimestamp(), Calendar.DAY_OF_MONTH);
-					dayItems = new ArrayList<TimelineItem>();
-					timelineByDay.put(keyDay, dayItems);
-				}
-				// always add item to current day in map
-				if (dayItems != null) {
-					dayItems.add(item);
-				}
-				else {
-					log.severe("dayItems should never be null on add");
+		if (items != null) {
+			for (TimelineItem item : items) {
+				if (item != null) {
+					if (item.getTimestamp()==null) {
+						log.severe("Timestamp in TimelineItem is not expected to be null: " + item);
+					}
+					else {
+						if (keyDay==null || !DateUtils.isSameDay(keyDay, item.getTimestamp())) {
+							// new day in Map => create new day in map and a new list for that day
+							keyDay = DateUtils.truncate(item.getTimestamp(), Calendar.DAY_OF_MONTH);
+							dayItems = new ArrayList<TimelineItem>();
+							timelineByDay.put(keyDay, dayItems);
+						}
+						// always add item to current day in map
+						if (dayItems != null) {
+							dayItems.add(item);
+						}
+						else {
+							log.severe("dayItems should never be null on add");
+						}
+					}
 				}
 			}
 		}

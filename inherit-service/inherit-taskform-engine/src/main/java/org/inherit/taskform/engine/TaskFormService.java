@@ -162,6 +162,26 @@ public class TaskFormService {
 		}
 	}
 	
+	public int addComment(String activityInstanceUuid, String comment, String userId) {
+		int result = bonitaClient.addComment(activityInstanceUuid, comment, userId); 
+		return result;
+	}
+	
+	public int assignTask(String activityInstanceUuid, String userId) {
+		int result = bonitaClient.assignTask(activityInstanceUuid, userId); 
+		return result;
+	}
+	
+	public int addCandidate(String activityInstanceUuid, String userId) {
+		int result = bonitaClient.addCandidate(activityInstanceUuid, userId); 
+		return result;
+	}
+
+	public int unassignTask(String activityInstanceUuid) {
+		int result = bonitaClient.unassignTask(activityInstanceUuid); 
+		return result;		
+	}
+	
 	public ActivityInstanceLogItem getStartFormActivityInstanceLogItem(String processInstanceUuid) {
 		ActivityInstanceLogItem result = null;
 		

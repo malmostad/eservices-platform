@@ -275,6 +275,73 @@ public class BonitaEngineServiceImpl {
 		return dash;
 	}
 	
+	public int addComment(String activityInstanceUuid, String comment, String userId) {
+		int result = -1;
+		try {
+			LoginContext loginContext = BonitaUtil.login();
+			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+			AccessorUtil.getRuntimeAPI().addComment(activityUUID, comment, userId);
+			result = 1;
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception when adding comment=[" + comment + "] to activityInstanceUuid=[" + activityInstanceUuid + "]");
+		}
+		return result;
+	}
+	
+	public int assignTask(String activityInstanceUuid, String userId) {
+		int result = -1;
+		try {
+			LoginContext loginContext = BonitaUtil.login();
+			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+			AccessorUtil.getRuntimeAPI().assignTask(activityUUID, userId);
+			result = 1;
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception when assigning task activityInstanceUuid=[" + activityInstanceUuid + "] to userId=[" + userId + "]");
+		}
+		return result;
+	}
+
+	public int addCandidate(String activityInstanceUuid, String userId) {
+		int result = -1;
+		try {
+			if (userId !=null) {
+				LoginContext loginContext = BonitaUtil.login();
+				ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+				Set<String> candidates = AccessorUtil.getQueryRuntimeAPI().getTaskCandidates(activityUUID);
+				if (candidates ==null) {
+					candidates = new HashSet<String>();
+				}
+				candidates.add(userId);
+				AccessorUtil.getRuntimeAPI().assignTask(activityUUID, candidates);
+				result = 1;
+				loginContext.logout();
+			}
+		}
+		catch (Exception e) {
+			log.severe("Exception when assigning task candidate userId=[" + userId + "] to activityInstanceUuid=[" + activityInstanceUuid + "]");
+		}
+		return result;
+	}
+
+	public int unassignTask(String activityInstanceUuid) {
+		int result = -1;
+		try {
+			LoginContext loginContext = BonitaUtil.login();
+			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+			AccessorUtil.getRuntimeAPI().unassignTask(activityUUID);
+			result = 1;
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception when unassigning task activityInstanceUuid=[" + activityInstanceUuid + "]");
+		}
+		return result;
+	}
+
 	private ProcessInstanceDetails getProcessInstanceDetailsByUuid(ProcessInstanceUUID piUuid) throws Exception {
 		ProcessInstanceDetails result = null;
 		
