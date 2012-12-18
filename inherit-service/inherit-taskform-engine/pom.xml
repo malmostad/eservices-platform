@@ -61,4 +61,92 @@
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+	
+	<profiles>
+	  <profile>
+	    <id>appserver</id>
+	    <activation>
+	      <activeByDefault>true</activeByDefault>
+	    </activation>
+	    <dependencies>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>3.6.10.Final</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-annotations</artifactId>
+				<version>3.5.6-Final</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.12.1.GA</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.1-901.jdbc4</version>
+				<scope>provided</scope>
+			</dependency>
+		</dependencies>
+	  </profile>
+	  <profile>
+	  	<id>standalone</id>
+	    <dependencies>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-core</artifactId>
+				<version>3.6.10.Final</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-annotations</artifactId>
+				<version>3.5.6-Final</version>
+			</dependency>
+			<dependency>
+				<groupId>javassist</groupId>
+				<artifactId>javassist</artifactId>
+				<version>3.12.1.GA</version>
+			</dependency>
+			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.1-901.jdbc4</version>
+			</dependency>
+		</dependencies>
+
+	  </profile>
+	</profiles>
+	
+	
+	<build>
+		<plugins>
+			<plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>exec-maven-plugin</artifactId>
+		        <version>1.2.1</version>
+		        <executions>
+		          <execution>
+		            <goals>
+		              <goal>java</goal>
+		            </goals>
+		          </execution>
+		        </executions>
+		        <configuration>
+		          <executableDependency>
+		            <artifactId>inherit-service</artifactId>
+					<groupId>se.inherit</groupId>
+		          </executableDependency>
+		          <mainClass>org.inherit.taskform.engine.persistence.TaskFormDb</mainClass>
+			          
+		        </configuration>
+	        </plugin>
+		</plugins>
+	</build>
+
 </project>

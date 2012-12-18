@@ -3,6 +3,9 @@ package org.inherit.taskform.engine.persistence;
 import java.util.List;
 import java.util.logging.Logger;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
@@ -386,7 +389,25 @@ public class TaskFormDb {
 	public static void main(String args[]) {
 		System.out.println("start main load initial data to InheritPlatform database");
 		
+		Configuration cfg = new AnnotationConfiguration()
+	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.StartFormDefinition.class)
+	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition.class)
+	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance.class)
+	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.TagType.class)
+	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityTag.class)
+	    .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
+	    .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
+	    .setProperty("hibernate.connection.url", " jdbc:postgresql://localhost/InheritPlatform")
+	    .setProperty("hibernate.connection.username", "inherit")
+	    .setProperty("hibernate.connection.password", "inh3rit")
+	    .setProperty("hibernate.hbm2ddl.auto", "create")
+//	    .setProperty("hibernate.hbm2ddl.auto", "update")
+	    .setProperty("show_sql", "true");
+	    
 		
+	    SessionFactory sessionFactory = cfg.buildSessionFactory();
+	    Session session = sessionFactory.openSession();
+	    log.fine("Init hibernate finished");
 		// initialize db with demo data
 		
 		StartFormDefinition spridning = new StartFormDefinition();
@@ -423,14 +444,18 @@ public class TaskFormDb {
 		applicationByTagType.setName("application_by");
 		applicationByTagType.setLabel("Ansökan av");
 
-		TaskFormDb db = new TaskFormDb();
-		db.save(spridning);
-		db.save(granskaAnsokan);
-		db.save(remissA);
-		db.save(remissB);
-		db.save(decision);
-		db.save(diaryTagType);
-		db.save(applicationByTagType);
+		session.beginTransaction();
+		session.save(spridning);
+		session.save(granskaAnsokan);
+		session.save(remissA);
+		session.save(remissB);
+		session.save(decision);
+		session.save(diaryTagType);
+		session.save(applicationByTagType);
+		
+		session.getTransaction().commit();
+		session.close();
+		
 		System.out.println("end main");
 		
 	}
