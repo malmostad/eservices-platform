@@ -127,13 +127,16 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 
 	@Override
 	public int getType() {
-		// TODO Auto-generated method stub
 		return TimelineItem.TYPE_COMMENT;
 	}
 
 	@Override
 	public String getBriefDescription() {
-		// TODO Auto-generated method stub
+		return message;
+	}
+
+	@Override
+	public String getDescription() {
 		return message;
 	}
 

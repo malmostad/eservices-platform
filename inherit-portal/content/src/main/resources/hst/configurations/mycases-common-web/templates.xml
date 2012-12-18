@@ -8,7 +8,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/inbox/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/web/inbox/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="status.main.content">
@@ -16,7 +16,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/status/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/web/status/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="form.main.content">
@@ -24,7 +24,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/form/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/web/form/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="confirm.main.content">
@@ -32,7 +32,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/confirm/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/web/confirm/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="formoverview.main.content">
@@ -40,7 +40,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/formoverview/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/web/formoverview/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="processinstancedetail.main.content">
@@ -48,7 +48,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/processinstancedetail/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/web/processinstancedetail/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="formwithdetails.main.content">
@@ -56,7 +56,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/formwithdetails/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/web/formwithdetails/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="dash.main.content">
@@ -64,7 +64,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/web/dash/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/web/dash/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
 </sv:node>

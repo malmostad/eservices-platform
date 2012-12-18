@@ -30,6 +30,12 @@ public interface TimelineItem {
 	public String getBriefDescription();
 	
 	/**
+	 * Description which can be viewed in timeline as first level in-depth information, before viewUrl info. 
+	 * @return
+	 */
+	public String getDescription();
+
+	/**
 	 * URL to view more information about this item. 
 	 * @return
 	 */

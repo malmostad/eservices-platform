@@ -30,6 +30,7 @@ public class InboxTaskItem implements Serializable {
 	String processLabel;
 	String activityLabel;
 	Date activityCreated;
+	Date expectedEndDate;
 	
 	// internal taskform-engine id, do not store, use in session communication 
 	Long processActivityFormInstanceId;
@@ -63,6 +64,14 @@ public class InboxTaskItem implements Serializable {
 
 	public void setActivityCreated(Date activityCreated) {
 		this.activityCreated = activityCreated;
+	}
+
+	public Date getExpectedEndDate() {
+		return expectedEndDate;
+	}
+
+	public void setExpectedEndDate(Date expectedEndDate) {
+		this.expectedEndDate = expectedEndDate;
 	}
 
 	public Long getProcessActivityFormInstanceId() {
@@ -118,6 +127,8 @@ public class InboxTaskItem implements Serializable {
 						: activityDefinitionUUID.hashCode());
 		result = prime * result
 				+ ((activityLabel == null) ? 0 : activityLabel.hashCode());
+		result = prime * result
+				+ ((expectedEndDate == null) ? 0 : expectedEndDate.hashCode());
 		result = prime
 				* result
 				+ ((processActivityFormInstanceId == null) ? 0
@@ -153,6 +164,11 @@ public class InboxTaskItem implements Serializable {
 				return false;
 		} else if (!activityLabel.equals(other.activityLabel))
 			return false;
+		if (expectedEndDate == null) {
+			if (other.expectedEndDate != null)
+				return false;
+		} else if (!expectedEndDate.equals(other.expectedEndDate))
+			return false;
 		if (processActivityFormInstanceId == null) {
 			if (other.processActivityFormInstanceId != null)
 				return false;
@@ -176,7 +192,8 @@ public class InboxTaskItem implements Serializable {
 	public String toString() {
 		return "InboxTaskItem [processLabel=" + processLabel
 				+ ", activityLabel=" + activityLabel + ", activityCreated="
-				+ activityCreated + ", processActivityFormInstanceId="
+				+ activityCreated + ", expectedEndDate=" + expectedEndDate
+				+ ", processActivityFormInstanceId="
 				+ processActivityFormInstanceId + ", taskUuid=" + taskUuid
 				+ ", activityDefinitionUUID=" + activityDefinitionUUID + "]";
 	}

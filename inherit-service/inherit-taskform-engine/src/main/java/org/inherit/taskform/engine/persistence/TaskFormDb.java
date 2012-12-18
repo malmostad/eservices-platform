@@ -6,7 +6,9 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
+import org.inherit.taskform.engine.persistence.entity.ProcessActivityTag;
 import org.inherit.taskform.engine.persistence.entity.StartFormDefinition;
+import org.inherit.taskform.engine.persistence.entity.TagType;
 
 public class TaskFormDb {
 	
@@ -365,9 +367,24 @@ public class TaskFormDb {
 		session.getTransaction().commit();
 		session.close();
 	}
+	
+	public void saveProcessActivityTag(Session session, ProcessActivityTag processActivityTag) {
+		session.saveOrUpdate(processActivityTag);		
+	}
+
+
+	public void saveProcessActivityTag(ProcessActivityTag processActivityTag) {
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		session.beginTransaction();
+		
+		saveProcessActivityTag(session, processActivityTag);
+		
+		session.getTransaction().commit();
+		session.close();
+	}
 
 	public static void main(String args[]) {
-		System.out.println("start main");
+		System.out.println("start main load initial data to InheritPlatform database");
 		
 		
 		// initialize db with demo data
@@ -395,14 +412,25 @@ public class TaskFormDb {
 		decision.setFormPath("Demo/Beslut");
 		decision.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Beslut");
 		decision.setStartFormDefinition(null);
-				
+		
+		TagType diaryTagType = new TagType();
+		diaryTagType.setTagTypeId(TagType.TAG_TYPE_DIARY_NO);
+		diaryTagType.setName("diary_no");
+		diaryTagType.setLabel("Diarienr");
+
+		TagType applicationByTagType = new TagType();
+		applicationByTagType.setTagTypeId(TagType.TAG_APPLICATION_BY);
+		applicationByTagType.setName("application_by");
+		applicationByTagType.setLabel("Ansökan av");
+
 		TaskFormDb db = new TaskFormDb();
 		db.save(spridning);
 		db.save(granskaAnsokan);
 		db.save(remissA);
 		db.save(remissB);
 		db.save(decision);
-				
+		db.save(diaryTagType);
+		db.save(applicationByTagType);
 		System.out.println("end main");
 		
 	}

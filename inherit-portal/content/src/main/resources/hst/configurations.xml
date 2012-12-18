@@ -586,23 +586,14 @@
       <sv:value>hst:configuration</sv:value>
     </sv:property>
   </sv:node>
-  <sv:node sv:name="mycases-web">
-    <sv:property sv:name="jcr:primaryType" sv:type="Name">
-      <sv:value>hst:configuration</sv:value>
-    </sv:property>
-  </sv:node>
-  <sv:node sv:name="mycases-mobile">
-    <sv:property sv:name="jcr:primaryType" sv:type="Name">
-      <sv:value>hst:configuration</sv:value>
-    </sv:property>
-  </sv:node>
   <sv:node sv:name="malmo-internal-web">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
     </sv:property>
     <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
       <sv:value>../malmo-internal-common</sv:value>
-      <sv:value>../mycases-web</sv:value>
+      <sv:value>../mycases-internal-web</sv:value>
+      <sv:value>../mycases-common-web</sv:value>
       <sv:value>../mycases-common</sv:value>
       <sv:value>../inheritportal-common</sv:value>
     </sv:property>
@@ -623,7 +614,8 @@
     </sv:property>
     <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
       <sv:value>../malmo-external-common</sv:value>
-      <sv:value>../mycases-web</sv:value>
+      <sv:value>../mycases-external-web</sv:value>
+      <sv:value>../mycases-common-web</sv:value>
       <sv:value>../mycases-common</sv:value>
       <sv:value>../inheritportal-common</sv:value>
     </sv:property>
@@ -634,9 +626,40 @@
     </sv:property>
     <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
       <sv:value>../malmo-external-common</sv:value>
-      <sv:value>../mycases-mobile</sv:value>
+      <sv:value>../mycases-external-mobile</sv:value>
+      <sv:value>../mycases-common-mobile</sv:value>
       <sv:value>../mycases-common</sv:value>
       <sv:value>../inheritportal-common</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-common-web">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-internal-web">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-external-web">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-common-mobile">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-external-mobile">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-internal-mobile">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
     </sv:property>
   </sv:node>
 </sv:node>

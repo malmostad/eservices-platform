@@ -8,7 +8,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/mobile/inbox/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/mobile/inbox/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="status.main.content">
@@ -16,7 +16,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/mobile/status/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/mobile/status/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="form.main.content">
@@ -24,7 +24,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/mobile/form/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/mobile/form/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="confirm.main.content">
@@ -32,7 +32,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/mobile/confirmform/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/mobile/confirmform/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="processinstancedetail.main.content">
@@ -40,7 +40,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/mobile/processinstancedetail/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/mobile/processinstancedetail/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="formwithdetails.main.content">
@@ -48,7 +48,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/mobile/formwithdetails/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/mobile/formwithdetails/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="formoverview.main.content">
@@ -56,7 +56,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/mobile/formoverview/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/mobile/formoverview/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
 </sv:node>

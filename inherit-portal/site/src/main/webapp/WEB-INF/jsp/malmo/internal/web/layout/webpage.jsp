@@ -20,6 +20,9 @@
 	<!--  Malmö assets-2.0 end -->    
     <script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     
+    <link rel="stylesheet" href="<hst:link path="/css/platform/inherit-platform.css"/>" type="text/css"/>
+    <script type="text/javascript" src="<hst:link path="/js/platform/inherit-platform.js"/>"></script>
+    
   </head>
   <body>
   	<div class="wrap-all">

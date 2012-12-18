@@ -190,6 +190,7 @@ public class BonitaEngineServiceImpl {
 				InboxTaskItem taskItem = new InboxTaskItem();
 				
 				taskItem.setActivityCreated(taskInstance.getStartedDate());
+				taskItem.setExpectedEndDate(taskInstance.getExpectedEndDate());
 				taskItem.setActivityLabel(taskInstance.getActivityLabel());
 				taskItem.setProcessLabel(getProcessLabel(taskInstance.getProcessDefinitionUUID()));;
 				taskItem.setProcessActivityFormInstanceId(new Long(0)); // TODO

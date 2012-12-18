@@ -1,0 +1,36 @@
+.view-url {
+	display: none;
+}
+
+.toggle-view {
+	list-style: none;
+	font-family: arial;
+	font-size: 11px;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+.toggle-view li {
+	margin: 10px;
+	border-bottom: 1px solid #ccc;
+	position: relative;
+	cursor: pointer;
+}
+
+.toggle-view h4 {
+	margin: 0;
+}
+
+.toggle-view span.exp {
+	position: absolute;
+	right: 5px;
+	top: 0;
+	color: #ccc;
+	font-size: 13px;
+}
+
+.toggle-view .panel {
+	margin: 5px 0;
+	display: none;
+}

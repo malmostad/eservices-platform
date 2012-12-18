@@ -8,8 +8,20 @@ import javax.persistence.Id;
 @Entity
 public class TagType {
 
+	// system defined tag types
+	
+	/**
+	 * Id number in diary/journal
+	 */
+	public static final Long TAG_TYPE_DIARY_NO = new Long(1);
+	
+	/**
+	 * Use this tag to mark that an userId has submitted an application 
+	 * in order to make a fast search possibly
+	 */
+	public static final Long TAG_APPLICATION_BY = new Long(2);
+	
 	@Id
-	@GeneratedValue
 	Long tagTypeId;
 	
 	@Column(unique=true, nullable=false)

@@ -1,32 +1,6 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="document" type="se.inherit.portal.beans.NewsDocument"--%>
 
-<script type="text/javascript" charset="utf-8">
-		        jQuery.noConflict();
-		        var $j = jQuery;
-		        $j(document).ready(function () {
-		            
-		            $j("li.logItemDetails").click(function(){
-			           	var url = $j(this).children("a.viewForm").attr('href');
-			           	if (typeof(url) !== 'undefined' && url.length>0) {
-				            var divItemLi = $j(this).next();
-							var divElem = $j(divItemLi).find("div");
-							$j(divElem).load("<fmt:message key="orbeonbase.portal.url"/>" + url, function(data) {
-						                if (typeof ORBEON != "undefined") { 
-						                    if (!document.all) {
-						                        ORBEON.xforms.Init.document(); 
-						                    } 
-						                } 
-						        	}
-								); 
-				        	
-				               
-			            }
-		            });
-				});
-		        
-		</script>
-		
 <h1><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
 
 <c:choose>
@@ -37,7 +11,7 @@
   	<p>${processInstanceDetails.processLabel}
   	</p>
  	<h2><fmt:message key="mycases.pendingActivities.lbl"/></h2>   
- 	<p>
+ 	<p></p>
 		 <table class="display dataTable">
 			<thead>
 				<tr>
@@ -74,21 +48,40 @@
 			</c:if>
 			</tbody>
 		</table>
-	</p>    
-	
-  	    
+		<p></p>
   	 <h2><fmt:message key="mycases.timeline.lbl"/></h2>
-  	 <ul>
-	 <c:if test="${not empty timelineByDay}">
+  	 <p></p>
+  	 <c:if test="${not empty timelineByDay}">
 		<c:forEach var="dayEntry" items="${timelineByDay}">
 			<h3><fmt:formatDate value="${dayEntry.key}" type="Date"/></h3>
-			<c:forEach var="logItem" items="${dayEntry.value}">
-					<li class="logItemDetails"><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;<a class="viewForm" href="${logItem.viewUrl}"></a>${logItem.briefDescription}&nbsp;(${logItem.userId})</li>
-					<li><div class="xform"></div></li>
-			</c:forEach>
+			
+			<ul class="toggle-view timeline">
+				<c:forEach var="logItem" items="${dayEntry.value}">
+					<li>
+					  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;${logItem.briefDescription}&nbsp;(${logItem.userId})</h4>
+					  <span class="exp">+ visa mer...</span>
+					  <div class="panel">
+						<c:choose>
+							<c:when test="${not empty logItem.description}">
+								<p>${logItem.description}</p>
+							</c:when>
+							<c:when test="${not empty logItem.viewUrl}">
+								<p><fmt:message key="mycases.loading"/></p>
+							</c:when>
+							<c:otherwise>
+								<p><fmt:message key="mycases.nomoredetails"/></p>
+							</c:otherwise>
+						</c:choose>
+					  </div>
+					  <c:if test="${not empty logItem.viewUrl}">
+					  	<a class="view-url" href="<fmt:message key="orbeonbase.portal.url"/>${logItem.viewUrl}"></a>
+					  </c:if>
+					</li>
+				</c:forEach>
+			</ul>
 		</c:forEach>
 	 </c:if>
-	 </ul>
+	 
     
   </c:otherwise>
  </c:choose>

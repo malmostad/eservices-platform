@@ -116,6 +116,10 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 		return activityLabel;
 	}
 	@Override
+	public String getDescription() {
+		return null;
+	}
+	@Override
 	public String getUserId() {
 		// TODO Auto-generated method stub
 		return this.getPerformedByUserId();
