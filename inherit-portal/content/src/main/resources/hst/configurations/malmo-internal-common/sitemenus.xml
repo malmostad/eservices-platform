@@ -15,13 +15,38 @@
         <sv:value>mycases/inbox</sv:value>
       </sv:property>
     </sv:node>
-    <sv:node sv:name="Mina ärenden">
+    <sv:node sv:name="Sök ärenden">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>hst:sitemenuitem</sv:value>
       </sv:property>
       <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-        <sv:value>mycases/status</sv:value>
+        <sv:value>mycases/search</sv:value>
       </sv:property>
+      <sv:node sv:name="Person">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenuitem</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="Företag">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenuitem</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="Diarienr">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenuitem</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="Där jag deltagit">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenuitem</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="Avancerad">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenuitem</sv:value>
+        </sv:property>
+      </sv:node>
     </sv:node>
     <sv:node sv:name="Instrumentpanel">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
