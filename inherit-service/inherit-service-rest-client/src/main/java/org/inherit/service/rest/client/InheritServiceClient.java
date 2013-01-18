@@ -26,6 +26,11 @@ import org.restlet.resource.ResourceException;
 
 import com.thoughtworks.xstream.XStream;
 
+/**
+ * A ready to use REST client implementation to inherit-service-rest-server.
+ * @author bjmo
+ *
+ */
 public class InheritServiceClient {
 
 	public static final Logger log = Logger.getLogger(InheritServiceClient.class.getName());
@@ -209,6 +214,49 @@ public class InheritServiceClient {
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userid, int remainingDays) {
 		DashOpenActivities result = null;
 		result = getDashOpenActivitiesByUserId(userid, Integer.toString(remainingDays));
+		return result;
+	}
+	
+	public int addComment(String activityInstanceUuid, String comment, String userId) {
+		int result = -2;
+		String uri;
+		
+		uri = serverBaseUrl + "addComment/" + ParameterEncoder.encode(activityInstanceUuid) + 
+					"/" + ParameterEncoder.encode(comment) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		log.severe("addComment uri: " + uri);
+		
+		String response = call(uri);
+		result = parseIntResponse(response);
+
+		return result;
+	}
+
+	public int assignTask(String activityInstanceUuid, String action, String userId) {
+		int result = -2;
+		String uri;
+		
+		uri = serverBaseUrl + "assignTask/" + ParameterEncoder.encode(activityInstanceUuid) + 
+					"/" + ParameterEncoder.encode(action) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		log.severe("addComment uri: " + uri);
+		
+		String response = call(uri);
+		result = parseIntResponse(response);
+
+		return result;
+	}
+
+	
+	private int parseIntResponse(String val) {
+		int result = -1000;
+		try {
+			if (val!=null) {
+				result = Integer.parseInt((String)val);
+			}
+		}
+		catch (NumberFormatException nfe) {
+			log.warning("Cannot parse integer value from val: " + val);
+			result = -1001;
+		}
 		return result;
 	}
 	

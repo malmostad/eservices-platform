@@ -14,7 +14,7 @@ public class ProcessActivityTag {
 
 	@Id
 	@GeneratedValue
-	Long processActivityFormInstanceId;
+	Long processActivityTagId;
 
 	@ManyToOne
     @JoinColumn(name="tagTypeId", nullable=false)
@@ -39,12 +39,12 @@ public class ProcessActivityTag {
 		
 	}
 
-	public Long getProcessActivityFormInstanceId() {
-		return processActivityFormInstanceId;
+	public Long getProcessActivityTagId() {
+		return processActivityTagId;
 	}
 
-	public void setProcessActivityFormInstanceId(Long processActivityFormInstanceId) {
-		this.processActivityFormInstanceId = processActivityFormInstanceId;
+	public void setProcessActivityTagId(Long processActivityTagId) {
+		this.processActivityTagId = processActivityTagId;
 	}
 
 	public TagType getType() {
@@ -85,8 +85,8 @@ public class ProcessActivityTag {
 		int result = 1;
 		result = prime
 				* result
-				+ ((processActivityFormInstanceId == null) ? 0
-						: processActivityFormInstanceId.hashCode());
+				+ ((processActivityTagId == null) ? 0
+						: processActivityTagId.hashCode());
 		result = prime * result
 				+ ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -104,11 +104,11 @@ public class ProcessActivityTag {
 		if (getClass() != obj.getClass())
 			return false;
 		ProcessActivityTag other = (ProcessActivityTag) obj;
-		if (processActivityFormInstanceId == null) {
-			if (other.processActivityFormInstanceId != null)
+		if (processActivityTagId == null) {
+			if (other.processActivityTagId != null)
 				return false;
-		} else if (!processActivityFormInstanceId
-				.equals(other.processActivityFormInstanceId))
+		} else if (!processActivityTagId
+				.equals(other.processActivityTagId))
 			return false;
 		if (timestamp == null) {
 			if (other.timestamp != null)
@@ -135,8 +135,8 @@ public class ProcessActivityTag {
 
 	@Override
 	public String toString() {
-		return "ProcessActivityTag [processActivityFormInstanceId="
-				+ processActivityFormInstanceId + ", type=" + type + ", value="
+		return "ProcessActivityTag [processActivityTagId="
+				+ processActivityTagId + ", type=" + type + ", value="
 				+ value + ", timestamp=" + timestamp + ", userId=" + userId
 				+ "]";
 	}

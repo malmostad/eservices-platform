@@ -6,6 +6,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 @XStreamAlias("DashOpenActivities")
 public class DashOpenActivities implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+	
 	int onTrack;
 	int atRisk;	
 	int overdue;

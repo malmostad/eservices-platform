@@ -1,10 +1,5 @@
 package se.inherit.portal.components.mycases;
 
-import java.security.Principal;
-import java.util.Date;
-import java.util.Locale;
-
-import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
@@ -26,7 +21,7 @@ public class Confirm extends MyCasesBaseComponent {
 		HippoBean doc = getContentBean(request);
 
 		String userName = getUserName(request);
-
+		
 		if (doc == null) {
 			log.warn(
 					"Did not find a content bean for relative content path '{}' for pathInfo '{}'",

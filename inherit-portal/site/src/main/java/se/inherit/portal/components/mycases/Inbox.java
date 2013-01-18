@@ -1,9 +1,6 @@
 package se.inherit.portal.components.mycases;
 
-import java.security.Principal;
 import java.util.ArrayList;
-
-import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;

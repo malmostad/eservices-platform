@@ -4,13 +4,18 @@ import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
 
+/**
+ * Inherit platform services back end REST API. 
+ * TODO Add authentication. Keep it protected from external use. 
+ * @author bjmo
+ *
+ */
 public class InheritServiceApplication extends Application {
 
 	@Override
 	public Restlet createInboundRoot() {
 		Router router = new Router(getContext());
 		
-		router.attach("/assignTask/{activityInstanceUuid}/{action}/{userid}", AssignTask.class); 
 		router.attach("/getActivityInstanceItemById/{processActivityFormInstanceId}", ActivityInstanceItemById.class);
 		router.attach("/getDashOpenActivitiesByUserId/{userid}/{remainingDays}", DashOpenActivitiesByUserId.class);
 		router.attach("/getStartActivityInstanceItem/{formPath}/{userId}", StartActivityInstanceItemByFormPath.class);
@@ -19,6 +24,7 @@ public class InheritServiceApplication extends Application {
 		
 		// TODO take user from login instead of parameter userid
 		router.attach("/addComment/{activityInstanceUuid}/{comment}/{userid}", AddComment.class); 
+		router.attach("/assignTask/{activityInstanceUuid}/{action}/{userid}", AssignTask.class); 
 		router.attach("/getActivityInstanceItem/{activityInstanceUuid}/{userId}", ActivityInstanceItemByActivityInstanceUuid.class);
 		router.attach("/inboxByUserId/{userid}", InboxByUserId.class);
 		router.attach("/statusByUserId/{userid}", StatusByUserId.class);

@@ -2,7 +2,6 @@ package org.inherit.service.common.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 

@@ -1,15 +1,11 @@
 package se.inherit.portal.components.mycases;
 
-import java.security.Principal;
-import java.util.ArrayList;
 
-import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inherit.service.common.domain.DashOpenActivities;
-import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

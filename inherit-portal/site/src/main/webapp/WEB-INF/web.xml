@@ -192,7 +192,7 @@
     <servlet-name>PingServlet</servlet-name>
     <servlet-class>org.hippoecm.hst.servlet.HstPingServlet</servlet-class>
   </servlet>
-
+  
   <servlet-mapping>
     <servlet-name>BinariesServlet</servlet-name>
     <url-pattern>/binaries/*</url-pattern>

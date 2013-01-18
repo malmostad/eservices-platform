@@ -1,7 +1,6 @@
 package se.inherit.portal.beans;
 
 import org.hippoecm.hst.content.beans.Node;
-import org.hippoecm.hst.content.beans.standard.HippoHtml;
 
 @Node(jcrType="inheritportal:eservicedocument")
 public class EServiceDocument extends BaseDocument{

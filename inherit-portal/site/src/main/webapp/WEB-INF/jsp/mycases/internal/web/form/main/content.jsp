@@ -35,12 +35,28 @@
 		<p>${guide.summary}</p>
 		<hst:html hippohtml="${guide.html}"/>
 	</c:if>
-				
+
+	<!-- Workflow add candidate -->				
+	<form action="/site/restservices/site-ajax/assignTask" id="addCandidate" class="siteAjaxForm">
+		<input type="hidden" name="activityInstanceUuid" value="Spridning_bekampningsmedel--5.0--1--Granska_ansokan--it1--mainActivityInstance--noLoop" />
+		<input type="hidden" name="action" value="addcandidate" />
+		<input type="text" name="targetUserId" placeholder="Användarnamn (kandidat)"/>
+		<input type="submit" value="Lägg till" />
+	</form>
+	
+	<!--  activity form (ajax load after page is loaded) -->
 	<div class="row-fluid">
 		<div class="span12">
     		<div id="xform">Loading form...please wait...</div>
 		</div>
 	</div>    
+    
+    <!-- Comment case -->
+	<form action="/site/restservices/site-ajax/addComment" id="addCommentForm" class="siteAjaxForm">
+		<input type="hidden" name="activityInstanceUuid" value="Spridning_bekampningsmedel--5.0--1--Granska_ansokan--it1--mainActivityInstance--noLoop" />
+		<input type="text" name="comment" placeholder="Kommentera ärendet"/>
+		<input type="submit" value="Lägg till" />
+	</form>		
     
   </c:otherwise>  
 </c:choose>

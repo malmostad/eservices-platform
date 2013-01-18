@@ -18,7 +18,7 @@ public class FormWithDetails extends Form  {
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
 		super.doBeforeRender(request, response);
 		
-		String userName = getUserName(request);
+//		String userName = getUserName(request);
 		
 		String activityInstanceUuid = getPublicRequestParameter(request,
 				"taskUuid"); // TODO change to activityInstanceUuid???

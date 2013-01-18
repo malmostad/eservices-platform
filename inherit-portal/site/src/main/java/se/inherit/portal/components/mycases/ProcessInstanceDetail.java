@@ -1,6 +1,5 @@
 package se.inherit.portal.components.mycases;
 
-import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
@@ -17,7 +16,7 @@ public class ProcessInstanceDetail extends MyCasesBaseComponent {
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
 		
-		String userName = getUserName(request);
+//		String userName = getUserName(request);
 
 		String processInstanceUuid = getPublicRequestParameter(request,
 				"processInstanceUuid");
