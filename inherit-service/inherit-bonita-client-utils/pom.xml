@@ -8,9 +8,7 @@
 		<artifactId>inherit-service</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	<groupId>se.inherit</groupId>
 	<artifactId>inherit-bonita-client-utils</artifactId>
-	<version>1.0-SNAPSHOT</version>
 	<name>inherit-bonita-client-utils</name>
 	<packaging>jar</packaging>
 	<url>http://maven.apache.org</url>

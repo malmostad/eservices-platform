@@ -8,9 +8,7 @@
 		<groupId>se.inherit</groupId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
-	<groupId>se.inherit</groupId>
 	<artifactId>inherit-taskform-engine</artifactId>
-	<version>1.0-SNAPSHOT</version>
 	<name>inherit-taskform-engine</name>
 	<packaging>jar</packaging>
 	<url>http://maven.apache.org</url>

@@ -1,0 +1,53 @@
+<!--
+    This file is an empty template for your own properties-local.xml file. Please follow the instructions here:
+
+    http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties
+-->
+<properties xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xmlns:oxf="http://www.orbeon.com/oxf/processors">
+
+    <!-- This is an example of property which overrides an existing property's default value:
+    <property as="xs:NMTOKENS"
+              name="oxf.xforms.logging.debug"
+              value="document model submission submission-details control event action analysis server html"/>
+    -->
+
+<property as="xs:string" name="oxf.fr.default-language.*.*" value="sv"/>
+
+<property as="xs:string"  name="oxf.fr.css.uri.*.*"
+  value=""/>
+
+<property as="xs:anyURI"
+          name="oxf.fr.persistence.service.exist.uri"
+          value="http://orbeon:orb@localhost:48080/exist/rest/db/orbeon-pe/fr"/>
+
+<property as="xs:anyURI" name="oxf.fr.default-logo.uri.*.*"
+                         value=""/>
+<property as="xs:boolean" name="oxf.fr.version.*.*" value="false"/>
+<property as="xs:string"  name="oxf.fr.detail.buttons.*.*" value="clear save submit"/>
+
+<property as="xs:string"  name="oxf.fr.detail.buttons.view.*.*" value="pdf"/>
+
+<property as="xs:string"  name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
+<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.*.*" value="concat('view/',xxforms:instance('fr-parameters-instance')/document)"/>
+<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.BMTest.BMTestForm" value="concat('http://eservices.malmo.se/site/bonita/start/miljo/anmalan-ansokan-yrkesmassig-anvandning-av-bekampningsmedel/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/>
+
+<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.malmo.*" value="concat('http://eservices.malmo.se/site/public/mycases/startforms/miljo/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/>
+<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.start.*" value="concat('http://eservices.malmo.se/site/public/mycases/startforms/start/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/>
+<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.Demo.*" value="concat('http://eservices.malmo.se/site/public/mycases/form/confirm?docId=', xxforms:instance('fr-parameters-instance')/document)"/>
+
+<property as="xs:string"  name="oxf.fr.resource.*.*.en.detail.labels.submit-document"
+                          value="Skicka"/>
+<property as="xs:string"  name="oxf.fr.resource.*.*.en.detail.labels.clear-document"
+                          value="Rensa"/>
+<property as="xs:string"  name="oxf.fr.resource.*.*.en.detail.labels.save-document"
+                          value="Spara"/>
+
+<property as="xs:string"  name="oxf.fr.resource.*.*.sv.detail.labels.submit-document"
+                          value="Skicka"/>
+<property as="xs:string"  name="oxf.fr.resource.*.*.sv.detail.labels.clear-document"
+                          value="Rensa"/>
+<property as="xs:string"  name="oxf.fr.resource.*.*.sv.detail.labels.save-document"
+                          value="Spara"/>
+<property as="xs:boolean" name="oxf.fr.noscript-link.*.*" value="false"/>
+</properties>

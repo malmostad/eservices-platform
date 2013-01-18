@@ -378,7 +378,6 @@ public class BonitaEngineServiceImpl {
 	}
 	
 	private void loadProcessInstanceCommentFeed(ProcessInstance src, ProcessInstanceDetails dst) {
-		List<CommentFeedItem> commentFeed = new ArrayList<CommentFeedItem>();
 		List<Comment> comments = src.getCommentFeed();
 		if (comments != null) {
 			for (Comment comment : comments) {

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<!--
+    Copyright (C) 2006 Orbeon, Inc.
+
+    This program is free software; you can redistribute it and/or modify it under the terms of the
+    GNU Lesser General Public License as published by the Free Software Foundation; either version
+    2.1 of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Lesser General Public License for more details.
+
+    The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+-->
+<xhtml:html xmlns:xforms="http://www.w3.org/2002/xforms"
+    xmlns:f="http://orbeon.org/oxf/xml/formatting"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:xxforms="http://orbeon.org/oxf/xml/xforms"
+    xmlns:widget="http://orbeon.org/oxf/xml/widget"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xhtml:head>
+        <xhtml:title>XForms Dialog</xhtml:title>
+        <xforms:model>
+            <xforms:instance id="instance">
+                <instance>
+                    <text>Some text here</text>
+                    <tmp/>
+                    <message/>
+                </instance>
+            </xforms:instance>
+        </xforms:model>
+        <xhtml:style type="text/css">
+			#myDialog_c {
+				width:60%;
+				height:50%;
+				/*Fix for IE6 vertical constraint*/
+				_height: expression((YAHOO.util.Dom.getViewportHeight()/2)+"px");
+			}
+			#myDialog {
+				width:100%;
+				height:100%;
+				border:none;
+			}
+			#myDialog_h {
+			    border-width:1px 1px;
+				width:97.5%;
+			}
+			#myDialog .xxforms-dialog-body {
+				width: 97.5%;
+				height:97.5%;
+				overflow:auto;
+				border-color:#808080;
+				border-style:solid;
+				border-width:1px 1px;
+				position: absolute;	/*http://www.nabble.com/Re:-autocomplete-fields-within-a-yui-dialog-with-scrollbar-p17405418.html*/
+			}
+            /* This doesn't work as of 2009-03-26 */
+            .xforms-mediatype-text-html { width: 100% }
+        </xhtml:style>
+
+</xhtml:head>
+    <xhtml:body>
+
+        <!-- The dialog -->
+        <xxforms:dialog id="myDialog" level="modeless" close="true" draggable="true" appearance="full">
+
+            <xforms:setvalue ev:event="xxforms-dialog-open" ref="tmp" value="context()/text"/>
+
+            <xforms:label>Dialog title</xforms:label>
+            <xhtml:h3>Please complete the form</xhtml:h3>
+            <xhtml:p>
+                <xforms:group>
+                    <xxforms:hide ev:event="DOMActivate" dialog="myDialog"/>
+                    <xforms:trigger>
+                        <xforms:label>Update</xforms:label>
+                        <xforms:setvalue ref="text" value="context()/tmp" ev:event="DOMActivate"/>
+                    </xforms:trigger>
+                    <xforms:trigger>
+                        <xforms:label>Undo</xforms:label>
+                    </xforms:trigger>
+                </xforms:group>
+            </xhtml:p>
+            <xforms:textarea ref="tmp" mediatype="text/html"/>
+            <xhtml:p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pretium, nisi non lobortis semper, elit
+                lacus lacinia arcu, sit amet elementum risus nisi a velit. In pellentesque tempus mi. Cras consectetur
+                sagittis lorem. Fusce sed sem. Morbi tristique. Vestibulum commodo porttitor quam. Sed malesuada risus
+                at risus. Sed egestas, velit eget imperdiet sollicitudin, neque quam molestie lectus, vitae venenatis
+                justo nisl vel sapien. Nam gravida aliquam tellus. Proin cursus risus mattis lacus. Nunc vehicula nulla
+                in pede. Suspendisse eu urna a nisl luctus malesuada. Nam vitae odio non mi ultrices sollicitudin. Donec
+                blandit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                Aliquam blandit placerat neque. Praesent feugiat eros vitae ante. Ut vitae neque in ipsum varius
+                bibendum. Morbi adipiscing malesuada nulla.
+            </xhtml:p>
+            <xhtml:p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pretium, nisi non lobortis semper, elit
+                lacus lacinia arcu, sit amet elementum risus nisi a velit. In pellentesque tempus mi. Cras consectetur
+                sagittis lorem. Fusce sed sem. Morbi tristique. Vestibulum commodo porttitor quam. Sed malesuada risus
+                at risus. Sed egestas, velit eget imperdiet sollicitudin, neque quam molestie lectus, vitae venenatis
+                justo nisl vel sapien. Nam gravida aliquam tellus. Proin cursus risus mattis lacus. Nunc vehicula nulla
+                in pede. Suspendisse eu urna a nisl luctus malesuada. Nam vitae odio non mi ultrices sollicitudin. Donec
+                blandit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                Aliquam blandit placerat neque. Praesent feugiat eros vitae ante. Ut vitae neque in ipsum varius
+                bibendum. Morbi adipiscing malesuada nulla.
+            </xhtml:p>
+            <xhtml:p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pretium, nisi non lobortis semper, elit
+                lacus lacinia arcu, sit amet elementum risus nisi a velit. In pellentesque tempus mi. Cras consectetur
+                sagittis lorem. Fusce sed sem. Morbi tristique. Vestibulum commodo porttitor quam. Sed malesuada risus
+                at risus. Sed egestas, velit eget imperdiet sollicitudin, neque quam molestie lectus, vitae venenatis
+                justo nisl vel sapien. Nam gravida aliquam tellus. Proin cursus risus mattis lacus. Nunc vehicula nulla
+                in pede. Suspendisse eu urna a nisl luctus malesuada. Nam vitae odio non mi ultrices sollicitudin. Donec
+                blandit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                Aliquam blandit placerat neque. Praesent feugiat eros vitae ante. Ut vitae neque in ipsum varius
+                bibendum. Morbi adipiscing malesuada nulla.
+            </xhtml:p>
+            <xhtml:p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut pretium, nisi non lobortis semper, elit
+                lacus lacinia arcu, sit amet elementum risus nisi a velit. In pellentesque tempus mi. Cras consectetur
+                sagittis lorem. Fusce sed sem. Morbi tristique. Vestibulum commodo porttitor quam. Sed malesuada risus
+                at risus. Sed egestas, velit eget imperdiet sollicitudin, neque quam molestie lectus, vitae venenatis
+                justo nisl vel sapien. Nam gravida aliquam tellus. Proin cursus risus mattis lacus. Nunc vehicula nulla
+                in pede. Suspendisse eu urna a nisl luctus malesuada. Nam vitae odio non mi ultrices sollicitudin. Donec
+                blandit. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.
+                Aliquam blandit placerat neque. Praesent feugiat eros vitae ante. Ut vitae neque in ipsum varius
+                bibendum. Morbi adipiscing malesuada nulla.
+            </xhtml:p>
+            <xhtml:p>
+                <xforms:trigger>
+                    <xforms:label>Hide dialog</xforms:label>
+                    <xxforms:hide dialog="myDialog" ev:event="DOMActivate"/>
+                </xforms:trigger>
+            </xhtml:p>
+        </xxforms:dialog>
+
+        <!-- Button to show the dialog -->
+        <xforms:trigger id="show-dialog-center">
+            <xforms:label>Show dialog (default)</xforms:label>
+            <xxforms:show ev:event="DOMActivate" dialog="myDialog"/>
+        </xforms:trigger>
+        <xforms:trigger id="show-dialog-below-output-trigger">
+            <xforms:label>Show dialog below output</xforms:label>
+            <xxforms:show ev:event="DOMActivate" dialog="myDialog" neighbor="message-output"/>
+        </xforms:trigger>
+        <xforms:trigger id="show-dialog-below-trigger-trigger">
+            <xforms:label>Show dialog below trigger</xforms:label>
+            <xxforms:show ev:event="DOMActivate" dialog="myDialog" neighbor="show-dialog-below-trigger-trigger"/>
+        </xforms:trigger>
+        <!-- Displays value entered in the dialog -->
+        <xhtml:p>
+            <xforms:output ref="text">
+                <xforms:label>Text:</xforms:label>
+            </xforms:output>
+        </xhtml:p>
+        <xhtml:p>
+            <xforms:output ref="message" id="message-output">
+                <xforms:label>Message:</xforms:label>
+            </xforms:output>
+        </xhtml:p>
+
+    </xhtml:body>
+</xhtml:html>

@@ -59,8 +59,7 @@ public class Confirm extends MyCasesBaseComponent {
 
 			}	
 		}
-		
-		
+				
 	}
 
 }

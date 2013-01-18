@@ -1,0 +1,94 @@
+<xhtml:html xmlns:xforms="http://www.w3.org/2002/xforms"
+        xmlns:f="http://orbeon.org/oxf/xml/formatting"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:xxforms="http://orbeon.org/oxf/xml/xforms"
+        xmlns:widget="http://orbeon.org/oxf/xml/widget"
+        xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xhtml:head>
+        <xhtml:title>Dialog Test</xhtml:title>
+        <xforms:model>
+            <xforms:instance>
+                <instance/>
+            </xforms:instance>
+        </xforms:model>
+        <xhtml:link type="text/css" rel="stylesheet" href="/ops/yui/logger/assets/logger.css"/>
+        <xhtml:script type="text/javascript" src="/ops/yui/logger/logger.js"/>
+        <xhtml:script type="text/javascript" src="/ops/yui/event-simulate/event-simulate.js"/>
+        <xhtml:script type="text/javascript" src="/ops/yui/yuitest/yuitest.js"/>
+        <xhtml:script type="text/javascript">
+            <![CDATA[
+                YAHOO.tool.TestRunner.add(new YAHOO.tool.TestCase({
+
+                    name: "Dialog",
+
+                    testShowHideMinimalDailog: function() {
+                        var dialogContainer = YAHOO.util.Dom.get("minimal-dialog_c");
+                        ORBEON.util.Test.executeCausingAjaxRequest(this, function() {
+                            YAHOO.util.UserAction.click("show-minimal-dialog");
+                        }, function() {
+                            YAHOO.util.Assert.areEqual("block", dialogContainer.style.display, "dialog shown after click on trigger");
+                            ORBEON.util.Test.executeCausingAjaxRequest(this, function() {
+                                YAHOO.util.UserAction.click(document.body);
+                            }, function() {
+                                YAHOO.util.Assert.areEqual("none", dialogContainer.style.display, "dialog hidden after click on body");
+                            });
+                        });
+
+                    },
+
+                    testMinimalDialogNoTitle: function() {
+                        ORBEON.util.Test.executeCausingAjaxRequest(this, function() {
+                            YAHOO.util.UserAction.click("show-minimal-dialog");
+                        }, function() {
+                            var header = YAHOO.util.Dom.getElementsByClassName("hd", null, "minimal-dialog")[0];
+                            YAHOO.util.Assert.areEqual("", header.innerHTML, "minimal dialog header must be empty");
+                            YAHOO.util.UserAction.click(document.body); // Close dialog to get back to initial state
+                        });
+                    }
+
+                }));
+
+                ORBEON.xforms.Events.orbeonLoadedEvent.subscribe(function() {
+                    if (parent && parent.TestManager) {
+                        parent.TestManager.load();
+                    } else {
+                        new YAHOO.tool.TestLogger();
+                        YAHOO.tool.TestRunner.run();
+                    }
+                });
+            ]]>
+        </xhtml:script>
+
+    </xhtml:head>
+    <xhtml:body>
+
+        <xxforms:dialog id="minimal-dialog" appearance="minimal" neighbor="show-minimal-dialog">
+            Body of the dialog.
+        </xxforms:dialog>
+        <xhtml:div>
+            <xxforms:dialog id="default-dialog">
+                <xforms:setfocus control="first-name" ev:event="xxforms-dialog-open"/>
+                <xforms:label>Dialog title</xforms:label>
+                Body of the dialog.
+                <xforms:input ref="." id="first-name">
+                    <xforms:label>First name</xforms:label>
+                </xforms:input>
+            </xxforms:dialog>
+            <xforms:trigger appearance="minimal" id="show-default-dialog">
+                <xforms:label>Show default dialog</xforms:label>
+                <xxforms:show ev:event="DOMActivate" dialog="default-dialog"/>
+            </xforms:trigger>
+        </xhtml:div>
+        <xhtml:div>
+            <xforms:trigger appearance="minimal" id="show-minimal-dialog">
+                <xforms:label>Show minimal dialog</xforms:label>
+                <xxforms:show ev:event="DOMActivate" dialog="minimal-dialog"/>
+            </xforms:trigger>
+        </xhtml:div>
+        <xhtml:div>
+            Footer.
+        </xhtml:div>
+    </xhtml:body>
+</xhtml:html>

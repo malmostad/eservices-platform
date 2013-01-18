@@ -194,6 +194,7 @@
         <module>content</module>
         <module>cms</module>
         <module>site</module>
+        <module>orbeon</module>
       </modules>
     </profile>
 
@@ -207,6 +208,13 @@
             <configuration>
               <configuration>
                 <deployables>
+                  <deployable>
+                    <location>${project.basedir}/orbeon/target/orbeon.war</location>
+                    <type>war</type>
+                    <properties>
+                      <context>/orbeon</context>
+                    </properties>
+                  </deployable>
                   <deployable>
                     <type>war</type>
                     <properties>

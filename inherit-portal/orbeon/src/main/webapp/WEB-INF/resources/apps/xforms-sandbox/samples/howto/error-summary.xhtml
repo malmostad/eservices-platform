@@ -1,0 +1,144 @@
+<xhtml:html xmlns:xforms="http://www.w3.org/2002/xforms"
+    xmlns:f="http://orbeon.org/oxf/xml/formatting"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:xxforms="http://orbeon.org/oxf/xml/xforms"
+    xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+    xmlns:widget="http://orbeon.org/oxf/xml/widget"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xhtml:head>
+        <xhtml:title>Error summary</xhtml:title>
+        <xforms:model xxforms:xhtml-layout="span">
+            
+            <xforms:instance id="user-info">
+                <user-info>
+                    <first-name/>
+                    <middle-name/>
+                    <last-name/>
+                    <age/>
+                    <number/>
+                </user-info>
+            </xforms:instance>
+            <xforms:bind nodeset="first-name | last-name" required="true()"/>
+            <xforms:bind nodeset="age"
+                constraint=". = '' or (. castable as xs:integer and xs:integer(.) ge 0 and xs:integer(.) le 150)"/>
+            <xforms:bind nodeset="phone/number" required="true()"/>
+            
+            <xforms:instance id="phone-template">
+                <phone>
+                    <number/>
+                    <type>Mobile</type>
+                </phone>
+            </xforms:instance>
+            <xforms:action ev:event="xforms-model-construct-done" xxforms:iterate="for $i in (1 to 3) return .">
+                <xforms:insert context="instance('user-info')" nodeset="phone" origin="instance('phone-template')"/>
+            </xforms:action>
+
+            <xforms:instance id="ui">
+                <ui>
+                    <show-errors>false</show-errors>
+                    <errors-count/>
+                </ui>>
+            </xforms:instance>
+            
+        </xforms:model>
+        <xhtml:style type="text/css">
+            .fields .xforms-alert-active, .fields .xforms-alert-inactive { display: none; }
+            .fields .xforms-label
+                { padding: 0 0 0 18px; }
+            .fields .xforms-required .xforms-label
+                { background: url('../../../apps/fr/style/images/silk/bullet_star.png') left top no-repeat; }
+            .fields .xforms-invalid-visited, .show-errors .xforms-invalid
+                { background: url('../../../apps/fr/style/images/silk/bullet_red.png') right top no-repeat; padding: 0 20px 1px 0; }
+
+            .fields .xforms-control { line-height: 2.5em; }
+            .fields .xforms-label { display: inline-block; width: 10em; }
+            
+            .buttons { margin-top: 2em; }
+            .buttons .xbl-fr-button { line-height: 1em; }
+            .buttons .xbl-fr-button img { margin-right: .3em; }
+
+            .xbl-fr-error-summary { margin-top: 2em; }
+            .fr-error-summary-body { background-color: #F2D6C6; padding: .5em 0 .5em 0; width: 40em; }
+            .xbl-fr-error-summary .fr-error-alert { color: black; }
+            .xforms-repeat-selected-item-1 { background-color: transparent; }
+        </xhtml:style>
+    </xhtml:head>
+    <xhtml:body>
+        <xforms:switch>
+            <xforms:case>
+                <xforms:group id="form-group" class="fields {if (instance('ui')/show-errors = 'true') then 'show-errors' else ''}">
+                    <xhtml:div>
+                        <xforms:input ref="first-name">
+                            <xforms:label>First name</xforms:label>
+                            <xforms:alert>First name is mandatory</xforms:alert>
+                        </xforms:input>
+                    </xhtml:div>
+                    <xhtml:div>
+                        <xforms:input ref="middle-name">
+                            <xforms:label>Middle name</xforms:label>
+                        </xforms:input>
+                    </xhtml:div>
+                    <xhtml:div>
+                        <xforms:input ref="last-name">
+                            <xforms:label>Last name</xforms:label>
+                            <xforms:alert>Last name is mandatory</xforms:alert>
+                        </xforms:input>
+                    </xhtml:div>
+                    <xhtml:div>
+                        <xforms:input ref="age">
+                            <xforms:label>Age</xforms:label>
+                            <xforms:alert>If provided, age must be a number between 0 and 150</xforms:alert>
+                        </xforms:input>
+                    </xhtml:div>
+                    <xforms:repeat nodeset="phone" id="phone-repeat">
+                        <xhtml:div>
+                            <xforms:input ref="number">
+                                <xforms:label>Phone number</xforms:label>
+                                <xforms:alert>Phone number is mandatory</xforms:alert>
+                            </xforms:input>
+                        </xhtml:div>
+                    </xforms:repeat>
+                </xforms:group>
+        
+                <xhtml:div class="buttons">
+                    <fr:button>
+                        <xforms:label>
+                            <xhtml:img src="/apps/fr/style/images/silk/add.png"/>
+                            <xhtml:span>Add phone</xhtml:span>
+                        </xforms:label>
+                        <xforms:insert context="." nodeset="phone" origin="instance('phone-template')" ev:event="DOMActivate"/>
+                    </fr:button>
+                    <fr:button>
+                        <xforms:label>
+                            <xhtml:img src="/apps/fr/style/images/silk/disk.png"/>
+                            <xhtml:span>Save</xhtml:span>
+                        </xforms:label>
+                        <xforms:action ev:event="DOMActivate">
+                            <xxforms:variable name="save-succeeded" select="instance('ui')/errors-count = 0"/>
+                            <xforms:action if="$save-succeeded">
+                                <xforms:toggle case="save-success"/>
+                            </xforms:action>
+                            <xforms:action if="not($save-succeeded)">
+                                <xforms:dispatch name="fr-visit-all" targetid="error-summary"/>
+                                <xforms:setvalue ref="instance('ui')/show-errors">true</xforms:setvalue> 
+                                <xforms:toggle case="save-failure"/>
+                            </xforms:action>
+                        </xforms:action>
+                    </fr:button>
+                    <xforms:switch>
+                        <xforms:case/>
+                        <xforms:case id="save-failure">Your data could not saved; please check the form for errors.</xforms:case>
+                    </xforms:switch>
+                </xhtml:div>
+
+
+                <fr:error-summary id="error-summary" observer="form-group" errors-count-ref="instance('ui')/errors-count">
+                    <fr:label>Error in this form</fr:label>
+                </fr:error-summary>
+            </xforms:case>
+            <xforms:case id="save-success">Your data was saved.</xforms:case>
+        </xforms:switch>
+    </xhtml:body>
+</xhtml:html>

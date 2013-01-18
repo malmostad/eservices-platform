@@ -1,0 +1,75 @@
+<!--
+    Copyright (C) 2007 Orbeon, Inc.
+
+    This program is free software; you can redistribute it and/or modify it under the terms of the
+    GNU Lesser General Public License as published by the Free Software Foundation; either version
+    2.1 of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Lesser General Public License for more details.
+
+    The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+-->
+<xhtml:html xmlns:xforms="http://www.w3.org/2002/xforms"
+    xmlns:f="http://orbeon.org/oxf/xml/formatting"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:xxforms="http://orbeon.org/oxf/xml/xforms"
+    xmlns:widget="http://orbeon.org/oxf/xml/widget"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xhtml:head>
+        <xhtml:title>Group around Table Elements</xhtml:title>
+        <xforms:model>
+            <xforms:instance id="instance">
+                <instance>
+                    <value tr="false" repeat="true"/>
+                    <value tr="false" repeat="false"/>
+                    <value tr="true" repeat="true"/>
+                    <value tr="true" repeat="false"/>
+                </instance>
+            </xforms:instance>
+        </xforms:model>
+    </xhtml:head>
+    <xhtml:body>
+        <xhtml:h2>Table with repeat</xhtml:h2>
+        <xhtml:table>
+            <xforms:repeat id="tr-repeat" nodeset="/instance/value">
+                <xhtml:tr>
+                    <xhtml:td>
+                        Group shows line:
+                        <xforms:select ref="@tr" appearance="full">
+                            <xforms:item>
+                                <xforms:value>true</xforms:value>
+                                <xforms:label/>
+                            </xforms:item>
+                        </xforms:select>
+                    </xhtml:td>
+                    <xhtml:td>
+                        Repeat shows line:
+                        <xforms:select ref="@repeat" appearance="full">
+                            <xforms:item>
+                                <xforms:value>true</xforms:value>
+                                <xforms:label/>
+                            </xforms:item>
+                        </xforms:select>
+                    </xhtml:td>
+                </xhtml:tr>
+            </xforms:repeat>
+        </xhtml:table>
+
+        <xhtml:h2>Table with group</xhtml:h2>
+        <xhtml:table>
+            <xforms:repeat nodeset="/instance/value[@repeat = 'true']" id="value-repeat">
+                <xforms:group ref=".[@tr = 'true']" id="tr-group">
+                    <xhtml:tr>
+                        <xhtml:td>Line <xforms:output value="count(preceding-sibling::value) + 1"/></xhtml:td>
+                    </xhtml:tr>
+                </xforms:group>
+            </xforms:repeat>
+
+        </xhtml:table>
+
+    </xhtml:body>
+</xhtml:html>

@@ -10,9 +10,7 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
-  <groupId>se.inherit</groupId>
   <artifactId>inherit-service</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>inherit-service</name>
   <packaging>pom</packaging>
 
