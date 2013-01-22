@@ -18,6 +18,11 @@
       <destName>site.war</destName>
     </file>
     <file>
+      <source>orbeon/target/orbeon.war</source>
+      <outputDirectory>/webapps</outputDirectory>
+      <destName>orbeon.war</destName>
+    </file>
+    <file>
       <source>conf/log4j-prod.xml</source>
       <outputDirectory>/conf</outputDirectory>
       <destName>log4j.xml</destName>
