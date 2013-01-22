@@ -14,7 +14,6 @@
     <script src="http://code.jquery.com/mobile/1.0.1/jquery.mobile-1.0.1.min.js"></script>
     
     <link rel="stylesheet" href="<hst:link path="/css/platform/inherit-platform.css"/>" type="text/css"/>
-    <script type="text/javascript" src="<hst:link path="/js/platform/inherit-platform.js"/>"></script>
     
   </head>
   <body>

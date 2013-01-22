@@ -33,8 +33,8 @@
 <property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.BMTest.BMTestForm" value="concat('http://eservices.malmo.se/site/bonita/start/miljo/anmalan-ansokan-yrkesmassig-anvandning-av-bekampningsmedel/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/>
 
 <property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.malmo.*" value="concat('http://eservices.malmo.se/site/public/mycases/startforms/miljo/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/>
-<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.start.*" value="concat('http://eservices.malmo.se/site/public/mycases/startforms/start/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/>
-<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.Demo.*" value="concat('http://eservices.malmo.se/site/public/mycases/form/confirm?docId=', xxforms:instance('fr-parameters-instance')/document)"/>
+<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.start.*" value="concat('http://eservices.malmo.se/site/mycases/form/confirmdispatcher?docId=', xxforms:instance('fr-parameters-instance')/document)"/>
+<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.Demo.*" value="concat('http://eservices.malmo.se/site/mycases/form/confirmdispatcher?docId=', xxforms:instance('fr-parameters-instance')/document)"/>
 
 <property as="xs:string"  name="oxf.fr.resource.*.*.en.detail.labels.submit-document"
                           value="Skicka"/>

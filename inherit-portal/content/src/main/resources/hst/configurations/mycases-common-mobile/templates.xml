@@ -32,7 +32,7 @@
       <sv:value>hst:template</sv:value>
     </sv:property>
     <sv:property sv:name="hst:renderpath" sv:type="String">
-      <sv:value>jsp/mycases/common/mobile/confirmform/main/content.jsp</sv:value>
+      <sv:value>jsp/mycases/common/mobile/confirm/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="processinstancedetail.main.content">

@@ -53,6 +53,14 @@
           <sv:value>${parent}/../confirmform</sv:value>
         </sv:property>
       </sv:node>
+      <sv:node sv:name="confirmdispatcher">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+          <sv:value>hst:components/confirmdispatcher</sv:value>
+        </sv:property>
+      </sv:node>
     </sv:node>
     <sv:node sv:name="startforms">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
