@@ -26,15 +26,9 @@
 <property as="xs:boolean" name="oxf.fr.version.*.*" value="false"/>
 <property as="xs:string"  name="oxf.fr.detail.buttons.*.*" value="clear save submit"/>
 
-<property as="xs:string"  name="oxf.fr.detail.buttons.view.*.*" value="pdf"/>
-
 <property as="xs:string"  name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
-<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.*.*" value="concat('view/',xxforms:instance('fr-parameters-instance')/document)"/>
-<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.BMTest.BMTestForm" value="concat('http://eservices.malmo.se/site/bonita/start/miljo/anmalan-ansokan-yrkesmassig-anvandning-av-bekampningsmedel/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/>
 
-<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.malmo.*" value="concat('http://eservices.malmo.se/site/public/mycases/startforms/miljo/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/>
-<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.start.*" value="concat('http://eservices.malmo.se/site/mycases/form/confirmdispatcher?docId=', xxforms:instance('fr-parameters-instance')/document)"/>
-<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.Demo.*" value="concat('http://eservices.malmo.se/site/mycases/form/confirmdispatcher?docId=', xxforms:instance('fr-parameters-instance')/document)"/>
+<property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.*.*" value="concat('http://eservices.malmo.se/site/mycases/form/confirmdispatcher?docId=', xxforms:instance('fr-parameters-instance')/document)"/>
 
 <property as="xs:string"  name="oxf.fr.resource.*.*.en.detail.labels.submit-document"
                           value="Skicka"/>
