@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
 import org.inherit.service.common.domain.ActivityInstancePendingItem;
+import org.inherit.service.common.domain.ActivityWorkflowInfo;
 import org.inherit.service.common.domain.CommentFeedItem;
 import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
@@ -66,6 +67,7 @@ public class InheritServiceClient {
 		xstream.alias("ActivityInstanceLogItem", ActivityInstanceLogItem.class);
 		xstream.alias("ActivityInstancePendingItem", ActivityInstancePendingItem.class);
 		xstream.alias("DashOpenActivities", DashOpenActivities.class);
+		xstream.alias("ActivityWorkflowInfo", ActivityWorkflowInfo.class);
 		
 		return xstream;
 	}
@@ -226,13 +228,14 @@ public class InheritServiceClient {
 		log.severe("addComment uri: " + uri);
 		
 		String response = call(uri);
+		log.severe("response addComment: [" + response + "]");
 		result = parseIntResponse(response);
 
 		return result;
 	}
 
-	public int assignTask(String activityInstanceUuid, String action, String userId) {
-		int result = -2;
+	public ActivityWorkflowInfo assignTask(String activityInstanceUuid, String action, String userId) {
+		ActivityWorkflowInfo result = null;
 		String uri;
 		
 		uri = serverBaseUrl + "assignTask/" + ParameterEncoder.encode(activityInstanceUuid) + 
@@ -240,7 +243,40 @@ public class InheritServiceClient {
 		log.severe("addComment uri: " + uri);
 		
 		String response = call(uri);
-		result = parseIntResponse(response);
+		if (response != null) {
+			result = (ActivityWorkflowInfo)xstream.fromXML(response);
+		}
+
+		return result;
+	}
+	
+	public ActivityWorkflowInfo setActivityPriority(String activityInstanceUuid, int priority) {
+		ActivityWorkflowInfo result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "setActivityPriority/" + ParameterEncoder.encode(activityInstanceUuid) + 
+					"/" + priority + "?media=xml";
+		log.severe("setActivityPriority uri: " + uri);
+		
+		String response = call(uri);
+		if (response != null) {
+			result = (ActivityWorkflowInfo)xstream.fromXML(response);
+		}
+
+		return result;
+	}
+
+	public ActivityWorkflowInfo getActivityWorkflowInfo(String activityInstanceUuid) {
+		ActivityWorkflowInfo result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getActivityWorkflowInfo/" + ParameterEncoder.encode(activityInstanceUuid) + "?media=xml";
+		log.severe("getActivityWorkflowInfo uri: " + uri);
+		
+		String response = call(uri);
+		if (response != null) {
+			result = (ActivityWorkflowInfo)xstream.fromXML(response);
+		}
 
 		return result;
 	}
@@ -250,10 +286,11 @@ public class InheritServiceClient {
 		int result = -1000;
 		try {
 			if (val!=null) {
-				result = Integer.parseInt((String)val);
+				result = ((Integer)xstream.fromXML(val)).intValue();
+				
 			}
 		}
-		catch (NumberFormatException nfe) {
+		catch (Exception nfe) {
 			log.warning("Cannot parse integer value from val: " + val);
 			result = -1001;
 		}

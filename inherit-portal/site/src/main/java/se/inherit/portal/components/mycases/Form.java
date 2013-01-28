@@ -80,7 +80,7 @@ public class Form extends MyCasesBaseComponent {
     		}
     	}
     	request.setAttribute("guide", guide);
-    	
+    	request.setAttribute("userName", userName);
     	log.error("XXXXXXXXXXXXXXXXXXXX guide:" + guide);
     	log.error("XXXXXXXXXXXXXXXXXXXX form activity:" + activity);
 

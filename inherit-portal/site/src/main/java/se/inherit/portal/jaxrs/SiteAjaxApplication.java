@@ -8,9 +8,12 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 
 import org.hippoecm.hst.jaxrs.services.AbstractResource;
+import org.inherit.service.common.domain.ActivityInstanceItem;
+import org.inherit.service.common.domain.ActivityWorkflowInfo;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,15 +78,16 @@ public class SiteAjaxApplication extends AbstractResource {
 	
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
+	@Produces("application/json")
 	@Path("/assignTask") //{activityInstanceUuid}/{action}/{targetUserId}")
-	public int assignTask(
+	public ActivityWorkflowInfo assignTask(
 			@Context HttpServletRequest servletRequest,
 			@Context HttpServletResponse servletResponse,
 			@FormParam("activityInstanceUuid") String activityInstanceUuid,
 			@FormParam("action") String action,
 			@FormParam("targetUserId") String targetUserId) {
 		
-		int result = GENERAL_ERROR;
+		ActivityWorkflowInfo result = null;
 		
 		String userId = getUserName(servletRequest);
 		
@@ -92,17 +96,78 @@ public class SiteAjaxApplication extends AbstractResource {
 		log.error("targetUserId: " + targetUserId);
 		log.error("userId: " + userId);
 		
-		if (userId != null) {
+//		if (userId != null) {
 			// user is authenticated
 			
 			// TODO check if user is authorized to assign task???
 			InheritServiceClient isc = new InheritServiceClient();
 			result = isc.assignTask(activityInstanceUuid, action, targetUserId);
-		}
+/*		}
 		else {
-			result = PERMISSION_DENIED_ERROR;
+			// TODO respone http error
 		}
+*/		
+		return result; 
+	}
+	
+	@POST
+	@Consumes("application/x-www-form-urlencoded")
+	@Produces("application/json")
+	@Path("/setActivityPriority") 
+	public ActivityWorkflowInfo setActivityPriority(
+			@Context HttpServletRequest servletRequest,
+			@Context HttpServletResponse servletResponse,
+			@FormParam("activityInstanceUuid") String activityInstanceUuid,
+			@FormParam("priority") int priority) {
 		
+		ActivityWorkflowInfo result = null;
+		
+		String userId = getUserName(servletRequest);
+		
+		log.error("activityInstanceUuid: " + activityInstanceUuid);
+		log.error("priority: " + priority);
+		
+//		if (userId != null) {
+			// user is authenticated
+			
+			// TODO check if user is authorized to assign task???
+			InheritServiceClient isc = new InheritServiceClient();
+			result = isc.setActivityPriority(activityInstanceUuid, priority);
+/*		}
+		else {
+			// TODO respone http error
+		}
+*/		
+		return result; 
+	}
+
+	
+	@POST
+	@Consumes("application/x-www-form-urlencoded")
+	@Produces("application/json")
+	@Path("/getActivityWorkflowInfo") 
+	public ActivityWorkflowInfo getActivityWorkflowInfo(
+			@Context HttpServletRequest servletRequest,
+			@Context HttpServletResponse servletResponse,
+			@FormParam("activityInstanceUuid") String activityInstanceUuid) {
+		
+		ActivityWorkflowInfo result = null;
+		
+		String userId = getUserName(servletRequest);
+		
+		log.error("activityInstanceUuid: " + activityInstanceUuid);
+		log.error("userId: " + userId);
+		
+//		if (userId != null) {
+			// user is authenticated
+			
+			InheritServiceClient isc = new InheritServiceClient();
+			result = isc.getActivityWorkflowInfo(activityInstanceUuid);
+/*		}
+		else {
+			// TODO respone http error
+		}
+*/		
 		return result; 
 	}
 		

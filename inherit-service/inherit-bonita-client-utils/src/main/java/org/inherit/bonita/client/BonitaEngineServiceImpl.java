@@ -20,6 +20,7 @@ import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.domain.ActivityWorkflowInfo;
 import org.ow2.bonita.facade.BAMAPI;
 import org.ow2.bonita.facade.QueryDefinitionAPI;
 import org.ow2.bonita.facade.def.majorElement.ActivityDefinition;
@@ -290,14 +291,30 @@ public class BonitaEngineServiceImpl {
 		}
 		return result;
 	}
+
 	
-	public int assignTask(String activityInstanceUuid, String userId) {
-		int result = -1;
+	public ActivityWorkflowInfo getActivityWorkflowInfo(String activityInstanceUuid) {
+		ActivityWorkflowInfo result = null;
+		try {
+			LoginContext loginContext = BonitaUtil.login();
+			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+			result = loadActivityWorkflowInfo(activityUUID);
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception when assigning task activityInstanceUuid=[" + activityInstanceUuid + "]");
+		}
+		return result;
+	}
+
+	
+	public ActivityWorkflowInfo assignTask(String activityInstanceUuid, String userId) {
+		ActivityWorkflowInfo result = null;
 		try {
 			LoginContext loginContext = BonitaUtil.login();
 			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
 			AccessorUtil.getRuntimeAPI().assignTask(activityUUID, userId);
-			result = 1;
+			result = loadActivityWorkflowInfo(activityUUID);
 			loginContext.logout();
 		}
 		catch (Exception e) {
@@ -306,8 +323,8 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 
-	public int addCandidate(String activityInstanceUuid, String userId) {
-		int result = -1;
+	public ActivityWorkflowInfo addCandidate(String activityInstanceUuid, String userId) {
+		ActivityWorkflowInfo result = null;
 		try {
 			if (userId !=null) {
 				LoginContext loginContext = BonitaUtil.login();
@@ -318,7 +335,7 @@ public class BonitaEngineServiceImpl {
 				}
 				candidates.add(userId);
 				AccessorUtil.getRuntimeAPI().assignTask(activityUUID, candidates);
-				result = 1;
+				result = loadActivityWorkflowInfo(activityUUID);
 				loginContext.logout();
 			}
 		}
@@ -328,13 +345,34 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 
-	public int unassignTask(String activityInstanceUuid) {
-		int result = -1;
+	public ActivityWorkflowInfo removeCandidate(String activityInstanceUuid, String userId) {
+		ActivityWorkflowInfo result = null;
+		try {
+			if (userId !=null) {
+				LoginContext loginContext = BonitaUtil.login();
+				ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+				Set<String> candidates = AccessorUtil.getQueryRuntimeAPI().getTaskCandidates(activityUUID);
+				if (candidates != null) {
+					candidates.remove(userId);
+					AccessorUtil.getRuntimeAPI().assignTask(activityUUID, candidates);
+				}
+				result = loadActivityWorkflowInfo(activityUUID);
+				loginContext.logout();
+			}
+		}
+		catch (Exception e) {
+			log.severe("Exception when assigning task candidate userId=[" + userId + "] to activityInstanceUuid=[" + activityInstanceUuid + "]");
+		}
+		return result;
+	}
+
+	public ActivityWorkflowInfo unassignTask(String activityInstanceUuid) {
+		ActivityWorkflowInfo result = null;
 		try {
 			LoginContext loginContext = BonitaUtil.login();
 			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
 			AccessorUtil.getRuntimeAPI().unassignTask(activityUUID);
-			result = 1;
+			result = loadActivityWorkflowInfo(activityUUID);
 			loginContext.logout();
 		}
 		catch (Exception e) {
@@ -343,6 +381,32 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 
+	public ActivityWorkflowInfo setPriority(String activityInstanceUuid, int priority) {
+		ActivityWorkflowInfo result = null;
+		try {
+			LoginContext loginContext = BonitaUtil.login();
+			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+			AccessorUtil.getRuntimeAPI().setActivityInstancePriority(activityUUID, priority);
+			result = loadActivityWorkflowInfo(activityUUID);
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception in setPriority activityInstanceUuid=[" + activityInstanceUuid + "]: " + e );
+		}
+		return result;
+	}
+
+	private ActivityWorkflowInfo loadActivityWorkflowInfo(ActivityInstanceUUID activityUUID) throws Exception {
+		ActivityWorkflowInfo result = new ActivityWorkflowInfo();
+		ActivityInstance activity = AccessorUtil.getQueryRuntimeAPI().getActivityInstance(activityUUID);
+		
+		result.setCandidates(activity.getLastAssignUpdate().getCandidates());
+		result.setAssignedUserId(activity.getLastAssignUpdate().getAssignedUserId());
+		result.setPriority(activity.getPriority());
+		
+		return result;
+	}
+	
 	private ProcessInstanceDetails getProcessInstanceDetailsByUuid(ProcessInstanceUUID piUuid) throws Exception {
 		ProcessInstanceDetails result = null;
 		

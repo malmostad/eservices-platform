@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="formwithdetails">
+<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="form">
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:component</sv:value>
   </sv:property>
@@ -10,12 +10,23 @@
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:component</sv:value>
     </sv:property>
+    <sv:property sv:name="hst:template" sv:type="String">
+      <sv:value>standard.main</sv:value>
+    </sv:property>
     <sv:node sv:name="content">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>hst:component</sv:value>
       </sv:property>
       <sv:property sv:name="hst:referencecomponent" sv:type="String">
-        <sv:value>hst:components/formwithdetails</sv:value>
+        <sv:value>hst:components/form</sv:value>
+      </sv:property>
+    </sv:node>
+    <sv:node sv:name="right">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:component</sv:value>
+      </sv:property>
+      <sv:property sv:name="hst:referencecomponent" sv:type="String">
+        <sv:value>hst:components/formright</sv:value>
       </sv:property>
     </sv:node>
   </sv:node>

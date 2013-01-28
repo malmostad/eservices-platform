@@ -1,3 +1,22 @@
+function siteAjaxPost(url, postdata, processSuccess ) {
+	  /* Send the data using post and put the results in a div */
+	  $.ajax({
+	    type: 'POST',
+	    url: url,
+	    data: postdata,
+	    success: function( data ) {
+                processSuccess(data);
+
+	    },
+	    error : function() {
+	    },
+	    complete : function( data ) {
+
+	    },
+	    dataType:"json"
+	   });
+	};
+
 $(document).ready(function() {
 	
 	/*
@@ -31,26 +50,6 @@ $(document).ready(function() {
 				}
 			});
 		}
-	});
-	
-	/*
-	 * todo move? take care of result...
-	 */
-	$(".siteAjaxForm").submit(function(event) {
-	   /* stop form from submitting normally */
-	   event.preventDefault();
-	   /* get some values from elements on the page: */
-	   var $form = $( this );
-	   var url = $form.attr( 'action' );
-	   alert($form.serialize());
-	   /* Send the data using post and put the results in a div */
-	   $.post( url, $form.serialize(),
-	      function( data ) {
-	         var content = $( data ).find( '#content' );
-		 $( "#result" ).empty().append( content );
-	      },
-	      "json"
-	   );
 	});
 
 });

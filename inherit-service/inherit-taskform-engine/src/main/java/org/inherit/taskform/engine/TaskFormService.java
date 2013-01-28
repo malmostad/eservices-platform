@@ -11,6 +11,7 @@ import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
 import org.inherit.service.common.domain.ActivityInstancePendingItem;
+import org.inherit.service.common.domain.ActivityWorkflowInfo;
 import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
@@ -167,21 +168,36 @@ public class TaskFormService {
 		return result;
 	}
 	
-	public int assignTask(String activityInstanceUuid, String userId) {
-		int result = bonitaClient.assignTask(activityInstanceUuid, userId); 
-		return result;
-	}
-	
-	public int addCandidate(String activityInstanceUuid, String userId) {
-		int result = bonitaClient.addCandidate(activityInstanceUuid, userId); 
+	public ActivityWorkflowInfo getActivityWorkflowInfo(String activityInstanceUuid) {
+		ActivityWorkflowInfo result = bonitaClient.getActivityWorkflowInfo(activityInstanceUuid); 
 		return result;
 	}
 
-	public int unassignTask(String activityInstanceUuid) {
-		int result = bonitaClient.unassignTask(activityInstanceUuid); 
-		return result;		
+	public ActivityWorkflowInfo assignTask(String activityInstanceUuid, String userId) {
+		ActivityWorkflowInfo result = bonitaClient.assignTask(activityInstanceUuid, userId); 
+		return result;
 	}
 	
+	public ActivityWorkflowInfo unassignTask(String activityInstanceUuid) {
+		ActivityWorkflowInfo result = bonitaClient.unassignTask(activityInstanceUuid); 
+		return result;		
+	}
+
+	public ActivityWorkflowInfo addCandidate(String activityInstanceUuid, String userId) {
+		ActivityWorkflowInfo result = bonitaClient.addCandidate(activityInstanceUuid, userId); 
+		return result;
+	}
+
+	public ActivityWorkflowInfo removeCandidate(String activityInstanceUuid, String userId) {
+		ActivityWorkflowInfo result = bonitaClient.removeCandidate(activityInstanceUuid, userId); 
+		return result;
+	}
+
+	public ActivityWorkflowInfo setActivityPriority(String activityInstanceUuid, int priority) {
+		ActivityWorkflowInfo result = bonitaClient.setPriority(activityInstanceUuid, priority); 
+		return result;		
+	}
+
 	public ActivityInstanceLogItem getStartFormActivityInstanceLogItem(String processInstanceUuid) {
 		ActivityInstanceLogItem result = null;
 		

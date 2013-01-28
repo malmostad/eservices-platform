@@ -7,7 +7,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
-public class AssignTask extends ServerResource {
+public class SetActivityPriority extends ServerResource {
 	
 	public static final String ACTION_ASSIGN = "assign";
 	public static final String ACTION_ADD_CANDIDATE = "addcandidate";
@@ -18,25 +18,13 @@ public class AssignTask extends ServerResource {
 	
 	@Get
 	@Post
-	public ActivityWorkflowInfo assignTask() {
+	public ActivityWorkflowInfo setActivityPriority() {
 		ActivityWorkflowInfo result = null;
 		
 		String activityInstanceUuid = ParameterEncoder.decode((String)getRequestAttributes().get("activityInstanceUuid"));
-		String action = ParameterEncoder.decode((String)getRequestAttributes().get("action"));
-		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
+		int priority = Integer.parseInt(ParameterEncoder.decode((String)getRequestAttributes().get("priority")));
 		
-		if (ACTION_ASSIGN.equals(action)) {
-			result = engine.assignTask(activityInstanceUuid, userId);
-		}
-		else if (ACTION_ADD_CANDIDATE.equals(action)) {
-			result = engine.addCandidate(activityInstanceUuid, userId);
-		}
-		else if (ACTION_REMOVE_CANDIDATE.equals(action)) {
-			result = engine.removeCandidate(activityInstanceUuid, userId);
-		}
-		else if (ACTION_UNASSIGN.equals(action)) {
-			result = engine.unassignTask(activityInstanceUuid);
-		}
+		result = engine.setActivityPriority(activityInstanceUuid, priority);
 		
 		return result;
 	}
