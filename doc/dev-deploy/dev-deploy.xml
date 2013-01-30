@@ -1471,7 +1471,8 @@
 	<programlisting>
 	    createuser -D -A -P inherit
 	    createdb -O inherit InheritPlatform
-	    psql -n InheritPlatform &lt;  &lt;ipldump.sql&gt;
+            cd inherit-service/inherit-taskform-engine
+            mvn exec:java -P standalone
 	</programlisting>
 
 	<para>
