@@ -5,7 +5,7 @@
 	Ej inloggad  <a href="/site/login/form">Logga in</a>
   </c:when>
   <c:when test="${userName eq 'eva_extern'}">
-	Inloggad som: ${userName} (automatiskt för test) <a href="/site/login/form?destination=%2Fsite%2Fkomin%2Fmycases%2Finbox">Logga in</a>
+	Inloggad som: ${userName} (automatiskt f&ouml;r test) <a href="/site/login/form?destination=%2Fsite%2Fkomin%2Fmycases%2Finbox">Logga in</a>
   </c:when>
   <c:otherwise>
 	Inloggad som: ${userName} <a href="/site/login/logout">Logga ut</a>

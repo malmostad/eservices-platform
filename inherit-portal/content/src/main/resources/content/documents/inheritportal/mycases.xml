@@ -282,7 +282,6 @@
           <sv:value>002e8956-da31-4f07-9149-a54e6ae03c6e</sv:value>
         </sv:property>
         <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
-          <sv:value>live</sv:value>
           <sv:value>preview</sv:value>
         </sv:property>
         <sv:property sv:name="hippo:related___pathreference" sv:type="String">
@@ -292,10 +291,10 @@
           <sv:value>admin</sv:value>
         </sv:property>
         <sv:property sv:name="hippostd:state" sv:type="String">
-          <sv:value>published</sv:value>
+          <sv:value>unpublished</sv:value>
         </sv:property>
         <sv:property sv:name="hippostd:stateSummary" sv:type="String">
-          <sv:value>live</sv:value>
+          <sv:value>new</sv:value>
         </sv:property>
         <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
           <sv:value>admin</sv:value>
@@ -504,7 +503,6 @@
             <sv:value>59f9b310-1f83-42b6-9f97-a1479b9a1752</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
-            <sv:value>live</sv:value>
             <sv:value>preview</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:related___pathreference" sv:type="String">
@@ -514,10 +512,10 @@
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostd:state" sv:type="String">
-            <sv:value>published</sv:value>
+            <sv:value>unpublished</sv:value>
           </sv:property>
           <sv:property sv:name="hippostd:stateSummary" sv:type="String">
-            <sv:value>live</sv:value>
+            <sv:value>new</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
             <sv:value>admin</sv:value>
@@ -609,7 +607,7 @@
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>7883a333-dd7e-447e-a87c-6890cc091be7</sv:value>
+            <sv:value>8cf5079d-6fd4-4166-afb5-5a1c6846c9c4</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -634,13 +632,13 @@
             <sv:value>2012-11-12T16:33:40.646+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2012-11-12T16:34:36.820+01:00</sv:value>
+            <sv:value>2013-01-30T15:34:46.635+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2012-11-12T16:34:41.363+01:00</sv:value>
+            <sv:value>2013-01-30T15:34:51.613+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>9ae699d9-e6fe-4506-af8e-3cf37c92c17f</sv:value>
@@ -655,10 +653,10 @@
             <sv:value/>
           </sv:property>
           <sv:property sv:name="inheritportal:summary" sv:type="String">
-            <sv:value>en liten demo ansökan med inte så många fält och inte för jobbiga valideringar</sv:value>
+            <sv:value>en liten demo på en ansökan med inte så många fält och inte för jobbiga valideringar</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:title" sv:type="String">
-            <sv:value>Demo Ansökan</sv:value>
+            <sv:value>Demo yrkesmässig användning av bekämpningsmedel</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:wordurl" sv:type="String">
             <sv:value/>
@@ -694,7 +692,6 @@
           <sv:value>bff1c867-ba3c-489d-a841-7f675f10845e</sv:value>
         </sv:property>
         <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
-          <sv:value>live</sv:value>
           <sv:value>preview</sv:value>
         </sv:property>
         <sv:property sv:name="hippo:related___pathreference" sv:type="String">
@@ -704,10 +701,10 @@
           <sv:value>admin</sv:value>
         </sv:property>
         <sv:property sv:name="hippostd:state" sv:type="String">
-          <sv:value>published</sv:value>
+          <sv:value>unpublished</sv:value>
         </sv:property>
         <sv:property sv:name="hippostd:stateSummary" sv:type="String">
-          <sv:value>live</sv:value>
+          <sv:value>new</sv:value>
         </sv:property>
         <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
           <sv:value>admin</sv:value>

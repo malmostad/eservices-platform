@@ -33,9 +33,6 @@
 			    </tr>
 			  </thead>
 			  <tbody>
-			    <tr>
-			    	<th colspan="4">TODO Katalognamn från JCR som namn på f&ouml;rvaltningen</th>
-			    </tr>
 			
 			   <c:forEach var="item" items="${result.hippoBeans}">
 			
