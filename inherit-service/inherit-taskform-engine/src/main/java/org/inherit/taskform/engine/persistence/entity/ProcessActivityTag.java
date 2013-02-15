@@ -19,18 +19,22 @@ public class ProcessActivityTag {
 	@ManyToOne
     @JoinColumn(name="tagTypeId", nullable=false)
 	TagType type;
-	
+
+	@ManyToOne
+    @JoinColumn(name="processActivityFormInstanceId", nullable=false)
+	ProcessActivityFormInstance processActivityFormInstance;
+
 	@Column(nullable=false)
 	String value;
 	
 	/**
-	 * If null, this form is still not submitted, otherwise submission time stamp.
+	 * Timestamp of last write
 	 */
 	@Column(nullable=false)
 	Date timestamp = null;
 	
 	/**
-	 * The last writer to this instance
+	 * The last writer
 	 */
 	@Column(nullable=false)
 	String userId;
@@ -53,6 +57,15 @@ public class ProcessActivityTag {
 
 	public void setType(TagType type) {
 		this.type = type;
+	}
+
+	public ProcessActivityFormInstance getProcessActivityFormInstance() {
+		return processActivityFormInstance;
+	}
+
+	public void setProcessActivityFormInstance(
+			ProcessActivityFormInstance processActivityFormInstance) {
+		this.processActivityFormInstance = processActivityFormInstance;
 	}
 
 	public String getValue() {
@@ -85,8 +98,12 @@ public class ProcessActivityTag {
 		int result = 1;
 		result = prime
 				* result
-				+ ((processActivityTagId == null) ? 0
-						: processActivityTagId.hashCode());
+				+ ((processActivityFormInstance == null) ? 0
+						: processActivityFormInstance.hashCode());
+		result = prime
+				* result
+				+ ((processActivityTagId == null) ? 0 : processActivityTagId
+						.hashCode());
 		result = prime * result
 				+ ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -104,11 +121,16 @@ public class ProcessActivityTag {
 		if (getClass() != obj.getClass())
 			return false;
 		ProcessActivityTag other = (ProcessActivityTag) obj;
+		if (processActivityFormInstance == null) {
+			if (other.processActivityFormInstance != null)
+				return false;
+		} else if (!processActivityFormInstance
+				.equals(other.processActivityFormInstance))
+			return false;
 		if (processActivityTagId == null) {
 			if (other.processActivityTagId != null)
 				return false;
-		} else if (!processActivityTagId
-				.equals(other.processActivityTagId))
+		} else if (!processActivityTagId.equals(other.processActivityTagId))
 			return false;
 		if (timestamp == null) {
 			if (other.timestamp != null)
@@ -136,9 +158,11 @@ public class ProcessActivityTag {
 	@Override
 	public String toString() {
 		return "ProcessActivityTag [processActivityTagId="
-				+ processActivityTagId + ", type=" + type + ", value="
-				+ value + ", timestamp=" + timestamp + ", userId=" + userId
-				+ "]";
+				+ processActivityTagId + ", type=" + type
+				+ ", processActivityFormInstance="
+				+ processActivityFormInstance + ", value=" + value
+				+ ", timestamp=" + timestamp + ", userId=" + userId + "]";
 	}
+
 	
 }

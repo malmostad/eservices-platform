@@ -1,6 +1,8 @@
 package se.inherit.portal.jaxrs;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,6 +16,8 @@ import javax.ws.rs.core.Context;
 import org.hippoecm.hst.jaxrs.services.AbstractResource;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityWorkflowInfo;
+import org.inherit.service.common.domain.CommentFeedItem;
+import org.inherit.service.common.domain.Tag;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,6 +175,97 @@ public class SiteAjaxApplication extends AbstractResource {
 		return result; 
 	}
 		
+
+	@POST
+	@Consumes("application/x-www-form-urlencoded")
+	@Produces("application/json")
+	@Path("/getCommentFeed") 
+	public List<CommentFeedItem> getCommentFeed(
+			@Context HttpServletRequest servletRequest,
+			@Context HttpServletResponse servletResponse,
+			@FormParam("activityInstanceUuid") String activityInstanceUuid) {
+		
+		ArrayList<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
+		
+		String userId = getUserName(servletRequest);
+		
+		log.error("activityInstanceUuid: " + activityInstanceUuid);
+		log.error("userId: " + userId);
+		
+//		if (userId != null) {
+			// user is authenticated
+			
+			InheritServiceClient isc = new InheritServiceClient();
+			result = isc.getCommentFeed(activityInstanceUuid, userId);
+/*		}
+		else {
+			// TODO respone http error
+		}
+*/		
+		return result; 
+	}
+		
+	
+	@POST
+	@Consumes("application/x-www-form-urlencoded")
+	@Produces("application/json")
+	@Path("/addTag") 
+	public Tag addTag (
+			@Context HttpServletRequest servletRequest,
+			@Context HttpServletResponse servletResponse,
+			@FormParam("processActivityFormInstanceId") long processActivityFormInstanceId,
+			@FormParam("tagTypeId") long tagTypeId,
+			@FormParam("value") String value) {
+		
+		Tag result = null;
+				
+		String userId = getUserName(servletRequest);
+
+		log.error("processActivityFormInstanceId: " + processActivityFormInstanceId);
+		log.error("tagTypeId: " + tagTypeId);
+		log.error("value: " + value);
+		log.error("userId: " + userId);
+
+//		if (userId != null) {
+			InheritServiceClient isc = new InheritServiceClient();
+			result = isc.addTag(processActivityFormInstanceId, tagTypeId, value, userId);
+	//	}
+//		else {
+	//				result = null;
+	//	}
+		
+		return result; 
+	}
+
+
+	@POST
+	@Consumes("application/x-www-form-urlencoded")
+	@Path("/deleteTag") 
+	public boolean deleteTag (
+			@Context HttpServletRequest servletRequest,
+			@Context HttpServletResponse servletResponse,
+			@FormParam("processInstanceUuid") String processInstanceUuid,
+			@FormParam("value") String value) {
+		
+		boolean result = false;
+				
+		String userId = getUserName(servletRequest);
+
+		log.error("processInstanceUuid: " + processInstanceUuid);
+		log.error("value: " + value);
+		log.error("userId: " + userId);
+
+//		if (userId != null) {
+			InheritServiceClient isc = new InheritServiceClient();
+			result = isc.deleteTag(processInstanceUuid, value, userId);
+	//	}
+//		else {
+	//				result = false;
+	//	}
+		
+		return result; 
+	}
+
 
 
 	private String getUserName(HttpServletRequest servletRequest) {

@@ -11,7 +11,9 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 	private static final long serialVersionUID = 7249719404625798791L;
 	
 	String processInstanceUuid;
+	String processLabel;
 	String activityInstanceUuid;
+	String activityLabel;
 	Date timestamp;
 	String message;
 	String userId;
@@ -28,12 +30,28 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 		this.processInstanceUuid = processInstanceUuid;
 	}
 
+	public String getProcessLabel() {
+		return processLabel;
+	}
+
+	public void setProcessLabel(String processLabel) {
+		this.processLabel = processLabel;
+	}
+
 	public String getActivityInstanceUuid() {
 		return activityInstanceUuid;
 	}
 
 	public void setActivityInstanceUuid(String activityInstanceUuid) {
 		this.activityInstanceUuid = activityInstanceUuid;
+	}
+
+	public String getActivityLabel() {
+		return activityLabel;
+	}
+
+	public void setActivityLabel(String activityLabel) {
+		this.activityLabel = activityLabel;
 	}
 
 	public void setTimestamp(Date timestamp) {
@@ -64,11 +82,15 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 				* result
 				+ ((activityInstanceUuid == null) ? 0 : activityInstanceUuid
 						.hashCode());
+		result = prime * result
+				+ ((activityLabel == null) ? 0 : activityLabel.hashCode());
 		result = prime * result + ((message == null) ? 0 : message.hashCode());
 		result = prime
 				* result
 				+ ((processInstanceUuid == null) ? 0 : processInstanceUuid
 						.hashCode());
+		result = prime * result
+				+ ((processLabel == null) ? 0 : processLabel.hashCode());
 		result = prime * result
 				+ ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
@@ -89,6 +111,11 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 				return false;
 		} else if (!activityInstanceUuid.equals(other.activityInstanceUuid))
 			return false;
+		if (activityLabel == null) {
+			if (other.activityLabel != null)
+				return false;
+		} else if (!activityLabel.equals(other.activityLabel))
+			return false;
 		if (message == null) {
 			if (other.message != null)
 				return false;
@@ -98,6 +125,11 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 			if (other.processInstanceUuid != null)
 				return false;
 		} else if (!processInstanceUuid.equals(other.processInstanceUuid))
+			return false;
+		if (processLabel == null) {
+			if (other.processLabel != null)
+				return false;
+		} else if (!processLabel.equals(other.processLabel))
 			return false;
 		if (timestamp == null) {
 			if (other.timestamp != null)
@@ -111,12 +143,13 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 			return false;
 		return true;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "CommentFeedItem [processInstanceUuid=" + processInstanceUuid
-				+ ", activityInstanceUuid=" + activityInstanceUuid
-				+ ", timeStamp=" + timestamp + ", message=" + message
+				+ ", processLabel=" + processLabel + ", activityInstanceUuid="
+				+ activityInstanceUuid + ", activityLabel=" + activityLabel
+				+ ", timestamp=" + timestamp + ", message=" + message
 				+ ", userId=" + userId + "]";
 	}
 

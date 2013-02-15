@@ -1,5 +1,6 @@
 package org.inherit.service.rest.server;
 
+import org.inherit.service.common.util.ParameterEncoder;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
@@ -24,6 +25,7 @@ public class InheritServiceApplication extends Application {
 		
 		// TODO take user from login instead of parameter userid
 		router.attach("/addComment/{activityInstanceUuid}/{comment}/{userid}", AddComment.class); 
+		router.attach("/getCommentFeed/{activityInstanceUuid}/{userid}", GetCommentFeed.class); 
 		router.attach("/assignTask/{activityInstanceUuid}/{action}/{userid}", AssignTask.class); 
 		router.attach("/getActivityInstanceItem/{activityInstanceUuid}/{userId}", ActivityInstanceItemByActivityInstanceUuid.class);
 		router.attach("/getActivityWorkflowInfo/{activityInstanceUuid}", GetActivityWorkflowInfo.class); 
@@ -32,6 +34,10 @@ public class InheritServiceApplication extends Application {
 		router.attach("/submitForm/{docId}/{userId}", SubmitForm.class);
 		router.attach("/submitStartForm/{formPath}/{docId}/{userId}", SubmitStartForm.class);
 		router.attach("/setActivityPriority/{activityInstanceUuid}/{priority}", SetActivityPriority.class); 
+	
+		router.attach("/addTag/{processActivityFormInstanceId}/{tagTypeId}/{value}/{userid}", AddTag.class); 
+		router.attach("/deleteTag/{processInstanceUuid}/{value}/{userid}", DeleteTagByValue.class); 
+		router.attach("/getTagsByProcessInstance/{processInstanceUuid}", GetTagsByProcessInstance.class); 
 		
 		return router;
 	}

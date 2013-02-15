@@ -23,8 +23,11 @@ import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.domain.ActivityWorkflowInfo;
 import org.ow2.bonita.facade.BAMAPI;
 import org.ow2.bonita.facade.QueryDefinitionAPI;
+import org.ow2.bonita.facade.QueryRuntimeAPI;
 import org.ow2.bonita.facade.def.majorElement.ActivityDefinition;
 import org.ow2.bonita.facade.def.majorElement.ProcessDefinition;
+import org.ow2.bonita.facade.exception.ActivityNotFoundException;
+import org.ow2.bonita.facade.exception.InstanceNotFoundException;
 import org.ow2.bonita.facade.exception.ProcessNotFoundException;
 import org.ow2.bonita.facade.runtime.ActivityInstance;
 import org.ow2.bonita.facade.runtime.ActivityState;
@@ -43,7 +46,9 @@ public class BonitaEngineServiceImpl {
 
 	public static final Logger log = Logger.getLogger(BonitaEngineServiceImpl.class.getName());
 	
-	HashMap<String, String> defUuid2LabelCache = new HashMap<String,String>();
+	HashMap<String, String> processDefinitionUuid2LabelCache = new HashMap<String,String>();
+	HashMap<String, String> processInstanceUuid2LabelCache = new HashMap<String,String>();
+	HashMap<String, String> activityInstanceUuid2LabelCache = new HashMap<String,String>();
 	
 	public BonitaEngineServiceImpl() {
 		
@@ -421,9 +426,58 @@ public class BonitaEngineServiceImpl {
 					result.addActivityInstanceItem(item);
 				}
 			}
-			loadProcessInstanceCommentFeed(pi, result);
+			// removed comments from timeline....think about it...  loadProcessInstanceCommentFeed(pi, result);
 		}
 		
+		return result;
+	}
+	
+	public List<CommentFeedItem> getProcessInstanceCommentFeedByProcess(String processInstanceUuid) {
+		List<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
+		try {
+			log.severe("processInstanceUuid=" + processInstanceUuid);
+			LoginContext loginContext = BonitaUtil.login(); 
+			ProcessInstanceUUID piUUID = new ProcessInstanceUUID(processInstanceUuid);
+			result = loadProcessInstanceCommentFeed(piUUID);
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		return result;
+	}
+	
+	public List<CommentFeedItem> getProcessInstanceCommentFeedByActivity(String activityInstanceUuid) {
+		List<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
+		try {
+			log.severe("activityInstanceUuid=" + activityInstanceUuid);
+			LoginContext loginContext = BonitaUtil.login(); 
+			ActivityInstanceUUID activityUUID = new ActivityInstanceUUID(activityInstanceUuid);
+			
+			ActivityInstance ai = AccessorUtil.getQueryRuntimeAPI().getActivityInstance(activityUUID);
+			result = loadProcessInstanceCommentFeed(ai.getProcessInstanceUUID());
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		return result;
+	}
+	
+	private List<CommentFeedItem> loadProcessInstanceCommentFeed(ProcessInstanceUUID processInstanceUUID) {
+		List<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
+		try {
+			List<Comment> comments = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(processInstanceUUID).getCommentFeed();
+			if (comments != null) {
+				for (Comment comment : comments) {
+					CommentFeedItem item = loadCommentFeedItem(comment);
+					result.add(item);
+				}
+			}
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
 		return result;
 	}
 	
@@ -431,10 +485,12 @@ public class BonitaEngineServiceImpl {
 		CommentFeedItem result = new CommentFeedItem();
 		if (comment.getActivityUUID() != null) {
 			result.setActivityInstanceUuid(comment.getActivityUUID().getValue());
+			result.setActivityLabel(getActivityLabelByInstanceUuid(comment.getActivityUUID()));
 		}
 		result.setMessage(comment.getMessage());
 		if (comment.getInstanceUUID() != null) {
 			result.setProcessInstanceUuid(comment.getInstanceUUID().getValue());
+			result.setProcessLabel(getProcessLabelByInstanceUuid(comment.getInstanceUUID()));
 		}
 		result.setTimestamp(comment.getDate());
 		result.setUserId(comment.getUserId());
@@ -449,6 +505,18 @@ public class BonitaEngineServiceImpl {
 				dst.getTimeline().add(item);
 			}
 		}
+	}
+
+	private List<CommentFeedItem> loadProcessInstanceCommentFeed(ProcessInstance src) {
+		List<CommentFeedItem> result = new ArrayList<CommentFeedItem> ();
+		List<Comment> comments = src.getCommentFeed();
+		if (comments != null) {
+			for (Comment comment : comments) {
+				CommentFeedItem item = loadCommentFeedItem(comment);
+				result.add(item);
+			}
+		}
+		return result;
 	}
 	
 	private void loadProcessInstanceBriefProperties(LightProcessInstance src, ProcessInstanceListItem dst) {
@@ -549,7 +617,7 @@ public class BonitaEngineServiceImpl {
 	}
 
 	private String getProcessLabel(ProcessDefinitionUUID processDefinitionUUID) {
-		String result = defUuid2LabelCache.get(processDefinitionUUID.getValue());
+		String result = processDefinitionUuid2LabelCache.get(processDefinitionUUID.getValue());
 
 		if (result == null) {
 			QueryDefinitionAPI definitionAPI = AccessorUtil.getQueryDefinitionAPI();
@@ -559,7 +627,41 @@ public class BonitaEngineServiceImpl {
 			} catch (ProcessNotFoundException e) {
 				result = "n/a";
 			}
-			defUuid2LabelCache.put(processDefinitionUUID.getValue(), result);
+			processDefinitionUuid2LabelCache.put(processDefinitionUUID.getValue(), result);
+		}
+
+		return result;
+	}
+	
+	private String getActivityLabelByInstanceUuid(ActivityInstanceUUID activityInstanceUUID) {
+		String result = activityInstanceUuid2LabelCache.get(activityInstanceUUID.getValue());
+
+		if (result == null) {
+			QueryRuntimeAPI qrAPI = AccessorUtil.getQueryRuntimeAPI();
+			try {
+				LightActivityInstance ai = qrAPI.getLightActivityInstance(activityInstanceUUID);
+				result = ai.getActivityLabel();
+			} catch (ActivityNotFoundException e) {
+				result = "n/a";
+			}
+			activityInstanceUuid2LabelCache.put(activityInstanceUUID.getValue(), result);
+		}
+
+		return result;
+	}
+	
+	private String getProcessLabelByInstanceUuid(ProcessInstanceUUID processInstanceUUID) {
+		String result = processInstanceUuid2LabelCache.get(processInstanceUUID.getValue());
+
+		if (result == null) {
+			QueryRuntimeAPI qrAPI = AccessorUtil.getQueryRuntimeAPI();
+			try {
+				LightProcessInstance ai = qrAPI.getLightProcessInstance(processInstanceUUID);
+				result = getProcessLabel(ai.getProcessDefinitionUUID());
+			} catch (InstanceNotFoundException e) {
+				result = "n/a";
+			}
+			processInstanceUuid2LabelCache.put(processInstanceUUID.getValue(), result);
 		}
 
 		return result;

@@ -50,6 +50,7 @@ public abstract class ActivityInstanceItem implements Serializable {
 	String formUrl;
 	int activityType;
 	int priority;
+	long processActivityFormInstanceId;
 	
 	
 	public String getProcessDefinitionUuid() {
@@ -142,6 +143,12 @@ public abstract class ActivityInstanceItem implements Serializable {
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
+	public long getProcessActivityFormInstanceId() {
+		return processActivityFormInstanceId;
+	}
+	public void setProcessActivityFormInstanceId(long processActivityFormInstanceId) {
+		this.processActivityFormInstanceId = processActivityFormInstanceId;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -171,6 +178,9 @@ public abstract class ActivityInstanceItem implements Serializable {
 				+ ((lastStateUpdateByUserId == null) ? 0
 						: lastStateUpdateByUserId.hashCode());
 		result = prime * result + priority;
+		result = prime
+				* result
+				+ (int) (processActivityFormInstanceId ^ (processActivityFormInstanceId >>> 32));
 		result = prime
 				* result
 				+ ((processDefinitionUuid == null) ? 0 : processDefinitionUuid
@@ -244,6 +254,8 @@ public abstract class ActivityInstanceItem implements Serializable {
 			return false;
 		if (priority != other.priority)
 			return false;
+		if (processActivityFormInstanceId != other.processActivityFormInstanceId)
+			return false;
 		if (processDefinitionUuid == null) {
 			if (other.processDefinitionUuid != null)
 				return false;
@@ -279,7 +291,11 @@ public abstract class ActivityInstanceItem implements Serializable {
 				+ ", lastStateUpdateByUserId=" + lastStateUpdateByUserId
 				+ ", startedBy=" + startedBy + ", expectedEndDate="
 				+ expectedEndDate + ", formUrl=" + formUrl + ", activityType="
-				+ activityType + ", priority=" + priority + "]";
+				+ activityType + ", priority=" + priority
+				+ ", processActivityFormInstanceId="
+				+ processActivityFormInstanceId + "]";
 	}
+
+	
 	
 }

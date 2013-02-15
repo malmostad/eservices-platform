@@ -12,10 +12,12 @@ import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
 import org.inherit.service.common.domain.ActivityInstancePendingItem;
 import org.inherit.service.common.domain.ActivityWorkflowInfo;
+import org.inherit.service.common.domain.CommentFeedItem;
 import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.domain.Tag;
 import org.inherit.service.common.domain.TimelineItem;
 import org.inherit.taskform.engine.persistence.TaskFormDb;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
@@ -168,6 +170,11 @@ public class TaskFormService {
 		return result;
 	}
 	
+	public List<CommentFeedItem> getCommentFeed(String activityInstanceUuid, String userId) {
+		List<CommentFeedItem> result = bonitaClient.getProcessInstanceCommentFeedByActivity(activityInstanceUuid); 
+		return result;
+	}
+	
 	public ActivityWorkflowInfo getActivityWorkflowInfo(String activityInstanceUuid) {
 		ActivityWorkflowInfo result = bonitaClient.getActivityWorkflowInfo(activityInstanceUuid); 
 		return result;
@@ -246,6 +253,9 @@ public class TaskFormService {
 		}
 		else {
 			item.setFormUrl(activityFormInstance.calcEditUrl());
+		}
+		if (activityFormInstance.getProcessActivityFormInstanceId()!=null) {
+			item.setProcessActivityFormInstanceId(activityFormInstance.getProcessActivityFormInstanceId().longValue());
 		}
 	}
 	
@@ -422,4 +432,21 @@ public class TaskFormService {
 		return result;
 	}
 	
+	public List<ProcessInstanceListItem> getProcessInstancesListByTag(String tagValue) { 
+		List<ProcessInstanceListItem> result = taskFormDb.getProcessInstancesByTag(tagValue);
+		return result;
+	}
+
+	
+	public Tag addTag(Long processActivityFormInstanceId, Long tagTypeId, String value, String userId) {
+		return taskFormDb.addTag(processActivityFormInstanceId, tagTypeId, value, userId);
+	}
+
+	public boolean deleteTag(String processInstanceUuid, String value, String userId) {
+		return taskFormDb.deleteTag(processInstanceUuid, value, userId);
+	}
+	
+	public List<Tag> getTagsByProcessInstance(String processInstanceUuid) {
+		return taskFormDb.getTagsByProcessInstance(processInstanceUuid);
+	}
 }

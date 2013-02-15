@@ -13,13 +13,10 @@
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
 
-	
 	<c:if test="${not empty activity}">
     	<script type="text/javascript" charset="utf-8">
-		        jQuery.noConflict();
-		        var $j = jQuery;
-		        $j(document).ready(function () {
-		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
+		        $(document).ready(function () {
+		             $("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
 		                if (typeof ORBEON != "undefined") { 
 		                    if (!document.all) {
 		                        ORBEON.xforms.Init.document(); 

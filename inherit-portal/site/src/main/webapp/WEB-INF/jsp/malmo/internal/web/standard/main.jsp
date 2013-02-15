@@ -23,7 +23,21 @@
 			</div>
 		</div>
 		<div class="aside">
-			<hst:include ref="right" />
+			<div class="content-wrapper">
+				<div class="content-wrapper-1">
+					<div class="content-wrapper-2">
+						<div class="content-wrapper-3">
+							<div class="content-wrapper-4">
+								<div class="content-wrapper-5">
+									<div class="content-wrapper-6">
+										<hst:include ref="right" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

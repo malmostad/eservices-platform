@@ -24,6 +24,10 @@
     <link rel="stylesheet" href="<hst:link path="/css/platform/inherit-platform.css"/>" type="text/css"/>
     <script type="text/javascript" src="<hst:link path="/js/platform/inherit-platform.js"/>"></script>
     
+    <link rel="stylesheet" href="/site/js/tag-it/css/jquery.tagit.css" type="text/css"/>
+    <link href=""/site/js/tag-it/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="/site/js/tag-it/js/tag-it.min.js"></script>
+    
   </head>
   <body>
   	<div class="wrap-all">

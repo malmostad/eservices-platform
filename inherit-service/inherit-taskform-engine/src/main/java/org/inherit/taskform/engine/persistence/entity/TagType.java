@@ -19,7 +19,13 @@ public class TagType {
 	 * in order to make a fast search possibly
 	 */
 	public static final Long TAG_APPLICATION_BY = new Long(2);
-	
+
+	/**
+	 * Use this tag to mark that an userId has submitted an application 
+	 * in order to make a fast search possibly
+	 */
+	public static final Long TAG_OTHER = new Long(10000);
+
 	@Id
 	Long tagTypeId;
 	

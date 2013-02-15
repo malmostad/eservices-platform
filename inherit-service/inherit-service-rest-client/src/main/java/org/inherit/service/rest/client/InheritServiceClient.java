@@ -3,6 +3,7 @@ package org.inherit.service.rest.client;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -16,6 +17,7 @@ import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessDefinitionInfo;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.domain.Tag;
 import org.inherit.service.common.util.ParameterEncoder;
 import org.restlet.Client;
 import org.restlet.Context;
@@ -68,6 +70,7 @@ public class InheritServiceClient {
 		xstream.alias("ActivityInstancePendingItem", ActivityInstancePendingItem.class);
 		xstream.alias("DashOpenActivities", DashOpenActivities.class);
 		xstream.alias("ActivityWorkflowInfo", ActivityWorkflowInfo.class);
+		xstream.alias("Tag", Tag.class);
 		
 		return xstream;
 	}
@@ -234,6 +237,23 @@ public class InheritServiceClient {
 		return result;
 	}
 
+	public ArrayList<CommentFeedItem> getCommentFeed(String activityInstanceUuid, String userId) {
+		ArrayList<CommentFeedItem> result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getCommentFeed/" + ParameterEncoder.encode(activityInstanceUuid) + 
+					"/" + ParameterEncoder.encode(userId) + "?media=xml";
+		log.severe("getCommentFeed uri: " + uri);
+		
+		String response = call(uri);
+		log.severe("response addComment: [" + response + "]");
+		if (response != null) {
+			result = (ArrayList<CommentFeedItem>)xstream.fromXML(response);
+		}
+
+		return result;
+	}
+
 	public ActivityWorkflowInfo assignTask(String activityInstanceUuid, String action, String userId) {
 		ActivityWorkflowInfo result = null;
 		String uri;
@@ -278,6 +298,67 @@ public class InheritServiceClient {
 			result = (ActivityWorkflowInfo)xstream.fromXML(response);
 		}
 
+		return result;
+	}
+
+	public Tag addTag(long processActivityFormInstanceId, long tagTypeId, String value, String userid) {
+		Tag result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "addTag/" + processActivityFormInstanceId + "/" + tagTypeId + "/" + ParameterEncoder.encode(value) + "/" + ParameterEncoder.encode(userid) + "?media=xml";
+		log.severe("addTag uri: " + uri);
+		
+		String response = call(uri);
+		if (response != null) {
+			result = (Tag)xstream.fromXML(response);
+		}
+
+		return result;
+	}
+
+	public boolean deleteTag(String processInstanceUuid, String value, String userId) {
+		boolean result = false;
+		String uri;
+		
+		uri = serverBaseUrl + "deleteTag/" + ParameterEncoder.encode(processInstanceUuid) + 
+					"/" + ParameterEncoder.encode(value) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		log.severe("deleteTag uri: " + uri);
+		
+		String response = call(uri);
+		log.severe("response deleteTag: [" + response + "]");
+		result = parseBooleanResponse(response);
+
+		return result;
+	}
+	
+	public List<Tag> getTagsByProcessInstance(String processInstanceUuid) {
+		ArrayList<Tag> result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getTagsByProcessInstance/" + ParameterEncoder.encode(processInstanceUuid) +  "?media=xml";
+		log.severe("getTagsByProcessInstance uri: " + uri);
+		
+		String response = call(uri);
+		log.severe("response getTagsByProcessInstance: [" + response + "]");
+		if (response != null) {
+			result = (ArrayList<Tag>)xstream.fromXML(response);
+		}
+
+		return result;
+	}
+	
+	private boolean parseBooleanResponse(String val) {
+		boolean result = false;
+		try {
+			if (val!=null) {
+				result = ((Boolean)xstream.fromXML(val)).booleanValue();
+				
+			}
+		}
+		catch (Exception nfe) {
+			log.warning("Cannot parse boolean value from val: " + val);
+			result = false;
+		}
 		return result;
 	}
 

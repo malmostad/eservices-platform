@@ -1,5 +1,7 @@
 package org.inherit.taskform.engine.persistence;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import org.hibernate.Session;
@@ -7,6 +9,8 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
+import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.domain.Tag;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityTag;
@@ -131,10 +135,10 @@ public class TaskFormDb {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
 		try {
-			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
 			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-				    .add( Restrictions.eq("processActivityFormInstanceId", id) )
-				    .list();
+					                                   .add( Restrictions.eq("processActivityFormInstanceId", id) )
+				                                       .list();
+
 		}
 		catch (Exception e) {
 			log.severe("id=[" + id + "] Exception: " + e);
@@ -144,6 +148,13 @@ public class TaskFormDb {
 		}
 		return filterUniqueProcessActivityFormInstanceFromList(result);
 	}
+	
+	public ProcessActivityFormInstance getProcessActivityFormInstanceById(Session session, Long id) {
+		ProcessActivityFormInstance result = null;
+		result = (ProcessActivityFormInstance)session.load(ProcessActivityFormInstance.class, id);
+		return result;
+	}
+
 
 	public ProcessActivityFormInstance getProcessStartFormInstanceById(String processInstanceUuid) {
 		ProcessActivityFormInstance result = null;
@@ -371,12 +382,12 @@ public class TaskFormDb {
 		session.close();
 	}
 	
-	public void saveProcessActivityTag(Session session, ProcessActivityTag processActivityTag) {
+	private void saveProcessActivityTag(Session session, ProcessActivityTag processActivityTag) {
 		session.saveOrUpdate(processActivityTag);		
 	}
 
 
-	public void saveProcessActivityTag(ProcessActivityTag processActivityTag) {
+	private void saveProcessActivityTag(ProcessActivityTag processActivityTag) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		
@@ -385,6 +396,150 @@ public class TaskFormDb {
 		session.getTransaction().commit();
 		session.close();
 	}
+	
+	private TagType getTagType(Session session, Long id) {
+		TagType result = null;
+		
+		result = (TagType)session.load(TagType.class, id);
+		
+		return result;
+	}
+	
+	public Tag addTag(Long processActivityFormInstanceId, Long tagTypeId, String value, String userId) {
+		Tag result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			session.beginTransaction();
+			ProcessActivityTag processActivityTag = new ProcessActivityTag();
+			processActivityTag.setType(getTagType(session, tagTypeId));
+			processActivityTag.setProcessActivityFormInstance(getProcessActivityFormInstanceById(session, processActivityFormInstanceId));
+			processActivityTag.setValue(value);
+			processActivityTag.setUserId(userId);
+			processActivityTag.setTimestamp(new Date());
+			saveProcessActivityTag(session, processActivityTag);
+			
+			result = processActivityTag2Tag(processActivityTag);
+			session.getTransaction().commit();
+		}
+		catch (Exception e) {
+			log.severe("processActivityFormInstanceId=[" + processActivityFormInstanceId + "] tagTypeId=[" + tagTypeId + "] value=[" + value  + "] userId=[" + userId + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		
+		return result;
+	}
+	
+	public boolean deleteTag(Long processActivityTagId, String userId) {
+		boolean result = false;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		try {
+			session.beginTransaction();
+			Object o = session.load(ProcessActivityTag.class, processActivityTagId);
+			System.out.println("Delete: " + o);
+			session.delete(o);
+			session.getTransaction().commit();
+			result = true;
+		}
+		catch (Exception e) {
+			log.severe("processActivityTagId=[" + processActivityTagId + "] userId=[" + userId + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return result;
+	}
+	
+	public boolean deleteTag(String processInstanceUuid, String value, String userId) {
+		boolean result = false;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		try {
+			session.beginTransaction();
+			List<ProcessActivityTag> tags = (List<ProcessActivityTag>) session.createCriteria(ProcessActivityTag.class)
+					.add( Restrictions.eq("value", value) )
+					.createCriteria("processActivityFormInstance")
+					.add( Restrictions.eq("processInstanceUuid", processInstanceUuid) )
+				    .list();
+			
+			if (tags != null && tags.size()>0) {
+				for (ProcessActivityTag tag : tags) {
+					session.delete(tag);				
+				}
+				result = true;
+			}
+			session.getTransaction().commit();
+		}
+		catch (Exception e) {
+			log.severe("processInstanceUuid=[" + processInstanceUuid + "] value=[" + value + "] userId=[" + userId + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return result;
+	}
+	
+	public List<Tag> getTagsByProcessInstance(String processInstanceUuid) {
+		List<Tag> tags = new ArrayList<Tag>();
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			List<ProcessActivityTag> result = (List<ProcessActivityTag>) session.createCriteria(ProcessActivityTag.class)
+					.createCriteria("processActivityFormInstance")
+					.add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) 
+				    .list();
+			
+			for (ProcessActivityTag pafi : result) {
+				tags.add(processActivityTag2Tag(pafi));
+			}
+		}
+		catch (Exception e) {
+			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		
+		return tags;
+	}
+	
+	public List<ProcessInstanceListItem> getProcessInstancesByTag(String tagValue) {
+		List<ProcessInstanceListItem>  result = new ArrayList<ProcessInstanceListItem> ();
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			// TODO
+			/*
+			List<ProcessActivityFormInstance> result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+					.createCriteria("processActivityFormInstance")
+					.add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) 
+				    .list();
+			*/
+		}
+		catch (Exception e) {
+			log.severe("tagValue=[" + tagValue + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		
+		return result;
+	}
+	
+	
+	
+	private Tag processActivityTag2Tag(ProcessActivityTag processActivityTag) {
+		Tag tag = new Tag();
+		tag.setProcessActivityTagId(processActivityTag.getProcessActivityTagId());
+		tag.setTypeId(processActivityTag.getType().getTagTypeId());
+		tag.setTypeLabel(processActivityTag.getType().getLabel());
+		tag.setValue(processActivityTag.getValue());
+		tag.setProcessActivityFormInstanceId(processActivityTag.getProcessActivityFormInstance().getProcessActivityFormInstanceId());
+		return tag;
+	}
+	
 
 	public static void main(String args[]) {
 		System.out.println("start main load initial data to InheritPlatform database");
@@ -443,6 +598,12 @@ public class TaskFormDb {
 		applicationByTagType.setTagTypeId(TagType.TAG_APPLICATION_BY);
 		applicationByTagType.setName("application_by");
 		applicationByTagType.setLabel("Ansökan av");
+		
+		TagType otherTagType = new TagType();
+		otherTagType.setTagTypeId(TagType.TAG_OTHER);
+		otherTagType.setName("other");
+		otherTagType.setLabel("Annan");
+
 
 		session.beginTransaction();
 		session.save(spridning);
@@ -452,6 +613,7 @@ public class TaskFormDb {
 		session.save(decision);
 		session.save(diaryTagType);
 		session.save(applicationByTagType);
+		session.save(otherTagType);
 		
 		session.getTransaction().commit();
 		session.close();
