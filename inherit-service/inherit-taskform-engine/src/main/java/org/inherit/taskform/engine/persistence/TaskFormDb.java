@@ -505,18 +505,21 @@ public class TaskFormDb {
 		return tags;
 	}
 	
-	public List<ProcessInstanceListItem> getProcessInstancesByTag(String tagValue) {
-		List<ProcessInstanceListItem>  result = new ArrayList<ProcessInstanceListItem> ();
+	public List<String> getProcessInstancesByTag(String tagValue) {
+		List<String>  result = new ArrayList<String> ();
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		try {
-			// TODO
-			/*
-			List<ProcessActivityFormInstance> result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-					.createCriteria("processActivityFormInstance")
-					.add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) 
+			List<ProcessActivityFormInstance> hitItems = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+					.createCriteria("processActivityTags")
+					.add( Restrictions.eq("value", tagValue) ) 
 				    .list();
-			*/
+			
+			if (hitItems != null) {
+				for (ProcessActivityFormInstance hitItem : hitItems) {
+					result.add(hitItem.getProcessInstanceUuid());
+				}
+			}
 		}
 		catch (Exception e) {
 			log.severe("tagValue=[" + tagValue + "] Exception: " + e);

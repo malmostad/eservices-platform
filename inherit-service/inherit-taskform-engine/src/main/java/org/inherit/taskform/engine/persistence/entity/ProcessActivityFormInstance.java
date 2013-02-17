@@ -1,12 +1,15 @@
 package org.inherit.taskform.engine.persistence.entity;
 
 import java.util.Date;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class ProcessActivityFormInstance {
@@ -54,7 +57,11 @@ public class ProcessActivityFormInstance {
 	 */
 	@Column(nullable=false)
 	String userId;
-
+	
+	@OneToMany
+	@JoinColumn(name="processActivityFormInstanceId")
+	Set<ProcessActivityTag> processActivityTags; 
+	
 	public ProcessActivityFormInstance() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -138,6 +145,14 @@ public class ProcessActivityFormInstance {
 	
 	public boolean isStartForm() {
 		return (activityInstanceUuid == null);
+	}
+	
+	public Set<ProcessActivityTag> getProcessActivityTags() {
+		return processActivityTags;
+	}
+
+	public void setProcessActivityTags(Set<ProcessActivityTag> processActivityTags) {
+		this.processActivityTags = processActivityTags;
 	}
 
 	@Override

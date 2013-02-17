@@ -1,4 +1,4 @@
-package se.inherit.portal.components.mycases;
+package se.inherit.portal.components.mycases.search;
 
 import java.util.ArrayList;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
@@ -10,9 +10,11 @@ import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Status extends MyCasesBaseComponent {
+import se.inherit.portal.components.mycases.MyCasesBaseComponent;
 
-	public static final Logger log = LoggerFactory.getLogger(Status.class);
+public class SearchCasesStartedByUserId extends MyCasesBaseComponent {
+
+	public static final Logger log = LoggerFactory.getLogger(SearchCasesStartedByUserId.class);
 	
 	@Override
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {

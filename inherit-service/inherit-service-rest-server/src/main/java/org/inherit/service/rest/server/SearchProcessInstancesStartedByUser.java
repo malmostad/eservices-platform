@@ -10,18 +10,18 @@ import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
 
-public class StatusByUserId extends ServerResource {
+public class SearchProcessInstancesStartedByUser extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(StatusByUserId.class.getName());
+	public static final Logger log = Logger.getLogger(SearchProcessInstancesStartedByUser.class.getName());
 	
 	TaskFormService engine = new TaskFormService();
 	
 	@Post
-	public List<ProcessInstanceListItem> getUserInstancesList() {
+	public List<ProcessInstanceListItem> searchProcessInstancesStartedByUser() {
 		String userid = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
 		
 		log.fine("REST getUserInstancesList with parameter userid=[" + userid + "]" );
 		
-		return engine.getUserInstancesList(userid);
+		return engine.searchProcessInstancesStartedByUser(userid);
 	}
 }

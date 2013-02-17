@@ -427,13 +427,14 @@ public class TaskFormService {
 		return viewUrl;
 	}
 		
-	public List<ProcessInstanceListItem> getUserInstancesList(String user) { 
+	public List<ProcessInstanceListItem> searchProcessInstancesStartedByUser(String user) { 
 		List<ProcessInstanceListItem> result = bonitaClient.getProcessInstancesStartedBy(user);
 		return result;
 	}
 	
 	public List<ProcessInstanceListItem> getProcessInstancesListByTag(String tagValue) { 
-		List<ProcessInstanceListItem> result = taskFormDb.getProcessInstancesByTag(tagValue);
+		List<String> uuids = taskFormDb.getProcessInstancesByTag(tagValue);
+		List<ProcessInstanceListItem> result = bonitaClient.getProcessInstancesByUuids(uuids);
 		return result;
 	}
 

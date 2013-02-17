@@ -30,7 +30,6 @@ public class InheritServiceApplication extends Application {
 		router.attach("/getActivityInstanceItem/{activityInstanceUuid}/{userId}", ActivityInstanceItemByActivityInstanceUuid.class);
 		router.attach("/getActivityWorkflowInfo/{activityInstanceUuid}", GetActivityWorkflowInfo.class); 
 		router.attach("/inboxByUserId/{userid}", InboxByUserId.class);
-		router.attach("/statusByUserId/{userid}", StatusByUserId.class);
 		router.attach("/submitForm/{docId}/{userId}", SubmitForm.class);
 		router.attach("/submitStartForm/{formPath}/{docId}/{userId}", SubmitStartForm.class);
 		router.attach("/setActivityPriority/{activityInstanceUuid}/{priority}", SetActivityPriority.class); 
@@ -38,6 +37,10 @@ public class InheritServiceApplication extends Application {
 		router.attach("/addTag/{processActivityFormInstanceId}/{tagTypeId}/{value}/{userid}", AddTag.class); 
 		router.attach("/deleteTag/{processInstanceUuid}/{value}/{userid}", DeleteTagByValue.class); 
 		router.attach("/getTagsByProcessInstance/{processInstanceUuid}", GetTagsByProcessInstance.class); 
+		
+		router.attach("/searchProcessInstancesByTagValue/{tagValue}", SearchProcessInstancesByTagValue.class); 
+		router.attach("/searchProcessInstancesStartedByUser/{userid}", SearchProcessInstancesStartedByUser.class);
+		
 		
 		return router;
 	}

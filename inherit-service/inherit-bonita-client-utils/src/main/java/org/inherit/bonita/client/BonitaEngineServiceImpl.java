@@ -113,6 +113,31 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
+	public List<ProcessInstanceListItem> getProcessInstancesByUuids(List<String> processInstanceUuids) {
+		List<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
+		
+		Collection<ProcessInstanceUUID> uuids = new ArrayList<ProcessInstanceUUID>();
+		for (String processInstanceUuid : processInstanceUuids) {
+			ProcessInstanceUUID uuid = new ProcessInstanceUUID(processInstanceUuid);
+			uuids.add(uuid);
+		}
+		
+		try {
+			LoginContext loginContext = BonitaUtil.login();
+			Set<LightProcessInstance> piList = AccessorUtil.getQueryRuntimeAPI().getLightProcessInstances(uuids);
+			for (LightProcessInstance pi : piList) {
+				ProcessInstanceListItem item = new ProcessInstanceListItem();
+				loadProcessInstanceBriefProperties(pi, item);
+				result.add(item);
+			}
+		    BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		return result;
+	}
+	
 	public List<ProcessInstanceListItem> getProcessInstancesInvolvedUser(String user, int fromIndex, int pageSize) {
 		// TODO add sort order???
 		List<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
@@ -519,6 +544,7 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
+
 	private void loadProcessInstanceBriefProperties(LightProcessInstance src, ProcessInstanceListItem dst) {
 		dst.setProcessInstanceUuid(src.getUUID().getValue());
 		

@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
 import org.inherit.service.common.domain.ActivityInstanceItem;
+import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.domain.Tag;
 import org.inherit.taskform.engine.persistence.HibernateUtil;
 import org.inherit.taskform.engine.persistence.TaskFormDb;
@@ -23,9 +24,19 @@ public class TaskFormDbTestCase {
 
 	SessionFactory sessionFactory;
 	
+	TaskFormDb taskFormDb = new TaskFormDb();
+
+	String formPath = "test/formpath";
+	String userId = "admin";
+	String processInstanceUuid1 = "test_proc_uuid1";
+	String processInstanceUuid2 = "test_proc_uuid2";
+	String tagVal1 = "121212-1212";
+	String tagVal2 = "1234567/22";
+	Long processActivityFormInstanceId1;
+	Long processActivityFormInstanceId2;
+
 	@Before
 	public void before() {
-		System.out.println("before start");
 		Configuration cfg = new AnnotationConfiguration()
 	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.StartFormDefinition.class)
 	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition.class)
@@ -41,25 +52,8 @@ public class TaskFormDbTestCase {
 		
 	    sessionFactory = cfg.buildSessionFactory();
 		
-	    
 		HibernateUtil.setSessionFactory(sessionFactory);
-		System.out.println("before finished");
-	}
-	
-	@After
-	 public void after() {
-		HibernateUtil.getSessionFactory().close();
-	 }
 
-	
-	@Test
-	public void tags() {
-		
-		String formPath = "test/formpath";
-		String userId = "admin";
-		String processInstanceUuid1 = "test_proc_uuid1";
-		String processInstanceUuid2 = "test_proc_uuid2";
-	
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
@@ -85,7 +79,6 @@ public class TaskFormDbTestCase {
 		session.getTransaction().commit();
 		session.close();
 	
-		TaskFormDb taskFormDb = new TaskFormDb();
 		
 		ProcessActivityFormInstance pafi1 = new ProcessActivityFormInstance();
 		pafi1.setFormDocId("testDocId");
@@ -101,11 +94,23 @@ public class TaskFormDbTestCase {
 		pafi2.setProcessInstanceUuid(processInstanceUuid2);		
 		taskFormDb.save(pafi2);
 
-		// add tags 
-		taskFormDb.addTag(pafi1.getProcessActivityFormInstanceId(), TagType.TAG_APPLICATION_BY, "121212-1212", userId);
-		taskFormDb.addTag(pafi1.getProcessActivityFormInstanceId(), TagType.TAG_TYPE_DIARY_NO, "1234567/11", userId);
+		processActivityFormInstanceId1 = pafi1.getProcessActivityFormInstanceId();
+		processActivityFormInstanceId2 = pafi2.getProcessActivityFormInstanceId();
+	}
+	
+	@After
+	 public void after() {
+		HibernateUtil.getSessionFactory().close();
+	 }
 
-		taskFormDb.addTag(pafi2.getProcessActivityFormInstanceId(), TagType.TAG_TYPE_DIARY_NO, "1234567/22", userId);
+	
+	@Test
+	public void tags() {
+		// add tags 
+		taskFormDb.addTag(processActivityFormInstanceId1, TagType.TAG_APPLICATION_BY, tagVal1, userId);
+		taskFormDb.addTag(processActivityFormInstanceId1, TagType.TAG_TYPE_DIARY_NO, tagVal2 , userId);
+
+		taskFormDb.addTag(processActivityFormInstanceId2, TagType.TAG_TYPE_DIARY_NO, tagVal2, userId);
 
 		// check tags count
 		List<Tag> tags1 = taskFormDb.getTagsByProcessInstance(processInstanceUuid1);
@@ -140,7 +145,34 @@ public class TaskFormDbTestCase {
 		tags2 = taskFormDb.getTagsByProcessInstance(processInstanceUuid2);
 		Assert.assertEquals(0, tags2.size());
 		
-		
-
 	}
+	
+	@Test
+	public void searchByTags() {
+		// add tags 
+		taskFormDb.addTag(processActivityFormInstanceId1, TagType.TAG_APPLICATION_BY, tagVal1, userId);
+		taskFormDb.addTag(processActivityFormInstanceId1, TagType.TAG_TYPE_DIARY_NO, tagVal2 , userId);
+
+		taskFormDb.addTag(processActivityFormInstanceId2, TagType.TAG_TYPE_DIARY_NO, tagVal2, userId);
+		
+		// search 
+		List<String> search1 = taskFormDb.getProcessInstancesByTag(tagVal1);
+		Assert.assertEquals(1, search1.size());
+		List<String> search2 = taskFormDb.getProcessInstancesByTag(tagVal2);
+		Assert.assertEquals(2, search2.size());
+				
+		// delete tags by id
+		List<Tag> tags1 = taskFormDb.getTagsByProcessInstance(processInstanceUuid1);
+		for (Tag tag : tags1) {
+			Assert.assertTrue(taskFormDb.deleteTag(tag.getProcessActivityTagId(), userId));
+		}
+
+		List<Tag> tags2 = taskFormDb.getTagsByProcessInstance(processInstanceUuid2);
+		for (Tag tag : tags2) {
+			Assert.assertTrue(taskFormDb.deleteTag(tag.getProcessActivityTagId(), userId));
+		}
+				
+	}
+
+	
 }

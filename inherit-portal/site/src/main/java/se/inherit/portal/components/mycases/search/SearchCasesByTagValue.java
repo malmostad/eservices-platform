@@ -1,4 +1,4 @@
-package se.inherit.portal.components.mycases;
+package se.inherit.portal.components.mycases.search;
 
 import java.util.ArrayList;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
@@ -10,15 +10,19 @@ import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Status extends MyCasesBaseComponent {
+import se.inherit.portal.components.mycases.MyCasesBaseComponent;
 
-	public static final Logger log = LoggerFactory.getLogger(Status.class);
+public class SearchCasesByTagValue extends MyCasesBaseComponent {
+
+	public static final Logger log = LoggerFactory.getLogger(SearchCasesByTagValue.class);
 	
 	@Override
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
 		
         HippoBean doc = getContentBean(request);
         String userName = getUserName(request);
+        
+        String tagValue = getPublicRequestParameter(request, "tagValue");
         
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
@@ -29,8 +33,9 @@ public class Status extends MyCasesBaseComponent {
         }
         request.setAttribute("document",doc);
 
+        
         InheritServiceClient isc = new InheritServiceClient();
-        ArrayList<ProcessInstanceListItem> processInstances = isc.searchProcessInstancesStartedByUser(userName);
+        ArrayList<ProcessInstanceListItem> processInstances = isc.searchProcessInstancesByTagValue(tagValue);
         request.setAttribute("processInstances", processInstances);
     }
 

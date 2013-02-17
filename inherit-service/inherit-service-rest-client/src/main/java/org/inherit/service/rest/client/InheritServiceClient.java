@@ -76,9 +76,9 @@ public class InheritServiceClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ArrayList<ProcessInstanceListItem> getStatusByUserId(String bonitaUser) {
+	public ArrayList<ProcessInstanceListItem> searchProcessInstancesStartedByUser(String bonitaUser) {
 		 ArrayList<ProcessInstanceListItem> result = null;
-		String uri = serverBaseUrl + "statusByUserId/" + ParameterEncoder.encode(bonitaUser) + "?media=xml";
+		String uri = serverBaseUrl + "searchProcessInstancesStartedByUser/" + ParameterEncoder.encode(bonitaUser) + "?media=xml";
 		String response = call(uri);
 		System.out.println(response);
 		if (response != null) {
@@ -347,6 +347,19 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<ProcessInstanceListItem> searchProcessInstancesByTagValue(String tagValue) {
+		 ArrayList<ProcessInstanceListItem> result = null;
+		String uri = serverBaseUrl + "searchProcessInstancesByTagValue/" + ParameterEncoder.encode(tagValue) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (ArrayList<ProcessInstanceListItem>)xstream.fromXML(response);
+		}
+		return result;
+	}
+	
 	private boolean parseBooleanResponse(String val) {
 		boolean result = false;
 		try {
@@ -410,7 +423,7 @@ public class InheritServiceClient {
 		System.out.println("Testa InheritServiceClient");
 		
 		InheritServiceClient c = new InheritServiceClient();
-		ArrayList<ProcessInstanceListItem> list = c.getStatusByUserId("john");
+		ArrayList<ProcessInstanceListItem> list = c.searchProcessInstancesStartedByUser("john");
 		for (ProcessInstanceListItem item : list) {
 			System.out.println("item: " + item);
 		}
@@ -420,6 +433,12 @@ public class InheritServiceClient {
 			System.out.println("listInbx item: " + item);
 		}
 
+	    list = c.searchProcessInstancesByTagValue("12345678/12");
+		for (ProcessInstanceListItem item : list) {
+			System.out.println("item: " + item);
+		}
+		
+		
 		System.out.println("InheritServiceClient avslutas");
 	}
 	
