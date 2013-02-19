@@ -823,14 +823,15 @@
     <section id="s.server.pre-req-hippo-jcr">
       <title>Hippo content repository</title>
       <para>
-	Download latest version of inherit-portal's content repository.
+	The Hippo content repository is automatically bootstrapped upon
+	initialization to mirror the status of the git repository. In order
+	to initialize the jcr repository with additional content, follow the
+	following instructions:
       </para>
-
-      <programlisting>
-	scp -P 2212 adminherit@pluto.inherit.se:_
-	./inherit-platform-server-components/jcr-inherit-portal.tgz .
-	tar xzf jcr-inherit-portal.tgz
-      </programlisting>
+      <para>
+	      <!-- TODO -->
+	...
+      </para>
     </section>
 
     <section id="s.deploy.server">
@@ -845,10 +846,13 @@
       <itemizedlist>
 	<listitem>
 	  <para>
+	    <!-- deploy rest services to runtime -->
 	    Copy
-	    inherit-platform/inherit-bonita-rest-server-custom/target/inherit-bonita-rest-server-custom-1.0-SNAPSHOT.war
-	    to demo-vm's
-	    /opt/inherit-platform/BOS-5.6.1-Tomcat-6.0.33/webapps/
+	    <programlisting>inherit-platform/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war</programlisting>
+	    to the target machine's
+	    <programlisting>
+	      /opt/inherit-platform/BOS-5.6.1-Tomcat-6.0.33/webapps/
+	    </programlisting>
 	  </para>
 	</listitem>
 
@@ -1456,7 +1460,16 @@
 	</para>
 
 	<programlisting>
-	    createuser -D -A -P bonita
+	    createuser -D -S -P bonita
+	</programlisting>
+
+	<para>
+	  When prompted for the password, make sure it will match the config
+	  in <xref linkend="app.s.bos-config.postgresql-data-sources"/>. 
+	  Then, create the following databases with the createdb command:
+	</para>
+
+	<programlisting>
 	    createdb -O bonita bonita_history
 	    createdb -O bonita bonita_journal
 	</programlisting>
@@ -1464,6 +1477,7 @@
 	<para>
 	  Prepare PostgreSQL for Inherit Platform
 	</para>
+
 	<para>
 	  Still as unix user postgresql and issue the the following;
 	</para>
@@ -1556,10 +1570,11 @@
 	download area</ulink>. The downloaded file is zip-compressed.
       </para>
       <para>
-	Unzip into directory of choice. If the global variables CATALINA_HOME
-	and CATALINA_BASE are not set, they will be set to this directory. If
-	for some reason one wants to override these default values, this is
-	done in the script
+	Unzip into directory of choice. We call this directory
+	TOMCAT_BONITA_HOME. If the global variables CATALINA_HOME and
+	CATALINA_BASE are not set, they will be set to this directory. If for
+	some reason one wants to override these default values, this is done
+	in the script
 	<programlisting>
 	  bin/setcatalina_home.sh
 	</programlisting>
@@ -1570,8 +1585,20 @@
       </para>
 
       <para>
-	Configure the port number the server will be running on to 58080.
+	Locate the file $TOMCAT_BONITA_HOME/conf/server.xml, and configure the port
+	numbers the server will be listening to.  The following shows the
+	changes from the default setup:
       </para>
+      <programlisting>
+	&lt;Server port="58005" shutdown="SHUTDOWN"&gt;
+
+        &lt;Connector port="58080" protocol="HTTP/1.1" 
+            connectionTimeout="20000" 
+            redirectPort="8443" /&gt;
+
+        &lt;Connector port="58009" protocol="AJP/1.3" redirectPort="58443"
+            tomcatAuthentication="false"/&gt;
+      </programlisting>
     </section>
 
     <section id="app.s.bos-config.postgresql-data-sources">
@@ -1672,7 +1699,8 @@
       </para>
 
       <para>
-	In bonita-history.properties, apply the following (actually same) patch:
+	In bonita-history.properties, apply the following (actually same,
+	except that bonita_journal is substituted with bonita_history) patch:
       </para>
       <para>
 	<programlisting>
@@ -1705,7 +1733,7 @@
       <title>Install PostgreSQL JDBC driver</title>
       <para>
 	Locate or download postgresql-9.1-901.jdbc4.jar or later and copy
-	into $CATALINA_HOME/lib
+	into $TOMCAT_BONITA_HOME/lib
       </para>
     </section>
 
@@ -1713,7 +1741,7 @@
       <title>Start server</title>
       <para>
 	Now server is ready to be started by running
-	$CATALINA_HOME/bin/startup.sh
+	$TOMCAT_BONITA_HOME/bin/startup.sh
       </para>
     </section>
   </appendix>
@@ -1735,7 +1763,7 @@
 
       <para>
 	Download bundle from <ulink url="">Orbeon download area</ulink>. The
-	downloaded file is XXX... 
+	downloaded file is orbeon-&lt;version&gt;-CE.zip
       </para>
     </section>
 
@@ -1746,28 +1774,162 @@
 	url="http://wiki.orbeon.com/forms/doc/developer-guide/admin/installing">Orbeon
 	Forms Wiki</ulink>.  Perform the initial checks and preparations as
 	described in that document and proceed to the section for installing
-	on Apache Tomcat. The base installation consists essentially of
-	extracting the downloaded orbeon.war file from XXX to the directory
-	$TOMCAT_ORBEON_HOME/webapps, and then to configure it.  The result is
-	a directory, $TOMCAT_ORBEON_HOME/webapps/orbeon.
+	on Apache Tomcat.
+      </para>
+
+      <para>
+	Unzip the dowloaded file orbeon-&lt;version&gt;-CE.zip to a directory
+	of choice, which creates a directory orbeon-&lt;version&gt;-CE/. The
+	base installation consists essentially of extracting the file
+	orbeon.war from this directory into the directory
+	$TOMCAT_ORB_HOME/webapps, and then to configure it.  The result is a
+	directory, $TOMCAT_ORB_HOME/webapps/orbeon.
       </para>
 
       <para>
 	Configuring Orbeon consists of defining or overriding configuration
 	properties according to <ulink
-	url="http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties">,
-	the section of configuration proerties</ulink> in the Orbeon Forms
-	Developer's Guide.
+	url="http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties">the
+	section on configuration properties</ulink> in the Orbeon Forms
+	Developer's Guide. The overridden properties should be put in a file
+	<filename>properties-local.xml</filename>, in the directory
+	$TOMCAT_ORB_HOME/webapps/orbeon/WEB-INF/resources/config/. This
+	directory contains a template for this file with the name
+	<filename>properties-local.xml.template</filename>, which as a
+	starting point should be copied to the file
+	<filename>properties-local.xml</filename> before further
+	customization.
       </para>
 
       <para>
-	In the directory
-	$TOMCAT_HOME/webapps/orbeon/WEB-INF/resources/config, there is a
-	file properties-local.xml. This file is for definition of new
-	properties or overrriding standard values of predefined
-	properties. The properties in this file are explained, where not
-	obvious, in a comment immediately preceding the comment.
+	The following listing is an example
+	<filename>properties-local.xml</filename>.  The properties in this
+	file are explained, where not obvious, in a comment immediately
+	preceding the property.
       </para>
+
+      <programlisting>
+&lt;!--
+    This file, properties-local.xml is created from an empty template,
+    properties-local.xml.template. We have followed the instructions in:
+
+    Consult
+    http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties
+    to customize this file.
+
+    For more information on the form runner config properties, consult:
+    http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties/configuration-properties-form-runner
+--&gt;
+
+&lt;properties xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xmlns:oxf="http://www.orbeon.com/oxf/processors"&gt;
+
+  &lt;property as="xs:string" name="oxf.fr.default-language.*.*" value="sv"/&gt;
+
+&lt;-- no css, use css from other sources --&gt;
+  &lt;property as="xs:string"  name="oxf.fr.css.uri.*.*"
+	    value=""/&gt;
+
+  &lt;!-- 
+       Connecting to eXist. The following config implies:
+       
+       The eXist user is 'orbeon' and the password is 'orb' (NB! protect this
+       file for unauthorized read access).
+       The servlet container is deployed on port 48080 on the local machine
+       The eXist WAR is deployed under path /exist
+       The Form Runner documents are stored under collection /db/orbeon-pe/fr
+
+       For configuration of the exist databae itself, consult
+       http://wiki.orbeon.com/forms/doc/developer-guide/exist-configuration
+  --&gt;
+  &lt;property as="xs:anyURI"
+	    name="oxf.fr.persistence.service.exist.uri"
+	    value="http://orbeon:orb@localhost:48080/exist/rest/db/orbeon-pe/fr"/&gt;
+
+  &lt;!-- no default logo by setting value to empty string --&gt;
+  &lt;property as="xs:anyURI" name="oxf.fr.default-logo.uri.*.*" value=""/&gt;
+
+  &lt;!-- false -&gt; do not show the Orbeon Forms version at the bottom --&gt;
+  &lt;property as="xs:boolean" name="oxf.fr.version.*.*" value="false"/&gt;
+
+  &lt;!-- 
+       Which buttons to show on the detail page (cf. 
+       http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties/configuration-properties-form-runner#TOC-Buttons-on-the-detail-page )
+  --&gt;
+  &lt;property as="xs:string"  name="oxf.fr.detail.buttons.*.*" value="clear save submit"/&gt;
+
+  &lt;!--
+      Cf.:
+      http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties/configuration-properties-form-runner#TOC-View-page
+  --&gt;
+  &lt;property as="xs:string"  name="oxf.fr.detail.buttons.view.*.*" value="pdf"/&gt;
+
+  &lt;property as="xs:string"  name="oxf.fr.detail.submit.buttons.*.*" value="go"/&gt;
+
+  &lt;!--
+    The uri of the landing page (result of 'go' action above). The value of
+    the property is an XPath expression evaluated in the context of the form
+    instance. This allows you both to have a "dynamic" URI (which depends on
+    the initial data or data entered by users) or a "static" URI in the form
+    of a URI between single quote in the XPath expression
+  --&gt;
+  &lt;property as="xs:string"
+	    name="oxf.fr.detail.submit.go.uri-xpath.*.*" 
+	    value="concat('view/',xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+  &lt;property as="xs:string"
+	    name="oxf.fr.detail.submit.go.uri-xpath.BMTest.BMTestForm" 
+	    value="concat('http://eservices.malmo.se/site/bonita/start/miljo/anmalan-ansokan-yrkesmassig-anvandning-av-bekampningsmedel/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+  &lt;!--
+    The uri of the landing page (result of 'go' action above). The value of
+    the property is an XPath expression evaluated in the context of the form
+    instance. This allows you both to have a "dynamic" URI (which depends on
+    the initial data or data entered by users) or a "static" URI in the form
+    of a URI between single quote in the XPath expression
+  --&gt;
+
+  &lt;property as="xs:string"
+	    name="oxf.fr.detail.submit.go.uri-xpath.malmo.*" 
+	    value="concat('http://eservices.malmo.se/site/public/mycases/startforms/miljo/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+  &lt;property as="xs:string" 
+	    name="oxf.fr.detail.submit.go.uri-xpath.start.*" 
+	    value="concat('http://eservices.malmo.se/site/public/mycases/startforms/start/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+  &lt;property as="xs:string"  
+	    name="oxf.fr.detail.submit.go.uri-xpath.Demo.*" 
+	    value="concat('http://eservices.malmo.se/site/public/mycases/form/confirm?docId=', xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+  &lt;property as="xs:string"
+	    name="oxf.fr.resource.*.*.sv.detail.labels.submit-document"
+	    value="Skicka"/&gt;
+
+  &lt;property as="xs:string"
+	    name="oxf.fr.resource.*.*.sv.detail.labels.clear-document"
+	    value="Rensa"/&gt;
+
+  &lt;property as="xs:string"
+	    name="oxf.fr.resource.*.*.sv.detail.labels.save-document"
+	    value="Spara"/&gt;
+
+  &lt;property as="xs:string"
+	    name="oxf.fr.resource.*.*.en.detail.labels.submit-document"
+	    value="Send"/&gt;
+
+  &lt;property as="xs:string"
+	    name="oxf.fr.resource.*.*.en.detail.labels.clear-document"
+	    value="Clear"/&gt;
+
+  &lt;property as="xs:string"
+	    name="oxf.fr.resource.*.*.en.detail.labels.save-document"
+	    value="Save"/&gt;
+
+  &lt;property as="xs:boolean" name="oxf.fr.noscript-link.*.*" value="false"/&gt;
+&lt;/properties&gt;
+
+      </programlisting>
+
     </section>
 
     <section id="app.s.orbeon-existdb">
@@ -1783,17 +1945,31 @@
     <section id="app.s.orbeon-start">
       <title>Start server</title>
       <para>
-	Configure the port number of the server to 48080.
+	Configure the port number of the server to 48080.  This is done in the
+	file $TOMCAT_ORB_HOME/conf/server.xml. Apply the following changes
+	from the default setup:
       </para>
+
+      <programlisting>
+	&lt;Server port="48005" shutdown="SHUTDOWN"&gt;
+
+        &lt;Connector port="48080" protocol="HTTP/1.1" 
+            connectionTimeout="20000" 
+            redirectPort="8443" /&gt;
+
+        &lt;Connector port="48009" protocol="AJP/1.3" redirectPort="48443"
+            tomcatAuthentication="false"/&gt;
+      </programlisting>
+
 
       <para>
 	Now server is ready to be started by running
-	$CATALINA_HOME/bin/startup.sh
+	$TOMCAT_ORB_HOME/bin/startup.sh
       </para>
     </section>
   </appendix>
 
-  <appendix id="app.souce-code-overview">
+  <appendix id="app.source-code-overview">
     <title>Source Code Overview</title>
     <section id="app.s.src-inherit-portal">
       <title>inherit-portal</title>
