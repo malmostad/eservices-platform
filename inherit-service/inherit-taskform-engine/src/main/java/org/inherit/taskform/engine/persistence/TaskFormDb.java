@@ -572,6 +572,10 @@ public class TaskFormDb {
 		spridning.setFormPath("start/demo-ansokan");
 		spridning.setProcessDefinitionUuid("Spridning_bekampningsmedel");
 		
+		StartFormDefinition pcb_arende = new StartFormDefinition();
+		pcb_arende.setFormPath("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor");
+		pcb_arende.setProcessDefinitionUuid("Arendeprocess");
+		
 		ActivityFormDefinition granskaAnsokan = new ActivityFormDefinition();
 		granskaAnsokan.setFormPath("Demo/Granska_ansokan");
 		granskaAnsokan.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Granska_ansokan");
@@ -586,12 +590,27 @@ public class TaskFormDb {
 		remissB.setFormPath("Demo/Remissyttrande");
 		remissB.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Remissyttrande_B");
 		remissB.setStartFormDefinition(null);
-				
+
 		ActivityFormDefinition decision = new ActivityFormDefinition();
 		decision.setFormPath("Demo/Beslut");
 		decision.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Beslut");
 		decision.setStartFormDefinition(null);
+//===		
+		ActivityFormDefinition registrering = new ActivityFormDefinition();
+		registrering.setFormPath("basprocess/registrera");
+		registrering.setActivityDefinitionUuid("Arendeprocess--1.0--Registrering");
+		registrering.setStartFormDefinition(null);
+
+		ActivityFormDefinition handlaggning = new ActivityFormDefinition();
+		handlaggning.setFormPath("basprocess/handlagga");
+		handlaggning.setActivityDefinitionUuid("Arendeprocess--1.0--Handlaggning");
+		handlaggning.setStartFormDefinition(null);
 		
+		ActivityFormDefinition beslut = new ActivityFormDefinition();
+		beslut.setFormPath("basprocess/beslut");
+		beslut.setActivityDefinitionUuid("Arendeprocess--1.0--Beslut");
+		beslut.setStartFormDefinition(null);
+				
 		TagType diaryTagType = new TagType();
 		diaryTagType.setTagTypeId(TagType.TAG_TYPE_DIARY_NO);
 		diaryTagType.setName("diary_no");
@@ -607,13 +626,16 @@ public class TaskFormDb {
 		otherTagType.setName("other");
 		otherTagType.setLabel("Annan");
 
-
 		session.beginTransaction();
 		session.save(spridning);
+		session.save(pcb_arende);
 		session.save(granskaAnsokan);
 		session.save(remissA);
 		session.save(remissB);
 		session.save(decision);
+		session.save(registrering);
+		session.save(handlaggning);
+		session.save(beslut);
 		session.save(diaryTagType);
 		session.save(applicationByTagType);
 		session.save(otherTagType);
