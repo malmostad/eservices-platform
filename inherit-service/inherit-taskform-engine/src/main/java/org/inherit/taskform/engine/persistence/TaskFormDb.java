@@ -11,11 +11,13 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.domain.Tag;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityTag;
 import org.inherit.taskform.engine.persistence.entity.StartFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.TagType;
+import org.inherit.taskform.engine.persistence.entity.UserEntity;
 
 public class TaskFormDb {
 	
@@ -543,6 +545,132 @@ public class TaskFormDb {
 		return tag;
 	}
 	
+	
+	public UserInfo getUserByUuid(String uuid) {
+		UserInfo result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			UserEntity user = getUserByUuid(session, uuid);
+			result = convertUser(user);
+		}
+		catch (Exception e) {
+			log.severe("uuid=[" + uuid + "] Exception: " + e);
+		}
+		finally {
+			session.close();
+		}
+		return result;
+	}
+	
+	public UserInfo getUserByDn(String dn) {
+		UserInfo result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			UserEntity user = getUserByDn(session, dn);
+			result = convertUser(user);
+		}
+		catch (Exception e) {
+			log.severe("dn=[" + dn + "] Exception: " + e);
+		}
+		finally {
+			session.close();
+		}
+		return result;
+	}
+	
+	public UserInfo getUserBySerial(String serial) {
+		UserInfo result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			UserEntity user = getUserBySerial(session, serial);
+			result = convertUser(user);
+		}
+		catch (Exception e) {
+			log.severe("serial=[" + serial + "] Exception: " + e);
+		}
+		finally {
+			session.close();
+		}
+		return result;
+	}
+	
+	private UserInfo convertUser(UserEntity user) {
+		UserInfo result = null;
+		if (user != null) {
+			result = new UserInfo();
+			result.setCategory(user.getCategory());
+			result.setLabel(user.getLabel());
+			result.setLabelShort(user.getLabelShort());
+			result.setUuid(user.getUuid());
+		}
+		return result;
+	}
+	
+	private UserEntity getUserByUuid(Session session, String uuid) throws Exception {
+		UserEntity user = null;
+		try {
+			user = (UserEntity) session.createCriteria(UserEntity.class).add(Restrictions.eq("uuid", uuid)).uniqueResult();
+		}
+		catch (Exception e) {
+			log.severe("uuid=[" + uuid + "] Exception: " + e);
+			throw e;
+		}
+		return user;
+	}
+	
+	private UserEntity getUserByDn(Session session, String dn) throws Exception {
+		UserEntity user = null;
+		try {
+			List<UserEntity> users = (List<UserEntity>) session.createCriteria(UserEntity.class)
+					.add( Restrictions.eq("dn", dn) ) 
+				    .list();
+			
+			if (users != null) {
+				if (users.size() > 0) {
+					user = users.get(0);
+				}
+				if (users.size()>1) {
+					log.severe("dn should identify a unique user. dn=[" + dn + "] identifies " + users.size() + " users");
+				}
+			}
+		}
+		catch (Exception e) {
+			log.severe("dn=[" + dn + "] Exception: " + e);
+			throw e;
+		}
+		
+		return user;
+	}
+	
+	private UserEntity getUserBySerial(Session session, String serial) throws Exception {
+		UserEntity user = null;
+		try {
+			List<UserEntity> users = (List<UserEntity>) session.createCriteria(UserEntity.class)
+					.add( Restrictions.eq("serial", serial) ) 
+				    .list();
+			
+			if (users != null) {
+				if (users.size() > 0) {
+					user = users.get(0);
+				}
+				if (users.size()>1) {
+					log.severe("serial should identify a unique user. serial=[" + serial + "] identifies " + users.size() + " users");
+				}
+			}
+		}
+		catch (Exception e) {
+			log.severe("serial=[" + serial + "] Exception: " + e);
+			throw e;
+		}
+		
+		return user;
+	}
+	
+	public UserInfo createUser(UserEntity user) {
+		save(user);
+		UserInfo result = this.convertUser(user);
+		return result;
+	}
 
 	public static void main(String args[]) {
 		System.out.println("start main load initial data to InheritPlatform database");
@@ -553,6 +681,7 @@ public class TaskFormDb {
 	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance.class)
 	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.TagType.class)
 	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityTag.class)
+	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.UserEntity.class)
 	    .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
 	    .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
 	    .setProperty("hibernate.connection.url", " jdbc:postgresql://localhost/InheritPlatform")
@@ -643,6 +772,16 @@ public class TaskFormDb {
 		session.getTransaction().commit();
 		session.close();
 		
+		/*
+		TaskFormDb db = new TaskFormDb();
+		
+		User user = new User();
+		user.setCategory(User.CATEGORY_UNKNOWN);
+		user.setDn("testdn");
+		user.setCn("test cn");
+		user.setUuid("uuid");
+		db.createUser(user);
+		*/
 		System.out.println("end main");
 		
 	}

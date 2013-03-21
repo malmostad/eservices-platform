@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import org.hibernate.criterion.Restrictions;
 import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
@@ -19,10 +21,12 @@ import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.domain.Tag;
 import org.inherit.service.common.domain.TimelineItem;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.taskform.engine.persistence.TaskFormDb;
 import org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
 import org.inherit.taskform.engine.persistence.entity.StartFormDefinition;
+import org.inherit.taskform.engine.persistence.entity.UserEntity;
 
 public class TaskFormService {
 	
@@ -449,5 +453,113 @@ public class TaskFormService {
 	
 	public List<Tag> getTagsByProcessInstance(String processInstanceUuid) {
 		return taskFormDb.getTagsByProcessInstance(processInstanceUuid);
+	}
+	
+	public UserInfo getUserByDn(String dn) {
+		UserInfo userInfo = taskFormDb.getUserByDn(dn);
+		
+		if (userInfo == null) {
+			// new user in system
+			
+			String gn = null, sn = null, cn = null;
+			String uuid = java.util.UUID.randomUUID().toString();
+			String serial = null;
+			
+			// try to parse certificateSubject
+			StringTokenizer st = new StringTokenizer(dn, ",");
+			while (st.hasMoreTokens()) {
+				String s = st.nextToken();
+				
+				StringTokenizer valuePairToken = new StringTokenizer(s, "=");
+				String key = null;
+				String value = null;
+				if (valuePairToken.hasMoreTokens()) {
+					key = valuePairToken.nextToken().trim();
+				}
+				if (valuePairToken.hasMoreTokens()) {
+					value = valuePairToken.nextToken().trim();
+				}
+				if (!valuePairToken.hasMoreTokens()) {
+					if ("CN".equalsIgnoreCase(key)) {
+						cn = value;
+					}
+				}
+				
+			}
+			// store user 
+			UserEntity user = new UserEntity();
+			user.setCategory(UserInfo.CATEGORY_INTERNAL);
+			user.setSerial(serial);
+			user.setCn(cn);
+			user.setGn(gn);
+			user.setSn(sn);
+			user.setDn(dn);
+			user.setUuid(uuid);
+			userInfo = taskFormDb.createUser(user);
+			
+			// create user in BOS engine
+			if (!bonitaClient.createUser(uuid)) {
+				log.severe("Failed to create user in BOS engine");
+			}
+		}
+		
+		return userInfo;
+	}
+
+	public UserInfo getUserBySerial(String serial, String certificateSubject) {
+		UserInfo userInfo = taskFormDb.getUserBySerial(serial);
+		
+		if (userInfo == null) {
+			// new user in system
+			
+			String gn = null, sn = null, cn = null;
+			String uuid = java.util.UUID.randomUUID().toString();
+			String dn = null;
+			
+			// try to parse certificateSubject
+			StringTokenizer st = new StringTokenizer(certificateSubject, ",");
+			while (st.hasMoreTokens()) {
+				String s = st.nextToken();
+				
+				StringTokenizer valuePairToken = new StringTokenizer(s, "=");
+				String key = null;
+				String value = null;
+				if (valuePairToken.hasMoreTokens()) {
+					key = valuePairToken.nextToken().trim();
+				}
+				if (valuePairToken.hasMoreTokens()) {
+					value = valuePairToken.nextToken().trim();
+				}
+				if (!valuePairToken.hasMoreTokens()) {
+					if ("CN".equalsIgnoreCase(key)) {
+						cn = value;
+					}
+					if ("GIVENNAME".equalsIgnoreCase(key)) {
+						gn = value;
+					}
+					if ("SURNAME".equalsIgnoreCase(key)) {
+						sn = value;
+					}
+				}
+				
+			}
+			// store user 
+			UserEntity user = new UserEntity();
+			user.setCategory(UserInfo.CATEGORY_EXTERNAL);
+			user.setSerial(serial);
+			user.setCn(cn);
+			user.setGn(gn);
+			user.setSn(sn);
+			user.setDn(dn);
+			user.setUuid(uuid);
+			userInfo = taskFormDb.createUser(user);
+			
+			// create user in BOS engine
+			if (!bonitaClient.createUser(uuid)) {
+				log.severe("Failed to create user in BOS engine");
+			}
+		}
+		
+		return userInfo;
 	}
 }

@@ -7,6 +7,7 @@ import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inherit.service.common.domain.ActivityInstanceItem;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class Form extends MyCasesBaseComponent {
 		
         HippoBean doc = getContentBean(request);
         
-        String userName = getUserName(request);
+        UserInfo user = getUserName(request);
         
         
         log.error("=================> user: " + request.getUserPrincipal());
@@ -44,7 +45,7 @@ public class Form extends MyCasesBaseComponent {
         ActivityInstanceItem activity = null;
         if (taskUuid != null && taskUuid.trim().length()>0) {
         	// specific BPMN engine activity instance is requested
-        	activity = isc.getActivityInstanceItem(taskUuid, userName);
+        	activity = isc.getActivityInstanceItem(taskUuid, user.getUuid());
         } 
         else {
         	if (processActivityFormInstanceId != null && processActivityFormInstanceId.trim().length()>0) {
@@ -56,7 +57,7 @@ public class Form extends MyCasesBaseComponent {
 	        	EServiceDocument eServiceDocument = (EServiceDocument)doc;
 	        	// look up existing form (docId) if partially saved form exist
 	        	// otherwise create new form
-	        	activity = isc.getStartActivityInstanceItem(eServiceDocument.getFormPath(), userName);
+	        	activity = isc.getStartActivityInstanceItem(eServiceDocument.getFormPath(), user.getUuid());
 	        }
         }
     	request.setAttribute("activity", activity);
@@ -80,7 +81,7 @@ public class Form extends MyCasesBaseComponent {
     		}
     	}
     	request.setAttribute("guide", guide);
-    	request.setAttribute("userName", userName);
+    	request.setAttribute("user", user);
     	log.error("XXXXXXXXXXXXXXXXXXXX guide:" + guide);
     	log.error("XXXXXXXXXXXXXXXXXXXX form activity:" + activity);
 

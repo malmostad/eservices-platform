@@ -6,6 +6,7 @@ import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inherit.service.common.domain.InboxTaskItem;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public class Inbox extends MyCasesBaseComponent {
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
         
 		HippoBean doc = getContentBean(request);
-		String userName = getUserName(request);
+		UserInfo user = getUserName(request);
 		
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
@@ -31,7 +32,7 @@ public class Inbox extends MyCasesBaseComponent {
         request.setAttribute("document",doc);
 
         InheritServiceClient isc = new InheritServiceClient();
-        ArrayList<InboxTaskItem> tasks = isc.getInboxByUserId(userName);
+        ArrayList<InboxTaskItem> tasks = isc.getInboxByUserId(user.getUuid());
         
         // TODO remove this debug print
         if (tasks != null) {

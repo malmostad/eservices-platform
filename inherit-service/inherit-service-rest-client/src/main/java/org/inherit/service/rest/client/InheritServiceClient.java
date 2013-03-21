@@ -18,6 +18,7 @@ import org.inherit.service.common.domain.ProcessDefinitionInfo;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.domain.Tag;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.service.common.util.ParameterEncoder;
 import org.restlet.Client;
 import org.restlet.Context;
@@ -71,6 +72,7 @@ public class InheritServiceClient {
 		xstream.alias("DashOpenActivities", DashOpenActivities.class);
 		xstream.alias("ActivityWorkflowInfo", ActivityWorkflowInfo.class);
 		xstream.alias("Tag", Tag.class);
+		xstream.alias("UserInfo", UserInfo.class);
 		
 		return xstream;
 	}
@@ -359,6 +361,39 @@ public class InheritServiceClient {
 		}
 		return result;
 	}
+	
+	public UserInfo getUserByDn(String dn) {
+		UserInfo result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getUserByDn/" 
+				+ ParameterEncoder.encode(dn) + "?media=xml";
+		log.severe("getUserByDn uri: " + uri);
+		String response = call(uri);
+		
+		if (response != null) {
+			result = (UserInfo)xstream.fromXML(response);
+		}
+		
+		return result;
+	}
+
+	public UserInfo getUserBySerial(String serial, String certificateSubject) {
+		UserInfo result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getUserBySerial/" 
+				+ ParameterEncoder.encode(serial) + "/" + ParameterEncoder.encode(certificateSubject) +  "?media=xml";
+		log.severe("getUserBySerial uri: " + uri);
+		String response = call(uri);
+		
+		if (response != null) {
+			result = (UserInfo)xstream.fromXML(response);
+		}
+		
+		return result;
+	}
+
 	
 	private boolean parseBooleanResponse(String val) {
 		boolean result = false;

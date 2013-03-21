@@ -42,6 +42,8 @@ public class InheritServiceApplication extends Application {
 		router.attach("/searchProcessInstancesStartedByUser/{userid}", SearchProcessInstancesStartedByUser.class);
 		
 		
+		router.attach("/getUserByDn/{dn}", GetUserByDn.class);
+		router.attach("/getUserBySerial/{serial}/{certificateSubject}", GetUserBySerial.class);
 		return router;
 	}
 	 

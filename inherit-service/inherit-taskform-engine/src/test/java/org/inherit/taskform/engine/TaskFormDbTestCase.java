@@ -11,10 +11,12 @@ import org.hibernate.cfg.Configuration;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.domain.Tag;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.taskform.engine.persistence.HibernateUtil;
 import org.inherit.taskform.engine.persistence.TaskFormDb;
 import org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance;
 import org.inherit.taskform.engine.persistence.entity.TagType;
+import org.inherit.taskform.engine.persistence.entity.UserEntity;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -42,7 +44,8 @@ public class TaskFormDbTestCase {
 	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ActivityFormDefinition.class)
 	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance.class)
 	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.TagType.class)
-	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityTag.class);
+	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityTag.class)
+	    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.UserEntity.class);
 
 	    cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
 		cfg.setProperty("hibernate.connection.driver_class", "org.h2.Driver");
@@ -172,6 +175,36 @@ public class TaskFormDbTestCase {
 			Assert.assertTrue(taskFormDb.deleteTag(tag.getProcessActivityTagId(), userId));
 		}
 				
+	}
+	
+	@Test
+	public void createUserDn() {
+		UserEntity userDn = new UserEntity();
+		userDn.setCategory(UserInfo.CATEGORY_INTERNAL);
+		userDn.setSerial(null);
+		userDn.setCn("dn cn");
+		userDn.setDn("dn");
+		userDn.setUuid("uuid-dn");
+		UserInfo userInfoDn = taskFormDb.createUser(userDn);
+
+		UserEntity userSer = new UserEntity();
+		userSer.setCategory(UserInfo.CATEGORY_INTERNAL);
+		userSer.setSerial("ser");
+		userSer.setGn("gn");
+		userSer.setSn("sn");
+		userSer.setCn("ser cn");
+		userSer.setDn(null);
+		userSer.setUuid("uuid-ser");
+		UserInfo userInfoSer = taskFormDb.createUser(userSer);
+
+		UserInfo qDn = taskFormDb.getUserByDn(userDn.getDn());
+		System.out.println("userInfoDn=" + userInfoDn);
+		Assert.assertEquals(userInfoDn, qDn);
+		
+		UserInfo qSer = taskFormDb.getUserBySerial(userSer.getSerial());
+		System.out.println("userSer=" + userSer);
+		Assert.assertEquals(userInfoSer, qSer);
+		
 	}
 
 	
