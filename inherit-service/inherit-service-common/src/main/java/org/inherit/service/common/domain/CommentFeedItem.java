@@ -16,7 +16,7 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 	String activityLabel;
 	Date timestamp;
 	String message;
-	String userId;
+	UserInfo user;
 	
 	public CommentFeedItem() {
 
@@ -66,12 +66,12 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 		this.message = message;
 	}
 
-	public String getUserId() {
-		return userId;
+	public UserInfo getUser() {
+		return user;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUser(UserInfo user) {
+		this.user = user;
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 				+ ((processLabel == null) ? 0 : processLabel.hashCode());
 		result = prime * result
 				+ ((timestamp == null) ? 0 : timestamp.hashCode());
-		result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 
@@ -136,10 +136,10 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 				return false;
 		} else if (!timestamp.equals(other.timestamp))
 			return false;
-		if (userId == null) {
-			if (other.userId != null)
+		if (user == null) {
+			if (other.user != null)
 				return false;
-		} else if (!userId.equals(other.userId))
+		} else if (!user.equals(other.user))
 			return false;
 		return true;
 	}
@@ -150,7 +150,7 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 				+ ", processLabel=" + processLabel + ", activityInstanceUuid="
 				+ activityInstanceUuid + ", activityLabel=" + activityLabel
 				+ ", timestamp=" + timestamp + ", message=" + message
-				+ ", userId=" + userId + "]";
+				+ ", user=" + user + "]";
 	}
 
 	@Override

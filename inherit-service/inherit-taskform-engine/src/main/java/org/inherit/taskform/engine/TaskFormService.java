@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.hibernate.criterion.Restrictions;
@@ -157,6 +158,8 @@ public class TaskFormService {
 				if (activity != null) {
 					pendingItem.setFormUrl(activity.calcEditUrl());
 				}
+				appendCandidateUserInfo(pendingItem);
+				pendingItem.setAssignedUser(appendTaskFormServiceUserData(pendingItem.getAssignedUser()));
 			}
 			
 			for (TimelineItem timelineItem : details.getTimeline().getItems()) {
@@ -188,37 +191,46 @@ public class TaskFormService {
 	
 	public ActivityWorkflowInfo getActivityWorkflowInfo(String activityInstanceUuid) {
 		ActivityWorkflowInfo result = bonitaClient.getActivityWorkflowInfo(activityInstanceUuid); 
+		appendTaskFormServiceData(result);
 		return result;
 	}
 
 	public ActivityWorkflowInfo assignTask(String activityInstanceUuid, String userId) {
 		ActivityWorkflowInfo result = bonitaClient.assignTask(activityInstanceUuid, userId); 
+		appendTaskFormServiceData(result);
 		return result;
+	}
+	
+	private void appendTaskFormServiceData(ActivityWorkflowInfo activityWorkflowInfo) {
+		activityWorkflowInfo.setAssignedUser(appendTaskFormServiceUserData(activityWorkflowInfo.getAssignedUser()));
 	}
 	
 	public ActivityWorkflowInfo unassignTask(String activityInstanceUuid) {
 		ActivityWorkflowInfo result = bonitaClient.unassignTask(activityInstanceUuid); 
+		appendTaskFormServiceData(result);
 		return result;		
 	}
 
 	public ActivityWorkflowInfo addCandidate(String activityInstanceUuid, String userId) {
 		ActivityWorkflowInfo result = bonitaClient.addCandidate(activityInstanceUuid, userId); 
+		appendTaskFormServiceData(result);
 		return result;
 	}
 
 	public ActivityWorkflowInfo removeCandidate(String activityInstanceUuid, String userId) {
 		ActivityWorkflowInfo result = bonitaClient.removeCandidate(activityInstanceUuid, userId); 
+		appendTaskFormServiceData(result);
 		return result;
 	}
 
 	public ActivityWorkflowInfo setActivityPriority(String activityInstanceUuid, int priority) {
-		ActivityWorkflowInfo result = bonitaClient.setPriority(activityInstanceUuid, priority); 
+		ActivityWorkflowInfo result = bonitaClient.setPriority(activityInstanceUuid, priority);
+		appendTaskFormServiceData(result);
 		return result;		
 	}
 
 	public ActivityInstanceLogItem getStartFormActivityInstanceLogItem(String processInstanceUuid) {
 		ActivityInstanceLogItem result = null;
-		
 		if (processInstanceUuid != null) {
 			
 			ProcessActivityFormInstance startActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
@@ -228,7 +240,7 @@ public class TaskFormService {
 				result.setFormUrl(startActivity.calcViewUrl());
 				result.setEndDate(startActivity.getSubmitted());
 				result.setActivityLabel(startActivity.getFormPath());
-				result.setPerformedByUserId(startActivity.getUserId());
+				result.setPerformedByUser(taskFormDb.getUserByUuid(startActivity.getUserId()));
 			}
 		}
 		
@@ -257,14 +269,45 @@ public class TaskFormService {
 		return processInstanceUuid;
 	}
 	
+	private UserInfo appendTaskFormServiceUserData(UserInfo ui) {
+		UserInfo dbUi = null;
+		
+		if (ui != null) {
+			dbUi = taskFormDb.getUserByUuid(ui.getUuid());
+		}
+		
+		log.severe("UserInfo[" + ui.getUuid() + "]=...");
+		if (dbUi == null) {
+			log.severe("null");
+			dbUi = ui;
+		}
+		else {
+			log.severe(dbUi.getLabel());
+		}
+		return dbUi;
+	}
+	
+	private void appendCandidateUserInfo(ActivityInstancePendingItem activityInstancePendingItem) {
+		log.severe("UserInfo appending UserEntity data..."); 
+		if (activityInstancePendingItem.getCandidates() != null) {
+			Set<UserInfo> candidates = new TreeSet<UserInfo>();  
+			for (UserInfo ui : activityInstancePendingItem.getCandidates()) {
+				candidates.add(appendTaskFormServiceUserData(ui));
+			}
+			activityInstancePendingItem.setCandidates(candidates);
+		}
+	}
 	
 	private void apppendTaskFormServiceData (ActivityInstanceItem item, ProcessActivityFormInstance activityFormInstance) {
 		if (item instanceof ActivityInstanceLogItem) {
 			item.setFormUrl(activityFormInstance.calcViewUrl());
 		}
-		else {
-			item.setFormUrl(activityFormInstance.calcEditUrl());
+		else if (item instanceof ActivityInstancePendingItem) {
+			ActivityInstancePendingItem aipi = (ActivityInstancePendingItem) item;
+			aipi.setFormUrl(activityFormInstance.calcEditUrl());
+			appendCandidateUserInfo(aipi);
 		}
+		
 		if (activityFormInstance.getProcessActivityFormInstanceId()!=null) {
 			item.setProcessActivityFormInstanceId(activityFormInstance.getProcessActivityFormInstanceId().longValue());
 		}
@@ -330,7 +373,7 @@ public class TaskFormService {
 		dst.setExpectedEndDate(null);
 		dst.setPriority(0);
 		dst.setStartedBy("");
-		dst.setAssignedUserId(src.getUserId());
+		dst.setAssignedUser(taskFormDb.getUserByUuid(src.getUserId()));
 		dst.setExpectedEndDate(null);
 		dst.setFormUrl(src.calcEditUrl());
 		
@@ -485,7 +528,7 @@ public class TaskFormService {
 			String uuid = java.util.UUID.randomUUID().toString();
 			String serial = null;
 			
-			// try to parse certificateSubject
+			// try to parse CN
 			StringTokenizer st = new StringTokenizer(dn, ",");
 			while (st.hasMoreTokens()) {
 				String s = st.nextToken();
@@ -506,6 +549,12 @@ public class TaskFormService {
 				}
 				
 			}
+			
+			if (cn!=null && cn.trim().length()>0) {
+				// use cn as uuid...
+				uuid = cn;
+			}
+			
 			// store user 
 			UserEntity user = new UserEntity();
 			user.setCategory(UserInfo.CATEGORY_INTERNAL);

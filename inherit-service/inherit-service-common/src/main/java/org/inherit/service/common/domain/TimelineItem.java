@@ -41,6 +41,6 @@ public interface TimelineItem {
 	 */
 	public String getViewUrl();
 	
-	public String getUserId();	
+	public UserInfo getUser();	
 	
 }

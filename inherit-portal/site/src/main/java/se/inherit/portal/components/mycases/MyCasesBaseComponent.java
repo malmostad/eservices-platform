@@ -54,7 +54,9 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 			log.info("userName header not found, get user principal instead"); 
 			Principal principal = request.getUserPrincipal();
 			if (principal != null) {
-				result = isc.getUserByDn(principal.getName());
+				String hippoDn = "CN=" + principal.getName() + ",OU=Personal,OU=Organisation,OU=Hippo Internal User,DC=adm,DC=inherit,DC=se";
+				result = isc.getUserByDn(hippoDn);
+				//"CN=tesetj,OU=Personal,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"
 			}
 	    }
 	    

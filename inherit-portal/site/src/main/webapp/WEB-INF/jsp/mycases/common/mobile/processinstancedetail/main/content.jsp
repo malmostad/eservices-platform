@@ -71,7 +71,7 @@
 					 	  	</c:otherwise>
 				 	  	</c:choose>
 				 	  	</td>
-						<td>${pendingTask.assignedUserId}</td>
+						<td>${pendingTask.assignedUser}</td>
 					</tr>
 				</c:forEach>
 			</c:if>
@@ -95,7 +95,7 @@
 					<tr>
 				 	  	<td><fmt:formatDate value="${comment.timeStamp}" type="Both" /></td>
 				 	  	</td>
-						<td>${comment.userId}</td>
+						<td>${comment.user}</td>
 						<td>${comment.message}</td>
 					</tr>
 				</c:forEach>
@@ -122,7 +122,7 @@
 				 	  	<td><a href="${logItem.viewUrl}">${logItem.activityLabel}</a></td>
 				 	  	<td><fmt:formatDate value="${logItem.startDate}" type="Both" /></td>
 				 	  	<td><fmt:formatDate value="${logItem.endDate}" type="Both" /></td>
-						<td>${logItem.performedByUserId}</td>
+						<td>${logItem.performedByUser}</td>
 					</tr>
 					<tr>
 					  <td colspan="4">

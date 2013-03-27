@@ -28,8 +28,8 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 	private static final long serialVersionUID = 6551923994738613262L;
 
 	Date expectedEndDate;
-	Set<String> candidates;
-	String assignedUserId;
+	Set<UserInfo> candidates;
+	UserInfo assignedUser;
 	
 	public ActivityInstancePendingItem() {
 		
@@ -43,20 +43,20 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 		this.expectedEndDate = expectedEndDate;
 	}
 
-	public Set<String> getCandidates() {
+	public Set<UserInfo> getCandidates() {
 		return candidates;
 	}
 
-	public void setCandidates(Set<String> candidates) {
+	public void setCandidates(Set<UserInfo> candidates) {
 		this.candidates = candidates;
 	}
 
-	public String getAssignedUserId() {
-		return assignedUserId;
+	public UserInfo getAssignedUser() {
+		return assignedUser;
 	}
 
-	public void setAssignedUserId(String assignedUserId) {
-		this.assignedUserId = assignedUserId;
+	public void setAssignedUser(UserInfo assignedUser) {
+		this.assignedUser = assignedUser;
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result
-				+ ((assignedUserId == null) ? 0 : assignedUserId.hashCode());
+				+ ((assignedUser == null) ? 0 : assignedUser.hashCode());
 		result = prime * result
 				+ ((candidates == null) ? 0 : candidates.hashCode());
 		result = prime * result
@@ -81,10 +81,10 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 		if (getClass() != obj.getClass())
 			return false;
 		ActivityInstancePendingItem other = (ActivityInstancePendingItem) obj;
-		if (assignedUserId == null) {
-			if (other.assignedUserId != null)
+		if (assignedUser == null) {
+			if (other.assignedUser != null)
 				return false;
-		} else if (!assignedUserId.equals(other.assignedUserId))
+		} else if (!assignedUser.equals(other.assignedUser))
 			return false;
 		if (candidates == null) {
 			if (other.candidates != null)
@@ -103,7 +103,7 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 	public String toString() {
 		return "ActivityInstancePendingItem [expectedEndDate="
 				+ expectedEndDate + ", candidates=" + candidates
-				+ ", assignedUserId=" + assignedUserId 
+				+ ", assignedUser=" + assignedUser 
 				+ " " + super.toString() + "]";
 	}
 	

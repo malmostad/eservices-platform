@@ -10,27 +10,27 @@ public class ActivityWorkflowInfo implements Serializable {
 	
 	private static final long serialVersionUID = 8813710157742764480L;
 	
-	String assignedUserId;
-	Set<String> candidates;
+	UserInfo assignedUser;
+	Set<UserInfo> candidates;
 	int priority;
 	
 	public ActivityWorkflowInfo() {
 		
 	}
 
-	public String getAssignedUserId() {
-		return assignedUserId;
+	public UserInfo getAssignedUser() {
+		return assignedUser;
 	}
 
-	public void setAssignedUserId(String assignedUserId) {
-		this.assignedUserId = assignedUserId;
+	public void setAssignedUser(UserInfo assignedUser) {
+		this.assignedUser = assignedUser;
 	}
 
-	public Set<String> getCandidates() {
+	public Set<UserInfo> getCandidates() {
 		return candidates;
 	}
 
-	public void setCandidates(Set<String> candidates) {
+	public void setCandidates(Set<UserInfo> candidates) {
 		this.candidates = candidates;
 	}
 
@@ -47,7 +47,7 @@ public class ActivityWorkflowInfo implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
-				+ ((assignedUserId == null) ? 0 : assignedUserId.hashCode());
+				+ ((assignedUser == null) ? 0 : assignedUser.hashCode());
 		result = prime * result
 				+ ((candidates == null) ? 0 : candidates.hashCode());
 		result = prime * result + priority;
@@ -63,10 +63,10 @@ public class ActivityWorkflowInfo implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		ActivityWorkflowInfo other = (ActivityWorkflowInfo) obj;
-		if (assignedUserId == null) {
-			if (other.assignedUserId != null)
+		if (assignedUser == null) {
+			if (other.assignedUser != null)
 				return false;
-		} else if (!assignedUserId.equals(other.assignedUserId))
+		} else if (!assignedUser.equals(other.assignedUser))
 			return false;
 		if (candidates == null) {
 			if (other.candidates != null)
@@ -80,7 +80,7 @@ public class ActivityWorkflowInfo implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ActivityWorkflowInfo [assignedUserId=" + assignedUserId
+		return "ActivityWorkflowInfo [assignedUser=" + assignedUser
 				+ ", candidates=" + candidates + ", priority=" + priority + "]";
 	}
 	

@@ -57,6 +57,7 @@ public class ProcessActivityFormInstance {
 	 */
 	@Column(nullable=false)
 	String userId;
+	// TODO rename userId to userUuid
 	
 	@OneToMany
 	@JoinColumn(name="processActivityFormInstanceId")

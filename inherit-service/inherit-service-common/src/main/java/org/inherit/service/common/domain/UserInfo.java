@@ -2,7 +2,7 @@ package org.inherit.service.common.domain;
 
 import java.io.Serializable;
 
-public class UserInfo implements Serializable {
+public class UserInfo implements Serializable, Comparable {
 
 	private static final long serialVersionUID = -4478283095497351127L;
 
@@ -96,8 +96,13 @@ public class UserInfo implements Serializable {
 
 	@Override
 	public String toString() {
-		return "UserInfo [uuid=" + uuid + ", labelShort=" + labelShort
-				+ ", label=" + label + ", category=" + category + "]";
+		return labelShort;
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		String ostr = (o==null ? "null" : o.toString());
+		return this.toString().compareTo(ostr);
 	}
 	
 	
