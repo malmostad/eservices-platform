@@ -38,7 +38,7 @@
 				
 	<div class="row-fluid">
 		<div class="span12">
-    		<div id="xform">Loading form...please wait...</div>
+    		<div id="xform" class="public-xform">Loading form...please wait...</div>
 		</div>
 	</div>    
     

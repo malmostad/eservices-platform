@@ -42,7 +42,7 @@
 					 	  	</c:otherwise>
 				 	  	</c:choose>
 				 	  	</td>
-						<td>${pendingTask.assignedUserId}</td>
+						<td>${pendingTask.assignedUser}</td>
 					</tr>
 				</c:forEach>
 			</c:if>
@@ -58,7 +58,7 @@
 			<ul class="toggle-view timeline">
 				<c:forEach var="logItem" items="${dayEntry.value}">
 					<li>
-					  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;${logItem.briefDescription}&nbsp;(${logItem.userId})</h4>
+					  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;${logItem.briefDescription}&nbsp;(${logItem.user})</h4>
 					  <span class="exp">+ visa mer...</span>
 					  <div class="panel">
 						<c:choose>

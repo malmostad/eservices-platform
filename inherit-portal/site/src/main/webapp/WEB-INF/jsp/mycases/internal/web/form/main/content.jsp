@@ -32,7 +32,7 @@
 	<!--  activity form (ajax load after page is loaded) -->
 	<div class="row-fluid">
 		<div class="span12">
-    		<div id="xform">Loading form...please wait...</div>
+    		<div id="xform" class="komin-xform">Loading form...please wait...</div>
 		</div>
 	</div>    
     
@@ -81,7 +81,7 @@
 				 	  	</c:otherwise>
 			 	  	</c:choose>
 			 	  	</td>
-					<td>${pendingTask.assignedUserId}</td>
+					<td>${pendingTask.assignedUser}</td>
 				</tr>
 			</c:forEach>
 		</c:if>
@@ -99,9 +99,9 @@
 			<ul class="toggle-view timeline">
 				<c:forEach var="logItem" items="${dayEntry.value}">
 					<li>
-					  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;${logItem.briefDescription}&nbsp;(${logItem.userId})</h4>
+					  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;${logItem.briefDescription}&nbsp;(${logItem.user})</h4>
 					  <span class="exp">+ visa mer...</span>
-					  <div class="panel">
+					  <div class="panel komin-xform">
 						<c:choose>
 							<c:when test="${not empty logItem.description}">
 								<p>${logItem.description}</p>

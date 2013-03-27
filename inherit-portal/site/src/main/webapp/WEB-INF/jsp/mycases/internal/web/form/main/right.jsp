@@ -466,18 +466,18 @@
 	function refreshActivityWorkflowInfo(info) {
 		var str = "";
 
-		if (!$.isEmptyObject(info) && !$.isEmptyObject(info.assignedUserId)) {
+		if (!$.isEmptyObject(info) && !$.isEmptyObject(info.assignedUser) && !$.isEmptyObject(info.assignedUser.uuid)) {
 			/* Assigned task */
-			if (info.assignedUserId == '${user.uuid}') {
+			if (info.assignedUser.uuid == '${user.uuid}') {
 				/* Assigned to me */
-				str = "Jag Ã¤r tilldelad att utfÃ¶ra aktiviteten";
+				str = "Jag är tilldelad att utföra aktiviteten";
 				$("#assign-to-me").hide();
 				$("#unassign").show();
 				$("#edit-candidates").hide();
 			} else {
 				/* Assigned to someone else */
-				str = info.assignedUserId
-						+ " Ã¤r tilldelad att utfÃ¶ra aktiviteten";
+				str = info.assignedUser.label
+						+ " är tilldelad att utföra aktiviteten";
 				$("#assign-to-me").show();
 				$("#unassign").show();
 				$("#edit-candidates").hide();
@@ -485,16 +485,20 @@
 		} else {
 			/* not assigned i.e. list candidates */
 			if ($.isEmptyObject(info) || $.isEmptyObject(info.candidates)) {
-				str = "Ingen kandidat till att utfÃ¶ra aktiviteten";
+				str = "Ingen kandidat till att utföra aktiviteten";
 			} else {
-				if (info.candidates.length < 4) {
-					str = info.candidates.join(", ");
+				if (info.candidates.length>0 && info.candidates.length < 4) {
+					str = info.candidates[0].labelShort;
+					for (var i=1;i<info.candidates.length;i++) {
+						str += ", ";
+						str += info.candidates[i].labelShort; 
+					}
 				} else {
-					str = info.candidates[0] + ", " + info.candidates[1] + ", "
-							+ info.candidates[2] + " och "
+					str = info.candidates[0].labelShort + ", " + info.candidates[1].labelShort + ", "
+							+ info.candidates[2].labelShort + " och "
 							+ (info.candidates.length - 3) + " till";
 				}
-				str += " Ã¤r kandidater till att utfÃ¶ra aktiviteten";
+				str += " är kandidater till att utföra aktiviteten";
 			}
 			$("#assign-to-me").show();
 			$("#unassign").hide();

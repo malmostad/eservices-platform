@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
@@ -21,6 +22,7 @@ import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.domain.ActivityWorkflowInfo;
+import org.inherit.service.common.domain.UserInfo;
 import org.ow2.bonita.facade.BAMAPI;
 import org.ow2.bonita.facade.QueryDefinitionAPI;
 import org.ow2.bonita.facade.QueryRuntimeAPI;
@@ -452,8 +454,8 @@ public class BonitaEngineServiceImpl {
 		ActivityWorkflowInfo result = new ActivityWorkflowInfo();
 		ActivityInstance activity = AccessorUtil.getQueryRuntimeAPI().getActivityInstance(activityUUID);
 		
-		result.setCandidates(activity.getLastAssignUpdate().getCandidates());
-		result.setAssignedUserId(activity.getLastAssignUpdate().getAssignedUserId());
+		result.setCandidates(createTemporaryUserInfoSet(activity.getLastAssignUpdate().getCandidates()));
+		result.setAssignedUser(createTemporaryUserInfo(activity.getLastAssignUpdate().getAssignedUserId()));
 		result.setPriority(activity.getPriority());
 		
 		return result;
@@ -540,7 +542,7 @@ public class BonitaEngineServiceImpl {
 			result.setProcessLabel(getProcessLabelByInstanceUuid(comment.getInstanceUUID()));
 		}
 		result.setTimestamp(comment.getDate());
-		result.setUserId(comment.getUserId());
+		result.setUser(this.createTemporaryUserInfo(comment.getUserId()));
 		return result;
 	}
 	
@@ -630,12 +632,29 @@ public class BonitaEngineServiceImpl {
 	
 	private void loadActivityInstanceLogItem(ActivityInstance src, ActivityInstanceLogItem dst) {
 		dst.setEndDate(src.getEndedDate());
-		dst.setPerformedByUserId(src.getLastStateUpdate().getUpdatedBy()); // TODO check if this is correct userid
+		dst.setPerformedByUser(this.createTemporaryUserInfo(src.getLastStateUpdate().getUpdatedBy())); // TODO check if this is correct userid
+	}
+	
+	private UserInfo createTemporaryUserInfo(String bonitaUser) {
+		UserInfo userInfo = new UserInfo();
+		userInfo.setUuid(bonitaUser);
+		userInfo.setLabelShort(bonitaUser);
+		userInfo.setLabel(bonitaUser);
+		return userInfo;
+	}
+	
+	private Set<UserInfo> createTemporaryUserInfoSet(Set<String> bonitaUserIds) {
+		Set<UserInfo> candidates = new HashSet<UserInfo>();
+		for (String bonitaUser : bonitaUserIds) {
+			UserInfo userInfo = this.createTemporaryUserInfo(bonitaUser);
+			candidates.add(userInfo);
+		}
+		return candidates;
 	}
 	
 	private void loadActivityInstancePendingItem(ActivityInstance src, ActivityInstancePendingItem dst) {
-		dst.setCandidates(src.getLastAssignUpdate().getCandidates());
-		dst.setAssignedUserId(src.getLastAssignUpdate().getAssignedUserId());
+		dst.setCandidates(createTemporaryUserInfoSet(src.getLastAssignUpdate().getCandidates()));
+		dst.setAssignedUser(createTemporaryUserInfo(src.getLastAssignUpdate().getAssignedUserId()));
 		dst.setExpectedEndDate(src.getExpectedEndDate());
 	}
 	

@@ -32,7 +32,7 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 	private static final long serialVersionUID = 4136625617508159625L;
 	
 	Date endDate;
-	String performedByUserId;
+	UserInfo performedByUser;
 	String viewUrl;
 	
 	public Date getEndDate() {
@@ -41,11 +41,11 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
-	public String getPerformedByUserId() {
-		return performedByUserId;
+	public UserInfo getPerformedByUser() {
+		return performedByUser;
 	}
-	public void setPerformedByUserId(String performedByUserId) {
-		this.performedByUserId = performedByUserId;
+	public void setPerformedByUser(UserInfo performedByUser) {
+		this.performedByUser = performedByUser;
 	}
 	
 	public String getViewUrl() {
@@ -62,7 +62,7 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 		result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
 		result = prime
 				* result
-				+ ((performedByUserId == null) ? 0 : performedByUserId
+				+ ((performedByUser == null) ? 0 : performedByUser
 						.hashCode());
 		result = prime * result + ((viewUrl == null) ? 0 : viewUrl.hashCode());
 		return result;
@@ -81,10 +81,10 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 				return false;
 		} else if (!endDate.equals(other.endDate))
 			return false;
-		if (performedByUserId == null) {
-			if (other.performedByUserId != null)
+		if (performedByUser == null) {
+			if (other.performedByUser != null)
 				return false;
-		} else if (!performedByUserId.equals(other.performedByUserId))
+		} else if (!performedByUser.equals(other.performedByUser))
 			return false;
 		if (viewUrl == null) {
 			if (other.viewUrl != null)
@@ -96,7 +96,7 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 	@Override
 	public String toString() {
 		return "ActivityInstanceLogItem [endDate=" + endDate
-				+ ", performedByUserId=" + performedByUserId 
+				+ ", performedByUser=" + performedByUser 
 				+ ", viewUrl=" + viewUrl
 				+ " " + super.toString() +   "]";
 	}
@@ -120,9 +120,9 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 		return null;
 	}
 	@Override
-	public String getUserId() {
+	public UserInfo getUser() {
 		// TODO Auto-generated method stub
-		return this.getPerformedByUserId();
+		return getPerformedByUser();
 	}
 	
 	

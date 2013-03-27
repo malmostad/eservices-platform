@@ -34,3 +34,54 @@
 	margin: 5px 0;
 	display: none;
 }
+
+.public-xform {
+  margin: 3px;
+}
+
+.komin-xform {
+  margin: 1px;
+}
+
+.fr-grid {
+   border: 0;
+   width:100%;
+}
+
+.fr-grid tbody tr {
+ background-color:white;
+}
+
+.fr-grid-content .xforms-label {
+  width:150px;
+  display: inline-block;
+}
+
+.fr-buttons {
+  text-align: right;
+}
+
+.xforms-input-input {
+  width: 500px;
+  display: inline-block;
+}
+
+.komin-xform .xforms-input-input {
+  width: 250px;
+}
+
+.fr-section-title {
+  background-color: rgb(0, 105, 60);
+  padding: 5px;
+  border-radius: 8px;
+  box-shadow:2px 2px 3px grey;
+  margin-bottom: 10px;
+}
+
+.komin-xform .fr-section-title {
+  background-color: rgb(102, 102, 102);
+}
+
+.fr-section-title a {
+  color: white;
+}
