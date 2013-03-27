@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.inherit.service.common.domain.ActivityInstanceItem;
@@ -347,6 +349,22 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public Set<String> getUsersByRoleAndActivity(String roleName, String activityInstanceUuid) {
+		Set<String> result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getUsersByRoleAndActivity/" + ParameterEncoder.encode(roleName) + "/" + ParameterEncoder.encode(activityInstanceUuid) +  "?media=xml";
+		log.severe("getUsersByRoleAndActivity uri: " + uri);
+		
+		String response = call(uri);
+		log.severe("response getUsersByRoleAndActivity: [" + response + "]");
+		if (response != null) {
+			result = (HashSet<String>)xstream.fromXML(response);
+		}
+
+		return result;
+	}
+	//{}/{}
 	
 	@SuppressWarnings("unchecked")
 	public ArrayList<ProcessInstanceListItem> searchProcessInstancesByTagValue(String tagValue) {
@@ -438,6 +456,10 @@ public class InheritServiceClient {
 			System.out.println("item: " + item);
 		}
 		
+		Set<String> users = c.getUsersByRoleAndActivity("Registrator", "activityInstanceUuid");
+		for (String user : users) {
+			System.out.println("user: " + user);
+		}
 		
 		System.out.println("InheritServiceClient avslutas");
 	}

@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.inherit.bonita.client.BonitaEngineServiceImpl;
@@ -30,11 +32,16 @@ public class TaskFormService {
 	
 	TaskFormDb taskFormDb;
 	BonitaEngineServiceImpl bonitaClient;
+	ActorSelectorDirUtils aSelectorDirUtils;
 	
 	public TaskFormService() {
 		taskFormDb = new TaskFormDb();
 		bonitaClient = new BonitaEngineServiceImpl();
-	}
+// TODO hostname,port and base DN should be resolved from configuration
+		aSelectorDirUtils = new ActorSelectorDirUtils("localhost",
+				"1389",
+				"ou=IDMGroups,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"); //Base DN
+		}	
 	
 	/**
 	 * 
@@ -450,4 +457,18 @@ public class TaskFormService {
 	public List<Tag> getTagsByProcessInstance(String processInstanceUuid) {
 		return taskFormDb.getTagsByProcessInstance(processInstanceUuid);
 	}
+	
+	public Set<String> getUsersByRoleAndActivity(String roleName, String activityInstanceUuid) {
+	//TODO implement getDepartmentByactivityInstanceUuid, for now just hardwire "Miljöförvaltningen"
+		Set<String> result =  null;
+				try {
+				    	result =   
+					aSelectorDirUtils.getUsersByDepartmentAndRole("Miljöförvaltningen", roleName); 
+				} catch (Exception e) {
+					log.severe(e.toString());
+				}
+
+		return result;
+	}
+	
 }
