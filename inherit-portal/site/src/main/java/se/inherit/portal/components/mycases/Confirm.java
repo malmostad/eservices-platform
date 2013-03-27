@@ -4,6 +4,7 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class Confirm extends MyCasesBaseComponent {
 
 		HippoBean doc = getContentBean(request);
 
-		String userName = getUserName(request);
+		UserInfo user = getUserName(request);
 		
 		if (doc == null) {
 			log.warn(
@@ -38,7 +39,7 @@ public class Confirm extends MyCasesBaseComponent {
 		
 		InheritServiceClient isc = new InheritServiceClient();
 		
-		String viewUrl = isc.submitForm(docId, userName);
+		String viewUrl = isc.submitForm(docId, user.getUuid());
 		request.setAttribute("formUrl", viewUrl);
 		
 		if (viewUrl==null) {
@@ -55,7 +56,7 @@ public class Confirm extends MyCasesBaseComponent {
 				// TODO remove later
 				log.error("==============> orbeon confirm form url:" + formUrl);
 
-				isc.submitStartForm(eServiceDocument.getFormPath(), docId, userName);
+				isc.submitStartForm(eServiceDocument.getFormPath(), docId, user.getUuid());
 
 			}	
 		}

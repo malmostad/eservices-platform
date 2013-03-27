@@ -254,14 +254,14 @@
 	<input type="hidden" name="activityInstanceUuid"
 		value="${activity.activityInstanceUuid}" /> <input type="hidden"
 		name="action" value="assign" /> <input type="hidden" size="8"
-		name="targetUserId" value="${userName}" />
+		name="targetUserId" value="${user.uuid}" />
 </form>
 <form action="/site/restservices/site-ajax/assignTask" id="unassign"
 	class="siteAjaxForm">
 	<input type="hidden" name="activityInstanceUuid"
 		value="${activity.activityInstanceUuid}" /> <input type="hidden"
 		name="action" value="unassign" /> <input type="hidden" size="8"
-		name="targetUserId" value="${userName}" />
+		name="targetUserId" value="${user.uuid}" />
 </form>
 
 
@@ -436,7 +436,7 @@
 		siteAjaxPost("/site/restservices/site-ajax/assignTask", {
 			activityInstanceUuid : '${activity.activityInstanceUuid}',
 			action : 'assign',
-			targetUserId : '${userName}'
+			targetUserId : '${user.uuid}'
 		}, function(data) {
 			refreshActivityWorkflowInfo(data);
 		});
@@ -445,7 +445,7 @@
 		siteAjaxPost("/site/restservices/site-ajax/assignTask", {
 			activityInstanceUuid : '${activity.activityInstanceUuid}',
 			action : 'unassign',
-			targetUserId : '${userName}'
+			targetUserId : '${user.uuid}'
 		}, function(data) {
 			refreshActivityWorkflowInfo(data);
 		});
@@ -468,7 +468,7 @@
 
 		if (!$.isEmptyObject(info) && !$.isEmptyObject(info.assignedUserId)) {
 			/* Assigned task */
-			if (info.assignedUserId == '${userName}') {
+			if (info.assignedUserId == '${user.uuid}') {
 				/* Assigned to me */
 				str = "Jag är tilldelad att utföra aktiviteten";
 				$("#assign-to-me").hide();

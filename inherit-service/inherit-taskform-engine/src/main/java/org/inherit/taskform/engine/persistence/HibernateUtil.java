@@ -27,6 +27,7 @@ public class HibernateUtil {
 		    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityFormInstance.class)
 		    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.TagType.class)
 		    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.ProcessActivityTag.class)
+		    .addAnnotatedClass(org.inherit.taskform.engine.persistence.entity.UserEntity.class)
 		    .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
 		    .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
 		    .setProperty("hibernate.connection.url", " jdbc:postgresql://localhost/InheritPlatform")

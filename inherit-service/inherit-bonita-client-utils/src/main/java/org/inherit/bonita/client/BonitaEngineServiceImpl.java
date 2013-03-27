@@ -29,6 +29,8 @@ import org.ow2.bonita.facade.def.majorElement.ProcessDefinition;
 import org.ow2.bonita.facade.exception.ActivityNotFoundException;
 import org.ow2.bonita.facade.exception.InstanceNotFoundException;
 import org.ow2.bonita.facade.exception.ProcessNotFoundException;
+import org.ow2.bonita.facade.exception.UserAlreadyExistsException;
+import org.ow2.bonita.facade.identity.User;
 import org.ow2.bonita.facade.runtime.ActivityInstance;
 import org.ow2.bonita.facade.runtime.ActivityState;
 import org.ow2.bonita.facade.runtime.Comment;
@@ -52,6 +54,26 @@ public class BonitaEngineServiceImpl {
 	
 	public BonitaEngineServiceImpl() {
 		
+	}
+	
+	public boolean createUser(String userName) {
+		boolean result = false;
+		try {
+			LoginContext loginContext = BonitaUtil.login(); 
+			
+			User user = AccessorUtil.getIdentityAPI().addUser(userName, "bpm");
+			
+			BonitaUtil.logout(loginContext);
+			result = true;
+		}
+		catch (UserAlreadyExistsException aee) {
+			log.info("UserAlreadyExistsException: " + aee);
+			result = true;
+		}			
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}		
+		return result;
 	}
 	
 	public boolean executeTask(String activityInstanceUuid, String userId) {

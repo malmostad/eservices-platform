@@ -44,6 +44,8 @@ public class InheritServiceApplication extends Application {
 		router.attach("/getUsersByRoleAndActivity/{roleName}/{activityInstanceUuid}", GetUsersByRoleAndActivity.class);
 		
 		
+		router.attach("/getUserByDn/{dn}", GetUserByDn.class);
+		router.attach("/getUserBySerial/{serial}/{certificateSubject}", GetUserBySerial.class);
 		return router;
 	}
 	 

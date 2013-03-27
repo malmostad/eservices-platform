@@ -20,7 +20,7 @@ public class SearchCasesByTagValue extends MyCasesBaseComponent {
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
 		
         HippoBean doc = getContentBean(request);
-        String userName = getUserName(request);
+        //UserInfo user = getUserName(request);
         
         String tagValue = getPublicRequestParameter(request, "tagValue");
         
