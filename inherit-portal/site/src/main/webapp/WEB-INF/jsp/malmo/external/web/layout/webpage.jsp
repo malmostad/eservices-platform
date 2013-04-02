@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="${link}" type="text/css"/>
 
 	<!--  Malmö external services assets-2.0 begin -->    
-    <link href="http://www.malmo.se/assets-2.0/css/external-core.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="http://www.malmo.se/assets-2.0/css/external.css" rel="stylesheet" type="text/css" media="all" />
 	<link href="http://www.malmo.se/assets-2.0/jquery/malmo-theme.css" rel="stylesheet" type="text/css" media="all" />
 	<link href="http://www.malmo.se/assets-2.0/css/malmo-print.css" rel="stylesheet" type="text/css" media="print" />
 	<!--[if lt IE 7]><link href="http://www.malmo.se/assets-2.0/css/malmo-ie-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->

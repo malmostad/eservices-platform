@@ -2,7 +2,7 @@
 <%--@elvariable id="menu" type="org.hippoecm.hst.core.sitemenu.HstSiteMenu"--%>
 
 <!--eri-no-index-->                     
-<div class="sub-menu">
+<div>
   <div>
 	<ul class="sub-menu-light">
 	  <c:forEach var="item" items="${menu.siteMenuItems}">
