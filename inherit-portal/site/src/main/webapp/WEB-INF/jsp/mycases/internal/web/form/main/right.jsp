@@ -266,7 +266,7 @@
 
 
 <!-- jquery scripts for dialogs etc TODO move to separate js file -->
-<script type="text/javascript">
+<script type="text/javascript" charset="utf-8">
 	$(".add-button").button({
 		color : 'green',
 		icons : {
@@ -348,9 +348,12 @@
 				width : 350,
 				modal : true,
 				buttons : {
-					"Kommentera" : function() {
+					"Kommentera" : function(data) {
 						siteAjaxPost($("#addCommentForm").attr('action'), $(
 								"#addCommentForm").serialize(), function() {
+							siteAjaxPost("/site/restservices/site-ajax/getCommentFeed", {activityInstanceUuid: '${activity.activityInstanceUuid}'}, function(data) {
+							    refreshCommentFeed(data);
+							});
 							$("#dialog-comment-case").dialog("close");
 						});
 					},
@@ -508,10 +511,25 @@
 		$("#activity-candidates").text(str);
 		$("#activity-priority").val(info.priority);
 	}
-
-	siteAjaxPost("/site/restservices/site-ajax/getActivityWorkflowInfo", {
-		activityInstanceUuid : '${activity.activityInstanceUuid}'
-	}, function(data) {
-		refreshActivityWorkflowInfo(data);
+	
+	function refreshCommentFeed(comments) {
+       for (var i=0;i<comments.length;i++) {
+    	   var commentDate = new Date(comments[i].timestamp);
+	       $("#commentfeed").append("<li><b>" + $.datepicker.formatDate('yy-mm-dd', commentDate) + " (" + comments[i].activityLabel + ") " + comments[i].user.label + ": </b><br/>" + comments[i].message + "</li>");
+	   }
+	}
+	
+	$(document).ready(function() {
+	
+		siteAjaxPost("/site/restservices/site-ajax/getActivityWorkflowInfo", {
+			activityInstanceUuid : '${activity.activityInstanceUuid}'
+		}, function(data) {
+			refreshActivityWorkflowInfo(data);
+		});
+		
+		siteAjaxPost("/site/restservices/site-ajax/getCommentFeed", {activityInstanceUuid: '${activity.activityInstanceUuid}'}, function(data) {
+		    refreshCommentFeed(data);
+		} );
+	
 	});
 </script>

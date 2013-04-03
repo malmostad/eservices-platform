@@ -44,6 +44,10 @@
 <p></p>
 <h1><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
 
+<h2><fmt:message key="mycases.commentFeed.lbl"/></h2>
+<ul id="commentfeed">
+</ul>
+
 <c:choose>
   <c:when test="${empty processInstanceDetails}">
   	<fmt:message key="mycases.noProcessInstanceDetails.lbl"/>
