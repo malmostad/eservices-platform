@@ -16,29 +16,36 @@
 		<h2>${document.title}</h2>
 		<p>${document.summary}</p>
 		<hst:html hippohtml="${document.html}" />
-
-		<c:if test="${not empty processInstances}">
-			<table class="display dataTable" width="100%" >
-				<thead>
-					<tr>
-						<th><fmt:message key="mycases.process.column.lbl" /></th>
-						<th><fmt:message key="mycases.status.column.lbl" /></th>
-						<th><fmt:message key="mycases.startDate.column.lbl" /></th>
-						<th><fmt:message key="mycases.endDate.column.lbl" /></th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach var="item" items="${processInstances}">
+		<c:choose>
+			<c:when test="${not empty processInstances}">
+				<table class="display dataTable" width="100%">
+					<thead>
 						<tr>
-							<td><a href="processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">${item.processLabel}</a></td>
-							<td>${item.status}</td>
-							<td><fmt:formatDate value="${item.startDate}" type="Date" /></td>
-							<td><fmt:formatDate value="${item.endDate}" type="Date" /></td>
+							<th><fmt:message key="mycases.process.column.lbl" /></th>
+							<th><fmt:message key="mycases.status.column.lbl" /></th>
+							<th><fmt:message key="mycases.startDate.column.lbl" /></th>
+							<th><fmt:message key="mycases.endDate.column.lbl" /></th>
 						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
-		</c:if>
+					</thead>
+					<tbody>
+						<c:forEach var="item" items="${processInstances}">
+							<tr>
+								<td><a
+									href="processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">${item.processLabel}</a></td>
+								<td>${item.status}</td>
+								<td><fmt:formatDate value="${item.startDate}" type="Date" /></td>
+								<td><fmt:formatDate value="${item.endDate}" type="Date" /></td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</c:when>
+			<c:otherwise>
+				<p>
+					<fmt:message key="mycases.noProcessInstance.lbl" />
+				</p>
+			</c:otherwise>
+		</c:choose>
 
 	</c:otherwise>
 </c:choose>
