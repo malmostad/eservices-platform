@@ -594,6 +594,7 @@
       <sv:value>../malmo-internal-common</sv:value>
       <sv:value>../mycases-internal-web</sv:value>
       <sv:value>../mycases-common-web</sv:value>
+      <sv:value>../mycases-common-internal</sv:value>
       <sv:value>../mycases-common</sv:value>
       <sv:value>../inheritportal-common</sv:value>
     </sv:property>
@@ -607,17 +608,36 @@
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
     </sv:property>
+    <sv:node sv:name="hst:sitemenus">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemenus</sv:value>
+      </sv:property>
+      <sv:node sv:name="main">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenu</sv:value>
+        </sv:property>
+        <sv:node sv:name="Inkorg">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemenuitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+            <sv:value>mycases/inbox</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="Mina ärenden">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemenuitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+            <sv:value>mycases/status</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+    </sv:node>
   </sv:node>
   <sv:node sv:name="malmo-external-web">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
-    </sv:property>
-    <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
-      <sv:value>../malmo-external-common</sv:value>
-      <sv:value>../mycases-external-web</sv:value>
-      <sv:value>../mycases-common-web</sv:value>
-      <sv:value>../mycases-common</sv:value>
-      <sv:value>../inheritportal-common</sv:value>
     </sv:property>
   </sv:node>
   <sv:node sv:name="malmo-external-mobile">
@@ -625,9 +645,11 @@
       <sv:value>hst:configuration</sv:value>
     </sv:property>
     <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
+      <sv:value>../malmo-external-sv</sv:value>
       <sv:value>../malmo-external-common</sv:value>
       <sv:value>../mycases-external-mobile</sv:value>
       <sv:value>../mycases-common-mobile</sv:value>
+      <sv:value>../mycases-common-external</sv:value>
       <sv:value>../mycases-common</sv:value>
       <sv:value>../inheritportal-common</sv:value>
     </sv:property>
@@ -658,6 +680,56 @@
     </sv:property>
   </sv:node>
   <sv:node sv:name="mycases-internal-mobile">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-external-en">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-external-sv">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-external-web-sv">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
+      <sv:value>../malmo-external-sv</sv:value>
+      <sv:value>../malmo-external-web</sv:value>
+      <sv:value>../malmo-external-common</sv:value>
+      <sv:value>../mycases-external-web</sv:value>
+      <sv:value>../mycases-common-web</sv:value>
+      <sv:value>../mycases-common-external</sv:value>
+      <sv:value>../mycases-common</sv:value>
+      <sv:value>../inheritportal-common</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-external-web-en">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
+      <sv:value>../malmo-external-en</sv:value>
+      <sv:value>../malmo-external-web</sv:value>
+      <sv:value>../malmo-external-common</sv:value>
+      <sv:value>../mycases-external-web</sv:value>
+      <sv:value>../mycases-common-web</sv:value>
+      <sv:value>../mycases-common-external</sv:value>
+      <sv:value>../mycases-common</sv:value>
+      <sv:value>../inheritportal-common</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-common-internal">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="mycases-common-external">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
     </sv:property>

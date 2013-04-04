@@ -32,9 +32,15 @@
 				
 				</script>
 	
+	
 	<div class="row-fluid">
 		<div class="span12">
-		    Tack f&ouml;r din ans&ouml;kan
+			<c:if test="${not empty document}">
+				<h2>${document.title}</h2>
+				<p>${document.summary}</p>
+				<hst:html hippohtml="${document.html}" />
+			</c:if>	    
+	
     		<div id="xform">Loading form...please wait...</div>
 		</div>
 	</div>    

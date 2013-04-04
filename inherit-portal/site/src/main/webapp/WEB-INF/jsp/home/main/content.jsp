@@ -16,7 +16,6 @@
     
     <hst:cmseditlink hippobean="${document}"/>
     <h2>${document.title}</h2>
-    <p>I18n key example: <fmt:message key="home.title"/></p>
     <p>${document.summary}</p>
     <hst:html hippohtml="${document.html}"/>
   </c:otherwise>

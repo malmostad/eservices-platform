@@ -232,48 +232,6 @@
     </sv:property> 
   </sv:node>  
   <!-- Content -->  
-  <sv:node sv:name="inheritportal-documents"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10400</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>content/documents/inherit-portal.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/content/documents</sv:value> 
-    </sv:property> 
-  </sv:node>  
-  <sv:node sv:name="inheritportal-common"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10404</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>content/documents/inherit-portal/common.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/content/documents/inheritportal</sv:value> 
-    </sv:property> 
-  </sv:node>  
-  <sv:node sv:name="inheritportal-news"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10404.1</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>content/documents/inherit-portal/news.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/content/documents/inheritportal</sv:value> 
-    </sv:property> 
-  </sv:node>  
   <!-- Gallery -->  
   <sv:node sv:name="inheritportal-gallery"> 
     <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
@@ -854,20 +812,6 @@
       <sv:value>/hst:hst/hst:configurations/mycases-common</sv:value> 
     </sv:property> 
   </sv:node>  
-  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-hst-sitemap"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10056.0</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>hst/configurations/mycases-common/sitemap.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/hst:hst/hst:configurations/mycases-common</sv:value> 
-    </sv:property> 
-  </sv:node>  
   <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-hst-components-status"> 
     <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
       <sv:value>hippo:initializeitem</sv:value> 
@@ -994,20 +938,6 @@
       <sv:value>/hst:hst/hst:configurations/mycases-common/hst:pages</sv:value> 
     </sv:property> 
   </sv:node>  
-  <sv:node sv:name="inherit-portal-content-documents-inheritportal-mycases"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10401.0</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>content/documents/inheritportal/mycases.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/content/documents/inheritportal</sv:value> 
-    </sv:property> 
-  </sv:node>  
   <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-malmo-internal-common-hst-components-header"> 
     <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
       <sv:value>hippo:initializeitem</sv:value> 
@@ -1132,20 +1062,6 @@
     </sv:property>  
     <sv:property sv:name="hippo:contentroot" sv:type="String"> 
       <sv:value>/hst:hst/hst:configurations/inheritportal-common/hst:components</sv:value> 
-    </sv:property> 
-  </sv:node>  
-  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-malmo-external-common-hst-sitemenus"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10056.0</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>hst/configurations/malmo-external-common/sitemenus.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/hst:hst/hst:configurations/malmo-external-common</sv:value> 
     </sv:property> 
   </sv:node>  
   <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-hst-components-processinstancedetail"> 
@@ -1442,18 +1358,242 @@
       <sv:value>/hst:hst/hst:configurations/mycases-internal-web/hst:pages</sv:value> 
     </sv:property> 
   </sv:node>  
-  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-inheritportal-common-hst-pages-standard-no-leftmenu">
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-inheritportal-common-hst-pages-standard-no-leftmenu"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10057.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/configurations/inheritportal-common/pages/standard-no-leftmenu.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:configurations/inheritportal-common/hst:pages</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hippo-configuration-hippo-frontend-cms"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>30000.3</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>configuration/frontend/cms.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hippo:configuration/hippo:frontend</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-sv-hippotranslation-translations"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10055.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-sv/translations.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents/inheritportal-sv</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-sv"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10054.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-sv.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-sv-mycases"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10055.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-sv/mycases.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents/inheritportal-sv</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-sv-common"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10055.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-sv/common.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents/inheritportal-sv</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-en"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10054.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-en.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-en-news"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10055.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-en/news.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents/inheritportal-en</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-en-mycases"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10055.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-en/mycases.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents/inheritportal-en</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-en-common"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10055.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-en/common.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents/inheritportal-en</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-content-documents-inheritportal-en-hippotranslation-translations"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10055.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>content/documents/inheritportal-en/translations.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/content/documents/inheritportal-en</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-malmo-external-sv-hst-sitemenus"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10056.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/configurations/malmo-external-sv/sitemenus.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:configurations/malmo-external-sv</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-malmo-external-en-hst-sitemenus"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10056.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/configurations/malmo-external-en/sitemenus.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:configurations/malmo-external-en</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-channels-malmo-external-web-en"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10053.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/channels/malmo-external-web-en.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:channels</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-internal-hst-sitemap">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hippo:initializeitem</sv:value>
     </sv:property>
     <sv:property sv:name="hippo:sequence" sv:type="Double">
-      <sv:value>10057.0</sv:value>
+      <sv:value>10056.0</sv:value>
     </sv:property>
     <sv:property sv:name="hippo:contentresource" sv:type="String">
-      <sv:value>hst/configurations/inheritportal-common/pages/standard-no-leftmenu.xml</sv:value>
+      <sv:value>hst/configurations/mycases-common-internal/sitemap.xml</sv:value>
     </sv:property>
     <sv:property sv:name="hippo:contentroot" sv:type="String">
-      <sv:value>/hst:hst/hst:configurations/inheritportal-common/hst:pages</sv:value>
+      <sv:value>/hst:hst/hst:configurations/mycases-common-internal</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-external-hst-sitemap">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:initializeitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:sequence" sv:type="Double">
+      <sv:value>10056.0</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentresource" sv:type="String">
+      <sv:value>hst/configurations/mycases-common-external/sitemap.xml</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentroot" sv:type="String">
+      <sv:value>/hst:hst/hst:configurations/mycases-common-external</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-hst-sitemap">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:initializeitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:sequence" sv:type="Double">
+      <sv:value>10056.0</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentresource" sv:type="String">
+      <sv:value>hst/configurations/mycases-common/sitemap.xml</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentroot" sv:type="String">
+      <sv:value>/hst:hst/hst:configurations/mycases-common</sv:value>
     </sv:property>
   </sv:node>
 </sv:node>
