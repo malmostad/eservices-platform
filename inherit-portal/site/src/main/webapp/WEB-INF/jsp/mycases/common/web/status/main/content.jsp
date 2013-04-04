@@ -16,18 +16,18 @@
 		<h2>${document.title}</h2>
 		<p>${document.summary}</p>
 		<hst:html hippohtml="${document.html}" />
-		<c:choose>
-			<c:when test="${not empty processInstances}">
-				<table class="display dataTable" width="100%">
-					<thead>
-						<tr>
-							<th><fmt:message key="mycases.process.column.lbl" /></th>
-							<th><fmt:message key="mycases.status.column.lbl" /></th>
-							<th><fmt:message key="mycases.startDate.column.lbl" /></th>
-							<th><fmt:message key="mycases.endDate.column.lbl" /></th>
-						</tr>
-					</thead>
-					<tbody>
+		<table class="display dataTable" width="100%">
+			<thead>
+				<tr>
+					<th><fmt:message key="mycases.process.column.lbl" /></th>
+					<th><fmt:message key="mycases.status.column.lbl" /></th>
+					<th><fmt:message key="mycases.startDate.column.lbl" /></th>
+					<th><fmt:message key="mycases.endDate.column.lbl" /></th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:choose>
+					<c:when test="${not empty processInstances}">
 						<c:forEach var="item" items="${processInstances}">
 							<tr>
 								<td><a
@@ -37,15 +37,15 @@
 								<td><fmt:formatDate value="${item.endDate}" type="Date" /></td>
 							</tr>
 						</c:forEach>
-					</tbody>
-				</table>
-			</c:when>
-			<c:otherwise>
-				<p>
-					<fmt:message key="mycases.noProcessInstance.lbl" />
-				</p>
-			</c:otherwise>
-		</c:choose>
+					</c:when>
+					<c:otherwise>
+						<tr>
+							<td colspan="4"><fmt:message key="mycases.noProcessInstance.lbl" /></td>
+						</tr>
+					</c:otherwise>
+				</c:choose>
+			</tbody>
+		</table>
 
 	</c:otherwise>
 </c:choose>
