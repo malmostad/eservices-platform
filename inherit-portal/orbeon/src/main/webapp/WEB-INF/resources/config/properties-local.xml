@@ -25,7 +25,7 @@
                          value=""/>
 <property as="xs:boolean" name="oxf.fr.version.*.*" value="false"/>
 <property as="xs:string"  name="oxf.fr.detail.buttons.*.*" value="clear save submit"/>
-
+<property as="xs:string"  name="oxf.fr.detail.buttons.view.*.*" value="pdf"/>
 <property as="xs:string"  name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
 
 <property as="xs:string"  name="oxf.fr.detail.submit.go.uri-xpath.*.*" value="concat('http://eservices.malmo.se/site/mycases/form/confirmdispatcher?docId=', xxforms:instance('fr-parameters-instance')/document)"/>
