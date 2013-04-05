@@ -26,7 +26,7 @@ public class ConfirmDispatcher extends MyCasesBaseComponent {
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
 		
-		String[] docIdParams =  getPublicRequestParameters(request, "docId");
+		String[] docIdParams =  getPublicRequestParameters(request, "document");
 		// default confirm path
 		String path = "/mycases/form/confirm";
 	
@@ -65,7 +65,7 @@ public class ConfirmDispatcher extends MyCasesBaseComponent {
 		log.error("path: " + path);
 		
 		Map<String, String[]> params = new HashMap<String, String[]>();
-		params.put("docId", docIdParams);
+		params.put("document", docIdParams);
 		HstResponseUtils.sendRedirect(request, response, path, params);
 	}
 }
