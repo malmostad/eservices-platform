@@ -26,9 +26,11 @@
 					});
 		</script>
     </c:if>
-    
-    <h1><fmt:message key="mycases.activity.column.lbl"/></h1>
+			
+    <h1><fmt:message key="mycases.activity.column.lbl"/></h1>	   
+
     <p> ${activity.activityLabel} i ${processInstanceDetails.processLabel}</p>
+
 	<!--  activity form (ajax load after page is loaded) -->
 	<div class="row-fluid">
 		<div class="span12">

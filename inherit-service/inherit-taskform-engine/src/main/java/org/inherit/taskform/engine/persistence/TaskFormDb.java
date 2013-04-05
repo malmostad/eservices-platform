@@ -690,7 +690,8 @@ public class TaskFormDb {
 	    .setProperty("hibernate.hbm2ddl.auto", "create")
 //	    .setProperty("hibernate.hbm2ddl.auto", "update")
 	    .setProperty("show_sql", "true");
-	    
+
+		HibernateUtil.overrideProperties(cfg);
 		
 	    SessionFactory sessionFactory = cfg.buildSessionFactory();
 	    Session session = sessionFactory.openSession();
