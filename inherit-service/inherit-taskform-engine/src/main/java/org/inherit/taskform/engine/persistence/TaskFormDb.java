@@ -66,6 +66,27 @@ public class TaskFormDb {
 		}
 		return result;
 	}	
+
+	public ProcessActivityFormInstance getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(String processInstanceUuid) {
+		List<ProcessActivityFormInstance> result = null;
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		try {
+			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+				    .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) // identifies the start form
+				    .add( Restrictions.isNull("activityInstanceUuid")) // only start forms
+				    .list();
+		}
+		catch (Exception e) {
+			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return filterUniqueProcessActivityFormInstanceFromList(result);
+	}
+
 	
 	public ProcessActivityFormInstance getStartProcessActivityFormInstanceByFormPathAndUser(String formPath, String userId) {
 		List<ProcessActivityFormInstance> result = null;
@@ -673,6 +694,7 @@ public class TaskFormDb {
 	}
 
 	public static void main(String args[]) {
+				
 		System.out.println("start main load initial data to InheritPlatform database");
 		
 		Configuration cfg = new AnnotationConfiguration()

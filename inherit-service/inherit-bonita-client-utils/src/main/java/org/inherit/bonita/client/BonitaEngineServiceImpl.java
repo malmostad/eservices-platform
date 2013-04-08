@@ -250,7 +250,9 @@ public class BonitaEngineServiceImpl {
 				taskItem.setProcessLabel(getProcessLabel(taskInstance.getProcessDefinitionUUID()));;
 				taskItem.setProcessActivityFormInstanceId(new Long(0)); // TODO
 				taskItem.setTaskUuid(taskInstance.getUUID().getValue());
-				taskItem.setActivityDefinitionUUID(taskInstance.getActivityDefinitionUUID().getValue());
+				taskItem.setProcessInstanceUuid(taskInstance.getProcessInstanceUUID().getValue());
+				taskItem.setActivityDefinitionUuid(taskInstance.getActivityDefinitionUUID().getValue());
+				taskItem.setProcessDefinitionUuid(taskInstance.getProcessDefinitionUUID().getValue());
 				result.add(taskItem);
 			}
 			BonitaUtil.logout(loginContext);
@@ -569,39 +571,56 @@ public class BonitaEngineServiceImpl {
 	}
 	
 
-	private void loadProcessInstanceBriefProperties(LightProcessInstance src, ProcessInstanceListItem dst) {
-		dst.setProcessInstanceUuid(src.getUUID().getValue());
-		
-		// find out process label
-		dst.setProcessLabel(getProcessLabel(src.getProcessDefinitionUUID()));
+    private void loadProcessInstanceBriefProperties(LightProcessInstance src, ProcessInstanceListItem dst) {
+        dst.setProcessInstanceUuid(src.getUUID().getValue());
+        
+        // find out process label
+        dst.setProcessLabel(getProcessLabel(src.getProcessDefinitionUUID()));
+        
+        dst.setProcessInstanceLabel(dst.getProcessLabel() + " - #" + src.getNb());
+        
+        // find out process instance status
+        if (InstanceState.FINISHED.equals(src.getInstanceState())) {
+                dst.setStatus(ProcessInstanceListItem.STATUS_FINISHED);
+        }
+        else if (InstanceState.CANCELLED.equals(src.getInstanceState())) {
+                dst.setStatus(ProcessInstanceListItem.STATUS_CANCELLED);
+        } 
+        else if (InstanceState.ABORTED.equals(src.getInstanceState())) {
+                dst.setStatus(ProcessInstanceListItem.STATUS_ABORTED);
+        } 
+        else {
+                dst.setStatus(ProcessInstanceListItem.STATUS_PENDING);
+                Set<InboxTaskItem> activities = new HashSet<InboxTaskItem>();
+                try {
+                        @SuppressWarnings("rawtypes")
+                        Set tasks = null;
+                        if (src instanceof ProcessInstance) {
+                                tasks = ((ProcessInstance)src).getActivities();
+                        }
+                        else {
+                                tasks = AccessorUtil.getQueryRuntimeAPI().getLightActivityInstances(src.getProcessInstanceUUID());                              
+                        }
+                        for (Object taskObj : tasks) {
+                                LightActivityInstance task = (LightActivityInstance)taskObj;
+                                if (ActivityState.READY.equals(task.getState()) || ActivityState.EXECUTING.equals(task.getState())) {
+                                        activities.add(lightActivityInstance2InboxTaskItem(task));
+                                }
+                        }
+                }
+            catch (InstanceNotFoundException e) {
+                        log.severe("Exception while loading activities");
+                        activities.clear();
+                }
+                dst.setActivities(activities);
+        }
+        
+        dst.setEndDate(src.getEndedDate());
+        dst.setStartDate(src.getStartedDate());
+        dst.setStartedBy(src.getStartedBy());
+        
+    }
 
-		// find out process instance status
-		if (InstanceState.FINISHED.equals(src.getInstanceState())) {
-			dst.setStatus("Avslutad");
-		}
-		else if (InstanceState.CANCELLED.equals(src.getInstanceState()) || InstanceState.ABORTED.equals(src.getInstanceState())) {
-			dst.setStatus("Avbruten");
-		} 
-		else {
-			if (src instanceof ProcessInstance) {
-				StringBuffer sb = new StringBuffer();
-				Set<TaskInstance> tasks = ((ProcessInstance)src).getTasks();
-				for (TaskInstance task : tasks) {
-					if (ActivityState.READY.equals(task.getState()) || ActivityState.EXECUTING.equals(task.getState())) {
-						sb.append(task.getActivityLabel());
-					}
-				}
-				dst.setStatus(sb.toString());
-			}
-			else {
-				dst.setStatus("TODO!");
-			}
-		}
-		
-		dst.setEndDate(src.getEndedDate());
-		dst.setStartDate(src.getStartedDate());
-		dst.setStartedBy(src.getStartedBy());
-	}
 	
 	private void loadActivityInstanceItem(ActivityInstance src, ActivityInstanceItem dst) {
 		if (dst != null) {
@@ -734,4 +753,22 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
+	private InboxTaskItem lightActivityInstance2InboxTaskItem(
+			LightActivityInstance activity) {
+		InboxTaskItem taskItem = new InboxTaskItem();
+
+		taskItem.setActivityCreated(activity.getStartedDate());
+		taskItem.setExpectedEndDate(activity.getExpectedEndDate());
+		taskItem.setActivityLabel(activity.getActivityLabel());
+		taskItem.setProcessLabel(getProcessLabel(activity.getProcessDefinitionUUID()));
+		
+		taskItem.setProcessActivityFormInstanceId(new Long(0)); // is not
+																// available
+																// here
+		taskItem.setTaskUuid(activity.getUUID().getValue());
+		taskItem.setActivityDefinitionUuid(activity.getActivityDefinitionUUID().getValue());
+		taskItem.setProcessDefinitionUuid(activity.getProcessDefinitionUUID().getValue());
+		return taskItem;
+	}
+
 }

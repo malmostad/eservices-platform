@@ -89,12 +89,14 @@ public class TaskFormService {
 				startFormItem.setActivityLabel("Ansökan"); // TODO bonita login 
 				startFormItem.setProcessActivityFormInstanceId(form.getProcessActivityFormInstanceId());
 				if (form.getStartFormDefinition()!=null) {
-					startFormItem.setProcessLabel(""); //TODO
+					startFormItem.setProcessLabel("Inte inskickad"); //TODO
 					//startFormItem.setProcessLabel(bonitaClient.getProcessLabel(form.getStartFormDefinition().getProcessDefinitionUuid()));
+					startFormItem.setStartedByFormPath(form.getStartFormDefinition().getFormPath());
 				}
 				else {
 					startFormItem.setProcessLabel("");
 				}
+				
 				unsubmittedStartForms.add(startFormItem);
 			}
 		}
@@ -104,11 +106,20 @@ public class TaskFormService {
 		for (InboxTaskItem item : inbox) {
 			String taskUuid = item.getTaskUuid();
 			log.severe("=======> TASK bonita: " + item);
+			
+			// TODO optimize ???
+			ProcessActivityFormInstance startedByForm = taskFormDb.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item.getProcessInstanceUuid());
+			if (startedByForm != null) {
+				item.setStartedByFormPath(startedByForm.getFormPath());
+			}
+			
 			ProcessActivityFormInstance form = forms.get(taskUuid);
 			if (form != null) {
 				// partial filled not submitted form exist for task	
 				// assign id to inbox item that can be used later to edit/view existing form
-				item.setProcessActivityFormInstanceId(form.getProcessActivityFormInstanceId());	
+				item.setProcessActivityFormInstanceId(form.getProcessActivityFormInstanceId());
+			
+				
 				forms.remove(form);
 			}
 			//else {
@@ -483,12 +494,31 @@ public class TaskFormService {
 		
 	public List<ProcessInstanceListItem> searchProcessInstancesStartedByUser(String user) { 
 		List<ProcessInstanceListItem> result = bonitaClient.getProcessInstancesStartedBy(user);
+		appendProcessAndActivityLabelsFromHippoJcr(result);
 		return result;
+	}
+	
+	private void appendProcessAndActivityLabelsFromHippoJcr(List<ProcessInstanceListItem> items) {
+		for (ProcessInstanceListItem item : items) {
+			
+			String startedByFormPath = null;
+			// TODO optimize ???
+			ProcessActivityFormInstance startedByForm = taskFormDb.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item.getProcessInstanceUuid());
+			if (startedByForm != null) {
+				startedByFormPath = startedByForm.getFormPath();
+				item.setStartedByFormPath(startedByFormPath);
+			}
+			
+			for (InboxTaskItem taskItem : item.getActivities()) {
+				taskItem.setStartedByFormPath(startedByFormPath);
+			}
+		}
 	}
 	
 	public List<ProcessInstanceListItem> getProcessInstancesListByTag(String tagValue) { 
 		List<String> uuids = taskFormDb.getProcessInstancesByTag(tagValue);
 		List<ProcessInstanceListItem> result = bonitaClient.getProcessInstancesByUuids(uuids);
+		appendProcessAndActivityLabelsFromHippoJcr(result);
 		return result;
 	}
 
@@ -631,4 +661,6 @@ public class TaskFormService {
 		
 		return userInfo;
 	}
+	
+	
 }

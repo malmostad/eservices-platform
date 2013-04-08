@@ -35,8 +35,15 @@ public class InboxTaskItem implements Serializable {
 	// internal taskform-engine id, do not store, use in session communication 
 	Long processActivityFormInstanceId;
 
+	String processInstanceUuid;
 	String taskUuid;
-	String activityDefinitionUUID;
+	String processDefinitionUuid;
+	String activityDefinitionUuid;
+	
+	/** 
+	 * The FORM_PATH that identifies the StartFormDefinition that started the case 
+	 */
+	String startedByFormPath;
 	
 	public InboxTaskItem() {
 		
@@ -81,9 +88,15 @@ public class InboxTaskItem implements Serializable {
 	public void setProcessActivityFormInstanceId(Long processActivityFormInstanceId) {
 		this.processActivityFormInstanceId = processActivityFormInstanceId;
 	}
+	
+	public String getProcessInstanceUuid() {
+		return processInstanceUuid;
+	}
 
-	
-	
+	public void setProcessInstanceUuid(String processInstanceUuid) {
+		this.processInstanceUuid = processInstanceUuid;
+	}
+
 	public String getTaskUuid() {
 		return taskUuid;
 	}
@@ -92,12 +105,12 @@ public class InboxTaskItem implements Serializable {
 		this.taskUuid = taskUuid;
 	}
 	
-	public String getActivityDefinitionUUID() {
-		return activityDefinitionUUID;
+	public String getActivityDefinitionUuid() {
+		return activityDefinitionUuid;
 	}
 
-	public void setActivityDefinitionUUID(String activityDefinitionUUID) {
-		this.activityDefinitionUUID = activityDefinitionUUID;
+	public void setActivityDefinitionUuid(String activityDefinitionUuid) {
+		this.activityDefinitionUuid = activityDefinitionUuid;
 	}
 	
 	public String getEditFormUrl() {
@@ -109,6 +122,22 @@ public class InboxTaskItem implements Serializable {
 			result = "form?taskUuid=" + getTaskUuid();				
 		}
 		return result;
+	}
+	
+	public String getProcessDefinitionUuid() {
+		return processDefinitionUuid;
+	}
+
+	public void setProcessDefinitionUuid(String processDefinitionUuid) {
+		this.processDefinitionUuid = processDefinitionUuid;
+	}
+
+	public String getStartedByFormPath() {
+		return startedByFormPath;
+	}
+
+	public void setStartedByFormPath(String startedByFormPath) {
+		this.startedByFormPath = startedByFormPath;
 	}
 
 	public static long getSerialversionuid() {
@@ -123,8 +152,8 @@ public class InboxTaskItem implements Serializable {
 				+ ((activityCreated == null) ? 0 : activityCreated.hashCode());
 		result = prime
 				* result
-				+ ((activityDefinitionUUID == null) ? 0
-						: activityDefinitionUUID.hashCode());
+				+ ((activityDefinitionUuid == null) ? 0
+						: activityDefinitionUuid.hashCode());
 		result = prime * result
 				+ ((activityLabel == null) ? 0 : activityLabel.hashCode());
 		result = prime * result
@@ -133,8 +162,20 @@ public class InboxTaskItem implements Serializable {
 				* result
 				+ ((processActivityFormInstanceId == null) ? 0
 						: processActivityFormInstanceId.hashCode());
+		result = prime
+				* result
+				+ ((processDefinitionUuid == null) ? 0 : processDefinitionUuid
+						.hashCode());
+		result = prime
+				* result
+				+ ((processInstanceUuid == null) ? 0 : processInstanceUuid
+						.hashCode());
 		result = prime * result
 				+ ((processLabel == null) ? 0 : processLabel.hashCode());
+		result = prime
+				* result
+				+ ((startedByFormPath == null) ? 0 : startedByFormPath
+						.hashCode());
 		result = prime * result
 				+ ((taskUuid == null) ? 0 : taskUuid.hashCode());
 		return result;
@@ -154,10 +195,10 @@ public class InboxTaskItem implements Serializable {
 				return false;
 		} else if (!activityCreated.equals(other.activityCreated))
 			return false;
-		if (activityDefinitionUUID == null) {
-			if (other.activityDefinitionUUID != null)
+		if (activityDefinitionUuid == null) {
+			if (other.activityDefinitionUuid != null)
 				return false;
-		} else if (!activityDefinitionUUID.equals(other.activityDefinitionUUID))
+		} else if (!activityDefinitionUuid.equals(other.activityDefinitionUuid))
 			return false;
 		if (activityLabel == null) {
 			if (other.activityLabel != null)
@@ -175,10 +216,25 @@ public class InboxTaskItem implements Serializable {
 		} else if (!processActivityFormInstanceId
 				.equals(other.processActivityFormInstanceId))
 			return false;
+		if (processDefinitionUuid == null) {
+			if (other.processDefinitionUuid != null)
+				return false;
+		} else if (!processDefinitionUuid.equals(other.processDefinitionUuid))
+			return false;
+		if (processInstanceUuid == null) {
+			if (other.processInstanceUuid != null)
+				return false;
+		} else if (!processInstanceUuid.equals(other.processInstanceUuid))
+			return false;
 		if (processLabel == null) {
 			if (other.processLabel != null)
 				return false;
 		} else if (!processLabel.equals(other.processLabel))
+			return false;
+		if (startedByFormPath == null) {
+			if (other.startedByFormPath != null)
+				return false;
+		} else if (!startedByFormPath.equals(other.startedByFormPath))
 			return false;
 		if (taskUuid == null) {
 			if (other.taskUuid != null)
@@ -194,8 +250,13 @@ public class InboxTaskItem implements Serializable {
 				+ ", activityLabel=" + activityLabel + ", activityCreated="
 				+ activityCreated + ", expectedEndDate=" + expectedEndDate
 				+ ", processActivityFormInstanceId="
-				+ processActivityFormInstanceId + ", taskUuid=" + taskUuid
-				+ ", activityDefinitionUUID=" + activityDefinitionUUID + "]";
+				+ processActivityFormInstanceId + ", processInstanceUuid="
+				+ processInstanceUuid + ", taskUuid=" + taskUuid
+				+ ", processDefinitionUuid=" + processDefinitionUuid
+				+ ", activityDefinitionUuid=" + activityDefinitionUuid
+				+ ", startedByFormPath=" + startedByFormPath + "]";
 	}
+
+
 
 }

@@ -20,7 +20,7 @@ public class StartFormDefinition {
 	Long startFormDefinitionId;
 	
 	/**
-	 * Process definition uuid
+	 * Process definition uuid to start when this start form is submitted
 	 */
 	String processDefinitionUuid;
 		
@@ -29,6 +29,7 @@ public class StartFormDefinition {
 	 */
 	@Column(nullable = false, unique = true)
 	String formPath;
+	
 
 	public StartFormDefinition() {
 		
