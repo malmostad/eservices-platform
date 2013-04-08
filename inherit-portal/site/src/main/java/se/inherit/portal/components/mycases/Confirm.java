@@ -34,8 +34,8 @@ public class Confirm extends MyCasesBaseComponent {
 			//return;
 		}
 
-		request.setAttribute("document", doc);
-		String docId = getPublicRequestParameter(request, "docId");
+		request.setAttribute("document", doc); 
+		String docId = getPublicRequestParameter(request, "document"); // parameter from orbeon workflow-send
 		
 		InheritServiceClient isc = new InheritServiceClient();
 		
