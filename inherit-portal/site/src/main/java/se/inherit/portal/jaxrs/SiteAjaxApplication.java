@@ -18,9 +18,12 @@ import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityWorkflowInfo;
 import org.inherit.service.common.domain.CommentFeedItem;
 import org.inherit.service.common.domain.Tag;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import se.inherit.portal.mycases.util.ServletUserNameUtil;
 
 /**
  * Service interface to execute AJAX requests, emeddded in site module 
@@ -63,7 +66,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		int result = GENERAL_ERROR;
 				
-		String userId = getUserName(servletRequest);
+		String userId = getUserUuid(servletRequest);
 
 		log.error("activityInstanceUuid: " + activityInstanceUuid);
 		log.error("comment: " + comment);
@@ -93,7 +96,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		ActivityWorkflowInfo result = null;
 		
-		String userId = getUserName(servletRequest);
+		String userId = getUserUuid(servletRequest);
 		
 		log.error("activityInstanceUuid: " + activityInstanceUuid);
 		log.error("comment: " + action);
@@ -126,7 +129,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		ActivityWorkflowInfo result = null;
 		
-		String userId = getUserName(servletRequest);
+		String userId = getUserUuid(servletRequest);
 		
 		log.error("activityInstanceUuid: " + activityInstanceUuid);
 		log.error("priority: " + priority);
@@ -157,7 +160,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		ActivityWorkflowInfo result = null;
 		
-		String userId = getUserName(servletRequest);
+		String userId = getUserUuid(servletRequest);
 		
 		log.error("activityInstanceUuid: " + activityInstanceUuid);
 		log.error("userId: " + userId);
@@ -187,7 +190,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		ArrayList<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
 		
-		String userId = getUserName(servletRequest);
+		String userId = getUserUuid(servletRequest);
 		
 		log.error("activityInstanceUuid: " + activityInstanceUuid);
 		log.error("userId: " + userId);
@@ -219,7 +222,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		Tag result = null;
 				
-		String userId = getUserName(servletRequest);
+		String userId = getUserUuid(servletRequest);
 
 		log.error("processActivityFormInstanceId: " + processActivityFormInstanceId);
 		log.error("tagTypeId: " + tagTypeId);
@@ -249,7 +252,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		boolean result = false;
 				
-		String userId = getUserName(servletRequest);
+		String userId = getUserUuid(servletRequest);
 
 		log.error("processInstanceUuid: " + processInstanceUuid);
 		log.error("value: " + value);
@@ -268,12 +271,8 @@ public class SiteAjaxApplication extends AbstractResource {
 
 
 
-	private String getUserName(HttpServletRequest servletRequest) {
-		String userName = null;
-		Principal principal = servletRequest.getUserPrincipal();
-		if (principal != null) {
-			userName = principal.getName();
-		}
-		return userName;
+	private String getUserUuid(HttpServletRequest servletRequest) {
+		UserInfo userName = ServletUserNameUtil.getUserName(servletRequest);
+		return (userName == null ? null : userName.getUuid());
 	}
 }
