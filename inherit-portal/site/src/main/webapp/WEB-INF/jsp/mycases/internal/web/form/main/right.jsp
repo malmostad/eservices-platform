@@ -5,7 +5,7 @@
 		<!-- Page content starts here -->
 		<div class="pagecontent" id="svid94_1d8b012512b3897f473800038727">
 			<div id="Hogerspalt">
-				<!-- Högerspalt -->
+				<!-- HÃ¶gerspalt -->
 			</div>
 			<div id="svid10_1d8b012512b3897f473800038728">
 				<div id="Text-1">
@@ -106,7 +106,7 @@
 		<!-- Page content starts here -->
 		<div class="pagecontent" id="svid94_1d8b012512b3897f473800038737">
 			<div id="hhutgar2011">
-				<!-- hh-utgår-2011 -->
+				<!-- hh-utgÃ¥r-2011 -->
 			</div>
 		</div>
 		<!-- Page content stops here -->
@@ -128,7 +128,7 @@
 				<th>Aktivitet</th>
 				<th>Typ</th>
 				<th>V&auml;rde</th>
-				<th>Tidstämpel</th>
+				<th>TidstÃ¤mpel</th>
 				<th></th>
 				<th></th>
 			</tr>
@@ -136,7 +136,7 @@
 		<tbody>
 			<tr>
 				<td>Start</td>
-				<td>Ansökan av</td>
+				<td>AnsÃ¶kan av</td>
 				<td>Kalle</td>
 				<td>2013-01-22</td>
 				<td><button class="edit-tag-btn" href="#">Redigera</button></td>
@@ -197,7 +197,7 @@
 			</tr>
 		</tbody>
 	</table>
-	<h3>Sök användare</h3>
+	<h3>SÃ¶k anvÃ¤ndare</h3>
 	<form>
 		<fieldset>
 			<label for="name"><fmt:message key="mycases.name.lbl" /></label> <input
@@ -279,7 +279,7 @@
 	 * Refresh tags list
 	 */
 	function refreshTags(info) {
-		console.log("refreshTags TODO, asynkront anrop lägger till taggar så tänk ut vettigaste sättet att återkoppla");
+		console.log("refreshTags TODO, asynkront anrop lÃ¤gger till taggar sÃ¥ tÃ¤nk ut vettigaste sÃ¤ttet att Ã¥terkoppla");
 	}
 
 	$("#myTags").tagit({
@@ -473,14 +473,14 @@
 			/* Assigned task */
 			if (info.assignedUser.uuid == '${user.uuid}') {
 				/* Assigned to me */
-				str = "Jag �r tilldelad att utf�ra aktiviteten";
+				str = "Jag är tilldelad att utföra aktiviteten";
 				$("#assign-to-me").hide();
 				$("#unassign").show();
 				$("#edit-candidates").hide();
 			} else {
 				/* Assigned to someone else */
 				str = info.assignedUser.label
-						+ " �r tilldelad att utf�ra aktiviteten";
+						+ " är tilldelad att utföra aktiviteten";
 				$("#assign-to-me").show();
 				$("#unassign").show();
 				$("#edit-candidates").hide();
@@ -488,7 +488,7 @@
 		} else {
 			/* not assigned i.e. list candidates */
 			if ($.isEmptyObject(info) || $.isEmptyObject(info.candidates)) {
-				str = "Ingen kandidat till att utf�ra aktiviteten";
+				str = "Ingen kandidat till att utföra aktiviteten";
 			} else {
 				if (info.candidates.length>0 && info.candidates.length < 4) {
 					str = info.candidates[0].labelShort;
@@ -501,7 +501,7 @@
 							+ info.candidates[2].labelShort + " och "
 							+ (info.candidates.length - 3) + " till";
 				}
-				str += " �r kandidater till att utf�ra aktiviteten";
+				str += " är kandidater till att utföra aktiviteten";
 			}
 			$("#assign-to-me").show();
 			$("#unassign").hide();
