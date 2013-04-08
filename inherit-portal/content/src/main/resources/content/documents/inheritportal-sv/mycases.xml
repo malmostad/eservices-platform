@@ -123,7 +123,7 @@
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>bdc0b028-eb64-4a9b-ab2c-f3350b17bbdd</sv:value>
+            <sv:value>c01001d7-2602-4d76-afa7-d5664bfadbba</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -148,13 +148,13 @@
             <sv:value>2013-03-07T20:42:27.159+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2013-03-07T20:54:59.789+01:00</sv:value>
+            <sv:value>2013-04-08T14:31:51.366+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-04-03T15:02:39.540+02:00</sv:value>
+            <sv:value>2013-04-08T14:31:57.478+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>3d120e5e-c24a-438b-adb9-a5a6ba2f4856</sv:value>
@@ -203,7 +203,7 @@
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>cdc0818f-3278-4139-bff5-c9de9753c86c</sv:value>
+            <sv:value>eb14d1ec-2122-49a0-ba3b-4eaa3f4fe328</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -228,13 +228,13 @@
             <sv:value>2012-11-12T16:33:40.646+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2013-01-30T15:34:46.635+01:00</sv:value>
+            <sv:value>2013-04-08T14:31:27.161+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-04-04T11:50:18.594+02:00</sv:value>
+            <sv:value>2013-04-08T14:31:30.682+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>9ae699d9-e6fe-4506-af8e-3cf37c92c17f</sv:value>
@@ -252,7 +252,7 @@
             <sv:value>en liten demo på en ansökan med inte så många fält och inte för jobbiga valideringar</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:title" sv:type="String">
-            <sv:value>Demo yrkesmässig användning av bekämpningsmedel</sv:value>
+            <sv:value>Demoansökan</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:wordurl" sv:type="String">
             <sv:value/>
@@ -355,6 +355,17 @@
         <sv:property sv:name="jcr:uuid" sv:type="String">
           <sv:value>debf2301-1200-4f7b-a78a-691af6aeb4b4</sv:value>
         </sv:property>
+        <sv:node sv:name="hippo:translation">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hippo:translation</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:language" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="hippo:message" sv:type="String">
+            <sv:value>Granska ansökan</sv:value>
+          </sv:property>
+        </sv:node>
         <sv:node sv:name="spridning_bekampningsmedel--5.0--granska_ansokan">
           <sv:property sv:name="jcr:primaryType" sv:type="Name">
             <sv:value>inheritportal:textdocument</sv:value>
@@ -364,7 +375,7 @@
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>27d52fb6-b323-49b8-8f0a-e4702b3a026a</sv:value>
+            <sv:value>ef8d5345-82a1-42d0-848a-df44a558386a</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -389,13 +400,13 @@
             <sv:value>2012-11-20T13:54:13.361+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2012-11-21T13:34:43.460+01:00</sv:value>
+            <sv:value>2013-04-08T16:29:11.992+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-04-03T15:02:24.874+02:00</sv:value>
+            <sv:value>2013-04-08T16:29:15.599+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>965d232e-ff5e-435f-b686-796af6a2f1f6</sv:value>
@@ -444,17 +455,6 @@
 &lt;/html&gt;</sv:value>
             </sv:property>
           </sv:node>
-        </sv:node>
-        <sv:node sv:name="hippo:translation">
-          <sv:property sv:name="jcr:primaryType" sv:type="Name">
-            <sv:value>hippo:translation</sv:value>
-          </sv:property>
-          <sv:property sv:name="hippo:language" sv:type="String">
-            <sv:value/>
-          </sv:property>
-          <sv:property sv:name="hippo:message" sv:type="String">
-            <sv:value>Granska ansökan</sv:value>
-          </sv:property>
         </sv:node>
       </sv:node>
       <sv:node sv:name="spridning_bekampningsmedel--5.0--remissyttrande_a">

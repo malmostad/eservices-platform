@@ -32,7 +32,27 @@
 							<tr>
 								<td><a
 									href="processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">${item.processLabel}</a></td>
-								<td>${item.status}</td>
+<c:choose>             
+  <c:when test="${item.status == 1}">                                  
+                                                       <td><fmt:message key="mycases.processStatusPending"/><br/>
+                                                       <c:forEach var="activity" items="${item.activities}">
+                                                          ${activity.activityLabel}<br/>
+                                                       </c:forEach>
+                                                       </td>
+  </c:when>
+  <c:when test="${item.status == 2}">                                  
+                                                       <td><fmt:message key="mycases.processStatusFinished"/></td>
+  </c:when>
+  <c:when test="${item.status == 3}">                                  
+                                                       <td><fmt:message key="mycases.processStatusCancelled"/></td>
+  </c:when>
+  <c:when test="${item.status == 4}">                                  
+                                                       <td><fmt:message key="mycases.processStatusAborted"/></td>
+  </c:when>
+  <c:otherwise>
+                               <td></td>
+  </c:otherwise>
+</c:choose>
 								<td><fmt:formatDate value="${item.startDate}" type="Date" /></td>
 								<td><fmt:formatDate value="${item.endDate}" type="Date" /></td>
 							</tr>

@@ -67,9 +67,8 @@ public class Form extends MyCasesBaseComponent {
     		String piUuid = activity.getProcessDefinitionUuid();
     		String aiUuid = activity.getActivityDefinitionUuid();
     		
-    		if (piUuid != null && aiUuid != null) {
-    		
-	    		String guidePath = "/content/documents/inheritportal/mycases/processes/" + piUuid.toLowerCase() + "/" + aiUuid.toLowerCase();
+    		if (piUuid != null && aiUuid != null) {    			
+	    		String guidePath = getMount(request).getCanonicalContentPath() + "/mycases/processes/" + piUuid.toLowerCase() + "/" + aiUuid.toLowerCase();
 	    		log.error("xxxxxxxxxxxxxxxxx guide path: " + guidePath );
 	    		
 	    		try {
@@ -84,6 +83,14 @@ public class Form extends MyCasesBaseComponent {
     	request.setAttribute("user", user);
     	log.error("XXXXXXXXXXXXXXXXXXXX guide:" + guide);
     	log.error("XXXXXXXXXXXXXXXXXXXX form activity:" + activity);
+
+    	log.error("CHANNELPATH: " + getMount(request).getChannelPath());
+    	log.error("MOUNTPATH: " + getMount(request).getMountPath());
+    	log.error("MOUNTPOINT: " + getMount(request).getMountPoint());
+    	log.error("CONTENTPATH: " + getMount(request).getContentPath());
+    	log.error("CANONICAL CONTENTPATH: " + getMount(request).getCanonicalContentPath());
+    	
+    	
 
 	}
 }
