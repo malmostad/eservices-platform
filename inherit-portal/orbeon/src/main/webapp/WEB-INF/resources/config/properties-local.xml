@@ -41,9 +41,9 @@
 <!-- HTTP method to use to navigate to the success page -->
 <property as="xs:string" name="oxf.fr.detail.send.success.method.*.*" value="get"/>
 
-<!-- URL to navigate to in case of error -->
+<!-- URL to navigate to in case of error 
 <property as="xs:anyURI" name="oxf.fr.detail.send.error.uri.*.*"
-          value="http://www.inherit.se"/>
+          value="http://www.inherit.se"/-->
 
 <!-- HTTP method to use to navigate to the error page -->
 <property as="xs:string" name="oxf.fr.detail.send.error.method.*.*" value="get"/>
