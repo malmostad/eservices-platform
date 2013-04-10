@@ -30,4 +30,15 @@
       </sv:node>
     </sv:node>
   </sv:node>
+  <sv:node sv:name="logout">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:sitemapitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+      <sv:value>hst:pages/logout</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+      <sv:value>common/logout</sv:value>
+    </sv:property>
+  </sv:node>
 </sv:node>
