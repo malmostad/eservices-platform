@@ -81,16 +81,8 @@ public class Form extends MyCasesBaseComponent {
     	}
     	request.setAttribute("guide", guide);
     	request.setAttribute("user", user);
-    	log.error("XXXXXXXXXXXXXXXXXXXX guide:" + guide);
-    	log.error("XXXXXXXXXXXXXXXXXXXX form activity:" + activity);
-
-    	log.error("CHANNELPATH: " + getMount(request).getChannelPath());
-    	log.error("MOUNTPATH: " + getMount(request).getMountPath());
-    	log.error("MOUNTPOINT: " + getMount(request).getMountPoint());
-    	log.error("CONTENTPATH: " + getMount(request).getContentPath());
-    	log.error("CANONICAL CONTENTPATH: " + getMount(request).getCanonicalContentPath());
     	
-    	
-
+    	log.info("Guide:" + guide);
+    	log.info("Form activity:" + activity);
 	}
 }
