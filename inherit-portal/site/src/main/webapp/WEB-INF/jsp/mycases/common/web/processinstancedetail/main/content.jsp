@@ -25,7 +25,7 @@
 					<tr>
 				 	  	<td>${pendingTask.activityLabel}</td>
 				 	  	<!--  TODO check start date vs lastStateUpdate -->
-				 	  	<td><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" /></td>
+				 	  	<td><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" dateStyle="short" timeStyle="short"/></td>
 					</tr>
 				</c:forEach>
 			</c:if>
@@ -36,13 +36,13 @@
   	 <p></p>
   	 <c:if test="${not empty timelineByDay}">
 		<c:forEach var="dayEntry" items="${timelineByDay}">
-			<h3><fmt:formatDate value="${dayEntry.key}" type="Date"/></h3>
+			<h3><fmt:formatDate value="${dayEntry.key}" type="Date" dateStyle="long"/></h3>
 			
 			<ul class="toggle-view timeline">
 				<c:forEach var="logItem" items="${dayEntry.value}">
 				    <c:if test="${logItem.type != 5}"> <!-- 5=comment -->
 						<li>
-						  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;${logItem.briefDescription}&nbsp;</h4>
+						  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both" dateStyle="short" timeStyle="short"/>&nbsp;${logItem.briefDescription}&nbsp;</h4>
 						  <span class="exp">+ visa mer...</span>
 						  <div class="panel">
 							<c:choose>
@@ -50,14 +50,21 @@
 									<p>${logItem.description}</p>
 								</c:when>
 								<c:when test="${not empty logItem.viewUrl}">
-									<p><fmt:message key="mycases.loading"/></p>
+									<c:choose>
+										<c:when test="${logItem.user.uuid == userInfo.uuid}">
+										   	<p><fmt:message key="mycases.loading"/></p>									
+										</c:when>
+										<c:otherwise>
+										   <p><fmt:message key="mycases.activityPerformed"/></p>
+										</c:otherwise>
+									</c:choose>
 								</c:when>
 								<c:otherwise>
 									<p><fmt:message key="mycases.nomoredetails"/></p>
 								</c:otherwise>
 							</c:choose>
 						  </div>
-						  <c:if test="${not empty logItem.viewUrl}">
+						  <c:if test="${logItem.user.uuid == userInfo.uuid and not empty logItem.viewUrl}">
 						  	<a class="view-url" href="<fmt:message key="orbeonbase.portal.url"/>${logItem.viewUrl}"></a>
 						  </c:if>
 						</li>

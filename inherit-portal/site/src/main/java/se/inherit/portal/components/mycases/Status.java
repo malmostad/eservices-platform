@@ -90,6 +90,7 @@ public class Status extends MyCasesBaseComponent {
         }
         
         request.setAttribute("processInstances", processInstances);
+        request.setAttribute("userInfo", user);
     }
 
 }

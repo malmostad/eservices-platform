@@ -102,8 +102,8 @@
 					<tr>
 				 	  	<td>${pendingTask.activityLabel}</td>
 				 	  	<!--  TODO check start date vs lastStateUpdate -->
-				 	  	<td><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" /></td>
-				 	  	<td><fmt:formatDate value="${pendingTask.expectedEndDate}" type="Date" /></td> 
+				 	  	<td><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" dateStyle="short" timeStyle="short"/></td>
+				 	  	<td><fmt:formatDate value="${pendingTask.expectedEndDate}" type="Date" dateStyle="short" timeStyle="short"/></td> 
 				 	  	<td>
 				 	  	<c:choose>
 					 	  	<c:when test="${empty pendingTask.candidates}}">
@@ -138,7 +138,7 @@
 		    <c:if test="${not empty processInstanceDetails.commentFeed}">
 				<c:forEach var="comment" items="${processInstanceDetails.commentFeed}">
 					<tr>
-				 	  	<td><fmt:formatDate value="${comment.timeStamp}" type="Both" /></td>
+				 	  	<td><fmt:formatDate value="${comment.timeStamp}" type="Both" dateStyle="short" timeStyle="short"/></td>
 				 	  	</td>
 						<td>${comment.user}</td>
 						<td>${comment.message}</td>
@@ -165,8 +165,8 @@
 				<c:forEach var="logItem" items="${processInstanceDetails.activityLog}">
 					<tr>
 				 	  	<td><a href="${logItem.viewUrl}">${logItem.activityLabel}</a></td>
-				 	  	<td><fmt:formatDate value="${logItem.startDate}" type="Both" /></td>
-				 	  	<td><fmt:formatDate value="${logItem.endDate}" type="Both" /></td>
+				 	  	<td><fmt:formatDate value="${logItem.startDate}" type="Both" dateStyle="short" timeStyle="short"/></td>
+				 	  	<td><fmt:formatDate value="${logItem.endDate}" type="Both" dateStyle="short" timeStyle="short"/></td>
 						<td>${logItem.performedByUser}</td>
 					</tr>
 					<tr>
@@ -177,7 +177,7 @@
 				</c:forEach>
 				<tr>
 				 	  	<td><a href="${processInstanceDetails.startActivity.viewUrl}"><fmt:message key="mycases.caseStarted.lbl"/></a></td>
-				 	  	<td><fmt:formatDate value="${processInstanceDetails.startDate}" type="Both" /></td>
+				 	  	<td><fmt:formatDate value="${processInstanceDetails.startDate}" type="Both" dateStyle="short" timeStyle="short"/></td>
 				 	  	<td></td>
 						<td>${processInstanceDetails.startedBy}</td>
 				</tr>

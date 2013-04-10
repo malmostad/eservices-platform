@@ -73,8 +73,8 @@
 				<tr>
 			 	  	<td>${pendingTask.activityLabel}</td>
 			 	  	<!--  TODO check start date vs lastStateUpdate -->
-			 	  	<td><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" /></td>
-			 	  	<td><fmt:formatDate value="${pendingTask.expectedEndDate}" type="Date" /></td> 
+			 	  	<td><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" dateStyle="short" timeStyle="short"/></td>
+			 	  	<td><fmt:formatDate value="${pendingTask.expectedEndDate}" type="Date" dateStyle="short" timeStyle="short"/></td> 
 			 	  	<td>
 			 	  	<c:choose>
 				 	  	<c:when test="${empty pendingTask.candidates}}">
@@ -100,12 +100,12 @@
   	 <p></p>
   	 <c:if test="${not empty timelineByDay}">
 		<c:forEach var="dayEntry" items="${timelineByDay}">
-			<h3><fmt:formatDate value="${dayEntry.key}" type="Date"/></h3>
+			<h3><fmt:formatDate value="${dayEntry.key}" type="Date" dateStyle="long" timeStyle="short"/></h3>
 			
 			<ul class="toggle-view timeline">
 				<c:forEach var="logItem" items="${dayEntry.value}">
 					<li>
-					  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both"/>&nbsp;${logItem.briefDescription}&nbsp;(${logItem.user})</h4>
+					  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both" dateStyle="short" timeStyle="short"/>&nbsp;${logItem.briefDescription}&nbsp;(${logItem.user})</h4>
 					  <span class="exp">+ visa mer...</span>
 					  <div class="panel komin-xform">
 						<c:choose>

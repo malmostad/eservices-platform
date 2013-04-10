@@ -8,7 +8,7 @@
                         <li><a href="${task.editFormUrl}">
                                         <h3>${task.activityLabel}</h3>
                                         <p>
-                                                ${task.processLabel} - <fmt:formatDate value="${task.activityCreated}" type="Date" />
+                                                ${task.processLabel} - <fmt:formatDate value="${task.activityCreated}" type="Date" dateStyle="short" timeStyle="short"/>
                                         </p>
                         </a></li>
                 </ul>

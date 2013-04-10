@@ -53,8 +53,8 @@
                                <td></td>
   </c:otherwise>
 </c:choose>
-								<td><fmt:formatDate value="${item.startDate}" type="Date" /></td>
-								<td><fmt:formatDate value="${item.endDate}" type="Date" /></td>
+								<td><fmt:formatDate value="${item.startDate}" type="Date" dateStyle="short" timeStyle="short"/></td>
+								<td><fmt:formatDate value="${item.endDate}" type="Date" dateStyle="short" timeStyle="short"/></td>
 							</tr>
 						</c:forEach>
 					</c:when>

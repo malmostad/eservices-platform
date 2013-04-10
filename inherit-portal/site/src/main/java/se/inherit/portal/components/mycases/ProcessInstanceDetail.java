@@ -4,6 +4,7 @@ import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
+import org.inherit.service.common.domain.UserInfo;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +17,7 @@ public class ProcessInstanceDetail extends MyCasesBaseComponent {
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
 		
-//		String userName = getUserName(request);
+		UserInfo userInfo = getUserName(request);
 
 		String processInstanceUuid = getPublicRequestParameter(request,
 				"processInstanceUuid");
@@ -35,6 +36,7 @@ public class ProcessInstanceDetail extends MyCasesBaseComponent {
 		if (piDetails != null && piDetails.getTimeline() != null) {
 			request.setAttribute("timelineByDay", piDetails.getTimeline().getTimelineByDay());
 		}
-
+		
+		request.setAttribute("userInfo", userInfo);
 	}
 }
