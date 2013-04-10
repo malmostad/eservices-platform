@@ -372,26 +372,38 @@ public class TaskFormService {
 		return processActivityFormInstance2ActivityInstancePendingItem(src);
 	}
 		
+	/**
+	 * This conversion is only valid on StartForms
+	 * @param src
+	 * @return
+	 */
 	private ActivityInstancePendingItem processActivityFormInstance2ActivityInstancePendingItem(ProcessActivityFormInstance src) {
+		// TODO this method name is confusing, it is only working on start forms...
 		ActivityInstancePendingItem dst = new ActivityInstancePendingItem();
-		dst.setProcessDefinitionUuid(src.getStartFormDefinition().getProcessDefinitionUuid());
-		dst.setActivityName("StartCaseTODO");
-		dst.setActivityLabel("Starta ärende TODO");
-		dst.setStartDate(null);
-		dst.setCurrentState("TODO");
-		dst.setLastStateUpdate(null);
-		dst.setLastStateUpdateByUserId(src.getUserId());
-		dst.setExpectedEndDate(null);
-		dst.setPriority(0);
-		dst.setStartedBy("");
-		dst.setAssignedUser(taskFormDb.getUserByUuid(src.getUserId()));
-		dst.setExpectedEndDate(null);
-		dst.setFormUrl(src.calcEditUrl());
-		
-		dst.setProcessInstanceUuid(null);
-		dst.setActivityInstanceUuid(null);
-		dst.setActivityDefinitionUuid(null);
-		
+		try {
+			dst.setProcessDefinitionUuid(src.getStartFormDefinition().getProcessDefinitionUuid());
+			dst.setActivityName("StartCaseTODO");
+			dst.setActivityLabel("Starta ärende TODO");
+			dst.setStartDate(null);
+			dst.setCurrentState("TODO");
+			dst.setLastStateUpdate(null);
+			dst.setLastStateUpdateByUserId(src.getUserId());
+			dst.setExpectedEndDate(null);
+			dst.setPriority(0);
+			dst.setStartedBy("");
+			dst.setAssignedUser(taskFormDb.getUserByUuid(src.getUserId()));
+			dst.setExpectedEndDate(null);
+			dst.setFormUrl(src.calcEditUrl());
+			
+			dst.setProcessInstanceUuid(null);
+			dst.setActivityInstanceUuid(null);
+			dst.setActivityDefinitionUuid(null);
+		}
+		catch (RuntimeException re) {
+			log.severe("Cannot convert ProcessActivityFormInstance " + src + " to ActivityInstancePendingItem. RuntimeException: " + re);
+			throw re;
+		}
+			
 		return dst;
 	}
 
