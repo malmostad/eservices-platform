@@ -5,7 +5,7 @@
 	Ej inloggad  <a href="/site/login/form">Logga in</a>
   </c:when>
   <c:otherwise>
-	Inloggad som: ${user.label} <a href="/site/login/logout">Logga ut</a>
+	Inloggad som: ${user.label} <a href="/site/logout">Logga ut</a>
   </c:otherwise>
 </c:choose>
 
