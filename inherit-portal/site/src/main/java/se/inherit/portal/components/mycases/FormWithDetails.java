@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 
 public class FormWithDetails extends Form  {
-
+ 
 	public static final Logger log = LoggerFactory.getLogger(FormWithDetails.class);
 	
 	@Override
@@ -38,6 +38,8 @@ public class FormWithDetails extends Form  {
 				piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activity.getActivityInstanceUuid());
 			}
 		}
+		String canonicalContentPath = getMount(request).getCanonicalContentPath();
+		
 		request.setAttribute("processInstanceDetails", piDetails);
 		
 		if (piDetails != null && piDetails.getProcessInstanceUuid() != null) {
@@ -50,4 +52,8 @@ public class FormWithDetails extends Form  {
 			log.error("timeline=" + piDetails.getTimeline().getTimelineByDay());
 		}
     }
+	
+	private void lookupJcrNamesOfActivitiesAndProcesses(ProcessInstanceDetails piDetails, String canonicalContentPath) {
+		
+	}
 }

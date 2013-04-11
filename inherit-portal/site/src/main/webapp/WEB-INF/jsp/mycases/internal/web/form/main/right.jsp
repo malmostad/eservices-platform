@@ -285,7 +285,8 @@
 	$("#myTags").tagit({
 	   onTagClicked: function(event, ui) {
              // do something special
-             console.log("clicked " + ui.tag);
+             console.log("clicked " + ui.tag.tagLabel);
+             window.location.href = "./search/casesbytagvalue?searchStr=" + ui.tagLabel;
            },
            beforeTagRemoved: function(event, ui) {
              // do something special

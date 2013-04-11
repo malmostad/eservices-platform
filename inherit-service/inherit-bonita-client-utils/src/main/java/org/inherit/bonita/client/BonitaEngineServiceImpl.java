@@ -19,6 +19,7 @@ import org.inherit.service.common.domain.ActivityInstancePendingItem;
 import org.inherit.service.common.domain.CommentFeedItem;
 import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
+import org.inherit.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
 import org.inherit.service.common.domain.ActivityWorkflowInfo;
@@ -33,6 +34,7 @@ import org.ow2.bonita.facade.exception.InstanceNotFoundException;
 import org.ow2.bonita.facade.exception.ProcessNotFoundException;
 import org.ow2.bonita.facade.exception.UserAlreadyExistsException;
 import org.ow2.bonita.facade.identity.User;
+import org.ow2.bonita.facade.paging.ProcessInstanceCriterion;
 import org.ow2.bonita.facade.runtime.ActivityInstance;
 import org.ow2.bonita.facade.runtime.ActivityState;
 import org.ow2.bonita.facade.runtime.Comment;
@@ -137,10 +139,10 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
-	public List<ProcessInstanceListItem> getProcessInstancesByUuids(List<String> processInstanceUuids) {
-		List<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
+	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(List<String> processInstanceUuids, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) {
+		PagedProcessInstanceSearchResult result = null;
 		
-		Collection<ProcessInstanceUUID> uuids = new ArrayList<ProcessInstanceUUID>();
+		Set<ProcessInstanceUUID> uuids = new HashSet<ProcessInstanceUUID>();
 		for (String processInstanceUuid : processInstanceUuids) {
 			ProcessInstanceUUID uuid = new ProcessInstanceUUID(processInstanceUuid);
 			uuids.add(uuid);
@@ -148,12 +150,18 @@ public class BonitaEngineServiceImpl {
 		
 		try {
 			LoginContext loginContext = BonitaUtil.login();
-			Set<LightProcessInstance> piList = AccessorUtil.getQueryRuntimeAPI().getLightProcessInstances(uuids);
+			
+			ProcessInstanceCriterion criterion = this.str2ProcessInstanceCriterion(sortBy, sortOrder);
+			
+			List<LightProcessInstance> piList = AccessorUtil.getQueryRuntimeAPI().getLightProcessInstances(uuids, 0, Integer.MAX_VALUE, criterion);
+			
+			result = calcPagedProcessInstanceSearchResult(piList,  fromIndex, pageSize, sortBy, sortOrder, filter);
+			/*
 			for (LightProcessInstance pi : piList) {
 				ProcessInstanceListItem item = new ProcessInstanceListItem();
 				loadProcessInstanceBriefProperties(pi, item);
 				result.add(item);
-			}
+			}*/
 		    BonitaUtil.logout(loginContext);
 		}
 		catch (Exception e) {
@@ -161,7 +169,7 @@ public class BonitaEngineServiceImpl {
 		}
 		return result;
 	}
-	
+		
 	public List<ProcessInstanceListItem> getProcessInstancesInvolvedUser(String user, int fromIndex, int pageSize) {
 		// TODO add sort order???
 		List<ProcessInstanceListItem> result = new ArrayList<ProcessInstanceListItem>();
@@ -242,24 +250,109 @@ public class BonitaEngineServiceImpl {
 			Collection<TaskInstance> taskList = AccessorUtil.getQueryRuntimeAPI().getTaskList(userId, ActivityState.READY);
 			
 			for (TaskInstance taskInstance : taskList) {
-				InboxTaskItem taskItem = new InboxTaskItem();
-				
-				taskItem.setActivityCreated(taskInstance.getStartedDate());
-				taskItem.setExpectedEndDate(taskInstance.getExpectedEndDate());
-				taskItem.setActivityLabel(taskInstance.getActivityLabel());
-				taskItem.setProcessLabel(getProcessLabel(taskInstance.getProcessDefinitionUUID()));;
-				taskItem.setProcessActivityFormInstanceId(new Long(0)); // TODO
-				taskItem.setTaskUuid(taskInstance.getUUID().getValue());
-				taskItem.setProcessInstanceUuid(taskInstance.getProcessInstanceUUID().getValue());
-				taskItem.setActivityDefinitionUuid(taskInstance.getActivityDefinitionUUID().getValue());
-				taskItem.setProcessDefinitionUuid(taskInstance.getProcessDefinitionUUID().getValue());
-				result.add(taskItem);
+				result.add(lightActivityInstance2InboxTaskItem(taskInstance));
 			}
 			BonitaUtil.logout(loginContext);
 		}
 		catch (Exception e) {
 			log.severe("Exception: " + e);
 		}
+		return result;
+	}
+	
+	
+	private ProcessInstanceCriterion str2ProcessInstanceCriterion(String sortBy, String sortOrder) {
+		ProcessInstanceCriterion result = ProcessInstanceCriterion.DEFAULT;
+		
+		if ("started".equalsIgnoreCase(sortBy)) {
+			if ("asc".equalsIgnoreCase(sortOrder)) {
+				result = ProcessInstanceCriterion.STARTED_DATE_ASC;
+			}
+			else {
+				result = ProcessInstanceCriterion.STARTED_DATE_DESC;
+			}
+		}
+		else if ("ended".equalsIgnoreCase(sortBy)) {
+			if ("asc".equalsIgnoreCase(sortOrder)) {
+				result = ProcessInstanceCriterion.ENDED_DATE_ASC;
+			}
+			else {
+				result = ProcessInstanceCriterion.ENDED_DATE_DESC;
+			}			
+		}
+		else if ("last_update".equalsIgnoreCase(sortBy)) {
+			if ("asc".equalsIgnoreCase(sortOrder)) {
+				result = ProcessInstanceCriterion.LAST_UPDATE_ASC;
+			}
+			else {
+				result = ProcessInstanceCriterion.LAST_UPDATE_DESC;
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 
+	 * @param searchForUserId
+	 * @param fromIndex
+	 * @param pageSize
+	 * @param sortBy
+	 * @param sortOrder
+	 * @param filter 
+	 * @param userId
+	 * @return
+	 */
+	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
+		PagedProcessInstanceSearchResult result = null;
+		
+		try {
+			ProcessInstanceCriterion criterion = this.str2ProcessInstanceCriterion(sortBy, sortOrder);
+			
+			LoginContext loginContext = BonitaUtil.login(); 
+
+			List<LightProcessInstance> piList = AccessorUtil.getQueryRuntimeAPI().getLightParentProcessInstancesWithInvolvedUser(searchForUserId, 0, Integer.MAX_VALUE, criterion);
+			
+			result = calcPagedProcessInstanceSearchResult(piList,  fromIndex, pageSize, sortBy, sortOrder, filter);
+			
+			BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+
+		return result;
+	}
+	
+	private PagedProcessInstanceSearchResult calcPagedProcessInstanceSearchResult(List<LightProcessInstance> piList, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter) {
+		PagedProcessInstanceSearchResult result = new PagedProcessInstanceSearchResult();
+		
+		int numberOfHits = 0;
+
+		for (LightProcessInstance pi : piList) {
+
+			if (InstanceState.FINISHED.equals(pi.getInstanceState()) && "FINISHED".equalsIgnoreCase(filter)) {
+				if (numberOfHits>=fromIndex && result.getHits().size()<pageSize) {
+					ProcessInstanceListItem item = new ProcessInstanceListItem();
+					loadProcessInstanceBriefProperties(pi, item);
+					result.getHits().add(item);
+				}
+				numberOfHits++;
+			}
+			else if (InstanceState.STARTED.equals(pi.getInstanceState()) && "STARTED".equalsIgnoreCase(filter)) {
+				if (numberOfHits>=fromIndex && result.getHits().size()<pageSize) {
+					ProcessInstanceListItem item = new ProcessInstanceListItem();
+					loadProcessInstanceBriefProperties(pi, item);
+					result.getHits().add(item);
+				}
+				numberOfHits++;
+			}
+		}
+		result.setFromIndex(fromIndex);
+		result.setPageSize(pageSize);
+		result.setSortBy(sortBy);
+		result.setSortOrder(sortOrder);
+		result.setNumberOfHits(numberOfHits);
 		return result;
 	}
 	
@@ -760,15 +853,15 @@ public class BonitaEngineServiceImpl {
 		taskItem.setActivityCreated(activity.getStartedDate());
 		taskItem.setExpectedEndDate(activity.getExpectedEndDate());
 		taskItem.setActivityLabel(activity.getActivityLabel());
-		taskItem.setProcessLabel(getProcessLabel(activity.getProcessDefinitionUUID()));
-		
-		taskItem.setProcessActivityFormInstanceId(new Long(0)); // is not
-																// available
-																// here
+		taskItem.setProcessLabel(getProcessLabel(activity.getProcessDefinitionUUID()));;
+		taskItem.setProcessActivityFormInstanceId(new Long(0)); // TODO
 		taskItem.setTaskUuid(activity.getUUID().getValue());
+		taskItem.setProcessInstanceUuid(activity.getProcessInstanceUUID().getValue());
 		taskItem.setActivityDefinitionUuid(activity.getActivityDefinitionUUID().getValue());
 		taskItem.setProcessDefinitionUuid(activity.getProcessDefinitionUUID().getValue());
+
 		return taskItem;
+		
 	}
 
 }

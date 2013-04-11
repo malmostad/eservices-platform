@@ -18,10 +18,11 @@ public class SearchProcessInstancesStartedByUser extends ServerResource {
 	
 	@Post
 	public List<ProcessInstanceListItem> searchProcessInstancesStartedByUser() {
-		String userid = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
+		String searchForUserId = ParameterEncoder.decode((String)getRequestAttributes().get("searchForUserId"));
+		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userId"));
 		
-		log.fine("REST getUserInstancesList with parameter userid=[" + userid + "]" );
+		log.fine("REST getUserInstancesList with parameter searchForUserId=[" + searchForUserId + "] userId=[" + userId + "]");
 		
-		return engine.searchProcessInstancesStartedByUser(userid);
+		return engine.searchProcessInstancesStartedByUser(searchForUserId, userId);
 	}
 }

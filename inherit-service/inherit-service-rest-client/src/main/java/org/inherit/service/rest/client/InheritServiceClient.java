@@ -16,6 +16,7 @@ import org.inherit.service.common.domain.ActivityWorkflowInfo;
 import org.inherit.service.common.domain.CommentFeedItem;
 import org.inherit.service.common.domain.DashOpenActivities;
 import org.inherit.service.common.domain.InboxTaskItem;
+import org.inherit.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inherit.service.common.domain.ProcessDefinitionInfo;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
@@ -73,6 +74,7 @@ public class InheritServiceClient {
 		xstream.alias("ActivityInstancePendingItem", ActivityInstancePendingItem.class);
 		xstream.alias("DashOpenActivities", DashOpenActivities.class);
 		xstream.alias("ActivityWorkflowInfo", ActivityWorkflowInfo.class);
+		xstream.alias("PagedProcessInstanceSearchResult", PagedProcessInstanceSearchResult.class);
 		xstream.alias("Tag", Tag.class);
 		xstream.alias("UserInfo", UserInfo.class);
 		
@@ -80,9 +82,9 @@ public class InheritServiceClient {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ArrayList<ProcessInstanceListItem> searchProcessInstancesStartedByUser(String bonitaUser) {
+	public ArrayList<ProcessInstanceListItem> searchProcessInstancesStartedByUser(String searchForUserId, String userId) {
 		 ArrayList<ProcessInstanceListItem> result = null;
-		String uri = serverBaseUrl + "searchProcessInstancesStartedByUser/" + ParameterEncoder.encode(bonitaUser) + "?media=xml";
+		String uri = serverBaseUrl + "searchProcessInstancesStartedByUser/" + ParameterEncoder.encode(searchForUserId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
 		String response = call(uri);
 		System.out.println(response);
 		if (response != null) {
@@ -90,7 +92,27 @@ public class InheritServiceClient {
 		}
 		return result;
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(
+			String searchForUserId, int fromIndex, int pageSize, String sortBy,
+			String sortOrder, String filter, String userId) {
+		PagedProcessInstanceSearchResult result = null;
+		String uri = serverBaseUrl + "searchProcessInstancesWithInvolvedUser/"
+				+ ParameterEncoder.encode(searchForUserId) + "/" + fromIndex
+				+ "/" + pageSize + "/" + ParameterEncoder.encode(sortBy) + "/"
+				+ ParameterEncoder.encode(sortOrder) + "/"
+				+ ParameterEncoder.encode(filter) + "/"
+				+ ParameterEncoder.encode(userId) + "?media=xml";
+		String response = call(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (PagedProcessInstanceSearchResult) xstream
+					.fromXML(response);
+		}
+		return result;
+	}
+
 	public ProcessInstanceDetails getProcessInstanceDetailByUuid(String processInstanceUuid) {
 		ProcessInstanceDetails result = null;
 		String uri = serverBaseUrl + "processInstanceDetailsByUuid/" + ParameterEncoder.encode(processInstanceUuid) + "?media=xml";
@@ -369,13 +391,13 @@ public class InheritServiceClient {
 	//{}/{}
 	
 	@SuppressWarnings("unchecked")
-	public ArrayList<ProcessInstanceListItem> searchProcessInstancesByTagValue(String tagValue) {
-		 ArrayList<ProcessInstanceListItem> result = null;
-		String uri = serverBaseUrl + "searchProcessInstancesByTagValue/" + ParameterEncoder.encode(tagValue) + "?media=xml";
+	public PagedProcessInstanceSearchResult searchProcessInstancesByTagValue(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) {
+		PagedProcessInstanceSearchResult result = null;
+		String uri = serverBaseUrl + "searchProcessInstancesByTagValue/" + ParameterEncoder.encode(tagValue)+ "/" + fromIndex + "/" + pageSize + "/" + ParameterEncoder.encode(sortBy) + "/" + ParameterEncoder.encode(sortOrder)  + "/" + ParameterEncoder.encode(filter) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
 		String response = call(uri);
 		System.out.println(response);
 		if (response != null) {
-			result = (ArrayList<ProcessInstanceListItem>)xstream.fromXML(response);
+			result = (PagedProcessInstanceSearchResult)xstream.fromXML(response);
 		}
 		return result;
 	}
@@ -476,26 +498,43 @@ public class InheritServiceClient {
 		System.out.println("Testa InheritServiceClient");
 		
 		InheritServiceClient c = new InheritServiceClient();
-		ArrayList<ProcessInstanceListItem> list = c.searchProcessInstancesStartedByUser("john");
+		ArrayList<ProcessInstanceListItem> list = c.searchProcessInstancesStartedByUser("john", "james");
+		System.out.println("searchProcessInstancesStartedByUser");
 		for (ProcessInstanceListItem item : list) {
 			System.out.println("item: " + item);
 		}
-
+/*
 		ArrayList<InboxTaskItem> listInbx = c.getInboxByUserId("john");
+		System.out.println("getInboxByUserId");
 		for (InboxTaskItem item : listInbx) {
 			System.out.println("listInbx item: " + item);
 		}
 
-	    list = c.searchProcessInstancesByTagValue("12345678/12");
-		for (ProcessInstanceListItem item : list) {
+		PagedProcessInstanceSearchResult hits = c.searchProcessInstancesByTagValue("ture", 0, 5 , "started", "desc", "STARTED", "james");
+		System.out.println("searchProcessInstancesByTagValue");
+		for (ProcessInstanceListItem item : hits.getHits()) {
 			System.out.println("item: " + item);
 		}
-		
-		Set<String> users = c.getUsersByRoleAndActivity("Registrator", "activityInstanceUuid");
-		for (String user : users) {
-			System.out.println("user: " + user);
+		System.out.println("Hits: " + hits);
+		System.out.println("Number of hits: " + hits.getNumberOfHits());
+		 
+		hits = c.searchProcessInstancesWithInvolvedUser("john", 2, 5 , "started", "desc", "STARTED", "james");
+		System.out.println("searchProcessInstancesWithInvolvedUser");
+		for (ProcessInstanceListItem item : hits.getHits()) {
+			System.out.println("item: " + item);
 		}
-		
+		System.out.println("Hits: " + hits);
+		System.out.println("Number of hits: " + hits.getNumberOfHits());
+
+		hits = c.searchProcessInstancesWithInvolvedUser("john", 2, 5 , "started", "desc", "FINISHED", "james");
+		System.out.println("searchProcessInstancesWithInvolvedUser");
+		for (ProcessInstanceListItem item : hits.getHits()) {
+			System.out.println("item: " + item);
+		}
+		System.out.println("Hits: " + hits);
+		System.out.println("Number of hits: " + hits.getNumberOfHits());
+
+		*/
 		System.out.println("InheritServiceClient avslutas");
 	}
 	

@@ -131,6 +131,28 @@ public class TaskFormDb {
 		return filterUniqueProcessActivityFormInstanceFromList(result);
 	}
 	
+   @SuppressWarnings("unchecked")
+   public List<ProcessActivityFormInstance> getProcessActivityFormInstances(String processInstanceUuid) {
+           List<ProcessActivityFormInstance> result = null;
+           
+           Session session = HibernateUtil.getSessionFactory().openSession();
+           
+           try {
+                   //result = (List<ProcessDefinition>)session.createQuery(hql).list();
+                   result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+                                   .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) )  // this user is last writer
+                                   .list();
+           }
+           catch (Exception e) {
+                   log.severe("Exception in getProcessActivityFormInstances: processInstanceUuid="  + processInstanceUuid + " exception: " + e);
+           }
+           finally {
+                   session.close();
+           }
+           return result;
+   }
+
+	
 	public ProcessActivityFormInstance getProcessActivityFormInstanceByActivityInstanceUuid(String activityInstanceUuid) {
 		List<ProcessActivityFormInstance> result = null;
 		

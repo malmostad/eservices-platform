@@ -37,7 +37,7 @@ public class Status extends MyCasesBaseComponent {
         request.setAttribute("document",doc);
 
         InheritServiceClient isc = new InheritServiceClient();
-        ArrayList<ProcessInstanceListItem> processInstances = isc.searchProcessInstancesStartedByUser(user.getUuid());
+        ArrayList<ProcessInstanceListItem> processInstances = isc.searchProcessInstancesStartedByUser(user.getUuid(), user.getUuid());
         
         
         if (processInstances != null) {

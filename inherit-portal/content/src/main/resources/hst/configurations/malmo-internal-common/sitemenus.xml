@@ -20,31 +20,38 @@
         <sv:value>hst:sitemenuitem</sv:value>
       </sv:property>
       <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-        <sv:value>mycases/search</sv:value>
+        <sv:value>mycases/search/casesbyinvolveduser</sv:value>
       </sv:property>
       <sv:node sv:name="Person">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
+        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+          <sv:value>mycases/search/casesbyinvolveduser</sv:value>
+        </sv:property>
       </sv:node>
-      <sv:node sv:name="Företag">
+      <sv:node sv:name="Etikett">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
+        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+          <sv:value>mycases/search/casesbytagvalue</sv:value>
+        </sv:property>
       </sv:node>
-      <sv:node sv:name="Diarienr">
+      <sv:node sv:name="Mina pågående">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
+        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+          <sv:value>mycases/search/with-me/pending</sv:value>
+        </sv:property>
       </sv:node>
-      <sv:node sv:name="Där jag deltagit">
+      <sv:node sv:name="Mina arkiverade">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
-      </sv:node>
-      <sv:node sv:name="Avancerad">
-        <sv:property sv:name="jcr:primaryType" sv:type="Name">
-          <sv:value>hst:sitemenuitem</sv:value>
+        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+          <sv:value>mycases/search/with-me/archived</sv:value>
         </sv:property>
       </sv:node>
     </sv:node>

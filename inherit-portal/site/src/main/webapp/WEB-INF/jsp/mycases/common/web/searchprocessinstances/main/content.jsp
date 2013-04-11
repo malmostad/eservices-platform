@@ -22,11 +22,42 @@
 			<input type="hidden" name="pageSize" value="${pageSize}"/>
 			<input type="hidden" name="sortBy" value="${sortBy}"/>
 			<input type="hidden" name="sortOrder" value="${sortOrder}"/>
-			<input type="hidden"  name="searchStr" value="${searchStr}"><br/>
+			<input type="input"  name="searchStr" value="${searchStr}"><br/>
 			<input type="hidden" name="editablefilter" value="${editablefilter}"/>
-			<input type="hidden" name="filter" value="${filter}"/>
+			
+			<c:choose>
+			  <c:when test="${editablefilter eq 'false'}">
+			  	<input type="hidden" name="filter" value="${filter}"/>
+			  </c:when>
+			  <c:otherwise>
+					<c:choose>		
+				      <c:when test="${filter eq 'STARTED'}">	
+						<input type="radio" name="filter" value="STARTED" checked/>P&aring;g&aring;ende<br/>
+					  </c:when>
+					  <c:otherwise>
+					    <input type="radio" name="filter" value="STARTED"/>P&aring;g&aring;ende<br/>
+					  </c:otherwise>
+					</c:choose>
+					<c:choose>		
+				      <c:when test="${filter eq 'FINISHED'}">	
+						<input type="radio" name="filter" value="FINISHED" checked/> Avslutade<br/>
+					  </c:when>
+					  <c:otherwise>
+					    <input type="radio" name="filter" value="FINISHED"/> Avslutade<br/>
+					  </c:otherwise>
+					</c:choose>
+		    	</c:otherwise>
+		    </c:choose>
+			
+			<button id="search-btn" href="#">S&ouml;k</button>
 		</form>
 		
+		<script type="text/javascript">
+			  $("#search-btn").click(function(event) {
+			   $("#searchPanelForm  > input[name=page]").prop("value", 1);
+			  });
+		</script>
+
 		<table class="display dataTable" width="100%">
 			<thead>
 				<tr>
