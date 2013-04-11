@@ -73,7 +73,7 @@
 						<c:forEach var="item" items="${searchResult.hits}">
 							<tr>
 								<td><a
-									href="processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">${item.processLabel}</a></td>
+									href="../processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">${item.processLabel}</a></td>
 <c:choose>             
   <c:when test="${item.status == 1}">                                  
                                                        <td><fmt:message key="mycases.processStatusPending"/><br/>
