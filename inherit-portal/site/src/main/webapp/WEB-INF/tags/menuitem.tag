@@ -12,7 +12,7 @@
    	</c:choose>
 </c:set>
 <c:choose>
-  <c:when test="${siteMenuItem.selected}">
+  <c:when test="${siteMenuItem.selected or siteMenuItem.expanded}">
   	
   		<c:choose>
   			<c:when test="${siteMenuItem.expanded and not empty siteMenuItem.childMenuItems}">
