@@ -75,11 +75,6 @@
 					</ul>
 				</form>
 
-				<p>
-					<a href="#" id="add-tags"><fmt:message
-							key="mycases.edittags.lbl" /></a>
-				</p>
-
 
 			</div>
 
@@ -111,48 +106,6 @@
 		</div>
 		<!-- Page content stops here -->
 	</div>
-</div>
-
-<!-- Modal dialog to edit tags associated to the case-->
-<div id="dialog-tags-case" title="<fmt:message key="mycases.tags.lbl"/>">
-	<p class="validateTips">
-		<fmt:message key="mycases.tagsdialog.hint" />
-	</p>
-	<!-- Taggar TODO case -->
-	<h3>
-		<fmt:message key="mycases.tags.lbl" />
-	</h3>
-	<table>
-		<thead>
-			<tr>
-				<th>Aktivitet</th>
-				<th>Typ</th>
-				<th>V&auml;rde</th>
-				<th>TidstÃ¤mpel</th>
-				<th></th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>Start</td>
-				<td>AnsÃ¶kan av</td>
-				<td>Kalle</td>
-				<td>2013-01-22</td>
-				<td><button class="edit-tag-btn" href="#">Redigera</button></td>
-				<td><button class="remove-tag-btn" href="#"></button></td>
-			</tr>
-		</tbody>
-	</table>
-
-	<form action="/site/restservices/site-ajax/addTag" id="addTag"
-		class="siteAjaxForm">
-		<input type="hidden" name="activityInstanceUuid"
-			value="${activity.activityInstanceUuid}" /> <input type="text"
-			name="tag-value" placeholder="Diarienr" /> <input type="submit"
-			value="<fmt:message key="mycases.add.lbl"/>" />
-		<button class="add-tag-btn" href="#"></button>
-	</form>
 </div>
 
 <!-- Modal dialog to comment the case-->
@@ -319,29 +272,6 @@
            }
         });
 
-	$("#dialog-tags-case").dialog({
-		autoOpen : false,
-		height : 300,
-		width : 350,
-		modal : true,
-		buttons : {
-			"Ok" : function() {
-				var bValid = true;
-				allFields.removeClass("ui-state-error");
-				bValid = bValid && checkLength(tag, "Ogiltig etikett", 1, 255);
-				if (bValid) {
-					// submit form
-				}
-			},
-			Cancel : function() {
-				$(this).dialog("close");
-			}
-		},
-		close : function() {
-			allFields.val("").removeClass("ui-state-error");
-		}
-	});
-
 	$("#dialog-comment-case").dialog(
 			{
 				autoOpen : false,
@@ -397,10 +327,6 @@
 
 	$("#add-comment").click(function() {
 		$("#dialog-comment-case").dialog("open");
-	});
-
-	$("#add-tags").click(function() {
-		$("#dialog-tags-case").dialog("open");
 	});
 
 	$(".remove-candidate-btn").button({

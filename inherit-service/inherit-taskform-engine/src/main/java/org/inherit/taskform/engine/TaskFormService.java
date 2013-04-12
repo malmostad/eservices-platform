@@ -518,6 +518,25 @@ public class TaskFormService {
 	}
 	
     
+    /**
+     * Find process instances with involved user
+     * @param searchForUserId involved user to search for
+     * @param fromIndex paging start index. starts with 0
+     * @param pageSize 
+     * @param sortBy
+     * @param sortOrder
+     * @param filter filter on instance state, valid values are STARTED, FINISHED
+     * @param userId The user that is actually performing the search, make it possibly to exclude hits because of privacy reasons for instance
+     * @return
+     */
+    public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
+            PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesStartedBy(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+            appendTaskFormData(result.getHits());
+            appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
+            return result;
+    }
+
+    
    /**
     * Find process instances with involved user
     * @param searchForUserId involved user to search for

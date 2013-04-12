@@ -20,14 +20,14 @@
         <sv:value>hst:sitemenuitem</sv:value>
       </sv:property>
       <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-        <sv:value>mycases/search/with-me/pending</sv:value>
+        <sv:value>mycases/search/started-by-me/pending</sv:value>
       </sv:property>
       <sv:node sv:name="Pågående">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
         <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-          <sv:value>mycases/search/with-me/pending</sv:value>
+          <sv:value>mycases/search/started-by-me/pending</sv:value>
         </sv:property>
       </sv:node>
       <sv:node sv:name="Arkiverade">
@@ -35,7 +35,7 @@
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
         <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-          <sv:value>mycases/search/with-me/archived</sv:value>
+          <sv:value>mycases/search/started-by-me/archived</sv:value>
         </sv:property>
       </sv:node>
     </sv:node>

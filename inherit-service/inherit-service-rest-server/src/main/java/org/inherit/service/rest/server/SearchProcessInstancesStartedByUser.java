@@ -1,9 +1,8 @@
 package org.inherit.service.rest.server;
 
-import java.util.List;
 import java.util.logging.Logger;
 
-import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inherit.service.common.util.ParameterEncoder;
 import org.inherit.taskform.engine.TaskFormService;
 import org.restlet.resource.Post;
@@ -17,12 +16,21 @@ public class SearchProcessInstancesStartedByUser extends ServerResource {
 	TaskFormService engine = new TaskFormService();
 	
 	@Post
-	public List<ProcessInstanceListItem> searchProcessInstancesStartedByUser() {
+	public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser() {
 		String searchForUserId = ParameterEncoder.decode((String)getRequestAttributes().get("searchForUserId"));
+		String fromIndexStr = ParameterEncoder.decode((String)getRequestAttributes().get("fromIndex"));
+		String pageSizeStr = ParameterEncoder.decode((String)getRequestAttributes().get("pageSize"));
+		String sortBy = ParameterEncoder.decode((String)getRequestAttributes().get("sortBy"));
+		String sortOrder = ParameterEncoder.decode((String)getRequestAttributes().get("sortOrder"));		
+		String filter = ParameterEncoder.decode((String)getRequestAttributes().get("filter"));		
 		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userId"));
 		
-		log.fine("REST getUserInstancesList with parameter searchForUserId=[" + searchForUserId + "] userId=[" + userId + "]");
+		int fromIndex = Integer.parseInt(fromIndexStr);
+		int pageSize = Integer.parseInt(pageSizeStr);
 		
-		return engine.searchProcessInstancesStartedByUser(searchForUserId, userId);
+		log.fine("REST searchProcessInstancesStartedByUser with parameter searchForUserId=[" + searchForUserId + "] fromIndex=[" + fromIndex + "] pageSize=[" + pageSize + "] sortBy=["  + sortBy + "] sortOrder=[" + sortOrder + "] filter=[" + filter + "] userId=[" + userId + "]");
+		
+		return engine.searchProcessInstancesStartedByUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+
 	}
 }

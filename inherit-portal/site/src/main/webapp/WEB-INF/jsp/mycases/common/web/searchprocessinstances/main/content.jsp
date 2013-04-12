@@ -69,7 +69,7 @@
 			</thead>
 			<tbody>
 				<c:choose>
-					<c:when test="${not empty searchResult}">
+					<c:when test="${not empty searchResult and not empty searchResult.hits}">
 						<c:forEach var="item" items="${searchResult.hits}">
 							<tr>
 								<td><a
@@ -108,26 +108,29 @@
 				</c:choose>
 			</tbody>
 		</table>
-		<div class="pagination">
-		  <ul id="hitlist_pagination">
-		  <c:if test="${page>1}">
-		      <li><a href='${page-1}' rel='prev' class='prev_page hitlist_goto_page'>F&ouml;reg&aring;ende</a></li>
-		  </c:if>
-		  <c:forEach var="i" begin="${pageLinkLb}" end="${pageLinkUb}" step="1" varStatus="status">
-		    <c:choose>
-		                <c:when test="${i == page}">
-		                        <li><span class="current">${i}</span></li>              
-		                </c:when>
-		                <c:otherwise>
-		                         <li><a href="${i}" class="hitlist_goto_page">${i}</a></li>
-		                </c:otherwise>
-		        </c:choose>
-		  </c:forEach>
-		  <c:if test="${page<pageCount}">
-		      <li><a href='${page+1}' rel='next' class='next_page hitlist_goto_page'>N&auml;sta</a></li>
-		  </c:if>
-		  </ul>
-		</div>
+		
+		<c:if test="${pageCount>1}">
+			<div class="pagination">
+			  <ul id="hitlist_pagination">
+			  <c:if test="${page>1}">
+			      <li><a href='${page-1}' rel='prev' class='prev_page hitlist_goto_page'>F&ouml;reg&aring;ende</a></li>
+			  </c:if>
+			  <c:forEach var="i" begin="${pageLinkLb}" end="${pageLinkUb}" step="1" varStatus="status">
+			    <c:choose>
+			                <c:when test="${i == page}">
+			                        <li><span class="current">${i}</span></li>              
+			                </c:when>
+			                <c:otherwise>
+			                         <li><a href="${i}" class="hitlist_goto_page">${i}</a></li>
+			                </c:otherwise>
+			        </c:choose>
+			  </c:forEach>
+			  <c:if test="${page<pageCount}">
+			      <li><a href='${page+1}' rel='next' class='next_page hitlist_goto_page'>N&auml;sta</a></li>
+			  </c:if>
+			  </ul>
+			</div>
+		</c:if>
 		
 		<script type="text/javascript">
 		          $(".hitlist_goto_page").click(function(event) {

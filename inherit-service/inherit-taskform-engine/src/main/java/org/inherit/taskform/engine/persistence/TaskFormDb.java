@@ -750,6 +750,10 @@ public class TaskFormDb {
 		pcb_arende.setFormPath("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor");
 		pcb_arende.setProcessDefinitionUuid("Arendeprocess");
 		
+		StartFormDefinition orbeon_demo_arende = new StartFormDefinition();
+		orbeon_demo_arende.setFormPath("orbeon/controls");
+		orbeon_demo_arende.setProcessDefinitionUuid("Arendeprocess");
+		
 		ActivityFormDefinition granskaAnsokan = new ActivityFormDefinition();
 		granskaAnsokan.setFormPath("Demo/Granska_ansokan");
 		granskaAnsokan.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Granska_ansokan");
@@ -803,6 +807,7 @@ public class TaskFormDb {
 		session.beginTransaction();
 		session.save(spridning);
 		session.save(pcb_arende);
+		session.save(orbeon_demo_arende);
 		session.save(granskaAnsokan);
 		session.save(remissA);
 		session.save(remissB);
