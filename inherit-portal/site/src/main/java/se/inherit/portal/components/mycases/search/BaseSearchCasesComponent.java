@@ -110,29 +110,31 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 					log.error("Error while searching for activity guide with path=[" + startFormContentPath + "] Exception: " + e);
 				}
 	    		
-				for (InboxTaskItem activity : piItem.getActivities()) {
-					String piUuid = activity.getProcessDefinitionUuid();
-					String aiUuid = activity.getActivityDefinitionUuid();
-
-					if (piUuid != null && aiUuid != null) {
-						String guidePath = canonicalContentPath
-								+ "/mycases/processes/" + piUuid.toLowerCase()
-								+ "/" + aiUuid.toLowerCase();
-						log.error("xxxxxxxxxxxxxxxxx guide path: " + guidePath);
-
-						try {
-							TextDocument guide = (TextDocument) getObjectBeanManager(
-									request).getObject(guidePath);
-							if (guide != null) {
-								activity.setActivityLabel(guide.getTitle());
+	    		if (piItem.getActivities() != null) {
+					for (InboxTaskItem activity : piItem.getActivities()) {
+						String piUuid = activity.getProcessDefinitionUuid();
+						String aiUuid = activity.getActivityDefinitionUuid();
+	
+						if (piUuid != null && aiUuid != null) {
+							String guidePath = canonicalContentPath
+									+ "/mycases/processes/" + piUuid.toLowerCase()
+									+ "/" + aiUuid.toLowerCase();
+							log.error("xxxxxxxxxxxxxxxxx guide path: " + guidePath);
+	
+							try {
+								TextDocument guide = (TextDocument) getObjectBeanManager(
+										request).getObject(guidePath);
+								if (guide != null) {
+									activity.setActivityLabel(guide.getTitle());
+								}
+							} catch (ObjectBeanManagerException e) {
+								// TODO Auto-generated catch block
+								log.error("Error while searching for activity guide with path=["
+										+ guidePath + "] Exception: " + e);
 							}
-						} catch (ObjectBeanManagerException e) {
-							// TODO Auto-generated catch block
-							log.error("Error while searching for activity guide with path=["
-									+ guidePath + "] Exception: " + e);
 						}
 					}
-				}
+	    		}
 			}
         	
         	log.error("processInstances count: " + searchResult.getHits().size());
