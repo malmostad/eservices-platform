@@ -600,18 +600,26 @@ public class TaskFormService {
 
     
 	private void appendProcessAndActivityLabelsFromTaskFormDb(List<ProcessInstanceListItem> items) {
-		for (ProcessInstanceListItem item : items) {
-			
-			String startedByFormPath = null;
-			// TODO optimize ???
-			ProcessActivityFormInstance startedByForm = taskFormDb.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item.getProcessInstanceUuid());
-			if (startedByForm != null) {
-				startedByFormPath = startedByForm.getFormPath();
-				item.setStartedByFormPath(startedByFormPath);
-			}
-			
-			for (InboxTaskItem taskItem : item.getActivities()) {
-				taskItem.setStartedByFormPath(startedByFormPath);
+		
+		if (items != null ) {
+			for (ProcessInstanceListItem item : items) {
+				if (item != null) {
+					String startedByFormPath = null;
+					// TODO optimize ???
+					ProcessActivityFormInstance startedByForm = taskFormDb.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item.getProcessInstanceUuid());
+					if (startedByForm != null) {
+						startedByFormPath = startedByForm.getFormPath();
+						item.setStartedByFormPath(startedByFormPath);
+					}
+					
+					if (item.getActivities() != null) {
+						for (InboxTaskItem taskItem : item.getActivities()) {
+							if (taskItem != null) {
+								taskItem.setStartedByFormPath(startedByFormPath);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
