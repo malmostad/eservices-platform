@@ -36,7 +36,11 @@ $(document).ready(function() {
 
 	/*
 	 * load url into div tag of class panel in a toggle view
-	 */
+	 * 
+	 * temporary removed, use iframe instead. workaround 
+	 * multiple orbeon forms at the same page problem...
+	 *  
+	
 	$('.timeline li').click(function() {
 		var url = $(this).children("a.view-url").attr('href');
 		if (typeof (url) !== 'undefined' && url.length > 0) {
@@ -50,6 +54,24 @@ $(document).ready(function() {
 				}
 			});
 		}
+	});
+	*/
+	
+	/*
+	 * load url into iframe in a toggle view
+	 */
+	$('.timeline li').click(function() {
+		var url = $(this).children("a.view-url").attr('href');
+		if (typeof (url) !== 'undefined' && url.length > 0) {
+			var divPanel = $(this).find("div.panel");
+	        var i = $(divPanel).find("iframe.iframe-orbeon-panel");
+	        $(i).attr("src", url);
+	    }
+	});
+	
+	$('.iframe-orbeon-panel').load(function() {
+		this.style.height =
+		this.contentWindow.document.body.offsetHeight + 15 +  'px';
 	});
 
 });

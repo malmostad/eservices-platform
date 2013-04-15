@@ -52,7 +52,7 @@
 								<c:when test="${not empty logItem.viewUrl}">
 									<c:choose>
 										<c:when test="${logItem.user.uuid == userInfo.uuid}">
-										   	<p><fmt:message key="mycases.loading"/></p>									
+										   	<iframe class="iframe-orbeon-panel" scrolling="no" frameborder="0" width="100%" height="100"></iframe>									
 										</c:when>
 										<c:otherwise>
 										   <p><fmt:message key="mycases.activityPerformed"/></p>

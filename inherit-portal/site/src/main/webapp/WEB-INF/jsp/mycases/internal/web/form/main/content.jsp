@@ -113,7 +113,7 @@
 								<p>${logItem.description}</p>
 							</c:when>
 							<c:when test="${not empty logItem.viewUrl}">
-								<p><fmt:message key="mycases.loading"/></p>
+								<iframe class="iframe-orbeon-panel" scrolling="no" frameborder="0" width="100%" height="100"></iframe>
 							</c:when>
 							<c:otherwise>
 								<p><fmt:message key="mycases.nomoredetails"/></p>
