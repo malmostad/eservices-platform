@@ -39,10 +39,9 @@
 							</select>
 						</p>
 						<p>
-							<span id="activity-candidates">Loading candidates...</span> <a
-								href="#" id="edit-candidates"><fmt:message
-									key="mycases.editcandidates.lbl" /></a> <a href="#" id="unassign"><fmt:message
-									key="mycases.unassign.lbl" /></a>
+							<span id="activity-candidates">Loading candidates...</span> 
+							  <!-- removed edit candidates temporary... a href="#" id="edit-candidates"><fmt:message	key="mycases.editcandidates.lbl" /></a--> 
+							  <a href="#" id="unassign"><fmt:message key="mycases.unassign.lbl" /></a>
 						</p>
 						<p>
 							<a href="#" id="assign-to-me"><fmt:message
@@ -217,6 +216,10 @@
 		name="targetUserId" value="${user.uuid}" />
 </form>
 
+<form action="./search/casesbytagvalue" method="POST" id="searchTagForm">
+	<input type="hidden" name="searchStr" value=""/>
+</form>
+
 
 <!-- jquery scripts for dialogs etc TODO move to separate js file -->
 <script type="text/javascript" charset="utf-8">
@@ -236,38 +239,37 @@
 	}
 
 	$("#myTags").tagit({
-	   onTagClicked: function(event, ui) {
+	       onTagClicked: function(event, ui) {
              // do something special
-             console.log("clicked " + ui.tag.tagLabel);
-             window.location.href = "./search/casesbytagvalue?searchStr=" + ui.tagLabel;
+             $("#searchTagForm input[name='searchStr']").val(ui.tagLabel);
+             $("#searchTagForm").submit();
            },
            beforeTagRemoved: function(event, ui) {
              // do something special
-             console.log("removed " + ui.tag.tagLabel);
-	     siteAjaxPost("/site/restservices/site-ajax/deleteTag", {
-		  processInstanceUuid : '${activity.processInstanceUuid}',
-		  value: ui.tagLabel
+	         siteAjaxPost("/site/restservices/site-ajax/deleteTag", {
+		          processInstanceUuid : '${activity.processInstanceUuid}',
+		          value: ui.tagLabel
                   
-	        }, function(data) {
-		  refreshTags(data);
-                }
-	     );
+	           }, function(data) {
+		         refreshTags(data);
+               }
+	         );
            },
            beforeTagAdded: function(event, ui) {
              // do something special
-	     if (ui.duringInitialization) {
-	       console.log("init tag " + ui.tag.tagLabel);
-	     }
+		     if (ui.duringInitialization) {
+		       console.log("init tag " + ui.tag.tagLabel);
+		     }
              else {
                 console.log("added " + ui.tag.tagLabel);
-	        siteAjaxPost("/site/restservices/site-ajax/addTag", {
-		     processActivityFormInstanceId : '${activity.processActivityFormInstanceId}',
-                     tagTypeId : '10000',
-		     value: ui.tagLabel
-	           }, function(data) {
-		     refreshTags(data);
+  	            siteAjaxPost("/site/restservices/site-ajax/addTag", {
+		              processActivityFormInstanceId : '${activity.processActivityFormInstanceId}',
+                      tagTypeId : '10000',
+		              value: ui.tagLabel
+	               }, function(data) {
+		              refreshTags(data);
                    }
-	        );
+	            );
               }
            }
         });
@@ -440,6 +442,7 @@
 	}
 	
 	function refreshCommentFeed(comments) {
+	   $("#commentfeed").empty();
        for (var i=0;i<comments.length;i++) {
     	   var commentDate = new Date(comments[i].timestamp);
 	       $("#commentfeed").append("<li><b>" + $.datepicker.formatDate('yy-mm-dd', commentDate) + " (" + comments[i].activityLabel + ") " + comments[i].user.label + ": </b><br/>" + comments[i].message + "</li>");
