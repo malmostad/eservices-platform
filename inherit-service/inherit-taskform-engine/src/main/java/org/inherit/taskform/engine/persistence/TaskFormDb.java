@@ -52,7 +52,7 @@ public class TaskFormDb {
 		return result;
 	}
 	
-	public StartFormDefinition getStartFormDefinitionByFormPath(String formPath) {
+	public StartFormDefinition getStartFormDefinitionByFormPath(String formPath) throws Exception {
 		StartFormDefinition result = null;
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		try {
@@ -60,6 +60,7 @@ public class TaskFormDb {
 		}
 		catch (Exception e) {
 			log.severe("formPath=[" + formPath + "] Exception: " + e);
+			throw e;
 		}
 		finally {		
 			session.close();

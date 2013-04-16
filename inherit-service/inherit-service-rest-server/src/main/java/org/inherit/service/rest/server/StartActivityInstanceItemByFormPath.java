@@ -17,11 +17,18 @@ public class StartActivityInstanceItemByFormPath extends ServerResource {
 	
 	@Post
 	public ActivityInstanceItem getStartActivityInstanceItemByFormPath() {
+		ActivityInstanceItem result = null;
 		String formPath = ParameterEncoder.decode((String)getRequestAttributes().get("formPath"));
 		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userId"));
 		
 		log.fine("REST call with parameter formPath=[" + formPath + "]" );
 		
-		return engine.getStartActivityInstanceItem(formPath, userId);
+		try {
+			result = engine.getStartActivityInstanceItem(formPath, userId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

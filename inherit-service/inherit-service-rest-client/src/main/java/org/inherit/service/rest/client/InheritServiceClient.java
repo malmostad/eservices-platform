@@ -85,7 +85,7 @@ public class InheritServiceClient {
 	public ArrayList<ProcessInstanceListItem> searchProcessInstancesStartedByUser(String searchForUserId, String userId) {
 		 ArrayList<ProcessInstanceListItem> result = null;
 		String uri = serverBaseUrl + "searchProcessInstancesStartedByUser/" + ParameterEncoder.encode(searchForUserId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (ArrayList<ProcessInstanceListItem>)xstream.fromXML(response);
@@ -104,7 +104,7 @@ public class InheritServiceClient {
 				+ ParameterEncoder.encode(sortOrder) + "/"
 				+ ParameterEncoder.encode(filter) + "/"
 				+ ParameterEncoder.encode(userId) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (PagedProcessInstanceSearchResult) xstream
@@ -116,7 +116,7 @@ public class InheritServiceClient {
 	public ProcessInstanceDetails getProcessInstanceDetailByUuid(String processInstanceUuid) {
 		ProcessInstanceDetails result = null;
 		String uri = serverBaseUrl + "processInstanceDetailsByUuid/" + ParameterEncoder.encode(processInstanceUuid) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (ProcessInstanceDetails)xstream.fromXML(response);
@@ -128,7 +128,7 @@ public class InheritServiceClient {
 	public ProcessInstanceDetails getProcessInstanceDetailByActivityInstanceUuid(String activityInstanceUuid) {
 		ProcessInstanceDetails result = null;
 		String uri = serverBaseUrl + "processInstanceDetailsByActivityInstanceUuid/" + ParameterEncoder.encode(activityInstanceUuid) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (ProcessInstanceDetails)xstream.fromXML(response);
@@ -141,7 +141,7 @@ public class InheritServiceClient {
 	public ArrayList<InboxTaskItem> getInboxByUserId(String bonitaUser) {
 		 ArrayList<InboxTaskItem> result = null;
 		String uri = serverBaseUrl + "inboxByUserId/" + ParameterEncoder.encode(bonitaUser) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (ArrayList<InboxTaskItem>)xstream.fromXML(response);
@@ -152,7 +152,7 @@ public class InheritServiceClient {
 	public ActivityInstanceItem getActivityInstanceItem(String activityInstanceUuid, String userId) {
 		ActivityInstanceItem result = null;
 		String uri = serverBaseUrl + "getActivityInstanceItem/" + ParameterEncoder.encode(activityInstanceUuid) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (ActivityInstanceItem)xstream.fromXML(response);
@@ -164,7 +164,7 @@ public class InheritServiceClient {
 	public ActivityInstanceItem getStartActivityInstanceItem(String formPath, String userId) {
 		ActivityInstanceItem result = null;
 		String uri = serverBaseUrl + "getStartActivityInstanceItem/" + ParameterEncoder.encode(formPath) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (ActivityInstanceItem)xstream.fromXML(response);
@@ -176,7 +176,7 @@ public class InheritServiceClient {
 	public ActivityInstanceItem getActivityInstanceItem(String processActivityFormInstanceId) {
 		ActivityInstanceItem result = null;
 		String uri = serverBaseUrl + "getActivityInstanceItemById/" + ParameterEncoder.encode(processActivityFormInstanceId) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (ActivityInstanceItem)xstream.fromXML(response);
@@ -193,19 +193,25 @@ public class InheritServiceClient {
 	}
 	
 	public String submitStartForm(String formPath, String docId, String userId) {
-		String result = null;
+		String result;
 		String uri;
-		
+
 		uri = serverBaseUrl + "submitStartForm/" + ParameterEncoder.encode(formPath) + 
-					"/" + ParameterEncoder.encode(docId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		log.severe("submitStartForm uri: " + uri);
-		String response = call(uri);
+				"/" + ParameterEncoder.encode(docId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
 		
-		if (response != null) {
-			result = (String)response;
+		result = (String) call(uri);
+		/* ROL let the caller take care of the exception
+		try {
+			result = (String) call(uri);
+		} catch (ResourceException e) {
+			log.severe("submitStartForm uri: " + uri);
+			System.out.println("Status description: " + e.getStatus().getDescription());
+			System.out.println("Uri: " + e.getStatus().getUri());
+			e.printStackTrace();
+//			throw e;
+			result = null;
 		}
-		
-		return result;
+*/		return result;
 	}
 
 	public String submitForm(String docId, String userId) {
@@ -216,24 +222,20 @@ public class InheritServiceClient {
 				+ ParameterEncoder.encode(docId) + "/" 
 				+ ParameterEncoder.encode(userId) + "?media=xml";
 		log.severe("submitStartForm uri: " + uri);
-		String response = call(uri);
-		
-		if (response != null) {
-			result = (String)response;
-		}
-		
+		/* ROL let the caller take care of the exception */
+		//result = (String) callAndCatchRE(uri);
+		result = (String) call(uri);
 		return result;
 	}
 	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userid, String remainingDays) {
 		DashOpenActivities result = null;
-		String uri;
-		
+		String uri;		
 		uri = serverBaseUrl + "getDashOpenActivitiesByUserId/" 
 				+ ParameterEncoder.encode(userid) + "/" 
 				+ ParameterEncoder.encode(remainingDays) + "?media=xml";
 		log.severe("getDashOpenActivitiesByUserId uri: " + uri);
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		
 		if (response != null) {
 			result = (DashOpenActivities)xstream.fromXML(response);
@@ -256,7 +258,7 @@ public class InheritServiceClient {
 					"/" + ParameterEncoder.encode(comment) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
 		log.severe("addComment uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		log.severe("response addComment: [" + response + "]");
 		result = parseIntResponse(response);
 
@@ -271,7 +273,7 @@ public class InheritServiceClient {
 					"/" + ParameterEncoder.encode(userId) + "?media=xml";
 		log.severe("getCommentFeed uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		log.severe("response addComment: [" + response + "]");
 		if (response != null) {
 			result = (ArrayList<CommentFeedItem>)xstream.fromXML(response);
@@ -288,7 +290,7 @@ public class InheritServiceClient {
 					"/" + ParameterEncoder.encode(action) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
 		log.severe("addComment uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		if (response != null) {
 			result = (ActivityWorkflowInfo)xstream.fromXML(response);
 		}
@@ -304,7 +306,7 @@ public class InheritServiceClient {
 					"/" + priority + "?media=xml";
 		log.severe("setActivityPriority uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		if (response != null) {
 			result = (ActivityWorkflowInfo)xstream.fromXML(response);
 		}
@@ -319,7 +321,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "getActivityWorkflowInfo/" + ParameterEncoder.encode(activityInstanceUuid) + "?media=xml";
 		log.severe("getActivityWorkflowInfo uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		if (response != null) {
 			result = (ActivityWorkflowInfo)xstream.fromXML(response);
 		}
@@ -334,7 +336,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "addTag/" + processActivityFormInstanceId + "/" + tagTypeId + "/" + ParameterEncoder.encode(value) + "/" + ParameterEncoder.encode(userid) + "?media=xml";
 		log.severe("addTag uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		if (response != null) {
 			result = (Tag)xstream.fromXML(response);
 		}
@@ -350,7 +352,7 @@ public class InheritServiceClient {
 					"/" + ParameterEncoder.encode(value) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
 		log.severe("deleteTag uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		log.severe("response deleteTag: [" + response + "]");
 		result = parseBooleanResponse(response);
 
@@ -364,7 +366,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "getTagsByProcessInstance/" + ParameterEncoder.encode(processInstanceUuid) +  "?media=xml";
 		log.severe("getTagsByProcessInstance uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		log.severe("response getTagsByProcessInstance: [" + response + "]");
 		if (response != null) {
 			result = (ArrayList<Tag>)xstream.fromXML(response);
@@ -380,7 +382,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "getUsersByRoleAndActivity/" + ParameterEncoder.encode(roleName) + "/" + ParameterEncoder.encode(activityInstanceUuid) +  "?media=xml";
 		log.severe("getUsersByRoleAndActivity uri: " + uri);
 		
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		log.severe("response getUsersByRoleAndActivity: [" + response + "]");
 		if (response != null) {
 			result = (HashSet<String>)xstream.fromXML(response);
@@ -394,7 +396,7 @@ public class InheritServiceClient {
 	public PagedProcessInstanceSearchResult searchProcessInstancesByTagValue(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) {
 		PagedProcessInstanceSearchResult result = null;
 		String uri = serverBaseUrl + "searchProcessInstancesByTagValue/" + ParameterEncoder.encode(tagValue)+ "/" + fromIndex + "/" + pageSize + "/" + ParameterEncoder.encode(sortBy) + "/" + ParameterEncoder.encode(sortOrder)  + "/" + ParameterEncoder.encode(filter) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (PagedProcessInstanceSearchResult)xstream.fromXML(response);
@@ -409,7 +411,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "getUserByDn/" 
 				+ ParameterEncoder.encode(dn) + "?media=xml";
 		log.severe("getUserByDn uri: " + uri);
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		
 		if (response != null) {
 			result = (UserInfo)xstream.fromXML(response);
@@ -425,7 +427,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "getUserBySerial/" 
 				+ ParameterEncoder.encode(serial) + "/" + ParameterEncoder.encode(certificateSubject) +  "?media=xml";
 		log.severe("getUserBySerial uri: " + uri);
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		
 		if (response != null) {
 			result = (UserInfo)xstream.fromXML(response);
@@ -466,7 +468,7 @@ public class InheritServiceClient {
 		return result;
 	}
 	
-	private String call(String uri) {
+	private String callAndCatchRE(String uri) {
 		String result = null;
 		try {
 			Client client = new Client(new Context(), Protocol.HTTP);
@@ -494,16 +496,43 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	private String call(String uri) throws ResourceException {
+		String result;
+		Client client = new Client(new Context(), Protocol.HTTP);
+
+		ClientResource cr = new ClientResource(uri);
+		cr.setNext(client);
+
+		cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, "restuser", "restbpm");
+
+		final String RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
+		Map<String, Object> reqAttribs = cr.getRequestAttributes();
+		Form headers = (Form)reqAttribs.get(RESTLET_HTTP_HEADERS);
+		if (headers == null) {
+			headers = new Form();
+			reqAttribs.put(RESTLET_HTTP_HEADERS, headers);
+		} 
+		//headers.add("options", "user:" + bonitaUser); 
+
+		result = (String)cr.post(null, String.class);
+		return result;
+	}
+	
 	public static void main(String args[]) {
 		System.out.println("Testa InheritServiceClient");
 		
 		InheritServiceClient c = new InheritServiceClient();
+		
+		System.out.print("submitStartForm(\"formPath\", \"docId\", \"userId\")");
+		System.out.println(c.submitStartForm("formPath", "docId", "userId"));
+			
+/*
 		ArrayList<ProcessInstanceListItem> list = c.searchProcessInstancesStartedByUser("john", "james");
 		System.out.println("searchProcessInstancesStartedByUser");
 		for (ProcessInstanceListItem item : list) {
 			System.out.println("item: " + item);
 		}
-/*
+
 		ArrayList<InboxTaskItem> listInbx = c.getInboxByUserId("john");
 		System.out.println("getInboxByUserId");
 		for (InboxTaskItem item : listInbx) {
