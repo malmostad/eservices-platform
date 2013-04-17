@@ -31,6 +31,9 @@ public class ProcessInstanceDetail extends MyCasesBaseComponent {
 		} else if (activityInstanceUuid != null && activityInstanceUuid.trim().length() > 0) {
 			piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activityInstanceUuid);
 		}
+		
+		appendChannelLabels(request, piDetails);
+		
 		request.setAttribute("processInstanceDetails", piDetails);
 		
 		if (piDetails != null && piDetails.getTimeline() != null) {

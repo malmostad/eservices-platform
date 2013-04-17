@@ -68,9 +68,9 @@ public class SiteAjaxApplication extends AbstractResource {
 				
 		String userId = getUserUuid(servletRequest);
 
-		log.error("activityInstanceUuid: " + activityInstanceUuid);
-		log.error("comment: " + comment);
-		log.error("userId: " + userId);
+		log.debug("activityInstanceUuid: " + activityInstanceUuid);
+		log.debug("comment: " + comment);
+		log.debug("userId: " + userId);
 
 		if (userId != null) {
 			InheritServiceClient isc = new InheritServiceClient();
@@ -98,10 +98,10 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		String userId = getUserUuid(servletRequest);
 		
-		log.error("activityInstanceUuid: " + activityInstanceUuid);
-		log.error("comment: " + action);
-		log.error("targetUserId: " + targetUserId);
-		log.error("userId: " + userId);
+		log.debug("activityInstanceUuid: " + activityInstanceUuid);
+		log.debug("comment: " + action);
+		log.debug("targetUserId: " + targetUserId);
+		log.debug("userId: " + userId);
 		
 //		if (userId != null) {
 			// user is authenticated
@@ -131,8 +131,8 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		String userId = getUserUuid(servletRequest);
 		
-		log.error("activityInstanceUuid: " + activityInstanceUuid);
-		log.error("priority: " + priority);
+		log.debug("activityInstanceUuid: " + activityInstanceUuid);
+		log.debug("priority: " + priority);
 		
 //		if (userId != null) {
 			// user is authenticated
@@ -162,8 +162,8 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		String userId = getUserUuid(servletRequest);
 		
-		log.error("activityInstanceUuid: " + activityInstanceUuid);
-		log.error("userId: " + userId);
+		log.debug("activityInstanceUuid: " + activityInstanceUuid);
+		log.debug("userId: " + userId);
 		
 //		if (userId != null) {
 			// user is authenticated
@@ -192,8 +192,8 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		String userId = getUserUuid(servletRequest);
 		
-		log.error("activityInstanceUuid: " + activityInstanceUuid);
-		log.error("userId: " + userId);
+		log.debug("activityInstanceUuid: " + activityInstanceUuid);
+		log.debug("userId: " + userId);
 		
 //		if (userId != null) {
 			// user is authenticated
@@ -224,10 +224,10 @@ public class SiteAjaxApplication extends AbstractResource {
 				
 		String userId = getUserUuid(servletRequest);
 
-		log.error("processActivityFormInstanceId: " + processActivityFormInstanceId);
-		log.error("tagTypeId: " + tagTypeId);
-		log.error("value: " + value);
-		log.error("userId: " + userId);
+		log.debug("processActivityFormInstanceId: " + processActivityFormInstanceId);
+		log.debug("tagTypeId: " + tagTypeId);
+		log.debug("value: " + value);
+		log.debug("userId: " + userId);
 
 //		if (userId != null) {
 			InheritServiceClient isc = new InheritServiceClient();
@@ -254,9 +254,9 @@ public class SiteAjaxApplication extends AbstractResource {
 				
 		String userId = getUserUuid(servletRequest);
 
-		log.error("processInstanceUuid: " + processInstanceUuid);
-		log.error("value: " + value);
-		log.error("userId: " + userId);
+		log.debug("processInstanceUuid: " + processInstanceUuid);
+		log.debug("value: " + value);
+		log.debug("userId: " + userId);
 
 //		if (userId != null) {
 			InheritServiceClient isc = new InheritServiceClient();

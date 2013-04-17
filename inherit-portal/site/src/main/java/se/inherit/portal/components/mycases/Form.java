@@ -60,6 +60,9 @@ public class Form extends MyCasesBaseComponent {
 	        	activity = isc.getStartActivityInstanceItem(eServiceDocument.getFormPath(), user.getUuid());
 	        }
         }
+        
+        appendChannelLabels(request, activity);
+        
     	request.setAttribute("activity", activity);
     	
     	HippoBean guide = null;

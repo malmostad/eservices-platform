@@ -54,7 +54,9 @@ public class BonitaEngineServiceImpl {
 	
 	HashMap<String, String> processDefinitionUuid2LabelCache = new HashMap<String,String>();
 	HashMap<String, String> processInstanceUuid2LabelCache = new HashMap<String,String>();
-	HashMap<String, String> activityInstanceUuid2LabelCache = new HashMap<String,String>();
+	HashMap<String, String> activityInstanceUuid2LabelCache = new HashMap<String,String>();	
+	HashMap<String, String> processInstanceUuid2processDefinitionUuid = new HashMap<String,String>();
+	HashMap<String, String> activityInstanceUuid2activityDefinitionUuid = new HashMap<String,String>();
 	
 	public BonitaEngineServiceImpl() {
 		
@@ -653,12 +655,15 @@ public class BonitaEngineServiceImpl {
 		if (comment.getActivityUUID() != null) {
 			result.setActivityInstanceUuid(comment.getActivityUUID().getValue());
 			result.setActivityLabel(getActivityLabelByInstanceUuid(comment.getActivityUUID()));
+			result.setActivityDefinitionUuid(this.getActivityDefinitionUuidlByInstanceUuid(comment.getActivityUUID()));
 		}
 		result.setMessage(comment.getMessage());
 		if (comment.getInstanceUUID() != null) {
 			result.setProcessInstanceUuid(comment.getInstanceUUID().getValue());
 			result.setProcessLabel(getProcessLabelByInstanceUuid(comment.getInstanceUUID()));
+			result.setProcessDefinitionUuid(getProcessDefinitionUuidByInstanceUuid(comment.getInstanceUUID()));
 		}
+		
 		result.setTimestamp(comment.getDate());
 		result.setUser(this.createTemporaryUserInfo(comment.getUserId()));
 		return result;
@@ -835,6 +840,24 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
+	private String getProcessDefinitionUuidByInstanceUuid(ProcessInstanceUUID processInstanceUUID) {
+		String result = processInstanceUuid2processDefinitionUuid.get(processInstanceUUID.getValue());
+
+		if (result == null) {
+			QueryRuntimeAPI qrAPI = AccessorUtil.getQueryRuntimeAPI();
+			try {
+				LightProcessInstance ai = qrAPI.getLightProcessInstance(processInstanceUUID);
+				result = ai.getProcessDefinitionUUID().getValue();
+			} catch (InstanceNotFoundException e) {
+				// TODO Auto-generated catch block
+				result = "n/a";
+			}
+			processInstanceUuid2processDefinitionUuid.put(processInstanceUUID.getValue(), result);
+		}
+
+		return result;
+	}
+	
 	private String getActivityLabelByInstanceUuid(ActivityInstanceUUID activityInstanceUUID) {
 		String result = activityInstanceUuid2LabelCache.get(activityInstanceUUID.getValue());
 
@@ -851,6 +874,24 @@ public class BonitaEngineServiceImpl {
 
 		return result;
 	}
+	
+	private String getActivityDefinitionUuidlByInstanceUuid(ActivityInstanceUUID activityInstanceUUID) {
+		String result = activityInstanceUuid2activityDefinitionUuid.get(activityInstanceUUID.getValue());
+
+		if (result == null) {
+			QueryRuntimeAPI qrAPI = AccessorUtil.getQueryRuntimeAPI();
+			try {
+				LightActivityInstance ai = qrAPI.getLightActivityInstance(activityInstanceUUID);
+				result = ai.getActivityDefinitionUUID().getValue();
+			} catch (ActivityNotFoundException e) {
+				result = "n/a";
+			}
+			activityInstanceUuid2activityDefinitionUuid.put(activityInstanceUUID.getValue(), result);
+		}
+
+		return result;
+	}
+
 	
 	private String getProcessLabelByInstanceUuid(ProcessInstanceUUID processInstanceUUID) {
 		String result = processInstanceUuid2LabelCache.get(processInstanceUUID.getValue());
