@@ -2,7 +2,6 @@ package se.inherit.portal.components.mycases;
 
 import java.util.ArrayList;
 
-import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
@@ -12,10 +11,6 @@ import org.inherit.service.common.domain.UserInfo;
 import org.inherit.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import se.inherit.portal.beans.EServiceDocument;
-import se.inherit.portal.beans.TextDocument;
-
 
 public class Inbox extends MyCasesBaseComponent {
 
@@ -39,48 +34,11 @@ public class Inbox extends MyCasesBaseComponent {
         InheritServiceClient isc = new InheritServiceClient();
         ArrayList<InboxTaskItem> tasks = isc.getInboxByUserId(user.getUuid());
         
-        // TODO remove this debug print
+        // Lookup process and activity labels from JCR channel if they exist
         if (tasks != null) {
-        	String canonicalContentPath = getMount(request).getCanonicalContentPath();
-        	for (InboxTaskItem task : tasks) {
-        		
-        		String startFormContentPath =  canonicalContentPath + "/mycases/startforms/" + task.getStartedByFormPath();
-        		
-	    		log.error("xxxxxxxxxxxxxxxxx startFormContentPath: " + startFormContentPath );
-	    		
-	    		try {
-	    			EServiceDocument startForm = (EServiceDocument) getObjectBeanManager(request).getObject(startFormContentPath);
-	    			if (startForm != null) {
-	    				task.setProcessLabel(startForm.getTitle());
-	    			}
-				} catch (ObjectBeanManagerException e) {
-					// TODO Auto-generated catch block
-					log.error("Error while searching for activity guide with path=[" + startFormContentPath + "] Exception: " + e);
-				}
-	    		
-	    		String piUuid = task.getProcessDefinitionUuid();
-	    		String aiUuid = task.getActivityDefinitionUuid();
-	    		
-	    		if (piUuid != null && aiUuid != null) {    			
-		    		String guidePath = canonicalContentPath + "/mycases/processes/" + piUuid.toLowerCase() + "/" + aiUuid.toLowerCase();
-		    		log.error("xxxxxxxxxxxxxxxxx guide path: " + guidePath );
-		    		
-		    		try {
-		    			TextDocument guide = (TextDocument) getObjectBeanManager(request).getObject(guidePath);
-		    			if (guide != null) {
-		    				task.setActivityLabel(guide.getTitle());
-		    			}
-					} catch (ObjectBeanManagerException e) {
-						// TODO Auto-generated catch block
-						log.error("Error while searching for activity guide with path=[" + guidePath + "] Exception: " + e);
-					}
-	    		}	    		
+        	for (InboxTaskItem task : tasks) { 
+        		appendChannelLabels(request, task);
         	}
-        	
-        	log.error("tasks count: " + tasks.size());
-        }
-        else {
-        	log.error("tasks count: no tasks");
         }
         
         request.setAttribute("tasks", tasks);

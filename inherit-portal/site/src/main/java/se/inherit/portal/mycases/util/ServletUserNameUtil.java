@@ -31,9 +31,9 @@ public class ServletUserNameUtil {
 	    		result = isc.getUserByDn(dn);
 	    	}
 	    	else {
-	    		log.error("Only one of header x-ipl-dn and x-ipl-ser should be used");
-	    		log.error("x-ipl-dn=[" + dn + "]");
-	    		log.error("x-ipl-ser=[" + ser + "]");
+	    		log.debug("Only one of header x-ipl-dn and x-ipl-ser should be used");
+	    		log.debug("x-ipl-dn=[" + dn + "]");
+	    		log.debug("x-ipl-ser=[" + ser + "]");
 	    		
 	    		/** 
 	    		 * TODO workaround to detect by path komin/extern

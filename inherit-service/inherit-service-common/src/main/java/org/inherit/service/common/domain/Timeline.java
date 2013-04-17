@@ -3,6 +3,7 @@ package org.inherit.service.common.domain;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
@@ -68,7 +69,29 @@ public class Timeline {
 	}
 
 	public TreeMap<Date, List<TimelineItem>> getTimelineByDay() {
-		TreeMap<Date, List<TimelineItem>> timelineByDay = new TreeMap<Date, List<TimelineItem>>();
+		TreeMap<Date, List<TimelineItem>> timelineByDay = new TreeMap<Date, List<TimelineItem>>(new Comparator<Date>() {
+			@Override
+			public int compare(Date o1, Date o2) {
+				int result = 0;
+				if (o1==null) {
+					if (o2==null) {
+						return 0;
+					}
+					else {
+						result = 1;
+					}
+				}
+				else {
+					if (o2==null) {
+						return -1;
+					}
+					else {
+						result = -o1.compareTo(o2);
+					}
+				}
+				return result;
+			}
+		} );
 		
 		if (!sorted) {
 			sort();

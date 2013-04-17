@@ -23,6 +23,7 @@ import org.inherit.service.common.domain.InboxTaskItem;
 import org.inherit.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.domain.StartLogItem;
 import org.inherit.service.common.domain.Tag;
 import org.inherit.service.common.domain.TimelineItem;
 import org.inherit.service.common.domain.UserInfo;
@@ -186,7 +187,14 @@ public class TaskFormService {
 					}
 				}
 			}
-			ActivityInstanceLogItem startLogItem = getStartFormActivityInstanceLogItem(details.getProcessInstanceUuid());
+			
+			StartLogItem startLogItem = getStartFormActivityInstanceLogItem(details.getProcessInstanceUuid());
+			
+			ProcessActivityFormInstance startedByForm = taskFormDb.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(details.getProcessInstanceUuid());
+			if (startedByForm != null) {
+				details.setStartedByFormPath(startedByForm.getFormPath());
+			}
+			
 			details.getTimeline().addAndSort(startLogItem);
 		}
 	}
@@ -241,13 +249,13 @@ public class TaskFormService {
 		return result;		
 	}
 
-	public ActivityInstanceLogItem getStartFormActivityInstanceLogItem(String processInstanceUuid) {
-		ActivityInstanceLogItem result = null;
+	public StartLogItem getStartFormActivityInstanceLogItem(String processInstanceUuid) {
+		StartLogItem result = null;
 		if (processInstanceUuid != null) {
 			
 			ProcessActivityFormInstance startActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
 			if (startActivity != null) {
-				result = new ActivityInstanceLogItem();
+				result = new StartLogItem();
 				result.setViewUrl(startActivity.calcViewUrl());
 				result.setFormUrl(startActivity.calcViewUrl());
 				result.setEndDate(startActivity.getSubmitted());

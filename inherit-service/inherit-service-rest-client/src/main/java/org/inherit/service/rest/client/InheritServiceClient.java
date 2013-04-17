@@ -20,6 +20,7 @@ import org.inherit.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inherit.service.common.domain.ProcessDefinitionInfo;
 import org.inherit.service.common.domain.ProcessInstanceDetails;
 import org.inherit.service.common.domain.ProcessInstanceListItem;
+import org.inherit.service.common.domain.StartLogItem;
 import org.inherit.service.common.domain.Tag;
 import org.inherit.service.common.domain.UserInfo;
 import org.inherit.service.common.util.ParameterEncoder;
@@ -70,6 +71,7 @@ public class InheritServiceClient {
 		
 		xstream.alias("ProcessInstanceDetails", ProcessInstanceDetails.class);
 		xstream.alias("ActivityInstanceItem", ActivityInstanceItem.class);
+		xstream.alias("StartLogItem", StartLogItem.class);
 		xstream.alias("ActivityInstanceLogItem", ActivityInstanceLogItem.class);
 		xstream.alias("ActivityInstancePendingItem", ActivityInstancePendingItem.class);
 		xstream.alias("DashOpenActivities", DashOpenActivities.class);
