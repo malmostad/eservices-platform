@@ -139,6 +139,27 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
+	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) {
+       PagedProcessInstanceSearchResult result = null;
+		
+		try {
+			ProcessInstanceCriterion criterion = this.str2ProcessInstanceCriterion(sortBy, sortOrder);
+			
+			Set<ProcessInstance> piList = new HashSet<ProcessInstance>();
+			LoginContext loginContext = BonitaUtil.loginWithUser(searchForUserId); 
+			piList = AccessorUtil.getQueryRuntimeAPI().getUserInstances();
+			
+			result = calcPagedProcessInstanceSearchResult(piList,  fromIndex, pageSize, sortBy, sortOrder, filter);
+			 
+			BonitaUtil.logoutWithUser(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+
+		return result;
+	}
+	
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(List<String> processInstanceUuids, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) {
 		PagedProcessInstanceSearchResult result = null;
 		
@@ -324,13 +345,15 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
-	private PagedProcessInstanceSearchResult calcPagedProcessInstanceSearchResult(List<LightProcessInstance> piList, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter) {
+	private PagedProcessInstanceSearchResult calcPagedProcessInstanceSearchResult(Collection piList, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter) {
 		PagedProcessInstanceSearchResult result = new PagedProcessInstanceSearchResult();
 		
 		int numberOfHits = 0;
 
-		for (LightProcessInstance pi : piList) {
+		for (Object o : piList) {
 
+			LightProcessInstance pi = (LightProcessInstance)o; 
+			
 			if (InstanceState.FINISHED.equals(pi.getInstanceState()) && "FINISHED".equalsIgnoreCase(filter)) {
 				if (numberOfHits>=fromIndex && result.getHits().size()<pageSize) {
 					ProcessInstanceListItem item = new ProcessInstanceListItem();

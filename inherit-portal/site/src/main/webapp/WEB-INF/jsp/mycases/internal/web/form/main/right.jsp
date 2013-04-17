@@ -39,10 +39,9 @@
 							</select>
 						</p>
 						<p>
-							<span id="activity-candidates">Loading candidates...</span> <a
-								href="#" id="edit-candidates"><fmt:message
-									key="mycases.editcandidates.lbl" /></a> <a href="#" id="unassign"><fmt:message
-									key="mycases.unassign.lbl" /></a>
+							<span id="activity-candidates">Loading candidates...</span> 
+							  <!-- removed edit candidates temporary... a href="#" id="edit-candidates"><fmt:message	key="mycases.editcandidates.lbl" /></a--> 
+							  <a href="#" id="unassign"><fmt:message key="mycases.unassign.lbl" /></a>
 						</p>
 						<p>
 							<a href="#" id="assign-to-me"><fmt:message
@@ -75,11 +74,6 @@
 					</ul>
 				</form>
 
-				<p>
-					<a href="#" id="add-tags"><fmt:message
-							key="mycases.edittags.lbl" /></a>
-				</p>
-
 
 			</div>
 
@@ -111,48 +105,6 @@
 		</div>
 		<!-- Page content stops here -->
 	</div>
-</div>
-
-<!-- Modal dialog to edit tags associated to the case-->
-<div id="dialog-tags-case" title="<fmt:message key="mycases.tags.lbl"/>">
-	<p class="validateTips">
-		<fmt:message key="mycases.tagsdialog.hint" />
-	</p>
-	<!-- Taggar TODO case -->
-	<h3>
-		<fmt:message key="mycases.tags.lbl" />
-	</h3>
-	<table>
-		<thead>
-			<tr>
-				<th>Aktivitet</th>
-				<th>Typ</th>
-				<th>V&auml;rde</th>
-				<th>TidstÃ¤mpel</th>
-				<th></th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>Start</td>
-				<td>AnsÃ¶kan av</td>
-				<td>Kalle</td>
-				<td>2013-01-22</td>
-				<td><button class="edit-tag-btn" href="#">Redigera</button></td>
-				<td><button class="remove-tag-btn" href="#"></button></td>
-			</tr>
-		</tbody>
-	</table>
-
-	<form action="/site/restservices/site-ajax/addTag" id="addTag"
-		class="siteAjaxForm">
-		<input type="hidden" name="activityInstanceUuid"
-			value="${activity.activityInstanceUuid}" /> <input type="text"
-			name="tag-value" placeholder="Diarienr" /> <input type="submit"
-			value="<fmt:message key="mycases.add.lbl"/>" />
-		<button class="add-tag-btn" href="#"></button>
-	</form>
 </div>
 
 <!-- Modal dialog to comment the case-->
@@ -264,6 +216,10 @@
 		name="targetUserId" value="${user.uuid}" />
 </form>
 
+<form action="./search/casesbytagvalue" method="POST" id="searchTagForm">
+	<input type="hidden" name="searchStr" value=""/>
+</form>
+
 
 <!-- jquery scripts for dialogs etc TODO move to separate js file -->
 <script type="text/javascript" charset="utf-8">
@@ -283,64 +239,40 @@
 	}
 
 	$("#myTags").tagit({
-	   onTagClicked: function(event, ui) {
+	       onTagClicked: function(event, ui) {
              // do something special
-             console.log("clicked " + ui.tag.tagLabel);
-             window.location.href = "./search/casesbytagvalue?searchStr=" + ui.tagLabel;
+             $("#searchTagForm input[name='searchStr']").val(ui.tagLabel);
+             $("#searchTagForm").submit();
            },
            beforeTagRemoved: function(event, ui) {
              // do something special
-             console.log("removed " + ui.tag.tagLabel);
-	     siteAjaxPost("/site/restservices/site-ajax/deleteTag", {
-		  processInstanceUuid : '${activity.processInstanceUuid}',
-		  value: ui.tagLabel
+	         siteAjaxPost("/site/restservices/site-ajax/deleteTag", {
+		          processInstanceUuid : '${activity.processInstanceUuid}',
+		          value: ui.tagLabel
                   
-	        }, function(data) {
-		  refreshTags(data);
-                }
-	     );
+	           }, function(data) {
+		         refreshTags(data);
+               }
+	         );
            },
            beforeTagAdded: function(event, ui) {
              // do something special
-	     if (ui.duringInitialization) {
-	       console.log("init tag " + ui.tag.tagLabel);
-	     }
+		     if (ui.duringInitialization) {
+		       console.log("init tag " + ui.tag.tagLabel);
+		     }
              else {
                 console.log("added " + ui.tag.tagLabel);
-	        siteAjaxPost("/site/restservices/site-ajax/addTag", {
-		     processActivityFormInstanceId : '${activity.processActivityFormInstanceId}',
-                     tagTypeId : '10000',
-		     value: ui.tagLabel
-	           }, function(data) {
-		     refreshTags(data);
+  	            siteAjaxPost("/site/restservices/site-ajax/addTag", {
+		              processActivityFormInstanceId : '${activity.processActivityFormInstanceId}',
+                      tagTypeId : '10000',
+		              value: ui.tagLabel
+	               }, function(data) {
+		              refreshTags(data);
                    }
-	        );
+	            );
               }
            }
         });
-
-	$("#dialog-tags-case").dialog({
-		autoOpen : false,
-		height : 300,
-		width : 350,
-		modal : true,
-		buttons : {
-			"Ok" : function() {
-				var bValid = true;
-				allFields.removeClass("ui-state-error");
-				bValid = bValid && checkLength(tag, "Ogiltig etikett", 1, 255);
-				if (bValid) {
-					// submit form
-				}
-			},
-			Cancel : function() {
-				$(this).dialog("close");
-			}
-		},
-		close : function() {
-			allFields.val("").removeClass("ui-state-error");
-		}
-	});
 
 	$("#dialog-comment-case").dialog(
 			{
@@ -397,10 +329,6 @@
 
 	$("#add-comment").click(function() {
 		$("#dialog-comment-case").dialog("open");
-	});
-
-	$("#add-tags").click(function() {
-		$("#dialog-tags-case").dialog("open");
 	});
 
 	$(".remove-candidate-btn").button({
@@ -514,6 +442,7 @@
 	}
 	
 	function refreshCommentFeed(comments) {
+	   $("#commentfeed").empty();
        for (var i=0;i<comments.length;i++) {
     	   var commentDate = new Date(comments[i].timestamp);
 	       $("#commentfeed").append("<li><b>" + $.datepicker.formatDate('yy-mm-dd', commentDate) + " (" + comments[i].activityLabel + ") " + comments[i].user.label + ": </b><br/>" + comments[i].message + "</li>");

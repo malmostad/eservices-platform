@@ -80,19 +80,28 @@ public class InheritServiceClient {
 		
 		return xstream;
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public ArrayList<ProcessInstanceListItem> searchProcessInstancesStartedByUser(String searchForUserId, String userId) {
-		 ArrayList<ProcessInstanceListItem> result = null;
-		String uri = serverBaseUrl + "searchProcessInstancesStartedByUser/" + ParameterEncoder.encode(searchForUserId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		String response = callAndCatchRE(uri);
+	public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(
+			String searchForUserId, int fromIndex, int pageSize, String sortBy,
+			String sortOrder, String filter, String userId) {
+		PagedProcessInstanceSearchResult result = null;
+		String uri = serverBaseUrl + "searchProcessInstancesStartedByUser/"
+				+ ParameterEncoder.encode(searchForUserId) + "/" + fromIndex
+				+ "/" + pageSize + "/" + ParameterEncoder.encode(sortBy) + "/"
+				+ ParameterEncoder.encode(sortOrder) + "/"
+				+ ParameterEncoder.encode(filter) + "/"
+				+ ParameterEncoder.encode(userId) + "?media=xml";
+		String response = call(uri);
 		System.out.println(response);
 		if (response != null) {
-			result = (ArrayList<ProcessInstanceListItem>)xstream.fromXML(response);
+			result = (PagedProcessInstanceSearchResult) xstream
+					.fromXML(response);
 		}
 		return result;
 	}
 
+	
 	@SuppressWarnings("unchecked")
 	public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(
 			String searchForUserId, int fromIndex, int pageSize, String sortBy,
@@ -522,14 +531,9 @@ public class InheritServiceClient {
 		System.out.println("Testa InheritServiceClient");
 		
 		InheritServiceClient c = new InheritServiceClient();
-		
-		System.out.print("submitStartForm(\"formPath\", \"docId\", \"userId\")");
-		System.out.println(c.submitStartForm("formPath", "docId", "userId"));
-			
-/*
-		ArrayList<ProcessInstanceListItem> list = c.searchProcessInstancesStartedByUser("john", "james");
+		PagedProcessInstanceSearchResult hits = c.searchProcessInstancesStartedByUser("john", 0, 5 , "started", "desc", "STARTED", "james");
 		System.out.println("searchProcessInstancesStartedByUser");
-		for (ProcessInstanceListItem item : list) {
+		for (ProcessInstanceListItem item : hits.getHits()) {
 			System.out.println("item: " + item);
 		}
 

@@ -20,8 +20,24 @@
         <sv:value>hst:sitemenuitem</sv:value>
       </sv:property>
       <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-        <sv:value>mycases/status</sv:value>
+        <sv:value>mycases/search/started-by-me/pending</sv:value>
       </sv:property>
+      <sv:node sv:name="Pending">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenuitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+          <sv:value>mycases/search/started-by-me/pending</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="Archived">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemenuitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
+          <sv:value>mycases/search/started-by-me/archived</sv:value>
+        </sv:property>
+      </sv:node>
     </sv:node>
   </sv:node>
 </sv:node>

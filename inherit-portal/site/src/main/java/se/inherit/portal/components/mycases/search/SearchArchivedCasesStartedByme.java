@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import se.inherit.portal.components.mycases.MyCasesBaseComponent;
 
-public class SearchCasesStartedByUserId extends BaseSearchCasesComponent {
+public class SearchArchivedCasesStartedByme extends BaseSearchCasesComponent {
 
-	public static final Logger log = LoggerFactory.getLogger(SearchCasesStartedByUserId.class);
+	public static final Logger log = LoggerFactory.getLogger(SearchArchivedCasesStartedByme.class);
 
 	@Override
 	public PagedProcessInstanceSearchResult executeSearch(
@@ -24,7 +24,9 @@ public class SearchCasesStartedByUserId extends BaseSearchCasesComponent {
 			String sortOrder, String filter, String userId) {
 		
         InheritServiceClient isc = new InheritServiceClient();
-        PagedProcessInstanceSearchResult searchResult = isc.searchProcessInstancesStartedByUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder,  filter,  userId);
+        
+        // ignore searchForUserId and search for logged on userId
+        PagedProcessInstanceSearchResult searchResult = isc.searchProcessInstancesStartedByUser(userId, fromIndex, pageSize, sortBy, sortOrder,  "FINISHED",  userId);
 
 		return searchResult;
 	}

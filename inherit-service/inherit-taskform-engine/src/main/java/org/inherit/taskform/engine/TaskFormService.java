@@ -630,114 +630,110 @@ public class TaskFormService {
 		appendProcessAndActivityLabelsFromTaskFormDb(result);
 		return result;
 	}
+	
+    
+    /**
+     * Find process instances with involved user
+     * @param searchForUserId involved user to search for
+     * @param fromIndex paging start index. starts with 0
+     * @param pageSize 
+     * @param sortBy
+     * @param sortOrder
+     * @param filter filter on instance state, valid values are STARTED, FINISHED
+     * @param userId The user that is actually performing the search, make it possibly to exclude hits because of privacy reasons for instance
+     * @return
+     */
+    public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
+            PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesStartedBy(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+            appendTaskFormData(result.getHits());
+            appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
+            return result;
+    }
 
-	/**
-	 * Find process instances with involved user
-	 * 
-	 * @param searchForUserId
-	 *            involved user to search for
-	 * @param fromIndex
-	 *            paging start index. starts with 0
-	 * @param pageSize
-	 * @param sortBy
-	 * @param sortOrder
-	 * @param filter
-	 *            filter on instance state, valid values are STARTED, FINISHED
-	 * @param userId
-	 *            The user that is actually performing the search, make it
-	 *            possibly to exclude hits because of privacy reasons for
-	 *            instance
-	 * @return
-	 */
-	public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(
-			String searchForUserId, int fromIndex, int pageSize, String sortBy,
-			String sortOrder, String filter, String userId) {
-		PagedProcessInstanceSearchResult result = bonitaClient
-				.getProcessInstancesWithInvolvedUser(searchForUserId,
-						fromIndex, pageSize, sortBy, sortOrder, filter, userId);
-		appendTaskFormData(result.getHits());
-		appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO
-																		// merge
-																		// with
-																		// appendTaskFormData
-		return result;
-	}
+    
+   /**
+    * Find process instances with involved user
+    * @param searchForUserId involved user to search for
+    * @param fromIndex paging start index. starts with 0
+    * @param pageSize 
+    * @param sortBy
+    * @param sortOrder
+    * @param filter filter on instance state, valid values are STARTED, FINISHED
+    * @param userId The user that is actually performing the search, make it possibly to exclude hits because of privacy reasons for instance
+    * @return
+    */
+   public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
+           PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesWithInvolvedUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+           appendTaskFormData(result.getHits());
+           appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
+           return result;
+   }
+   
+   
+   /**
+    * Find process instances that has a specified associated tag
+    * @param tagValue  Tag value to search for
+    * @param userId    The user that is actually performing the search, make it possibly to exclude hits because of privacy reasons for instance 
 
-	/**
-	 * Find process instances that has a specified associated tag
-	 * 
-	 * @param tagValue
-	 *            Tag value to search for
-	 * @param userId
-	 *            The user that is actually performing the search, make it
-	 *            possibly to exclude hits because of privacy reasons for
-	 *            instance
-	 * 
-	 * @return
-	 */
-	public PagedProcessInstanceSearchResult searchProcessInstancesListByTag(
-			String tagValue, int fromIndex, int pageSize, String sortBy,
-			String sortOrder, String filter, String userId) {
-		List<String> uuids = taskFormDb.getProcessInstancesByTag(tagValue);
-		PagedProcessInstanceSearchResult result = bonitaClient
-				.getProcessInstancesByUuids(uuids, fromIndex, pageSize, sortBy,
-						sortOrder, filter, userId);
-		appendTaskFormData(result.getHits());
-		appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO
-																		// merge
-																		// with
-																		// appendTaskFormData
-		return result;
-	}
+    * @return
+    */
+       public PagedProcessInstanceSearchResult searchProcessInstancesListByTag(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
+                List<String> uuids = taskFormDb.getProcessInstancesByTag(tagValue);
+               PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesByUuids(uuids, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+               appendTaskFormData(result.getHits());
+               appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
+               return result;
+        }
+ 
+   
+       private void appendTaskFormData(List<ProcessInstanceListItem> items) {
+               HashMap<String, ProcessActivityFormInstance> forms = new HashMap<String, ProcessActivityFormInstance>();
+                       
+               if (items != null) {
+                       for (ProcessInstanceListItem item : items) {
+                               forms.clear();
+                               List<ProcessActivityFormInstance> formInstances = taskFormDb.getProcessActivityFormInstances(item.getProcessInstanceUuid());
+                               for (ProcessActivityFormInstance formInstance : formInstances) {
+                                       String activityInstanceUuid = formInstance.getActivityInstanceUuid();
+                                       if (activityInstanceUuid != null && activityInstanceUuid.trim().length()>0) {
+                                               forms.put(activityInstanceUuid, formInstance);
+                                       }
+                               }
+                       
+                               if (item.getActivities() != null) {
+                                       for (InboxTaskItem activity : item.getActivities()) {
+                                               ProcessActivityFormInstance paf = forms.get(activity.getTaskUuid());
+                                               if (paf != null) {
+                                                       activity.setProcessActivityFormInstanceId(paf.getProcessActivityFormInstanceId());
+                                               }
+                                       }
+                               }
+                       }
+               }
+       }
 
-	private void appendTaskFormData(List<ProcessInstanceListItem> items) {
-		HashMap<String, ProcessActivityFormInstance> forms = new HashMap<String, ProcessActivityFormInstance>();
-
-		if (items != null) {
+    
+	private void appendProcessAndActivityLabelsFromTaskFormDb(List<ProcessInstanceListItem> items) {
+		
+		if (items != null ) {
 			for (ProcessInstanceListItem item : items) {
-				forms.clear();
-				List<ProcessActivityFormInstance> formInstances = taskFormDb
-						.getProcessActivityFormInstances(item
-								.getProcessInstanceUuid());
-				for (ProcessActivityFormInstance formInstance : formInstances) {
-					String activityInstanceUuid = formInstance
-							.getActivityInstanceUuid();
-					if (activityInstanceUuid != null
-							&& activityInstanceUuid.trim().length() > 0) {
-						forms.put(activityInstanceUuid, formInstance);
+				if (item != null) {
+					String startedByFormPath = null;
+					// TODO optimize ???
+					ProcessActivityFormInstance startedByForm = taskFormDb.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item.getProcessInstanceUuid());
+					if (startedByForm != null) {
+						startedByFormPath = startedByForm.getFormPath();
+						item.setStartedByFormPath(startedByFormPath);
 					}
-				}
-
-				if (item.getActivities() != null) {
-					for (InboxTaskItem activity : item.getActivities()) {
-						ProcessActivityFormInstance paf = forms.get(activity
-								.getTaskUuid());
-						if (paf != null) {
-							activity.setProcessActivityFormInstanceId(paf
-									.getProcessActivityFormInstanceId());
+					
+					if (item.getActivities() != null) {
+						for (InboxTaskItem taskItem : item.getActivities()) {
+							if (taskItem != null) {
+								taskItem.setStartedByFormPath(startedByFormPath);
+							}
 						}
 					}
 				}
-			}
-		}
-	}
-
-	private void appendProcessAndActivityLabelsFromTaskFormDb(
-			List<ProcessInstanceListItem> items) {
-		for (ProcessInstanceListItem item : items) {
-
-			String startedByFormPath = null;
-			// TODO optimize ???
-			ProcessActivityFormInstance startedByForm = taskFormDb
-					.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item
-							.getProcessInstanceUuid());
-			if (startedByForm != null) {
-				startedByFormPath = startedByForm.getFormPath();
-				item.setStartedByFormPath(startedByFormPath);
-			}
-
-			for (InboxTaskItem taskItem : item.getActivities()) {
-				taskItem.setStartedByFormPath(startedByFormPath);
 			}
 		}
 	}

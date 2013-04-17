@@ -5,7 +5,7 @@
         <ul data-role="listview">
                 <c:forEach var="item" items="${processInstances}">
                         <li>
-                        	<a href="processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">
+                        	<a href="../../processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">
                                 <h3>${item.processLabel}</h3>
                                 <p>
                                         <fmt:message key="mycases.startDate.column.lbl"/>:&nbsp;<fmt:formatDate value="${item.startDate}" type="Date" dateStyle="short" timeStyle="short"/>

@@ -39,7 +39,7 @@ public class InheritServiceApplication extends Application {
 		router.attach("/getTagsByProcessInstance/{processInstanceUuid}", GetTagsByProcessInstance.class); 
 				
 		router.attach("/searchProcessInstancesByTagValue/{tagValue}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}", SearchProcessInstancesByTagValue.class); 
-		router.attach("/searchProcessInstancesStartedByUser/{searchForUserId}/{userId}", SearchProcessInstancesStartedByUser.class);
+		router.attach("/searchProcessInstancesStartedByUser/{searchForUserId}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}", SearchProcessInstancesStartedByUser.class);
 		router.attach("/searchProcessInstancesWithInvolvedUser/{searchForUserId}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}", SearchProcessInstancesWithInvolvedUser.class);
 		
 		router.attach("/getUsersByRoleAndActivity/{roleName}/{activityInstanceUuid}", GetUsersByRoleAndActivity.class);
