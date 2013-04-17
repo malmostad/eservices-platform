@@ -92,7 +92,7 @@ public class InheritServiceClient {
 				+ ParameterEncoder.encode(sortOrder) + "/"
 				+ ParameterEncoder.encode(filter) + "/"
 				+ ParameterEncoder.encode(userId) + "?media=xml";
-		String response = call(uri);
+		String response = callAndCatchRE(uri);
 		System.out.println(response);
 		if (response != null) {
 			result = (PagedProcessInstanceSearchResult) xstream
@@ -209,7 +209,8 @@ public class InheritServiceClient {
 				"/" + ParameterEncoder.encode(docId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
 		
 		result = (String) call(uri);
-		/* ROL let the caller take care of the exception
+		/* 
+		   ROL let the caller take care of the exception
 		try {
 			result = (String) call(uri);
 		} catch (ResourceException e) {
@@ -220,7 +221,8 @@ public class InheritServiceClient {
 //			throw e;
 			result = null;
 		}
-*/		return result;
+		*/
+		return result;
 	}
 
 	public String submitForm(String docId, String userId) {
