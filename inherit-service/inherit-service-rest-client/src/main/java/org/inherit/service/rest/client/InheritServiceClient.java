@@ -545,7 +545,7 @@ public class InheritServiceClient {
 			System.out.println("listInbx item: " + item);
 		}
 
-		PagedProcessInstanceSearchResult hits = c.searchProcessInstancesByTagValue("ture", 0, 5 , "started", "desc", "STARTED", "james");
+		hits = c.searchProcessInstancesByTagValue("ture", 0, 5 , "started", "desc", "STARTED", "james");
 		System.out.println("searchProcessInstancesByTagValue");
 		for (ProcessInstanceListItem item : hits.getHits()) {
 			System.out.println("item: " + item);
@@ -569,7 +569,7 @@ public class InheritServiceClient {
 		System.out.println("Hits: " + hits);
 		System.out.println("Number of hits: " + hits.getNumberOfHits());
 
-		*/
+
 		System.out.println("InheritServiceClient avslutas");
 	}
 	

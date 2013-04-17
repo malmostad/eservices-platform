@@ -50,7 +50,7 @@ public class Confirm extends MyCasesBaseComponent {
 			viewUrl = isc.submitForm(docId, user.getUuid());
 		} catch (ResourceException re) {
 			try {
-				response.sendRedirect("/site/internalerror");
+				response.sendRedirect("/site/internal-error");
 			} catch (IOException ioe) {
 				log.error("==============> ioexception in catch block");
 			}
@@ -80,7 +80,7 @@ public class Confirm extends MyCasesBaseComponent {
 							user.getUuid());
 				} catch (ResourceException re) {
 					try {
-						response.sendRedirect("/site/internalerror");
+						response.sendRedirect("/site/internal-error");
 					} catch (IOException ioe) {
 						log.error("==============> ioexception in catch block");
 					}
