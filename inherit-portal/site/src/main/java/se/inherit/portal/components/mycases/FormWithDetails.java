@@ -23,7 +23,7 @@ public class FormWithDetails extends Form  {
 		String activityInstanceUuid = getPublicRequestParameter(request,
 				"taskUuid"); // TODO change to activityInstanceUuid???
 
-		log.error("activityInstanceUuid=" + activityInstanceUuid);
+		log.debug("activityInstanceUuid=" + activityInstanceUuid);
 		InheritServiceClient isc = new InheritServiceClient();
 		
 		ProcessInstanceDetails piDetails = null;
@@ -47,7 +47,7 @@ public class FormWithDetails extends Form  {
 		
 		if (piDetails != null && piDetails.getTimeline() != null) {
 			request.setAttribute("timelineByDay", piDetails.getTimeline().getTimelineByDay());
-			log.error("timeline=" + piDetails.getTimeline().getTimelineByDay());
+			log.debug("timeline=" + piDetails.getTimeline().getTimelineByDay());
 		}
     }
 	
