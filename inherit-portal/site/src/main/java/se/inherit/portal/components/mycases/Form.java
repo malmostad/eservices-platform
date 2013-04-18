@@ -27,7 +27,7 @@ public class Form extends MyCasesBaseComponent {
         UserInfo user = getUserName(request);
         
         
-        log.error("=================> user: " + request.getUserPrincipal());
+        log.debug("user: " + request.getUserPrincipal());
         InheritServiceClient isc = new InheritServiceClient();
         
         String processActivityFormInstanceId = getPublicRequestParameter(request, "processActivityFormInstanceId");
@@ -72,7 +72,7 @@ public class Form extends MyCasesBaseComponent {
     		
     		if (piUuid != null && aiUuid != null) {    			
 	    		String guidePath = getMount(request).getCanonicalContentPath() + "/mycases/processes/" + piUuid.toLowerCase() + "/" + aiUuid.toLowerCase();
-	    		log.error("xxxxxxxxxxxxxxxxx guide path: " + guidePath );
+	    		log.debug("guide path: " + guidePath );
 	    		
 	    		try {
 					guide = (HippoBean) getObjectBeanManager(request).getObject(guidePath);
