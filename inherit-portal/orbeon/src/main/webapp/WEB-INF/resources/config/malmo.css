@@ -1,0 +1,51 @@
+.fr-grid {
+   border: 0;
+   width:100%;
+}
+
+.fr-grid tbody tr {
+ background-color:white;
+}
+
+.fr-grid-content .xforms-label {
+  width:150px;
+  display: inline-block;
+}
+
+.fr-buttons {
+  text-align: right;
+}
+
+.fr-section-title {
+  background-color: rgb(0, 105, 60);
+  color: white;
+  padding: 5px;
+  border-radius: 8px;
+  box-shadow:2px 2px 3px grey;
+  margin-bottom: 10px;
+}
+
+.fr-section-title .fr-section-arrow {
+    background-color: rgb(0, 105, 60);
+}
+
+.fr-section-arrow a {
+  color: white !important;
+}
+
+a.fr-section-label:link, a.fr-section-label:visited, a.fr-section-label:active {
+  color: white !important;
+}
+
+.komin-xform .fr-section-title {
+  background-color: rgb(102, 102, 102);
+}
+
+.fr-top {
+  background-image: none; 
+  background-color: rgb(0, 105, 60);
+}
+
+#doc4 {
+    width: 100%;
+}
