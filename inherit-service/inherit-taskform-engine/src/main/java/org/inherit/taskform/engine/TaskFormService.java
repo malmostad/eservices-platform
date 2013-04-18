@@ -619,23 +619,20 @@ public class TaskFormService {
 		return viewUrl;
 	}
 
-	/**
-	 * Find process instances that is started by a specified user
-	 * 
-	 * @param searchForUserId
-	 *            The user to search for.
-	 * @param userId
-	 *            The user that is actually performing the search, make it
-	 *            possibly to exclude hits because of privacy reasons for
-	 *            instance
-	 * @return
-	 */
-	public List<ProcessInstanceListItem> searchProcessInstancesStartedByUser(
-			String searchForUserId, String user) {
-		List<ProcessInstanceListItem> result = bonitaClient
-				.getProcessInstancesStartedBy(user);
-		appendProcessAndActivityLabelsFromTaskFormDb(result);
-		return result;
+
+	
+	private String searchForBonitaUser(String searchForUserId) {
+		String searchForBonitaUser = searchForUserId;
+		
+		if (searchForBonitaUser!=null) {
+			searchForBonitaUser = searchForBonitaUser.trim();
+		}
+		UserInfo userInfo = taskFormDb.getUserBySerial(searchForBonitaUser);
+		if (userInfo != null) {
+			searchForBonitaUser = userInfo.getUuid();
+		}
+		
+		return searchForBonitaUser;
 	}
 	
     
@@ -651,7 +648,7 @@ public class TaskFormService {
      * @return
      */
     public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
-            PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesStartedBy(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+            PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesStartedBy(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, userId);
             appendTaskFormData(result.getHits());
             appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
             return result;
@@ -670,7 +667,7 @@ public class TaskFormService {
     * @return
     */
    public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
-           PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesWithInvolvedUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+           PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesWithInvolvedUser(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, userId);
            appendTaskFormData(result.getHits());
            appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
            return result;
