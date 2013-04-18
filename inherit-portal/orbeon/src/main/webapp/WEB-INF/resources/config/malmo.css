@@ -17,8 +17,7 @@
 }
 
 .fr-section-title {
-  background-color: rgb(0, 105, 60);
-  color: white;
+  background-color: rgb(255, 207, 61);
   padding: 5px;
   border-radius: 8px;
   box-shadow:2px 2px 3px grey;
@@ -26,19 +25,15 @@
 }
 
 .fr-section-title .fr-section-arrow {
-    background-color: rgb(0, 105, 60);
+    background-color: rgb(255, 207, 61);
 }
 
 .fr-section-arrow a {
-  color: white !important;
+  color: black !important;
 }
 
 a.fr-section-label:link, a.fr-section-label:visited, a.fr-section-label:active {
-  color: white !important;
-}
-
-.komin-xform .fr-section-title {
-  background-color: rgb(102, 102, 102);
+  color: black !important;
 }
 
 .fr-top {
@@ -48,4 +43,16 @@ a.fr-section-label:link, a.fr-section-label:visited, a.fr-section-label:active {
 
 #doc4 {
     width: 100%;
+}
+
+ul li {
+   list-style-type: none;
+}
+
+.fr-separator {
+   background-color: rgb(0, 105, 60);
+}
+
+@media print {
+
 }
