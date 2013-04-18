@@ -1,22 +1,20 @@
 #!/bin/sh
 
 # ROOT of build directory
-#BUILD_DIR=${HOME}/inherit-platform-gitclone/inherit-platform
-BUILD_DIR=${HOME}/workspace/inherit-platform
+BUILD_DIR=${HOME}/inherit-platform-gitclone/inherit-platform
 
 # ROOT of directory holding the j2ee containers
-#CONTAINER_ROOT=${HOME}/inherit-platform
-CONTAINER_ROOT=/opt/inherit-platform
+CONTAINER_ROOT=${HOME}/inherit-platform
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
+CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
 
 # Name of container roots
 EXIST=orbeon-tomcat-6.0.36
 BOS=BOS-5.9-Tomcat-6.0.35
-#ESERVICE=hippo-eservice-tomcat-6.0.36
-ESERVICE=hippo-tomcat-6.0.36
+ESERVICE=hippo-eservice-tomcat-6.0.36
 KSERVICE=hippo-kservice-tomcat-6.0.36
 
-ESERVICEPATCH=xxxxxxxx.malmo.se
+ESERVICEPATCH=eservicetest.malmo.se
 KSERVICEPATCH=kservicetest.malmo.se
 
 EXIST_PORT=48080
@@ -24,7 +22,7 @@ BOS_PORT=58080
 ESERVICE_PORT=8080
 KSERVICE_PORT=38080
 
-WITH_KSERVICES=false
+WITH_KSERVICES=true
 
 ERRORSTATUS=0
 
@@ -219,12 +217,20 @@ fi
 
 # 8. Install TASKFORM engine on BOS container
 echo "Installing taskform engine on BOS"
-cp ${BUILD_DIR}/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war ${CONTAINER_ROOT}/${BOS}/webapps/
-rm -rf ${CONTAINER_ROOT}/${BOS}/webapps/inherit-service-rest-server-1.0-SNAPSHOT
+pushd ${CONTAINER_ROOT}/${BOS}/webapps
+cp ${BUILD_DIR}/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war .
+rm -rf inherit-service-rest-server-1.0-SNAPSHOT
+popd
 
 # 9. Clean up content repository
 echo "Clean up content repository..."
-rm -fr ${CONTENT_ROOT}/*
+pushd ${CONTENT_ROOT}
+rm -fr repository version workspaces 
+popd
+pushd ${CONTENT_ROOT_WORKAROUND}
+rm -fr repository version workspaces 
+popd
+
 
 # 10. Restart containers
 pushd ${CONTAINER_ROOT}
