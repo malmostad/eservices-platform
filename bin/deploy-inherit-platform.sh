@@ -1,10 +1,11 @@
 #!/bin/sh
 
 # ROOT of build directory
-BUILD_DIR=${HOME}/inherit-platform-gitclone/inherit-platform
+#BUILD_DIR=${HOME}/inherit-platform-gitclone/inherit-platform
+BUILD_DIR=${HOME}/workspace/inherit-platform
 
 # ROOT of directory holding the j2ee containers
-CONTAINER_ROOT=${HOME}/inherit-platform
+CONTAINER_ROOT=/opt/inherit-platform
 
 # ROOT of Hippo jcr content repository
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
@@ -13,15 +14,16 @@ CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
 # This should not be so, and is a fix because of the 
 # problem that we need two hippo instances pga openam realm requirement
 
-CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
+#CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
+CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal
 
 # Name of container roots
 EXIST=orbeon-tomcat-6.0.36
 BOS=BOS-5.9-Tomcat-6.0.35
-ESERVICE=hippo-eservice-tomcat-6.0.36
+ESERVICE=hippo-tomcat-6.0.36
 KSERVICE=hippo-kservice-tomcat-6.0.36
 
-#ESERVICEPATCH=eservicetest.malmo.se
+ESERVICEPATCH=eservices.malmo.se
 KSERVICEPATCH=kservicetest.malmo.se
 
 EXIST_PORT=48080
@@ -29,7 +31,7 @@ BOS_PORT=58080
 ESERVICE_PORT=8080
 KSERVICE_PORT=38080
 
-WITH_KSERVICES=true
+WITH_KSERVICES=false
 
 ERRORSTATUS=0
 
@@ -43,6 +45,13 @@ echo "CONTENT_ROOT_WORKAROUND: $CONTENT_ROOT_WORKAROUND"
 if [ -z ${BUILD_DIR} ] || [ -z ${CONTAINER_ROOT} ] || [ -z ${CONTENT_ROOT} ] || [ -z ${CONTENT_ROOT_WORKAROUND} ]
 then
     echo "Either of parameters BUILD_DIR, CONTAINER_ROOT, CONTENT_ROOT or CONTENT_ROOT_WORKAROUND unset, aborting execution of $0"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
+
+if [ ! -d ${BUILD_DIR} ] || [ ! -d ${CONTAINER_ROOT} ] || [ ! -d ${CONTENT_ROOT} ] || [ ! -d ${CONTENT_ROOT_WORKAROUND} ]
+then
+    echo "Either of $BUILD_DIR, $CONTAINER_ROOT, $CONTENT_ROOT or $CONTENT_ROOT_WORKAROUND do not exist, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
@@ -70,9 +79,16 @@ then
 fi
 
 # 2. Patching properties-local.xml for eservicetest
-pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
-popd
+if [ -d ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config ]
+then
+    pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
+    sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
+    popd
+else
+    echo "${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
 
 # 3. Build eservice-platform
 pushd ${BUILD_DIR}
@@ -99,9 +115,16 @@ popd
 if ${WITH_KSERVICES}
 then
 # 4. Patching properties-local.xml for kservicetest
-    pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-    sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
-    popd
+    if [ -d ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config ]
+    then
+	pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
+	sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
+	popd
+    else
+	echo "${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
+	ERRORSTATUS=1
+	exit $ERRORSTATUS
+    fi
 
 # 5. Build kservice-platform
     pushd ${BUILD_DIR}
@@ -271,29 +294,47 @@ fi
 
 # 7. Install on eservice container
 echo "Installing on eservice container"
-pushd ${CONTAINER_ROOT}/${ESERVICE}
-tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
-cd webapps
-rm -fr cms site orbeon
-popd
-
-# 8. Install on kservice container
-if ${WITH_KSERVICES}
+if [ -d  ${CONTAINER_ROOT}/${ESERVICE} ]
 then
-    echo "Installing on kservice container"
-    pushd ${CONTAINER_ROOT}/${KSERVICE}
+    pushd ${CONTAINER_ROOT}/${ESERVICE}
     tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
     cd webapps
     rm -fr cms site orbeon
     popd
+else
+    echo "Directory ${CONTAINER_ROOT}/${ESERVICE} does not exist. Halting."
+    exit 1
+fi
+
+# 8. Install on kservice container
+if ${WITH_KSERVICES}
+then
+    if [ -d ${CONTAINER_ROOT}/${KSERVICE} ]
+    then
+	echo "Installing on kservice container"
+	pushd ${CONTAINER_ROOT}/${KSERVICE}
+	tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
+	cd webapps
+	rm -fr cms site orbeon
+	popd
+    else
+	echo "Directory ${CONTAINER_ROOT}/${KSERVICE} does not exist. Halting."
+	exit 1
+    fi
 fi
 
 # 9. Install TASKFORM engine on BOS container
 echo "Installing taskform engine on BOS"
-pushd ${CONTAINER_ROOT}/${BOS}/webapps
-cp ${BUILD_DIR}/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war .
-rm -rf inherit-service-rest-server-1.0-SNAPSHOT
-popd
+if [ -d ${CONTAINER_ROOT}/${BOS}/webapps ] 
+then
+    pushd ${CONTAINER_ROOT}/${BOS}/webapps
+    cp ${BUILD_DIR}/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war .
+    rm -rf inherit-service-rest-server-1.0-SNAPSHOT
+    popd
+else
+    echo "Directory ${CONTAINER_ROOT}/${BOS}/webapps does not exist. Halting."
+    exit 1
+fi
 
 # 10. Clean up content repositories
 echo "Clean up content repository..."
