@@ -216,7 +216,7 @@
 		name="targetUserId" value="${user.uuid}" />
 </form>
 
-<form action="./search/casesbytagvalue" method="POST" id="searchTagForm">
+<form action="./search/by-tag/casesbytagvalue" method="POST" id="searchTagForm">
 	<input type="hidden" name="searchStr" value=""/>
 </form>
 

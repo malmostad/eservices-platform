@@ -146,28 +146,6 @@
       <sv:property sv:name="hst:relativecontentpath" sv:type="String">
         <sv:value>${parent}/search</sv:value>
       </sv:property>
-      <sv:node sv:name="casesbyinvolveduser">
-        <sv:property sv:name="jcr:primaryType" sv:type="Name">
-          <sv:value>hst:sitemapitem</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-          <sv:value>hst:pages/searchcasesbyinvolveduser</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-          <sv:value>${parent}/casesbyinvolveduser</sv:value>
-        </sv:property>
-      </sv:node>
-      <sv:node sv:name="casesbytagvalue">
-        <sv:property sv:name="jcr:primaryType" sv:type="Name">
-          <sv:value>hst:sitemapitem</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
-          <sv:value>hst:pages/searchcasesbytagvalue</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
-          <sv:value>${parent}/casesbytagvalue</sv:value>
-        </sv:property>
-      </sv:node>
       <sv:node sv:name="with-me">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemapitem</sv:value>
@@ -198,6 +176,88 @@
           </sv:property>
           <sv:property sv:name="hst:relativecontentpath" sv:type="String">
             <sv:value>${parent}/archived</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="by-user">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+          <sv:value>${parent}/by-user</sv:value>
+        </sv:property>
+        <sv:node sv:name="casesbyinvolveduser">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/searchcasesbyinvolveduser</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/casesbyinvolveduser</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="casesstartedbyuser">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/searchcasesstartedbyuser</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/casesstartedbyuser</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="started-by-me">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+          <sv:value>hst:pages/searchpendingcasesstartedbyme</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+          <sv:value>${parent}/started-by-me</sv:value>
+        </sv:property>
+        <sv:node sv:name="pending">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/searchpendingcasesstartedbyme</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/pending</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="archived">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/searcharchivedcasesstartedbyme</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/archived</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="by-tag">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+          <sv:value>${parent}/by-tag</sv:value>
+        </sv:property>
+        <sv:node sv:name="casesbytagvalue">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/searchcasesbytagvalue</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/casesbytagvalue</sv:value>
           </sv:property>
         </sv:node>
       </sv:node>
