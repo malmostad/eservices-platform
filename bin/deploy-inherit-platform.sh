@@ -5,7 +5,14 @@ BUILD_DIR=${HOME}/inherit-platform-gitclone/inherit-platform
 
 # ROOT of directory holding the j2ee containers
 CONTAINER_ROOT=${HOME}/inherit-platform
+
+# ROOT of Hippo jcr content repository
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
+
+# Clone of ROOT of Hippo jcr content repository
+# This should not be so, and is a fix because of the 
+# problem that we need two hippo instances pga openam realm requirement
+
 CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
 
 # Name of container roots
@@ -14,7 +21,7 @@ BOS=BOS-5.9-Tomcat-6.0.35
 ESERVICE=hippo-eservice-tomcat-6.0.36
 KSERVICE=hippo-kservice-tomcat-6.0.36
 
-ESERVICEPATCH=eservicetest.malmo.se
+#ESERVICEPATCH=eservicetest.malmo.se
 KSERVICEPATCH=kservicetest.malmo.se
 
 EXIST_PORT=48080
@@ -26,7 +33,100 @@ WITH_KSERVICES=true
 
 ERRORSTATUS=0
 
-# 1. Stop servers (containers, not Apache for the moment) 
+# 1. Sanity check of supplied parameters
+
+echo "BUILD_DIR: $BUILD_DIR"
+echo "CONTAINER_ROOT: $CONTAINER_ROOT"
+echo "CONTENT_ROOT: $CONTENT_ROOT"
+echo "CONTENT_ROOT_WORKAROUND: $CONTENT_ROOT_WORKAROUND"
+
+if [ -z ${BUILD_DIR} ] || [ -z ${CONTAINER_ROOT} ] || [ -z ${CONTENT_ROOT} ] || [ -z ${CONTENT_ROOT_WORKAROUND} ]
+then
+    echo "Either of parameters BUILD_DIR, CONTAINER_ROOT, CONTENT_ROOT or CONTENT_ROOT_WORKAROUND unset, aborting execution of $0"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
+
+echo "EXIST_PORT: $EXIST_PORT"
+echo "BOS_PORT: $BOS_PORT"
+echo "ESERVICE_PORT: $ESERVICE_PORT"
+echo "KSERVICE_PORT: KESERVICE_PORT"
+
+if [ -z "${EXIST_PORT}" ] || [ -z "${BOS_PORT}" ] || [ -z "${ESERVICE_PORT}" ] || [ -z "${KSERVICE_PORT}" ]
+then
+    echo "Either of parameters EXIST_PORT, BOS_PORT, ESERVICE_PORT or KSERVICE_PORT unset, aborting execution of $0"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
+
+echo "ESERVICEPATCH: $ESERVICEPATCH"
+echo "KSERVICEPATCH: KSERVICEPATCH"
+
+if [ -z ${ESERVICEPATCH} ] || [ -z ${KSERVICEPATCH} ]
+then
+    echo "Either of parameters ESERVICEPATCH or KSERVICEPATCH unset, aborting execution of $0"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
+
+# 2. Patching properties-local.xml for eservicetest
+pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
+sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
+popd
+
+# 3. Build eservice-platform
+pushd ${BUILD_DIR}
+if mvn clean install
+then
+    echo "Executing mvn clean install - patched for eservicetest..."
+else
+    echo "Compilation failed. Aborting execution"
+    ERRORSTATUS=$?
+    exit $ERRORSTATUS
+fi
+
+cd inherit-portal
+if mvn -P dist
+then
+    echo "Creating eservicetest snapshot distribution tar.gz..."
+else
+    echo "Building of snapshot distribution failed. Aborting execution"
+    ERRORSTATUS=$?
+    exit $ERRORSTATUS
+fi
+popd
+
+if ${WITH_KSERVICES}
+then
+# 4. Patching properties-local.xml for kservicetest
+    pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
+    sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
+    popd
+
+# 5. Build kservice-platform
+    pushd ${BUILD_DIR}
+    if mvn clean install
+    then
+	echo "Executing mvn clean install - patched for kservicetest..."
+    else
+	echo "Compilation failed. Aborting execution"
+	ERRORSTATUS=$?
+	exit $ERRORSTATUS
+    fi
+
+    cd inherit-portal
+    if mvn -P dist
+    then
+	echo "Creating eservicetest snapshot distribution tar.gz..."
+    else
+	echo "Building of snapshot distribution failed. Aborting execution"
+	ERRORSTATUS=$?
+	exit $ERRORSTATUS
+    fi
+    popd
+fi
+
+# 6. Stop j2ee containers
 pushd ${CONTAINER_ROOT}
 cd $EXIST/bin/
 EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
@@ -165,24 +265,11 @@ popd
 
 if [ ${ERRORSTATUS} -eq 1 ]
 then
+    echo "Failed to shutdown all containers, aborting execution of script"
     exit ${ERRORSTATUS}
 fi
 
-# 2. Patching properties-local.xml for eservicetest
-pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
-popd
-
-# 3. Build eservice-platform
-pushd ${BUILD_DIR}
-echo "Executing mvn clean install - patched for eservicetest..."
-mvn clean install
-cd inherit-portal
-echo "Creating eservicetest snapshot distribution tar.gz..."
-mvn -P dist
-popd
-
-# 4. Install on eservice container
+# 7. Install on eservice container
 echo "Installing on eservice container"
 pushd ${CONTAINER_ROOT}/${ESERVICE}
 tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
@@ -190,23 +277,9 @@ cd webapps
 rm -fr cms site orbeon
 popd
 
+# 8. Install on kservice container
 if ${WITH_KSERVICES}
 then
-# 5. Patching properties-local.xml for kservicetest
-    pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-    sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
-    popd
-
-# 6. Build kservice-platform
-    pushd ${BUILD_DIR}
-    echo "Executing mvn clean install - patched for kservicetest..."
-    mvn clean install
-    cd inherit-portal
-    echo "Creating kservicetest snapshot distribution tar.gz..."
-    mvn -P dist
-    popd
-
-# 7. Install on kservice container
     echo "Installing on kservice container"
     pushd ${CONTAINER_ROOT}/${KSERVICE}
     tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
@@ -215,24 +288,24 @@ then
     popd
 fi
 
-# 8. Install TASKFORM engine on BOS container
+# 9. Install TASKFORM engine on BOS container
 echo "Installing taskform engine on BOS"
 pushd ${CONTAINER_ROOT}/${BOS}/webapps
 cp ${BUILD_DIR}/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war .
 rm -rf inherit-service-rest-server-1.0-SNAPSHOT
 popd
 
-# 9. Clean up content repository
+# 10. Clean up content repositories
 echo "Clean up content repository..."
 pushd ${CONTENT_ROOT}
 rm -fr repository version workspaces 
 popd
+
 pushd ${CONTENT_ROOT_WORKAROUND}
 rm -fr repository version workspaces 
 popd
 
-
-# 10. Restart containers
+# 11. Restart containers
 pushd ${CONTAINER_ROOT}
 echo "Restart eXist container..."
 cd ${EXIST}/bin/
