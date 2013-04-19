@@ -53,6 +53,38 @@ ul li {
    background-color: rgb(0, 105, 60);
 }
 
+h1 {
+    margin: 0px 0px 0.3em;
+    line-height: 1.13636;
+    font-weight: normal;
+    text-decoration: none;
+    color: black;
+}
+
+h2 {
+    font-size: 1.57143em;
+    font-weight: normal;
+    line-height: 1.13636;
+    margin: 0 0 0.3em;
+    color: black;
+}
+
+h3 {
+    font-size: 1em;
+    line-height: 1.28571;
+    font-weight: bold;
+    font-style: italic;
+    margin: 0px;
+    color: black;
+}
+
+h4 {
+    margin: 0.25em 0px;
+    font-size: 1em;
+    font-weight: bold;
+    color: black;
+}
+
 @media print {
 
 }
