@@ -18,7 +18,7 @@ CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-ks
 # Name of container roots
 EXIST=orbeon-tomcat-6.0.36
 BOS=BOS-5.9-Tomcat-6.0.35
-ESERVICE=hippo-tomcat-6.0.36
+ESERVICE=hippo-eservice-tomcat-6.0.36
 KSERVICE=hippo-kservice-tomcat-6.0.36
 
 ESERVICEPATCH=eservicetest.malmo.se
@@ -43,6 +43,18 @@ echo "CONTENT_ROOT_WORKAROUND: $CONTENT_ROOT_WORKAROUND"
 if [ ! -d "${BUILD_DIR}" ] || [ ! -d "${CONTAINER_ROOT}" ] || [ ! -d "${CONTENT_ROOT}" ] || [ ! -d "${CONTENT_ROOT_WORKAROUND}" ]
 then
     echo "Either of $BUILD_DIR, $CONTAINER_ROOT, $CONTENT_ROOT or $CONTENT_ROOT_WORKAROUND do not exist, aborting execution of $0"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
+
+echo "CONTAINER_ROOT/EXIST:    $CONTAINER_ROOT/$EXIST"
+echo "CONTAINER_ROOT/BOS:      $CONTAINER_ROOT/$BOS"
+echo "CONTAINER_ROOT/ESERVICE: $CONTAINER_ROOT/$ESERVICE"
+echo "CONTAINER_ROOT/KSERVICE: $CONTAINER_ROOT/$KSERVICE"
+
+if [ ! -d ${CONTAINER_ROOT}/${EXIST} ] || [ ! -d ${CONTAINER_ROOT}/${BOS} ] || [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${KSERVICE} ]
+then
+    echo "Either of ${CONTAINER_ROOT}/${EXIST} ${CONTAINER_ROOT}/${BOS} ${CONTAINER_ROOT}/${ESERVICE} ${CONTAINER_ROOT}/${KSERVICE} do not exist, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
