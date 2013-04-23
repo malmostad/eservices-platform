@@ -258,10 +258,10 @@
            beforeTagAdded: function(event, ui) {
              // do something special
 		     if (ui.duringInitialization) {
-		       console.log("init tag " + ui.tag.tagLabel);
+		       //console.log("init tag " + ui.tagLabel);
 		     }
              else {
-                console.log("added " + ui.tag.tagLabel);
+                //console.log("added " + ui.tagLabel);
   	            siteAjaxPost("/site/restservices/site-ajax/addTag", {
 		              processActivityFormInstanceId : '${activity.processActivityFormInstanceId}',
                       tagTypeId : '10000',
