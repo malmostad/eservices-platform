@@ -18,7 +18,7 @@ CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-ks
 # Name of container roots
 EXIST=orbeon-tomcat-6.0.36
 BOS=BOS-5.9-Tomcat-6.0.35
-ESERVICE=hippo-tomcat-6.0.36
+ESERVICE=hippo-eservice-tomcat-6.0.36
 KSERVICE=hippo-kservice-tomcat-6.0.36
 
 ESERVICEPATCH=eservicetest.malmo.se
@@ -43,6 +43,18 @@ echo "CONTENT_ROOT_WORKAROUND: $CONTENT_ROOT_WORKAROUND"
 if [ ! -d "${BUILD_DIR}" ] || [ ! -d "${CONTAINER_ROOT}" ] || [ ! -d "${CONTENT_ROOT}" ] || [ ! -d "${CONTENT_ROOT_WORKAROUND}" ]
 then
     echo "Either of $BUILD_DIR, $CONTAINER_ROOT, $CONTENT_ROOT or $CONTENT_ROOT_WORKAROUND do not exist, aborting execution of $0"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
+
+echo "CONTAINER_ROOT/EXIST:    $CONTAINER_ROOT/$EXIST"
+echo "CONTAINER_ROOT/BOS:      $CONTAINER_ROOT/$BOS"
+echo "CONTAINER_ROOT/ESERVICE: $CONTAINER_ROOT/$ESERVICE"
+echo "CONTAINER_ROOT/KSERVICE: $CONTAINER_ROOT/$KSERVICE"
+
+if [ ! -d ${CONTAINER_ROOT}/${EXIST} ] || [ ! -d ${CONTAINER_ROOT}/${BOS} ] || [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${KSERVICE} ]
+then
+    echo "Either of ${CONTAINER_ROOT}/${EXIST} ${CONTAINER_ROOT}/${BOS} ${CONTAINER_ROOT}/${ESERVICE} ${CONTAINER_ROOT}/${KSERVICE} do not exist, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
@@ -121,8 +133,10 @@ then
     fi
 
 # 5. Build kservice-platform
-    pushd ${BUILD_DIR}
-    if mvn clean install
+    pushd ${BUILD_DIR}/inherit-portal
+    if mvn install                       # NB no clean here because
+                                         # inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
+                                         # will otherwise be removed, but is used at a later stage...
     then
 	echo "Executing mvn clean install - patched for kservicetest..."
     else
@@ -131,7 +145,6 @@ then
 	exit $ERRORSTATUS
     fi
 
-    cd inherit-portal
     if mvn -P dist
     then
 	echo "Creating eservicetest snapshot distribution tar.gz..."
@@ -180,6 +193,7 @@ then
 fi
 
 cd ../../${BOS}/bin/
+
 BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${BOS_PID}" ] 
 then 
@@ -213,6 +227,7 @@ then
 fi
 
 cd ../../${ESERVICE}/bin/
+
 ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${ESERVICE_PID}" ] 
 then 
@@ -228,7 +243,7 @@ then
     done
 fi
 
-  # If proper shutdown did not bite
+# If proper shutdown did not bite
 ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${ESERVICE_PID}" ] 
 then 
@@ -236,7 +251,7 @@ then
     kill  ${ESERVICE_PID}
 fi
 
-  # If still did not bite
+# If still did not bite
 ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${ESERVICE_PID}" ] 
 then 
