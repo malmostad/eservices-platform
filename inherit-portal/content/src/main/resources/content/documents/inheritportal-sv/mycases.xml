@@ -2213,7 +2213,7 @@ fortskrida.&lt;/p&gt;
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>08422f82-5b4f-4b31-94b2-e1be7e760684</sv:value>
+            <sv:value>590acd3d-d7a4-454d-8bf8-a5ad64b479a3</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -2238,13 +2238,13 @@ fortskrida.&lt;/p&gt;
             <sv:value>2013-04-11T10:11:38.857+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2013-04-19T10:29:29.318+02:00</sv:value>
+            <sv:value>2013-04-23T13:49:51.207+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-04-19T10:29:32.070+02:00</sv:value>
+            <sv:value>2013-04-23T13:50:01.314+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>9818459f-4854-43e6-a712-04975e800ffc</sv:value>
@@ -2253,7 +2253,7 @@ fortskrida.&lt;/p&gt;
             <sv:value>sv</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:summary" sv:type="String">
-            <sv:value>Ange användarnamn eller personnummer att söka efter.</sv:value>
+            <sv:value>Ange användarnamn eller personnummer (ÅÅÅÅMMDDXXXX) att söka efter.</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:title" sv:type="String">
             <sv:value>Sök ärenden där användare har deltagit</sv:value>
@@ -2304,7 +2304,7 @@ fortskrida.&lt;/p&gt;
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>56cb6e55-ee64-4f48-8e96-364d78562070</sv:value>
+            <sv:value>22aa03fc-eda1-46ab-8851-975bbcfc9690</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -2329,13 +2329,13 @@ fortskrida.&lt;/p&gt;
             <sv:value>2013-04-19T10:27:55.176+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2013-04-19T10:29:09.556+02:00</sv:value>
+            <sv:value>2013-04-23T13:50:25.891+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-04-19T10:29:34.497+02:00</sv:value>
+            <sv:value>2013-04-23T13:50:29.122+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>ee7b9ef2-f7d6-4d69-8a2f-5313896352ff</sv:value>
@@ -2344,7 +2344,7 @@ fortskrida.&lt;/p&gt;
             <sv:value>sv</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:summary" sv:type="String">
-            <sv:value>Ange användarnamn eller personnummer att söka efter.</sv:value>
+            <sv:value>Ange användarnamn eller personnummer (ÅÅÅÅMMDDXXXX) att söka efter.</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:title" sv:type="String">
             <sv:value>Sök ärenden som användare har startat</sv:value>
