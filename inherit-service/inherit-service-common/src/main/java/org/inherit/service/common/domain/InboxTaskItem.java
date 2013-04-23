@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 @XStreamAlias("InboxTaskItem")
-public class InboxTaskItem implements Serializable {
+public class InboxTaskItem implements Serializable, Comparable{
 	
 	private static final long serialVersionUID = -5668377849020426352L;
 	
@@ -255,6 +255,23 @@ public class InboxTaskItem implements Serializable {
 				+ ", processDefinitionUuid=" + processDefinitionUuid
 				+ ", activityDefinitionUuid=" + activityDefinitionUuid
 				+ ", startedByFormPath=" + startedByFormPath + "]";
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		int result = -1;
+		if (o instanceof InboxTaskItem) {
+			InboxTaskItem it =(InboxTaskItem) o;
+			if (getActivityCreated()==null) {
+				if (it.getActivityCreated()==null) {
+					result = 0;
+				} 
+			}
+			else {
+				result = getActivityCreated().compareTo(it.getActivityCreated());
+			}
+		} 
+		return result;
 	}
 
 

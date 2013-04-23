@@ -913,8 +913,7 @@ public class BonitaEngineServiceImpl {
 	private InboxTaskItem lightActivityInstance2InboxTaskItem(
 			LightActivityInstance activity) {
 		InboxTaskItem taskItem = new InboxTaskItem();
-
-		taskItem.setActivityCreated(activity.getStartedDate());
+		taskItem.setActivityCreated(activity.getReadyDate()); // TODO we want the *process instance* start date
 		taskItem.setExpectedEndDate(activity.getExpectedEndDate());
 		taskItem.setActivityLabel(activity.getActivityLabel());
 		taskItem.setProcessLabel(getProcessLabel(activity.getProcessDefinitionUUID()));;

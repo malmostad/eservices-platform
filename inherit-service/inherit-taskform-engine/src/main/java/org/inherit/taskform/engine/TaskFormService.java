@@ -1,17 +1,16 @@
 package org.inherit.taskform.engine;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import org.hibernate.criterion.Restrictions;
 import org.inherit.bonita.client.BonitaEngineServiceImpl;
 import org.inherit.service.common.domain.ActivityInstanceItem;
 import org.inherit.service.common.domain.ActivityInstanceLogItem;
@@ -163,6 +162,7 @@ public class TaskFormService {
 
 		inbox.addAll(unsubmittedStartForms);
 
+		Collections.sort(inbox);
 		log.severe("=======> getInboxTaskItems " + userId + " size="
 				+ (inbox == null ? 0 : inbox.size()));
 		return inbox;

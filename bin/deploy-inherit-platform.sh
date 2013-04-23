@@ -1,11 +1,11 @@
 #!/bin/sh
 
 # ROOT of build directory
-#BUILD_DIR=${HOME}/inherit-platform-gitclone/inherit-platform
-BUILD_DIR=${HOME}/workspace/inherit-platform
+#BUILD_DIR=${HOME}/workspace/inherit-platform
+BUILD_DIR=${HOME}/inherit-platform-gitclone/inherit-platform
 
 # ROOT of directory holding the j2ee containers
-CONTAINER_ROOT=/opt/inherit-platform
+CONTAINER_ROOT=${HOME}/inherit-platform
 
 # ROOT of Hippo jcr content repository
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
@@ -13,9 +13,7 @@ CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
 # Clone of ROOT of Hippo jcr content repository
 # This should not be so, and is a fix because of the 
 # problem that we need two hippo instances pga openam realm requirement
-
-#CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
-CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal
+CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
 
 # Name of container roots
 EXIST=orbeon-tomcat-6.0.36
@@ -23,7 +21,7 @@ BOS=BOS-5.9-Tomcat-6.0.35
 ESERVICE=hippo-tomcat-6.0.36
 KSERVICE=hippo-kservice-tomcat-6.0.36
 
-ESERVICEPATCH=eservices.malmo.se
+ESERVICEPATCH=eservicetest.malmo.se
 KSERVICEPATCH=kservicetest.malmo.se
 
 EXIST_PORT=48080
@@ -31,7 +29,7 @@ BOS_PORT=58080
 ESERVICE_PORT=8080
 KSERVICE_PORT=38080
 
-WITH_KSERVICES=false
+WITH_KSERVICES=true
 
 ERRORSTATUS=0
 
@@ -42,14 +40,7 @@ echo "CONTAINER_ROOT: $CONTAINER_ROOT"
 echo "CONTENT_ROOT: $CONTENT_ROOT"
 echo "CONTENT_ROOT_WORKAROUND: $CONTENT_ROOT_WORKAROUND"
 
-if [ -z ${BUILD_DIR} ] || [ -z ${CONTAINER_ROOT} ] || [ -z ${CONTENT_ROOT} ] || [ -z ${CONTENT_ROOT_WORKAROUND} ]
-then
-    echo "Either of parameters BUILD_DIR, CONTAINER_ROOT, CONTENT_ROOT or CONTENT_ROOT_WORKAROUND unset, aborting execution of $0"
-    ERRORSTATUS=1
-    exit $ERRORSTATUS
-fi
-
-if [ ! -d ${BUILD_DIR} ] || [ ! -d ${CONTAINER_ROOT} ] || [ ! -d ${CONTENT_ROOT} ] || [ ! -d ${CONTENT_ROOT_WORKAROUND} ]
+if [ ! -d "${BUILD_DIR}" ] || [ ! -d "${CONTAINER_ROOT}" ] || [ ! -d "${CONTENT_ROOT}" ] || [ ! -d "${CONTENT_ROOT_WORKAROUND}" ]
 then
     echo "Either of $BUILD_DIR, $CONTAINER_ROOT, $CONTENT_ROOT or $CONTENT_ROOT_WORKAROUND do not exist, aborting execution of $0"
     ERRORSTATUS=1
@@ -71,7 +62,7 @@ fi
 echo "ESERVICEPATCH: $ESERVICEPATCH"
 echo "KSERVICEPATCH: KSERVICEPATCH"
 
-if [ -z ${ESERVICEPATCH} ] || [ -z ${KSERVICEPATCH} ]
+if [ -z "${ESERVICEPATCH}" ] || [ -z "${KSERVICEPATCH}" ]
 then
     echo "Either of parameters ESERVICEPATCH or KSERVICEPATCH unset, aborting execution of $0"
     ERRORSTATUS=1
@@ -82,7 +73,8 @@ fi
 if [ -d ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config ]
 then
     pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-    sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
+    sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml > properties-local.xml.patch
+    mv properties-local.xml.patch properties-local.xml
     popd
 else
     echo "${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
@@ -105,6 +97,7 @@ cd inherit-portal
 if mvn -P dist
 then
     echo "Creating eservicetest snapshot distribution tar.gz..."
+    mv target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
 else
     echo "Building of snapshot distribution failed. Aborting execution"
     ERRORSTATUS=$?
@@ -118,7 +111,8 @@ then
     if [ -d ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config ]
     then
 	pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-	sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml.ingit > properties-local.xml
+	sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml > properties-local.xml.patch
+	mv properties-local.xml.patch properties-local.xml
 	popd
     else
 	echo "${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
@@ -141,6 +135,7 @@ then
     if mvn -P dist
     then
 	echo "Creating eservicetest snapshot distribution tar.gz..."
+        mv target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
     else
 	echo "Building of snapshot distribution failed. Aborting execution"
 	ERRORSTATUS=$?
@@ -297,7 +292,7 @@ echo "Installing on eservice container"
 if [ -d  ${CONTAINER_ROOT}/${ESERVICE} ]
 then
     pushd ${CONTAINER_ROOT}/${ESERVICE}
-    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
+    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
     cd webapps
     rm -fr cms site orbeon
     popd
@@ -313,7 +308,7 @@ then
     then
 	echo "Installing on kservice container"
 	pushd ${CONTAINER_ROOT}/${KSERVICE}
-	tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
+	tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
 	cd webapps
 	rm -fr cms site orbeon
 	popd
