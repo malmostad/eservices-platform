@@ -17,23 +17,30 @@
 }
 
 .fr-section-title {
-  background-color: rgb(255, 207, 61);
-  padding: 5px;
+  background-color: rgb(0, 105, 60);
+  padding: 7px;
   border-radius: 8px;
   box-shadow:2px 2px 3px grey;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.fr-footer {
+  background: rgb(0, 105, 60);
+  min-height: 1px;
 }
 
 .fr-section-title .fr-section-arrow {
-    background-color: rgb(255, 207, 61);
+    background-color: rgb(0, 105, 60);
+    margin: 0;
+    padding: 0;
 }
 
 .fr-section-arrow a {
-  color: black !important;
+  color: white !important;
 }
 
 a.fr-section-label:link, a.fr-section-label:visited, a.fr-section-label:active {
-  color: black !important;
+  color: white !important;
 }
 
 .fr-top {
@@ -51,6 +58,7 @@ ul li {
 
 .fr-separator {
    background-color: rgb(0, 105, 60);
+   height: 1px; 
 }
 
 h1 {
