@@ -121,8 +121,10 @@ then
     fi
 
 # 5. Build kservice-platform
-    pushd ${BUILD_DIR}
-    if mvn clean install
+    pushd ${BUILD_DIR}/inherit-portal
+    if mvn install                       # NB no clean here because
+                                         # inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
+                                         # will otherwise be removed, but is used at a later stage...
     then
 	echo "Executing mvn clean install - patched for kservicetest..."
     else
@@ -131,7 +133,6 @@ then
 	exit $ERRORSTATUS
     fi
 
-    cd inherit-portal
     if mvn -P dist
     then
 	echo "Creating eservicetest snapshot distribution tar.gz..."
@@ -180,6 +181,7 @@ then
 fi
 
 cd ../../${BOS}/bin/
+
 BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${BOS_PID}" ] 
 then 
@@ -213,6 +215,7 @@ then
 fi
 
 cd ../../${ESERVICE}/bin/
+
 ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${ESERVICE_PID}" ] 
 then 
@@ -228,7 +231,7 @@ then
     done
 fi
 
-  # If proper shutdown did not bite
+# If proper shutdown did not bite
 ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${ESERVICE_PID}" ] 
 then 
@@ -236,7 +239,7 @@ then
     kill  ${ESERVICE_PID}
 fi
 
-  # If still did not bite
+# If still did not bite
 ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${ESERVICE_PID}" ] 
 then 
