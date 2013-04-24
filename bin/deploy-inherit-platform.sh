@@ -81,12 +81,13 @@ then
     exit $ERRORSTATUS
 fi
 
-# 2. Patching properties-local.xml for eservicetest
+# 2. Patching properties-local.xml for eservicetest and kservicetest
 if [ -d ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config ]
 then
     pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-    sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml > properties-local.xml.patch
-    mv properties-local.xml.patch properties-local.xml
+    sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml > properties-local.xml.eservicepatch
+    sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml > properties-local.xml.kservicepatch
+    mv properties-local.xml.eservicepatch properties-local.xml
     popd
 else
     echo "${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
@@ -105,6 +106,7 @@ else
     exit $ERRORSTATUS
 fi
 
+# 4. Build eservice-platform
 cd inherit-portal
 if mvn -P dist
 then
@@ -119,20 +121,12 @@ popd
 
 if ${WITH_KSERVICES}
 then
-# 4. Patching properties-local.xml for kservicetest
-    if [ -d ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config ]
-    then
-	pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-	sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml > properties-local.xml.patch
-	mv properties-local.xml.patch properties-local.xml
-	popd
-    else
-	echo "${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
-	ERRORSTATUS=1
-	exit $ERRORSTATUS
-    fi
+# 5. Preparing properties-local.xml for kservicetest (patching done in step #2)
+    pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
+    mv properties-local.xml.kservicepatch properties-local.xml
+    popd
 
-# 5. Build kservice-platform
+# 6. Build kservice-platform
     pushd ${BUILD_DIR}/inherit-portal
     if mvn install                       # NB no clean here because
                                          # inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
@@ -145,6 +139,7 @@ then
 	exit $ERRORSTATUS
     fi
 
+# 7. deploy kservice-platform
     if mvn -P dist
     then
 	echo "Creating eservicetest snapshot distribution tar.gz..."
@@ -157,7 +152,7 @@ then
     popd
 fi
 
-# 6. Stop j2ee containers
+# 8. Stop j2ee containers
 pushd ${CONTAINER_ROOT}
 cd $EXIST/bin/
 EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
@@ -302,7 +297,7 @@ then
     exit ${ERRORSTATUS}
 fi
 
-# 7. Install on eservice container
+# 9. Install on eservice container
 echo "Installing on eservice container"
 if [ -d  ${CONTAINER_ROOT}/${ESERVICE} ]
 then
@@ -316,7 +311,7 @@ else
     exit 1
 fi
 
-# 8. Install on kservice container
+# 10. Install on kservice container
 if ${WITH_KSERVICES}
 then
     if [ -d ${CONTAINER_ROOT}/${KSERVICE} ]
@@ -333,7 +328,7 @@ then
     fi
 fi
 
-# 9. Install TASKFORM engine on BOS container
+# 11. Install TASKFORM engine on BOS container
 echo "Installing taskform engine on BOS"
 if [ -d ${CONTAINER_ROOT}/${BOS}/webapps ] 
 then
@@ -346,7 +341,7 @@ else
     exit 1
 fi
 
-# 10. Clean up content repositories
+# 12. Clean up content repositories
 echo "Clean up content repository..."
 pushd ${CONTENT_ROOT}
 rm -fr repository version workspaces 
@@ -356,7 +351,7 @@ pushd ${CONTENT_ROOT_WORKAROUND}
 rm -fr repository version workspaces 
 popd
 
-# 11. Restart containers
+# 13. Restart containers
 pushd ${CONTAINER_ROOT}
 echo "Restart eXist container..."
 cd ${EXIST}/bin/
