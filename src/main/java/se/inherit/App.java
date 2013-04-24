@@ -1,4 +1,4 @@
-package se.inherit;
+package org.inheritsource;
 
 /**
  * Hello world!

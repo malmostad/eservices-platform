@@ -13,7 +13,7 @@
       <init-param>
             <!-- Application class name -->
             <param-name>org.restlet.application</param-name>
-            <param-value>org.inherit.service.rest.server.InheritServiceApplication</param-value>
+            <param-value>org.inheritsource.service.rest.server.InheritServiceApplication</param-value>
       </init-param>
    </servlet>  
   

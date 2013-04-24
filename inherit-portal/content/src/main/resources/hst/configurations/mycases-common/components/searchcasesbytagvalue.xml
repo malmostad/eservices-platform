@@ -4,7 +4,7 @@
     <sv:value>hst:component</sv:value>
   </sv:property>
   <sv:property sv:name="hst:componentclassname" sv:type="String">
-    <sv:value>se.inherit.portal.components.mycases.search.SearchCasesByTagValue</sv:value>
+    <sv:value>org.inheritsource.portal.components.mycases.search.SearchCasesByTagValue</sv:value>
   </sv:property>
   <sv:property sv:name="hst:template" sv:type="String">
     <sv:value>searchprocessinstances.main.content</sv:value>

@@ -56,7 +56,7 @@
   -->
   <context-param>
     <param-name>hst-beans-annotated-classes</param-name>
-    <param-value>classpath*:se/inherit/portal/beans/**/*.class</param-value>
+    <param-value>classpath*:org/inheritsource/portal/beans/**/*.class</param-value>
   </context-param>
 
   <filter>

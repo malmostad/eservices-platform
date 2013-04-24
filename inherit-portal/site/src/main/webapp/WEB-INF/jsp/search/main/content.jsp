@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="crPage" type="java.lang.Integer"--%>
-<%--@elvariable id="info" type="se.inherit.portal.componentsinfo.GeneralListInfo"--%>
+<%--@elvariable id="info" type="org.inheritsource.portal.componentsinfo.GeneralListInfo"--%>
 <%--@elvariable id="pages" type="java.util.Collection<java.lang.Integer>"--%>
 <%--@elvariable id="query" type="java.lang.String"--%>
 <%--@elvariable id="result" type="org.hippoecm.hst.content.beans.query.HstQueryResult"--%>

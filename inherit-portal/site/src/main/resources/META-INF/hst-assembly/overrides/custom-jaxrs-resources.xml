@@ -16,7 +16,7 @@
 			<!-- Wrap your JAX-RS component by SingletonResourceProvider. -->
 			<bean class="org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider">
 				<constructor-arg>
-					<bean class="se.inherit.portal.jaxrs.SiteAjaxApplication" />
+					<bean class="org.inheritsource.portal.jaxrs.SiteAjaxApplication" />
 				</constructor-arg>
 			</bean>
       </list>

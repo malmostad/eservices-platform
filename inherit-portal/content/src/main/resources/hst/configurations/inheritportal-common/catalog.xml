@@ -12,7 +12,7 @@
         <sv:value>hst:containeritemcomponent</sv:value>
       </sv:property>
       <sv:property sv:name="hst:componentclassname" sv:type="String">
-        <sv:value>se.inherit.portal.components.ListView</sv:value>
+        <sv:value>org.inheritsource.portal.components.ListView</sv:value>
       </sv:property>
       <sv:property sv:name="hst:iconpath" sv:type="String">
         <sv:value>images/catalog-list.png</sv:value>

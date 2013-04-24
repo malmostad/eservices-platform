@@ -377,7 +377,7 @@
           <sv:value>hst:component</sv:value>
         </sv:property>
         <sv:property sv:name="hst:componentclassname" sv:type="String">
-          <sv:value>se.inherit.portal.components.Detail</sv:value>
+          <sv:value>org.inheritsource.portal.components.Detail</sv:value>
         </sv:property>
         <sv:property sv:name="hst:template" sv:type="String">
           <sv:value>standard.main.content</sv:value>
@@ -388,7 +388,7 @@
           <sv:value>hst:component</sv:value>
         </sv:property>
         <sv:property sv:name="hst:componentclassname" sv:type="String">
-          <sv:value>se.inherit.portal.components.Header</sv:value>
+          <sv:value>org.inheritsource.portal.components.Header</sv:value>
         </sv:property>
         <sv:property sv:name="hst:template" sv:type="String">
           <sv:value>standard.header</sv:value>
@@ -399,7 +399,7 @@
           <sv:value>hst:component</sv:value>
         </sv:property>
         <sv:property sv:name="hst:componentclassname" sv:type="String">
-          <sv:value>se.inherit.portal.components.LeftMenu</sv:value>
+          <sv:value>org.inheritsource.portal.components.LeftMenu</sv:value>
         </sv:property>
         <sv:property sv:name="hst:template" sv:type="String">
           <sv:value>standard.main.leftmenu</sv:value>
@@ -410,7 +410,7 @@
           <sv:value>hst:component</sv:value>
         </sv:property>
         <sv:property sv:name="hst:componentclassname" sv:type="String">
-          <sv:value>se.inherit.portal.components.NotFound</sv:value>
+          <sv:value>org.inheritsource.portal.components.NotFound</sv:value>
         </sv:property>
         <sv:property sv:name="hst:template" sv:type="String">
           <sv:value>notfound.main.content</sv:value>
@@ -421,7 +421,7 @@
           <sv:value>hst:component</sv:value>
         </sv:property>
         <sv:property sv:name="hst:componentclassname" sv:type="String">
-          <sv:value>se.inherit.portal.components.Search</sv:value>
+          <sv:value>org.inheritsource.portal.components.Search</sv:value>
         </sv:property>
         <sv:property sv:name="hst:template" sv:type="String">
           <sv:value>search.main.content</sv:value>
@@ -432,7 +432,7 @@
           <sv:value>hst:component</sv:value>
         </sv:property>
         <sv:property sv:name="hst:componentclassname" sv:type="String">
-          <sv:value>se.inherit.portal.components.Overview</sv:value>
+          <sv:value>org.inheritsource.portal.components.Overview</sv:value>
         </sv:property>
         <sv:property sv:name="hst:template" sv:type="String">
           <sv:value>overview.main.content</sv:value>
@@ -553,7 +553,7 @@
             <sv:value>hst:containeritemcomponent</sv:value>
           </sv:property>
           <sv:property sv:name="hst:componentclassname" sv:type="String">
-            <sv:value>se.inherit.portal.components.ListView</sv:value>
+            <sv:value>org.inheritsource.portal.components.ListView</sv:value>
           </sv:property>
           <sv:property sv:name="hst:iconpath" sv:type="String">
             <sv:value>images/catalog-list.png</sv:value>

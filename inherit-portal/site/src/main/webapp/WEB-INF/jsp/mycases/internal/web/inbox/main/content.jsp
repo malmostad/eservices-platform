@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
-<%--@elvariable id="document" type="se.inherit.portal.beans.NewsDocument"--%>
+<%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
 
 <c:choose>
 	<c:when test="${empty document}">
