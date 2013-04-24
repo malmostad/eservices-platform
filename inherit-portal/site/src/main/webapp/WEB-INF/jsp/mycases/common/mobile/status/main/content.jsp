@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
-<%--@elvariable id="document" type="se.inherit.portal.beans.NewsDocument"--%>
+<%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
 
 <c:if test="${not empty processInstances}">
         <ul data-role="listview">

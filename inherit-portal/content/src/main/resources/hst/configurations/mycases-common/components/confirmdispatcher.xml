@@ -4,6 +4,6 @@
     <sv:value>hst:component</sv:value>
   </sv:property>
   <sv:property sv:name="hst:componentclassname" sv:type="String">
-    <sv:value>se.inherit.portal.components.mycases.ConfirmDispatcher</sv:value>
+    <sv:value>org.inheritsource.portal.components.mycases.ConfirmDispatcher</sv:value>
   </sv:property>
 </sv:node>

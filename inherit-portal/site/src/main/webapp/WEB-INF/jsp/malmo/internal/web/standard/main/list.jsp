@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
-<%--@elvariable id="info" type="se.inherit.portal.componentsinfo.ListInfo"--%>
+<%--@elvariable id="info" type="org.inheritsource.portal.componentsinfo.ListInfo"--%>
 <%--@elvariable id="result" type="org.hippoecm.hst.content.beans.query.HstQueryResult"--%>
 
 <c:choose>

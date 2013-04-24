@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>se.inherit.portal</groupId>
+    <groupId>org.inheritsource.portal</groupId>
     <artifactId>inherit-portal</artifactId>
     <version>1.01.00-SNAPSHOT</version>
   </parent>

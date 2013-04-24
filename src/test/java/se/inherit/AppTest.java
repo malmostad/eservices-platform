@@ -1,4 +1,4 @@
-package se.inherit;
+package org.inheritsource;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

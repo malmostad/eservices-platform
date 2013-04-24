@@ -10,7 +10,7 @@
 
   <name>Inherit portal</name>
   <description>Inherit portal</description>
-  <groupId>se.inherit.portal</groupId>
+  <groupId>org.inheritsource.portal</groupId>
   <artifactId>inherit-portal</artifactId>
   <version>1.01.00-SNAPSHOT</version>
   <packaging>pom</packaging>

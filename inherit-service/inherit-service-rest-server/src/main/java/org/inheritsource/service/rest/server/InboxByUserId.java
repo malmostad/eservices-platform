@@ -1,0 +1,28 @@
+package org.inheritsource.service.rest.server;
+
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.inheritsource.service.common.domain.InboxTaskItem;
+import org.inheritsource.service.common.util.ParameterEncoder;
+import org.inheritsource.taskform.engine.TaskFormService;
+import org.restlet.resource.Post;
+import org.restlet.resource.ServerResource;
+
+
+
+public class InboxByUserId extends ServerResource{
+
+	public static final Logger log = Logger.getLogger(InboxByUserId.class.getName());
+	
+	TaskFormService engine = new TaskFormService();
+	
+	@Post
+	public List<InboxTaskItem> getInboxTaskList() {
+		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
+		
+		log.fine("REST getUserInstancesList with parameter userid=[" + userId + "]" );
+		
+		return engine.getInboxTaskItems(userId);
+	}
+}
