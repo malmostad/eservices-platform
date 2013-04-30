@@ -1,42 +1,47 @@
 package  org.inheritsource.security.jaas.authify;
  
-
 /**
  * +-------------------------------------------------------------------------------------+
- * |																					 |
- * | Demonstration code for Authify Client.  Runs only on JAVA		                	 |
- * |																					 |	
- * | Authify class make it faster and easier for users to access your website.			 |
- * | Handles the UI, authentication, and import user profile							 |
- * | and registration data for your website,											 |
- * | You can choose to request JSON data or other type of request format.				 |
- * |																					 |
- * | Instanciate Authify Client with your API key and your SECRET key. 					 |
+ * |											 |
+ * | Demonstration code for Authify Client.  Runs only on JAVA		                 |
+ * |											 |	
+ * | Authify class make it faster and easier for users to access your website.		 |
+ * | Handles the UI, authentication, and import user profile				 |
+ * | and registration data for your website,						 |
+ * | You can choose to request JSON data or other type of request format.		 |
+ * |											 |
+ * | Instanciate Authify Client with your API key and your SECRET key. 			 |
  * | authifyClientRest authifyObject = new authifyClientRest(                            |
- * | "your_API_KEY", "your_SECRET_KEY", "http://your_server/");			 				 |
+ * | "your_API_KEY", "your_SECRET_KEY", "http://your_server/");			 	 |
  * |                                                                                     |
  * | @author    Authify Team.                                                            |
- * |               								                                         |
+ * |               								         |
  * +-------------------------------------------------------------------------------------+
  */
 
-/* 
-Modified Authify Client
-Copyright (C) 2011 Inherit S AB
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+/*
+ *  Process Aware Web Application Platform
+ *  Modified Authify Client
+ *
+ *  Copyright (C) 2011-2013 Inherit S AB
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *  e-mail: info _at_ inherit.se
+ *  mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN
+ *  phone: +46 8 641 64 14
+ */
 
 import java.io.*;
 import java.security.MessageDigest;
@@ -362,3 +367,4 @@ public class AuthifyClientRest
 	
 	
 }
+
