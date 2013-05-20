@@ -774,6 +774,10 @@ public class TaskFormDb {
 		pcb_arende.setFormPath("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor");
 		pcb_arende.setProcessDefinitionUuid("Arendeprocess");
 		
+		StartFormDefinition hk_arende = new StartFormDefinition();
+		hk_arende.setFormPath("miljoforvaltningen/anmalan-hemkompostering");
+		hk_arende.setProcessDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall");
+
 		StartFormDefinition orbeon_demo_arende = new StartFormDefinition();
 		orbeon_demo_arende.setFormPath("orbeon/controls");
 		orbeon_demo_arende.setProcessDefinitionUuid("Arendeprocess");
@@ -812,7 +816,32 @@ public class TaskFormDb {
 		beslut.setFormPath("basprocess/beslut");
 		beslut.setActivityDefinitionUuid("Arendeprocess--1.0--Beslut");
 		beslut.setStartFormDefinition(null);
-				
+//===
+		ActivityFormDefinition hk_registrering = new ActivityFormDefinition();
+		hk_registrering.setFormPath("miljoforvaltningen/registrering");
+		hk_registrering.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Registrering");
+		hk_registrering.setStartFormDefinition(null);
+
+		ActivityFormDefinition hk_handlaggning = new ActivityFormDefinition();
+		hk_handlaggning.setFormPath("miljoforvaltningen/handlaggning");
+		hk_handlaggning.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Handlaggning");
+		hk_handlaggning.setStartFormDefinition(null);
+
+		ActivityFormDefinition hk_beslut = new ActivityFormDefinition();
+		hk_beslut.setFormPath("miljoforvaltningen/beslut");
+		hk_beslut.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Beslut");
+		hk_beslut.setStartFormDefinition(null);
+
+		ActivityFormDefinition hk_expediering = new ActivityFormDefinition();
+		hk_expediering.setFormPath("miljoforvaltningen/expediering");
+		hk_expediering.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Expediering");
+		hk_expediering.setStartFormDefinition(null);
+
+		ActivityFormDefinition hk_delgivning = new ActivityFormDefinition();
+		hk_delgivning.setFormPath("miljoforvaltningen/delgivning");
+		hk_delgivning.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Delgivning");
+		hk_delgivning.setStartFormDefinition(null);
+//===
 		TagType diaryTagType = new TagType();
 		diaryTagType.setTagTypeId(TagType.TAG_TYPE_DIARY_NO);
 		diaryTagType.setName("diary_no");
@@ -839,6 +868,14 @@ public class TaskFormDb {
 		session.save(registrering);
 		session.save(handlaggning);
 		session.save(beslut);
+
+		session.save(hk_arende);
+		session.save(hk_registrering);
+		session.save(hk_handlaggning);
+		session.save(hk_beslut);
+		session.save(hk_expediering);
+		session.save(hk_delgivning);
+		
 		session.save(diaryTagType);
 		session.save(applicationByTagType);
 		session.save(otherTagType);
