@@ -60,7 +60,6 @@
     <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
       <sv:value>../inheritportal-common</sv:value>
       <sv:value>../mycases-common</sv:value>
-      <sv:value>../mycases-web</sv:value>
     </sv:property>
     <sv:node sv:name="hst:sitemap">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">

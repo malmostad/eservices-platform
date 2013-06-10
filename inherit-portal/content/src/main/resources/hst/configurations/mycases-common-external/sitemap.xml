@@ -180,5 +180,16 @@
         </sv:node>
       </sv:node>
     </sv:node>
+    <sv:node sv:name="myprofile">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemapitem</sv:value>
+      </sv:property>
+      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+        <sv:value>hst:pages/myprofile</sv:value>
+      </sv:property>
+      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+        <sv:value>${parent}/profileform</sv:value>
+      </sv:property>
+    </sv:node>
   </sv:node>
 </sv:node>
