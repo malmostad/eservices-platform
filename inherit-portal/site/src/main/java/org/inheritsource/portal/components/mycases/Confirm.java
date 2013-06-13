@@ -38,16 +38,34 @@ import org.slf4j.LoggerFactory;
 
 public class Confirm extends MyCasesBaseComponent {
 
+	public static final String ORBEON_PERSISTENCE_API_BASE_URL = "/orbeon/fr/service/exist/crud/";
+	
+	public static final String CASE_STARTER_SERIAL = "case-starter-serial";
+	
 	public static final Logger log = LoggerFactory.getLogger(Confirm.class);
 
 	@Override
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
 
-		HippoBean doc = getContentBean(request);
+		String docId = getPublicRequestParameter(request, "document"); // parameter
+		// from
+		// orbeon
+		// workflow-send
 
+		
 		UserInfo user = getUserName(request);
-
+		
+		// strategy 1. use anonymous user as fall back
+		String userUuid = UserInfo.ANONYMOUS_UUID;
+		
+		if (user != null) {
+			// strategy 2. use authenticated user's uuid
+			userUuid = user.getUuid();
+		}
+		
+		HippoBean doc = getContentBean(request);
+				
 		if (doc == null) {
 			log.warn(
 					"Did not find a content bean for relative content path '{}' for pathInfo '{}'",
@@ -60,17 +78,16 @@ public class Confirm extends MyCasesBaseComponent {
 		}
 
 		request.setAttribute("document", doc);
-		String docId = getPublicRequestParameter(request, "document"); // parameter
-																		// from
-																		// orbeon
-																		// workflow-send
+		
 
+		
+		
 		InheritServiceClient isc = new InheritServiceClient();
 
 		String viewUrl = null;
 //		viewUrl = isc.submitForm(docId, user.getUuid());
 		try {
-			viewUrl = isc.submitForm(docId, user.getUuid());
+			viewUrl = isc.submitForm(docId, userUuid);
 		} catch (ResourceException re) {
 			try {
 				response.sendRedirect("/site/internal-error");
@@ -84,6 +101,8 @@ public class Confirm extends MyCasesBaseComponent {
 		if (viewUrl == null) {
 			// render a fail url???
 
+			// TODO 20130506 teori: nedanstående är död kod...
+			
 			// this can be removed later on, only when start form not is
 			// initialized before....
 			if (doc instanceof EServiceDocument) {
@@ -100,7 +119,7 @@ public class Confirm extends MyCasesBaseComponent {
 				try {
 					isc.submitStartForm(eServiceDocument.getFormPath(),
 							docId,
-							user.getUuid());
+							userUuid);
 				} catch (ResourceException re) {
 					try {
 						response.sendRedirect("/site/internal-error");

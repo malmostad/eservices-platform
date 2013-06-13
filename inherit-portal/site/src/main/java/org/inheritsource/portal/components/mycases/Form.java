@@ -24,6 +24,8 @@
 package org.inheritsource.portal.components.mycases;
 
 
+import javax.servlet.http.HttpSession;
+
 import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
@@ -80,7 +82,10 @@ public class Form extends MyCasesBaseComponent {
 	        	EServiceDocument eServiceDocument = (EServiceDocument)doc;
 	        	// look up existing form (docId) if partially saved form exist
 	        	// otherwise create new form
-	        	activity = isc.getStartActivityInstanceItem(eServiceDocument.getFormPath(), user.getUuid());
+	        	
+	        	String userId = (user == null ? getTransientUserId(request) : user.getUuid());
+	        	
+	        	activity = isc.getStartActivityInstanceItem(eServiceDocument.getFormPath(), userId);
 	        }
         }
         
@@ -110,5 +115,19 @@ public class Form extends MyCasesBaseComponent {
     	
     	log.info("Guide:" + guide);
     	log.info("Form activity:" + activity);
+	}
+	
+	/**
+	 * Get a transient userId to use in database when the user is not authenticated.
+	 * @param request
+	 * @return
+	 */
+	private String getTransientUserId(final HstRequest request) {
+		String result = null;
+		HttpSession session = request.getSession();
+		if (session != null) {
+			result = "sessionId#" + session.getId();
+		}
+		return result;
 	}
 }
