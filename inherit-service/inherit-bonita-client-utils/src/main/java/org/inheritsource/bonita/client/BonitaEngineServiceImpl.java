@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
@@ -83,6 +82,38 @@ public class BonitaEngineServiceImpl {
 	
 	public BonitaEngineServiceImpl() {
 		
+	}
+	
+	/**
+	 * 
+	 * @param processInstanceUuid
+	 * @param activityName
+	 * @return
+	 */
+	public String getActivityInstanceUuid(String processInstanceUuid, String activityName) {
+		String activityInstanceUuid = null;
+		try {
+			
+			if (activityName != null) {
+				LoginContext loginContext = BonitaUtil.login(); 
+				ProcessInstanceUUID processInstanceUUID = new ProcessInstanceUUID(processInstanceUuid);
+				ProcessInstance processInstance = AccessorUtil.getAPIAccessor().getQueryRuntimeAPI().getProcessInstance(processInstanceUUID);
+				
+				Set<ActivityInstance> ais = processInstance.getActivities();
+				for (ActivityInstance ai : ais) {
+					if (activityName.equals(ai.getActivityName())) {
+						activityInstanceUuid = ai.getUUID().getValue();
+					}
+				}
+				
+				BonitaUtil.logout(loginContext);
+			}
+			
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}	
+		return activityInstanceUuid;
 	}
 	
 	public boolean createUser(String userName) {

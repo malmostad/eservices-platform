@@ -44,6 +44,8 @@ public class InheritServiceApplication extends Application {
 		router.attach("/getStartActivityInstanceItem/{formPath}/{userId}", StartActivityInstanceItemByFormPath.class);
 		router.attach("/processInstanceDetailsByActivityInstanceUuid/{activityInstanceUuid}", ProcessInstanceDetailByActivityInstanceUuid.class); 
 		router.attach("/processInstanceDetailsByUuid/{processInstanceUuid}", ProcessInstanceDetailByUuid.class); 
+		router.attach("/getPreviousActivityDataByDocId/{currentActivityFormDocId}/{previousActivityName}/{uniqueXPathExpr}", GetPreviousActivityDataByDocId.class); 
+		router.attach("/getPreviousActivityDataByInstanceUuid/{currentActivityInstanceUuid}/{previousActivityName}/{uniqueXPathExpr}", GetPreviousActivityDataByInstanceUuid.class); 
 		
 		// TODO take user from login instead of parameter userid
 		router.attach("/addComment/{activityInstanceUuid}/{comment}/{userid}", AddComment.class); 
@@ -63,6 +65,8 @@ public class InheritServiceApplication extends Application {
 		router.attach("/searchProcessInstancesByTagValue/{tagValue}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}", SearchProcessInstancesByTagValue.class); 
 		router.attach("/searchProcessInstancesStartedByUser/{searchForUserId}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}", SearchProcessInstancesStartedByUser.class);
 		router.attach("/searchProcessInstancesWithInvolvedUser/{searchForUserId}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}", SearchProcessInstancesWithInvolvedUser.class);
+		
+		
 		
 		router.attach("/getUsersByRoleAndActivity/{roleName}/{activityInstanceUuid}", GetUsersByRoleAndActivity.class);
 		

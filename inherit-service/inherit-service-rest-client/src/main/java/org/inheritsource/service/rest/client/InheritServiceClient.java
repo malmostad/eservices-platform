@@ -470,7 +470,33 @@ public class InheritServiceClient {
 		
 		return result;
 	}
+	
 
+	public String getPreviousActivityDataByDocId(String currentActivityFormDocId, String previousActivityName, String uniqueXPathExpr) {
+		String result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getPreviousActivityDataByDocId/" 
+				+ ParameterEncoder.encode(currentActivityFormDocId) + "/" 
+				+ ParameterEncoder.encode(previousActivityName)  + "/" 
+				+ ParameterEncoder.encode(uniqueXPathExpr) + "?media=xml";
+		log.severe("getPreviousActivityDataByDocId uri: " + uri);
+		result = (String) call(uri);
+		return result;
+	}
+	
+	public String getPreviousActivityDataByInstanceUuid(String currentActivityInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
+		String result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getPreviousActivityDataByInstanceUuid/" 
+				+ ParameterEncoder.encode(currentActivityInstanceUuid) + "/" 
+				+ ParameterEncoder.encode(previousActivityName)  + "/" 
+				+ ParameterEncoder.encode(uniqueXPathExpr) + "?media=xml";
+		log.severe("getPreviousActivityDataByInstanceUuid uri: " + uri);
+		result = (String) call(uri);
+		return result;
+	}
 	
 	private boolean parseBooleanResponse(String val) {
 		boolean result = false;
@@ -593,7 +619,11 @@ public class InheritServiceClient {
 		System.out.println("Hits: " + hits);
 		System.out.println("Number of hits: " + hits.getNumberOfHits());
 
-
+		System.out.println("getPreviousActivityDataByDocId: " + c.getPreviousActivityDataByDocId("fafe3e7d-0b45-49b6-be43-ee59ec8c1d55", "Beslut", "//section-1/control-1"));
+		System.out.println("getPreviousActivityDataByInstanceUuid: " + c.getPreviousActivityDataByInstanceUuid("Arendeprocess--1.0--1--Handlaggning--it1--mainActivityInstance--noLoop", "Beslut", "//section-1/control-1"));
+		System.out.println("getPreviousActivityDataByDocId: " + c.getPreviousActivityDataByDocId("fafe3e7d-0b45-49b6-be43-ee59ec8c1d55", "startform", "//section-1/control-1"));
+		System.out.println("getPreviousActivityDataByInstanceUuid: " + c.getPreviousActivityDataByInstanceUuid("Arendeprocess--1.0--1--Handlaggning--it1--mainActivityInstance--noLoop", "startform", "//section-1/control-1"));
+		
 		System.out.println("InheritServiceClient avslutas");
 	}
 	
