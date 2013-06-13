@@ -781,6 +781,8 @@ public class TaskFormDb {
 		StartFormDefinition hk_arende = new StartFormDefinition();
 		hk_arende.setFormPath("miljoforvaltningen/anmalan-hemkompostering");
 		hk_arende.setProcessDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall");
+		hk_arende.setAuthTypeReq(StartFormDefinition.AuthTypes.USERSESSION);
+		hk_arende.setUserDataXPath("");
 
 		StartFormDefinition orbeon_demo_arende = new StartFormDefinition();
 		orbeon_demo_arende.setFormPath("orbeon/controls");
