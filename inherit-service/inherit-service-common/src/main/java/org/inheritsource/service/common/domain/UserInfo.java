@@ -32,6 +32,8 @@ public class UserInfo implements Serializable, Comparable {
 	public static final int CATEGORY_INTERNAL = 1;
 	public static final int CATEGORY_EXTERNAL = 2;
 
+	public static final String ANONYMOUS_UUID = "anonymous";
+	
 	String uuid;
 	
 	String labelShort;
