@@ -49,6 +49,7 @@ import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
+import org.inheritsource.service.orbeon.OrbeonService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inheritsource.taskform.engine.persistence.entity.ProcessActivityFormInstance;
@@ -63,15 +64,49 @@ public class TaskFormService {
 	TaskFormDb taskFormDb;
 	BonitaEngineServiceImpl bonitaClient;
 	ActorSelectorDirUtils aSelectorDirUtils;
+    OrbeonService orbeonService;
 
 	public TaskFormService() {
 		taskFormDb = new TaskFormDb();
+		orbeonService = new OrbeonService();
 		bonitaClient = new BonitaEngineServiceImpl();
 		// TODO hostname,port and base DN should be resolved from configuration
 		aSelectorDirUtils = new ActorSelectorDirUtils("localhost", "1389",
 				"ou=IDMGroups,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"); // Base
 																				// DN
 	}
+	
+	public String getPreviousActivityDataByInstanceUuid(String currentActivityInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
+		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(currentActivityInstanceUuid);
+		return currentActivity==null ? "" : getProcessInstanceActivityData(currentActivity.getProcessInstanceUuid(), previousActivityName, uniqueXPathExpr);
+	}
+	
+	public String getPreviousActivityDataByDocId(String currentActivityFormDocId, String previousActivityName, String uniqueXPathExpr) {
+		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
+		return currentActivity==null ? "" : getProcessInstanceActivityData(currentActivity.getProcessInstanceUuid(), previousActivityName, uniqueXPathExpr);
+	}
+	
+	public String getProcessInstanceActivityData(String processInstanceUuid, String activityName, String uniqueXPathExpr) {
+		String result = "";
+		
+		ProcessActivityFormInstance prevoiusActivity = null;
+		if ("startform".equalsIgnoreCase(activityName)) {
+			prevoiusActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
+		}
+		else {
+			String prevoiusActivityUuid = bonitaClient.getActivityInstanceUuid(processInstanceUuid, activityName);
+			if (prevoiusActivityUuid != null) {
+				prevoiusActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(prevoiusActivityUuid);
+			}
+		}
+		if (prevoiusActivity!=null) {
+			result = orbeonService.getFormDataValue(prevoiusActivity.getFormPath(), prevoiusActivity.getFormDocId(), uniqueXPathExpr);
+		}
+		
+		return result;
+	}
+	
+	 
 
 	/**
 	 * 
@@ -589,38 +624,86 @@ public class TaskFormService {
 	 * submit form
 	 * 
 	 * @param docId
-	 * @param userId
+	 * @param userId 
 	 * @return confirmation form viewUrl. null if submission fails.
 	 */
 	public String submitActivityForm(String docId, String userId)
 			throws Exception {
 		String viewUrl = null;
-
+		
+		// TODO, när userId är null 1) kolla om det finns i formulärdata i xpath angiven av startformdef 2) anonymous om startformdef tillåter anonym
+		
 		try {
-			ProcessActivityFormInstance activity = taskFormDb
-					.getProcessActivityFormInstanceByFormDocId(docId);
+			ProcessActivityFormInstance activity = taskFormDb.getProcessActivityFormInstanceByFormDocId(docId);
 
 			if (activity == null) {
 				log.severe("This should never happen :) cannot find activity with docId=["
 						+ docId + "]" + " userId=[" + userId + "]");
 			} else {
+				
 				Date tstamp = new Date();
 				activity.setSubmitted(tstamp);
 				activity.setUserId(userId);
-
+				
 				boolean success = false;
+
+				
 				if (activity.isStartForm()) {
+					String startFormUser = null;
+					switch (activity.getStartFormDefinition().getAuthTypeReq()) {
+    				    case USERSESSION: 
+    				    	// do nothing userId is going to be used
+    				    	break;
+					    case USERSESSION_FORMDATA: 
+					    	if (userId == null || userId.trim().length()==0) {
+						      startFormUser = orbeonService.getFormDataValue(activity.getFormPath(), activity.getFormDocId(), activity.getStartFormDefinition().getUserDataXPath());
+						      userId = startFormUser;
+					    	}
+							break;
+						case FORMDATA_USERSESSION:
+							startFormUser = orbeonService.getFormDataValue(activity.getFormPath(), activity.getFormDocId(), activity.getStartFormDefinition().getUserDataXPath());
+							if (startFormUser != null && startFormUser.trim().length()>0) {
+								userId = startFormUser;
+							}
+							break;
+						case USERSESSION_FORMDATA_ANONYMOUS: 
+					    	if (userId == null || userId.trim().length()==0) {
+						      startFormUser = orbeonService.getFormDataValue(activity.getFormPath(), activity.getFormDocId(), activity.getStartFormDefinition().getUserDataXPath());
+						      userId = startFormUser;
+						      if (userId == null || userId.trim().length()==0) {
+						    	  userId = UserInfo.ANONYMOUS_UUID;
+						      }
+						    }
+							break;
+						case FORMDATA_USERSESSION_ANONYMOUS: 
+							startFormUser = orbeonService.getFormDataValue(activity.getFormPath(), activity.getFormDocId(), activity.getStartFormDefinition().getUserDataXPath());
+							if (startFormUser != null && startFormUser.trim().length()>0) {
+								userId = startFormUser;
+							}
+							if (userId == null || userId.trim().length()==0) {
+						    	  userId = UserInfo.ANONYMOUS_UUID;
+						    }
+							break;
+						case ANONYMOUS:
+							userId = UserInfo.ANONYMOUS_UUID;
+							break;
+						default:
+							log.severe("Unknown AuthTypeReq in StartFormDefinition, this should never happen...");
+							break;
+					}
+					
 					// start the process
 					String pDefUuid = activity.getStartFormDefinition()
 							.getProcessDefinitionUuid();
-					String processInstanceUuid = bonitaClient.startProcess(
-							pDefUuid, userId);
+										
+					String processInstanceUuid = bonitaClient.startProcess(pDefUuid, userId);
 					activity.setProcessInstanceUuid(processInstanceUuid);
-					success = (processInstanceUuid != null && processInstanceUuid
-							.trim().length() > 0);
-				} else if (bonitaClient.executeTask(
-						activity.getActivityInstanceUuid(), userId)) {
-					// execute activity task
+					
+					// success if start process succeeded
+					success = (processInstanceUuid != null && processInstanceUuid.trim().length() > 0);
+
+				} else if (bonitaClient.executeTask(activity.getActivityInstanceUuid(), userId)) {
+					// execute activity task succeded
 					success = true;
 				}
 
@@ -635,7 +718,7 @@ public class TaskFormService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.severe("Exception while submitting activity with docId=[" + docId + "] as userId=[" + userId + "] Exception: " + e);
 			// ROL cleanup inconsistencies...
 			throw e;
 		}
