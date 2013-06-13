@@ -769,15 +769,21 @@ public class TaskFormDb {
 		StartFormDefinition spridning = new StartFormDefinition();
 		spridning.setFormPath("start/demo-ansokan");
 		spridning.setProcessDefinitionUuid("Spridning_bekampningsmedel");
+		spridning.setAuthTypeReq(StartFormDefinition.AuthTypes.USERSESSION);
+		spridning.setUserDataXPath("");
 		
 		StartFormDefinition pcb_arende = new StartFormDefinition();
 		pcb_arende.setFormPath("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor");
 		pcb_arende.setProcessDefinitionUuid("Arendeprocess");
+		pcb_arende.setAuthTypeReq(StartFormDefinition.AuthTypes.USERSESSION);
+		pcb_arende.setUserDataXPath("");
 		
 		StartFormDefinition orbeon_demo_arende = new StartFormDefinition();
 		orbeon_demo_arende.setFormPath("orbeon/controls");
 		orbeon_demo_arende.setProcessDefinitionUuid("Arendeprocess");
-		
+		orbeon_demo_arende.setAuthTypeReq(StartFormDefinition.AuthTypes.USERSESSION);
+		orbeon_demo_arende.setUserDataXPath("");
+
 		ActivityFormDefinition granskaAnsokan = new ActivityFormDefinition();
 		granskaAnsokan.setFormPath("Demo/Granska_ansokan");
 		granskaAnsokan.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Granska_ansokan");

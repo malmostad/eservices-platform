@@ -25,6 +25,8 @@ package org.inheritsource.taskform.engine.persistence.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -36,8 +38,54 @@ import javax.persistence.Id;
  *
  */
 @Entity
-public class StartFormDefinition {
+public class StartFormDefinition { 
 
+	/**
+	 * Assign the case start event to a user. 
+	 * <ul>
+	 *   <li>USERSESSION logged on user from session. Do not allow unauthenticated user.</li>
+	 *   
+	 *   <li>USERSESSION_FORMDATA strategy to find out user:
+	 *     <ol>
+	 *       <li>logged on user from session</li>
+	 *       <li>form data defined by userDataXPath</li>
+	 *     </ol>
+	 * 		Do not allow anonymous user to submit start form
+	 *   </li>
+	 *   
+	 *   <li>FORMDATA_USERSESSION strategy to find out user:
+	 *     <ol>
+	 *       <li>form data defined by userDataXPath</li>
+	 *       <li>logged on user from session</li>
+	 *     </ol>
+	 * 		Do not allow anonymous user to submit start form
+	 *   </li>
+	 *   
+	 *   <li>USERSESSION_FORMDATA_ANONYMOUS strategy to find out user:
+	 *     <ol>
+	 *       <li>logged on user from session</li>
+	 *       <li>form data defined by userDataXPath</li>
+	 *       <li>Anonymous user</li>
+	 *     </ol>
+	 *   </li>
+	 *   
+	 *   <li>FORMDATA_USERSESSION_ANONYMOUS strategy to find out user:
+	 *     <ol>
+	 *       <li>form data defined by userDataXPath</li>
+	 *       <li>logged on user from session</li>
+	 *       <li>Anonymous user</li>
+	 *     </ol>
+	 *   </li>
+	 *   
+	 *   <li>ANONYMOUS - Assign the case to anonymous user</li>
+	 *
+	 * </ul>
+	 * @author bjmo
+	 *
+	 */
+	public enum AuthTypes {USERSESSION, USERSESSION_FORMDATA, FORMDATA_USERSESSION, USERSESSION_FORMDATA_ANONYMOUS, FORMDATA_USERSESSION_ANONYMOUS, ANONYMOUS};
+
+	
 	@Id
 	@GeneratedValue
 	Long startFormDefinitionId;
@@ -53,6 +101,11 @@ public class StartFormDefinition {
 	@Column(nullable = false, unique = true)
 	String formPath;
 	
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	AuthTypes authTypeReq;
+	
+	String userDataXPath;
 
 	public StartFormDefinition() {
 		
@@ -82,10 +135,38 @@ public class StartFormDefinition {
 		this.formPath = formPath;
 	}
 
+	public AuthTypes getAuthTypeReq() {
+		return authTypeReq;
+	}
+
+	public void setAuthTypeReq(AuthTypes authTypeReq) {
+		this.authTypeReq = authTypeReq;
+	}
+
+	/**
+	 * The user data XPath defines where user data in the form data can be found. In use when authTypeReq
+	 * defines that the start form submit should try to look up user from form data.
+	 * @return
+	 */
+	public String getUserDataXPath() {
+		return userDataXPath;
+	}
+
+	/**
+	 * The user data XPath defines where user data in the form data can be found. In use when authTypeReq
+	 * defines that the start form submit should try to look up user from form data.
+	 * @param userDataXPath
+	 */
+	public void setUserDataXPath(String userDataXPath) {
+		this.userDataXPath = userDataXPath;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result
+				+ ((authTypeReq == null) ? 0 : authTypeReq.hashCode());
 		result = prime * result
 				+ ((formPath == null) ? 0 : formPath.hashCode());
 		result = prime
@@ -96,6 +177,8 @@ public class StartFormDefinition {
 				* result
 				+ ((startFormDefinitionId == null) ? 0 : startFormDefinitionId
 						.hashCode());
+		result = prime * result
+				+ ((userDataXPath == null) ? 0 : userDataXPath.hashCode());
 		return result;
 	}
 
@@ -108,6 +191,8 @@ public class StartFormDefinition {
 		if (getClass() != obj.getClass())
 			return false;
 		StartFormDefinition other = (StartFormDefinition) obj;
+		if (authTypeReq != other.authTypeReq)
+			return false;
 		if (formPath == null) {
 			if (other.formPath != null)
 				return false;
@@ -123,6 +208,11 @@ public class StartFormDefinition {
 				return false;
 		} else if (!startFormDefinitionId.equals(other.startFormDefinitionId))
 			return false;
+		if (userDataXPath == null) {
+			if (other.userDataXPath != null)
+				return false;
+		} else if (!userDataXPath.equals(other.userDataXPath))
+			return false;
 		return true;
 	}
 
@@ -130,7 +220,9 @@ public class StartFormDefinition {
 	public String toString() {
 		return "StartFormDefinition [startFormDefinitionId="
 				+ startFormDefinitionId + ", processDefinitionUuid="
-				+ processDefinitionUuid + ", formPath=" + formPath + "]";
+				+ processDefinitionUuid + ", formPath=" + formPath
+				+ ", authTypeReq=" + authTypeReq + ", userDataXPath="
+				+ userDataXPath + "]";
 	}
-	
+
 }
