@@ -63,7 +63,7 @@ public class HibernateUtil {
 			.addAnnotatedClass(org.inheritsource.taskform.engine.persistence.entity.UserEntity.class)
 			.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
 			.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
-			.setProperty("hibernate.connection.url", " jdbc:postgresql://localhost/InheritPlatform")
+			.setProperty("hibernate.connection.url", " jdbc:postgresql://localhost/InheritPlatform");
 		    overrideProperties(cfg);
 		    sessionFactory = cfg.buildSessionFactory();
 		    log.fine("Init hibernate finished");
