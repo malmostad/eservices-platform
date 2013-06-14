@@ -64,8 +64,6 @@ public class HibernateUtil {
 			.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
 			.setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
 			.setProperty("hibernate.connection.url", " jdbc:postgresql://localhost/InheritPlatform")
-			.setProperty("hibernate.connection.username", "inherit")
-			.setProperty("hibernate.connection.password", "inh3rit");
 		    overrideProperties(cfg);
 		    sessionFactory = cfg.buildSessionFactory();
 		    log.fine("Init hibernate finished");
