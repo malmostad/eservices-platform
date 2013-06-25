@@ -7,9 +7,7 @@
     <artifactId>inherit-service</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.inheritsource</groupId>
   <artifactId>inherit-service-orbeon</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>inherit-service-orbeon</name>
   <packaging>jar</packaging>
   <url>http://maven.apache.org</url>
