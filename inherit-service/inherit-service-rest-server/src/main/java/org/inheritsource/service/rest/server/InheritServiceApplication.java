@@ -46,6 +46,7 @@ public class InheritServiceApplication extends Application {
 		router.attach("/processInstanceDetailsByUuid/{processInstanceUuid}", ProcessInstanceDetailByUuid.class); 
 		router.attach("/getPreviousActivityDataByDocId/{currentActivityFormDocId}/{previousActivityName}/{uniqueXPathExpr}", GetPreviousActivityDataByDocId.class); 
 		router.attach("/getPreviousActivityDataByInstanceUuid/{currentActivityInstanceUuid}/{previousActivityName}/{uniqueXPathExpr}", GetPreviousActivityDataByInstanceUuid.class); 
+		router.attach("/getPreviousActivitiesDataByDocId/{currentActivityFormDocId}", GetPreviousActivitiesDataByDocId.class); 
 		
 		// TODO take user from login instead of parameter userid
 		router.attach("/addComment/{activityInstanceUuid}/{comment}/{userid}", AddComment.class); 

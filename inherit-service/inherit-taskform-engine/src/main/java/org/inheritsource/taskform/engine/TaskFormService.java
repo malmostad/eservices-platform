@@ -24,7 +24,6 @@
 package org.inheritsource.taskform.engine;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -76,6 +75,11 @@ public class TaskFormService {
 																				// DN
 	}
 	
+	public String getPrevoiusActivitiesData(String currentActivityFormDocId) {
+		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
+		return currentActivity==null ? "" : getProcessInstanceActivitiesData(currentActivity.getProcessInstanceUuid());
+	}
+	
 	public String getPreviousActivityDataByInstanceUuid(String currentActivityInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
 		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(currentActivityInstanceUuid);
 		return currentActivity==null ? "" : getProcessInstanceActivityData(currentActivity.getProcessInstanceUuid(), previousActivityName, uniqueXPathExpr);
@@ -106,7 +110,50 @@ public class TaskFormService {
 		return result;
 	}
 	
-	 
+	public String getProcessInstanceActivitiesData(String processInstanceUuid) {
+		StringBuffer result = new StringBuffer();
+		
+		result.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?><process processInstanceUuid=\"");
+		result.append(processInstanceUuid);
+		result.append("\">");
+		
+		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
+		
+		if (pafis != null) {
+			for (ProcessActivityFormInstance pafi : pafis) {
+				String formDataFragment = orbeonService.getFormData(pafi.getFormPath(), pafi.getFormDocId());
+				if (formDataFragment != null) {
+					if (pafi.isStartForm()) {
+						result.append("<startform>");
+						result.append(formDataFragment);
+						result.append("</startform>");
+					}
+					else {
+						// activity form 
+						
+						ActivityInstanceItem activityItem = bonitaClient.getActivityInstanceItem(pafi.getActivityInstanceUuid());
+
+						if (activityItem != null)  {
+							result.append("<activity uuid=\"");
+							result.append(pafi.getActivityInstanceUuid());
+							result.append("\" activityName=\"");
+							result.append(activityItem.getActivityName());
+							result.append("\" activityDefinitionUuid=\"");
+							result.append(activityItem.getActivityDefinitionUuid());
+							result.append("\">");
+							result.append(formDataFragment);
+							result.append("</activity>");
+						}
+					}
+				}
+			}
+		}
+		
+		result.append("</process>");
+		
+		return result.toString();
+	}
+ 
 
 	/**
 	 * 
