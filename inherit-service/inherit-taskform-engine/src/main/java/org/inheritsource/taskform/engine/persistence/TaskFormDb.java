@@ -164,7 +164,7 @@ public class TaskFormDb {
            try {
                    //result = (List<ProcessDefinition>)session.createQuery(hql).list();
                    result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-                                   .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) )  // this user is last writer
+                                   .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) )  
                                    .list();
            }
            catch (Exception e) {
