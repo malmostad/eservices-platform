@@ -1,0 +1,67 @@
+1. Skapa process i Bonita
+=========================
+
+  1.1 Konfigurera Actor Selectors, se Ärendeprocess
+
+2. Installera Bonitaprocess i UserXP
+====================================
+
+3. Kör processen, i userXP
+==========================
+
+  se på URL:ar för att avgöra processUUID och aktivitetsUUID
+
+4. Utifrån 3. editera och kör main i TaskFormDb
+===============================================
+
+   - ok att köra flera gånger över samma?
+
+5. Fixa roller i opendj på serversidan
+======================================
+
+   se exempel i ~/inherit/test/ldap
+
+6. git commit, git pull, mvn clean install
+==========================================
+
+7. Bootstrap CMS
+================
+
+   Formpath på startform och aktform
+   viktigt
+
+   process och aktiviteter skall identifieras
+   med sin URI
+
+   se exempel, ärendeprocess
+   .../cms och .../cms/console
+
+8. Git commit git push
+======================
+
+9. Mvn clean install på serversidan
+====================================
+
+10. Kör deployment script
+=========================
+
+BILAGA:
+=======
+
+Formpather, samt process- och aktivitets-UUID  till anmälan hemkompostering:
+
+Process     	      Formpath startform
+xxx		      miljoforvaltningen/anmalan-hemkompostering
+
+==============================
+
+Aktivitet     	      Formpath
+==============================
+Inkommen	      
+Registrering	      miljoforvaltningen/registrering
+Handläggning	      miljoforvaltningen/handlaggning
+Beslut		      miljoforvaltningen/beslut
+Expediering	      miljoforvaltningen/expediering
+Delgivning	      
+
+ 
