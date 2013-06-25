@@ -29,6 +29,12 @@
 <property as="xs:boolean" name="oxf.fr.version.*.*" value="false"/>
 <!-- <property as="xs:string"  name="oxf.fr.detail.buttons.*.*" value="clear save submit"/> -->
 <property as="xs:string"  name="oxf.fr.detail.buttons.*.*" value="clear save workflow-send"/>
+<property as="xs:string"  name="oxf.fr.detail.buttons.anonymous.*" value="workflow-send"/>
+<property as="xs:string"  name="oxf.fr.detail.buttons.start.demo-ansokan" value="workflow-send"/>
+<property as="xs:string"  name="oxf.fr.detail.buttons.miljoforvaltningen.anmalan-hemkompostering" value="workflow-send"/>
+
+<property as="xs:string"  name="oxf.fr.detail.buttons.malmo.profil" value="clear save"/>
+
 <property as="xs:string"  name="oxf.fr.detail.buttons.view.*.*" value="pdf"/>
 <property as="xs:string"  name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
 
