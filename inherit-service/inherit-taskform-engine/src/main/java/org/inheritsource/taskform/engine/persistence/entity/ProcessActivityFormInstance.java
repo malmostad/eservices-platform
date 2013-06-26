@@ -156,7 +156,7 @@ public class ProcessActivityFormInstance {
 	}
 
 	public String calcEditUrl() {
-		return getFormPath() + "/edit/" + getFormDocId() + "?orbeon-embeddable=true";
+		return getFormPath() + "/edit/" + getFormDocId() + "?orbeon-embeddable=true&pawap-mode=load-deps";
 	}
 
 	public String calcViewUrl() {
