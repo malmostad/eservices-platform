@@ -133,7 +133,8 @@ public class OrbeonService
 	
 	public String getFormData(String formPath, String dataUuid) {
 		String uri = persistenceApiBaseUrl + formPath + "/data/" + dataUuid + "/data.xml";
-		String response = parseXPathExpr(uri, "//form");
+		// get form data except for pawap-activities element
+		String response = parseXPathExpr(uri, "//form/*[not(self::pawap-activities)]");
 		System.out.println("response: " + response);
 		
 		return response;
@@ -174,6 +175,7 @@ public class OrbeonService
         OrbeonService service = new OrbeonService();
         System.out.println("data: " + service.getFormDataValue("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor", "059eba3c-c91b-47b7-ac28-b590caa1c073", "//section-1/control-1"));
         System.out.println("data: " + service.getFormData("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor", "059eba3c-c91b-47b7-ac28-b590caa1c073"));
+        System.out.println("data: " + service.getFormData("basprocess/registrera", "259b09b0-0303-4222-a368-13368f0a5ae8"));
         
     }
 }
