@@ -27,6 +27,8 @@ import java.util.logging.Logger;
 
 import org.inheritsource.service.common.util.ParameterEncoder;
 import org.inheritsource.taskform.engine.TaskFormService;
+import org.restlet.data.MediaType;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
@@ -41,12 +43,14 @@ public class GetPreviousActivitiesDataByDocId extends ServerResource {
 	
 	@Post
 	@Get
-	public String getPreviousActivitiesDataByDocId() {
+	public StringRepresentation getPreviousActivitiesDataByDocId() {
 		
 		String currentActivityFormDocId = ParameterEncoder.decode((String)getRequestAttributes().get("currentActivityFormDocId"));
 		
 		log.fine("REST getPreviousActivitiesDataByDocId with parameter currentActivityFormDocId=[" + currentActivityFormDocId+  "]" );
-		
-		return engine.getPrevoiusActivitiesData(currentActivityFormDocId);
+		StringRepresentation sr = new StringRepresentation(engine.getPrevoiusActivitiesData(currentActivityFormDocId));
+	    sr.setMediaType(MediaType.TEXT_XML);
+	    
+		return sr;
 	}
 }
