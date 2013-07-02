@@ -176,6 +176,7 @@ public class OrbeonService
         System.out.println("data: " + service.getFormDataValue("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor", "059eba3c-c91b-47b7-ac28-b590caa1c073", "//section-1/control-1"));
         System.out.println("data: " + service.getFormData("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor", "059eba3c-c91b-47b7-ac28-b590caa1c073"));
         System.out.println("data: " + service.getFormData("basprocess/registrera", "259b09b0-0303-4222-a368-13368f0a5ae8"));
-        
+        System.out.println("data: " + service.getFormDataValue("malmo/profil", "john", "//section-1/email"));
+        System.out.println("data: " + service.getFormData("malmo/profil", "john"));
     }
 }
