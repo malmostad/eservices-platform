@@ -2,7 +2,7 @@
 
 # ROOT of build directory
 #BUILD_DIR=${HOME}/workspace/inherit-platform
-BUILD_DIR=${HOME}/inherit-platform-gitclone/inherit-platform
+BUILD_DIR=${HOME}/inherit-platform-gitclone/eservices-platform
 
 # ROOT of directory holding the j2ee containers
 CONTAINER_ROOT=${HOME}/inherit-platform
@@ -112,7 +112,7 @@ else
     exit $ERRORSTATUS
 fi
 
-# 4. Deploy eservice-platform
+# 4. Build eservice-platform distribution snapshot
 cd inherit-portal
 if mvn -P dist
 then
@@ -145,7 +145,7 @@ then
 	exit $ERRORSTATUS
     fi
 
-# 7. deploy kservice-platform
+# 7. Build kservice-platform distribution snapshot
     if mvn -P dist
     then
 	echo "Creating eservicetest snapshot distribution tar.gz..."
@@ -222,7 +222,7 @@ if [ "${BOS_PID}" ]
 then 
     echo "Force shutting down BOS, pid: " ${BOS_PID}
     kill  ${BOS_PID}
-    sleep 1
+    sleep 6
 fi
 
 BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
@@ -256,6 +256,7 @@ if [ "${ESERVICE_PID}" ]
 then 
     echo "Force shutting down eservice, pid: " ${ESERVICE_PID}
     kill  ${ESERVICE_PID}
+    sleep 6
 fi
 
 # If still did not bite
@@ -290,7 +291,7 @@ then
     then 
 	echo "Force shutting down kservice, pid: " ${KSERVICE_PID}
 	kill  ${KSERVICE_PID}
-	sleep 1
+	sleep 6
     fi
 
     KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
@@ -317,6 +318,7 @@ then
     tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
     cd webapps
     rm -fr cms site orbeon
+    rm cms.war # deploy cms only at kservice and share the same JCR
     popd
 else
     echo "Directory ${CONTAINER_ROOT}/${ESERVICE} does not exist. Halting."
