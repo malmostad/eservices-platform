@@ -40,10 +40,13 @@ import org.restlet.resource.Post;
 
 public class EmailToInitiator extends ServerResource {
 	//TODO Place all configurable strings in resource config file
-//	private static final String SENDERADDRESS="No Reply Malmö <noreply@malmo.se>";
-//	private static final String SMTPSERVER="relay.malmo.se";
-	private static final String SENDERADDRESS="info@inherit.se";
-	private static final String SMTPSERVER="smtp.bredband.net";
+	private static final String SENDERADDRESS="No Reply Malmö <noreply@malmo.se>";
+//	private static final String SENDERADDRESS="info@inherit.se";
+	private static final String SMTPSERVER="relay.malmo.se";
+//	private static final String SMTPSERVER="smtp.bredband.net";
+	private static final String ERRORRECIPIENT="malmo@inherit.se";
+	private static final String ERRORMESG1 = "Mail till processInitiator, fel: processInstanceDetails == null";
+	private static final String ERRORMESG2 = "Mail till processInitiator, fel: processInstanceUuid tom eller null";
 	TaskFormService engine = new TaskFormService();
 	MyProfile myProfile = new MyProfile();
 	
@@ -84,7 +87,7 @@ public class EmailToInitiator extends ServerResource {
 			ProcessInstanceDetails processInstanceDetails = engine.getProcessInstanceDetails(processInstanceUuid);
 			to = myProfile.getEmail(processInstanceDetails.getStartedBy());
 		} else {
-			to="malmo@inherit.se";
+			to=ERRORRECIPIENT;
 			mailBody = "Fel vid skickande av: " + mailBody; 
 		}
 */
@@ -93,12 +96,12 @@ public class EmailToInitiator extends ServerResource {
 			if (processInstanceDetails != null) {
 				to = myProfile.getEmail(processInstanceDetails.getStartedBy());
 			} else {
-				to="malmo@inherit.se";
-				mailBody = "Mail till processInitiator, fel: processInstanceDetails == null"; 
+				to=ERRORRECIPIENT;
+				mailBody = ERRORMESG1; 
 			}
 		} else {
-			to="malmo@inherit.se";
-			mailBody = "Mail till processInitiator, fel: processInstanceUuid tom eller null"; 
+			to=ERRORRECIPIENT;
+			mailBody = ERRORMESG2; 
 		}
 		try{
 			// Create a default MimeMessage object.
