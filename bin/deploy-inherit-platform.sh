@@ -13,7 +13,8 @@ CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
 # Clone of ROOT of Hippo jcr content repository
 # This should not be so, and is a fix because of the 
 # problem that we need two hippo instances pga openam realm requirement
-CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
+# ===> Now fixed 2013-06, so we skip this...
+# CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
 
 # Name of container roots
 EXIST=orbeon-tomcat-6.0.36
@@ -23,6 +24,7 @@ KSERVICE=hippo-kservice-tomcat-6.0.36
 
 ESERVICEPATCH=eservicetest.malmo.se
 KSERVICEPATCH=kservicetest.malmo.se
+PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
 
 EXIST_PORT=48080
 BOS_PORT=58080
@@ -38,11 +40,11 @@ ERRORSTATUS=0
 echo "BUILD_DIR: $BUILD_DIR"
 echo "CONTAINER_ROOT: $CONTAINER_ROOT"
 echo "CONTENT_ROOT: $CONTENT_ROOT"
-echo "CONTENT_ROOT_WORKAROUND: $CONTENT_ROOT_WORKAROUND"
+#echo "CONTENT_ROOT_WORKAROUND: $CONTENT_ROOT_WORKAROUND"
 
-if [ ! -d "${BUILD_DIR}" ] || [ ! -d "${CONTAINER_ROOT}" ] || [ ! -d "${CONTENT_ROOT}" ] || [ ! -d "${CONTENT_ROOT_WORKAROUND}" ]
+if [ ! -d "${BUILD_DIR}" ] || [ ! -d "${CONTAINER_ROOT}" ] || [ ! -d "${CONTENT_ROOT}" ]
 then
-    echo "Either of $BUILD_DIR, $CONTAINER_ROOT, $CONTENT_ROOT or $CONTENT_ROOT_WORKAROUND do not exist, aborting execution of $0"
+    echo "Either of $BUILD_DIR, $CONTAINER_ROOT or $CONTENT_ROOT do not exist, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
@@ -85,9 +87,13 @@ fi
 if [ -d ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config ]
 then
     pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-    sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml > properties-local.xml.eservicepatch
-    sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml > properties-local.xml.kservicepatch
-    mv properties-local.xml.eservicepatch properties-local.xml
+       mv properties-local.xml $PROPERTIES_LOCAL_BEFOREPATCH
+       cp $PROPERTIES_LOCAL_BEFOREPATCH properties-local.xml # thereby conserving mod date of properties-local.xml
+                                                             # when $PROPERTIES_LOCAL_BEFOREPATCH is renamed
+                                                             # back to properties-local.xml in step 8
+       sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml > properties-local.xml.eservicepatch
+       sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml > properties-local.xml.kservicepatch
+       mv properties-local.xml.eservicepatch properties-local.xml
     popd
 else
     echo "${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
@@ -106,7 +112,7 @@ else
     exit $ERRORSTATUS
 fi
 
-# 4. Build eservice-platform
+# 4. Deploy eservice-platform
 cd inherit-portal
 if mvn -P dist
 then
@@ -123,7 +129,7 @@ if ${WITH_KSERVICES}
 then
 # 5. Preparing properties-local.xml for kservicetest (patching done in step #2)
     pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-    mv properties-local.xml.kservicepatch properties-local.xml
+       mv properties-local.xml.kservicepatch properties-local.xml
     popd
 
 # 6. Build kservice-platform
@@ -152,7 +158,13 @@ then
     popd
 fi
 
-# 8. Stop j2ee containers
+# 8. Restore original properties-local.xml to original state. Necessary to make step 2 (patching properties-local.xml)
+#     work correctly next time script is run
+    pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
+       mv $PROPERTIES_LOCAL_BEFOREPATCH properties-local.xml
+    popd
+
+# 9. Stop j2ee containers
 pushd ${CONTAINER_ROOT}
 cd $EXIST/bin/
 EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
@@ -297,7 +309,7 @@ then
     exit ${ERRORSTATUS}
 fi
 
-# 9. Install on eservice container
+# 10. Install on eservice container
 echo "Installing on eservice container"
 if [ -d  ${CONTAINER_ROOT}/${ESERVICE} ]
 then
@@ -311,7 +323,7 @@ else
     exit 1
 fi
 
-# 10. Install on kservice container
+# 11. Install on kservice container
 if ${WITH_KSERVICES}
 then
     if [ -d ${CONTAINER_ROOT}/${KSERVICE} ]
@@ -328,7 +340,7 @@ then
     fi
 fi
 
-# 11. Install TASKFORM engine on BOS container
+# 12. Install TASKFORM engine on BOS container
 echo "Installing taskform engine on BOS"
 if [ -d ${CONTAINER_ROOT}/${BOS}/webapps ] 
 then
@@ -341,17 +353,17 @@ else
     exit 1
 fi
 
-# 12. Clean up content repositories
+# 13. Clean up content repositories
 echo "Clean up content repository..."
 pushd ${CONTENT_ROOT}
 rm -fr repository version workspaces 
 popd
 
-pushd ${CONTENT_ROOT_WORKAROUND}
-rm -fr repository version workspaces 
-popd
+#pushd ${CONTENT_ROOT_WORKAROUND}
+#rm -fr repository version workspaces 
+#popd
 
-# 13. Restart containers
+# 14. Restart containers
 pushd ${CONTAINER_ROOT}
 echo "Restart eXist container..."
 cd ${EXIST}/bin/
