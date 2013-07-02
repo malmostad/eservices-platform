@@ -410,6 +410,27 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public void emailToInitiator(
+			String processInstanceUuidStr,
+			String activityInstanceUuidStr,
+			String  mailSubjectLine,
+			String  mailBodyText) {
+		//int result;
+		String uri;
+		uri = serverBaseUrl + "emailToInitiator/" +
+			ParameterEncoder.encode(processInstanceUuidStr) +
+			"/" + ParameterEncoder.encode(activityInstanceUuidStr) +
+			"/" + ParameterEncoder.encode(mailSubjectLine) +
+			"/" + ParameterEncoder.encode(mailBodyText) + "?media=xml";
+		log.severe("emailToInitiator uri: " + uri);
+		String response = callAndCatchRE(uri);
+		log.severe("response emailToInitiator: [" + response + "]");
+		//result = parseIntResponse(response);
+		//return result;
+		return;
+	}
+	//{}/{}
+	
 	public Set<String> getUsersByRoleAndActivity(String roleName, String activityInstanceUuid) {
 		Set<String> result = null;
 		String uri;
@@ -425,8 +446,6 @@ public class InheritServiceClient {
 
 		return result;
 	}
-	//{}/{}
-	
 	@SuppressWarnings("unchecked")
 	public PagedProcessInstanceSearchResult searchProcessInstancesByTagValue(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) {
 		PagedProcessInstanceSearchResult result = null;
@@ -563,6 +582,7 @@ public class InheritServiceClient {
 	        			
 		} catch (ResourceException e) {
 			log.severe("call ResourceException: " + e);
+			e.printStackTrace();
 		}
 		
 		return result;
@@ -594,6 +614,14 @@ public class InheritServiceClient {
 		System.out.println("Testa InheritServiceClient");
 		
 		InheritServiceClient c = new InheritServiceClient();
+		c.emailToInitiator(
+				"procInstanceUuid",
+				"Miljoforvaltningen_hemkompostering_matavfall--1.0--6--Delgivning--it1--mainActivityInstance--noLoop",
+				"Re: mailSubjectLine",
+				"<BodyText>");
+		//System.out.println("InheritServiceClient, Resultat: " + res);
+
+		/*
 		PagedProcessInstanceSearchResult hits = c.searchProcessInstancesStartedByUser("john", 0, 5 , "started", "desc", "STARTED", "james");
 		System.out.println("searchProcessInstancesStartedByUser");
 		for (ProcessInstanceListItem item : hits.getHits()) {
@@ -638,7 +666,7 @@ public class InheritServiceClient {
 		System.out.println("getPreviousActivityDataByInstanceUuid: " + c.getPreviousActivityDataByInstanceUuid("Arendeprocess--1.0--1--Handlaggning--it1--mainActivityInstance--noLoop", "Handlaggning", "//section-1/control-1"));
 		
 		System.out.println("getPreviousActivityDataByDocId: " + c.getPreviousActivitiesDataByDocId("fafe3e7d-0b45-49b6-be43-ee59ec8c1d55"));
+*/
 		System.out.println("InheritServiceClient avslutas");
 	}
-	
 }

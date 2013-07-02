@@ -534,6 +534,12 @@ public class TaskFormService {
 		return result;
 	}
 
+	public ActivityInstanceItem getActivityInstanceItemByUuId(
+			String activityInstanceUuid) {
+		ActivityInstanceItem result = bonitaClient.getActivityInstanceItem(activityInstanceUuid);
+		return result;
+	}
+	
 	public ActivityInstanceItem getStartActivityInstanceItem(String formPath,
 			String userId) throws Exception {
 		ActivityInstanceItem result = null;

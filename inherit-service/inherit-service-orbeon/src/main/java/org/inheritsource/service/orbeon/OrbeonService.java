@@ -174,6 +174,8 @@ public class OrbeonService
         OrbeonService service = new OrbeonService();
         System.out.println("data: " + service.getFormDataValue("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor", "059eba3c-c91b-47b7-ac28-b590caa1c073", "//section-1/control-1"));
         System.out.println("data: " + service.getFormData("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor", "059eba3c-c91b-47b7-ac28-b590caa1c073"));
+        System.out.println("data: " + service.getFormDataValue("malmo/profil", "john", "//section-1/email"));
+        System.out.println("data: " + service.getFormData("malmo/profil", "john"));
         
     }
 }
