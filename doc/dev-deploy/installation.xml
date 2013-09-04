@@ -1,0 +1,1496 @@
+<?xml version="1.0" encoding="utf-8"?> <!DOCTYPE article PUBLIC
+"-//OASIS//DTD DocBook XML V4.3//EN"
+"http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd"
+[]>
+<?xml-stylesheet type="text/css" href="css/style.css"?>
+
+<article lang="en">
+  <articleinfo>
+    <title>
+      PAWAP: Process Aware Web Application Platform
+    </title>
+
+    <titleabbrev>PAWAP</titleabbrev>
+
+    <subtitle>Installation Guide</subtitle>
+
+    <pubdate>
+      2013-08-23
+    </pubdate>
+
+    <authorgroup>
+      <author>
+	<firstname>Björn</firstname>
+	<surname>Molin</surname>
+	<affiliation>
+	  <orgname>Inherit S AB</orgname>
+	</affiliation>
+      </author>
+
+      <author>
+	<firstname>Roland</firstname>
+	<surname>Hedayat</surname>
+	<affiliation>
+	  <orgname>Inherit S AB</orgname>
+	</affiliation>
+      </author>
+    </authorgroup>
+  </articleinfo>
+
+  <?custom-pagebreak?>
+
+  <section id="s.intro">
+    <title>Introduction</title>
+    <para>
+      PAWAP lives in a Server Side Java (JEE) based Ecosystem. This makes the
+      program suite platform independent as far as a certified Java run time
+      environment is implemented on the platform in question. In this
+      document, development and deployment on an Ubuntu Linux v. 12.04 LTS
+      (Long Time Support) is described.
+    </para>
+
+    <para>
+      Unless specifically mentioned, we use the Ubuntu/Debian package system
+      for the prerequsites, thus taking advantage of the ease of installation
+      and update mechanisms of Ubuntu Linux.
+    </para>
+
+    <para>
+      The base installation mainly consists of setting up and configuring a
+      set of servlet (Tomcat) containers and underlying persistence
+      components, as well as Apache http server. Thereafter, we deploy the
+      various web applications (.war files) to their corresponding containers.
+    </para>
+  </section>
+
+  <section id="s.prereq-prod">
+    <title>Prerequisites for a Production Environment</title>
+    <para>
+      The platform itself depends on a series of open source components which are
+      assumed to be installed upon installation of PAWAP. This section
+      describes the installation of these. Some of these components require
+      additional configuration. This is covered in a subsequent section.
+    </para>
+
+    <section id="s.prereq-prod.git">
+      <title>
+	Git: Source code repository and version/configuration management
+      </title>
+
+      <para>
+	The project uses <ulink url="http://git-scm.com/">Git</ulink> as
+	version control system and the source code resides on <ulink
+	url="https://github.com">GitHub</ulink>. Therefore, Git needs to
+	be installed on the system:
+      </para>
+
+      <programlisting>
+	apt-get install git
+	apt-get install git-man
+      </programlisting>
+    </section>
+
+    <section id="s.prereq-prod.java">
+      <title>
+	Java
+      </title>
+
+      <para>
+	We use a scripted build from the source tree, also when deploying
+	for production. Thereefore, both a Java Runtime (JRE) and a Java
+	Developer's kit (JDK) is required.
+      </para>
+
+      <para>
+	OpenJDK 6 is already present in the package repository of Ubuntu
+	12.04. This flavour of the Java Runtime is mature and should work well
+	for all Java dependent components in PAWAP. However, for Hippo, the
+	official recommendation is still to use the Sun Java 6 version.
+	Therefore we also describe how to install this version in a subsequent
+	section.
+      </para>
+
+      <section id="s.prereq-prod.openjdk">
+	<title>Installation of OpenJDK  6 on Ubuntu 12.04</title>
+	<para>
+	  The following commands will insall OpenJDK 6 JDK and JRE:
+	</para>
+
+	<programlisting>
+	  apt-get install openjdk-6-jre
+	  apt-get install openjdk-6-jdk
+	</programlisting>
+      </section>
+
+      <section id="s.prereq-prod.sunjava">
+	<title>Installing Sun JDK 6 on Ubuntu 12.04</title>
+	<para>
+	  The JDK (Java Development Kit) used is <ulink
+	  url="http://www.oracle.com/technetwork/java/javase/overview/index.html">Oracle
+	  JDK version 1.6</ulink>.
+	</para>
+	<para>
+	  Download the sun jdk 6 bin from here:
+	  <ulink
+	      url="http://www.oracle.com/technetwork/java/javase/downloads/"/>
+	  Acquire root permissions:
+
+	  <programlisting>
+	    sudo -s / &lt;password&gt;
+	  </programlisting>
+
+	  Make the bin file executeable:
+
+	  <programlisting>
+	    chmod +x jdk-6u37-linux-x64.bin
+	  </programlisting>
+
+	  Extract the bin file:
+
+	  <programlisting>
+	    ./jdk-6u37-linux-x64.bin
+	  </programlisting>
+
+	  This creates a subdirectory: jdk1.6.0_37
+
+	  <programlisting>
+	    mkdir /usr/lib/jvm
+	    mv jdk1.6.0_37 /usr/lib/jvm
+	  </programlisting>
+
+	  Symlink to generic name (we use this in update alternatives, in order to make
+	  more robust against minor version changes.
+
+	  <programlisting>
+	    ln -s jdk1.6.0_37 java-6-sun  
+	  </programlisting>
+
+	  Install new java source in system:
+
+	  <programlisting>
+	    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-6-sun/bin/javac 1
+	    update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-6-sun/bin/java 1
+	    update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/java-6-sun/bin/javaws 1
+	  </programlisting>
+
+	  Choose default java:
+
+	  <programlisting>
+	    update-alternatives --config javac
+	    update-alternatives --config java
+	    update-alternatives --config javaws
+	  </programlisting>
+
+	  Java version test:
+
+	  <programlisting>
+	    java -version
+	  </programlisting>
+
+	  Verify the symlinks all point to the new java location:
+
+	  <programlisting>
+	    ls -la /etc/alternatives/java*
+	  </programlisting>
+
+	  set JAVA_HOME in /etc/environment:
+
+	  <programlisting>
+	    JAVA_HOME=/usr/lib/jvm/java-6-sun
+	  </programlisting>
+	</para>
+
+	<note>
+	  <simpara>
+	    The licensing of this JDK is not open source compatible. Some
+	    of the program components of PAWAP require the Oracle JDK
+	    rather than OpenJDK) (We expect this problem to be solved in
+	    the near future, when all components are expected to be
+	    compatible with <ulink url="http://openjdk.java.net/">OpenJDK
+	    7</ulink>
+	  </simpara>
+	</note>
+      </section>
+    </section>
+
+    <section id="s.prereq-prod.tomcat">
+      <title>
+	Tomcat Servlet Container
+      </title>
+      <para>
+	Ubuntu 12.04 LTS does provide<ulink
+	url="http://tomcat.apache.org/">Apache Tomcat
+	packages</ulink>. However, we don't use the Ubuntu packaging system
+	for the Tomcat containers in the system. The reason is that we have
+	several container instances running, and have found it easier to
+	simply extract a tar-file of the distribution to each container root
+	directory. We currently use apache-tomcat-6.0.36.tar.gz.
+      </para>
+    </section>
+
+    <section id="s.prereq-prod.posgtresql">
+      <title>
+	PostgreSQL
+      </title>
+      <para>
+	We use PostgreSQL as a database backend in the system.  Ubuntu Server
+	12.04 supply packages for PostgreSQL version 9.1. To install, issue
+	the following commands, as root user:
+      </para>
+      <programlisting>
+	apt-get install postgresql-9.1
+      </programlisting>
+    </section>
+
+    <section id="s.prereq-prod.mvn">
+      <title>
+	Apache Maven 
+      </title>
+      <para>
+	<ulink url="http://maven.apache.org/">Apache Maven</ulink> is used for
+	managing the build and testing environment. The platform is built
+	using Maven 2.2.1, and Maven must be installed on the development
+	machine. Installation on Ubuntu server 12.04:
+      </para>
+      <programlisting>
+	sudo apt-get install maven
+      </programlisting>
+    </section>
+
+    <section id="s.prereq-prod.apache-http">
+      <title>
+	Apache HTTP Server
+      </title>
+
+      <para>
+	PAWAP is entirely web based, but it runs several java (JEE) based
+	services. We Apache HTTP Server as a reverse proxy (a web front for
+	the various services). Installation:
+      </para>
+
+      <programlisting>
+	sudo apt-get install apache2      
+      </programlisting>
+
+      <para>
+	Enable SSL and proxying modules:
+      </para>
+
+      <programlisting>
+	sudo a2enmod proxy_ajp ssl
+      </programlisting>
+    </section>
+
+    <section id="s.prereq-prod.openssl">
+      <title>
+	OpenSSL
+      </title>
+
+      <programlisting>
+	sudo apt-get install openssl
+      </programlisting>
+    </section>
+
+    <section id="s.prereq-prod.opendj">
+      <title>
+	OpenDJ
+      </title>
+
+      <para>
+	OpenDJ is an Open Source, Java based LDAPv3 compliant directory
+	service.  It is used in the platform to administer users and groups.
+      </para>
+
+      <para>
+	We currently use OpenDJ, v. 2.5.0. It can be downloaded from <ulink
+	url="http://forgerock.com/download-stack/">The download page of
+	ForgeRock</ulink>.
+      </para>
+    </section>
+
+    <section id="s.prereq-prod.openam">
+      <title>
+	OpenAM
+      </title>
+
+      <para>
+	We use the open source product OpenAM for Federation, Single-Sign-On,
+	Authentication and Access Control.
+      </para>
+      <para>
+	We currently use v. 10.0.1 of the product.  It can be downloaded from
+	<ulink url="http://forgerock.com/download-stack/">The download page of
+	ForgeRock</ulink>.
+      </para>
+    </section>
+  </section>
+
+  <section id="s.prereq-dev">
+    <title>Additional Prerequisites for a Development Environment</title>
+    <para>
+    </para>
+    <section id="s.prereq-dev.eclipse">
+      <title>
+	Eclipse
+      </title>
+      <para>
+	<ulink url="http://www.eclipse.org">Eclipse</ulink> is used as
+	Integrated Development Environment (IDE). Eclipse comes in many different pre packaged
+	bundles. Choose the bundle: <ulink
+	url="http://www.eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/junosr1">Eclipse
+	IDE for Java EE Developers</ulink>.
+      </para>
+
+      <para>
+	The Eclipse development environment is integrated with Maven through
+	the Maven plugin <ulink
+	url="http://www.eclipse.org/m2e/">m2e</ulink> (Maven 2 Eclipse
+	Integration). For installation information, refer to the <ulink
+	url="http://www.eclipse.org/m2e/download/">Eclipse Maven Plugin
+	Download Site</ulink>.
+      </para>
+    </section>
+  </section>
+
+  <section id="s.prod">
+    <title>Production Deployment</title>
+
+    <para>
+      This section describes how to set up an environment ready for
+      production, assuming the prerquisites are met. It consists of the
+      following steps:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Installation and configuration of the Process Engine
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Installation and configuration of the Forms Engine
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Hippo CMS and Content Repository installation
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Installation and configuration of OpenAM
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Installation and configuration of OpenDJ
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Configuration of Apache HTTP server as reverse proxy
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Check out and build of source tree
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Deployment on server
+	</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>
+      In the following, we call the root directory of the system for
+      CONTAINER_ROOT (the various servlet containers reside in this directory,
+      amongst other components).
+    </para>
+
+    <para>
+      We use the following names for the home directories of the servlet
+      containers (all subdirs of CONTAINER_ROOT):
+      <programlisting>
+	EXIST=orbeon-tomcat-6.0.36
+	BOS=BOS-5.9-Tomcat-6.0.35
+	ESERVICE=hippo-eservice-tomcat-6.0.36
+	KSERVICE=hippo-kservice-tomcat-6.0.36
+      </programlisting>
+
+      In this document we use the shell script notation for actually referring
+      to the values of these variables ($&lt;VARIABLE_NAME&gt;
+    </para>
+
+    <section id="s.prod.bos">
+      <title>Install and configure the Process Engine</title>
+      <para>
+	This section describes the steps involved for installation and
+	Configuration of BOS-Tomcat bundle with PostgreSQL.
+      </para>
+      
+      <section id="s.prod.bos.download">
+	<title>Download Tomcat/Bonita bundle</title>
+	<para>
+	  Download bundle from <ulink
+	  url="http://www.bonitasoft.com/products/BPM_downloads/all">Bonita
+	  download area</ulink>. The downloaded file is zip-compressed.
+	</para>
+	<para>
+	  Unzip into directory of choice. We call this directory
+	  $CONTAINER_ROOT/$BOS. If the variables CATALINA_HOME and
+	  CATALINA_BASE are not set, they will be set to this directory. If for
+	  some reason one wants to override these default values, this is done
+	  in the script
+	  <programlisting>
+	    bin/setcatalina_home.sh
+	  </programlisting>
+	  which in turn is read from
+	  <programlisting>
+	    bin/startup.sh
+	  </programlisting>
+	</para>
+
+	<para>
+	  Locate the file $CONTAINER_ROOT/$BOS/conf/server.xml, and configure the port
+	  numbers the server will be listening to.  The following shows the
+	  changes from the default setup:
+	</para>
+	<programlisting>
+	  &lt;Server port="58005" shutdown="SHUTDOWN"&gt;
+
+	  &lt;Connector port="58080" protocol="HTTP/1.1" 
+	  connectionTimeout="20000" 
+	  redirectPort="8443" /&gt;
+
+	  &lt;Connector port="58009" protocol="AJP/1.3" redirectPort="58443"
+	  tomcatAuthentication="false"/&gt;
+	</programlisting>
+      </section>
+
+      <section id="s.prod.bos.datasource">
+	<title>PostgreSQL Data Source Configuration</title>
+	<para>
+	  The default data source configuration uses the file based DBMS H2.
+	  To change this to PostgreSQL, locate $CATALINA_HOME/conf/context.xml
+	  and apply the following changes to this file:
+	</para>
+
+	<para>	
+	  Comment out default Resource tags (configured for use with H2)  with name
+	</para>
+
+	<para>
+	  <programlisting>
+	    "bonita/default/history" and
+	    "bonita/default/journal"
+	  </programlisting>
+	  and replace with the following resources:
+	  <programlisting>
+	    &lt;Resource name="bonita/default/history"  
+	    auth="Container"  
+	    type="javax.sql.DataSource" 
+	    maxActive="100"  
+	    minIdle="10"  
+	    maxWait="10000"  
+	    initialSize="1" 
+	    maxPoolSize="15" 
+	    minPoolSize="3"
+	    maxConnectionAge="0"
+	    maxIdleTime="1800"
+	    maxIdleTimeExcessConnections="120"
+	    idleConnectionTestPeriod="30"
+	    acquireIncrement="3"
+	    testConnectionOnCheckout="true"
+	    removeAbandoned="true" 
+	    logAbandoned="true" 
+	    username="bonita" 
+	    password="XXXXXXXXXXX"
+	    driverClassName="org.postgresql.Driver"
+	    url="jdbc:postgresql://localhost:5432/bonita_history?dontTrackOpenResources=true"/&gt;
+
+	    &lt;Resource name="bonita/default/journal"  
+	    auth="Container"  
+	    type="javax.sql.DataSource" 
+	    maxActive="100"  
+	    minIdle="10"  
+	    maxWait="10000"  
+	    initialSize="1" 
+	    maxPoolSize="15" 
+	    minPoolSize="3"
+	    maxConnectionAge="0"
+	    maxIdleTime="1800"
+	    maxIdleTimeExcessConnections="120"
+	    idleConnectionTestPeriod="30"
+	    acquireIncrement="3"
+	    testConnectionOnCheckout="true"
+	    removeAbandoned="true" 
+	    logAbandoned="true" 
+	    username="bonita" 
+	    password="bpm"
+	    driverClassName="org.postgresql.Driver" 
+	    url="jdbc:postgresql://localhost:5432/bonita_journal?dontTrackOpenResources=true"/&gt;
+	  </programlisting>
+	</para>
+      </section>
+
+      <section id="s.prod.bos.property-files">
+	<title>Changes to bonita server property files</title>
+	<para>
+	  Locate the directory $CATALINA_HOME/bonita/server/default.  In this
+	  directory, there are two property files, bonita-journal.properties,
+	  and bonita-history.properties that need changes in order to work
+	  with PostgreSQL.
+	</para>
+
+	<para>
+	  In bonita-journal.properties, apply the following patch:
+	</para>
+
+	<para>
+	  <programlisting>
+	    17c17
+	    &lt; hibernate.dialect                        org.hibernate.dialect.H2Dialect
+	    ---
+	    &gt; # hibernate.dialect                        org.hibernate.dialect.H2Dialect
+	    20c20,25
+	    &lt; bonita.hibernate.interceptor             org.ow2.bonita.env.interceptor.H2DescNullFirstInterceptor
+	    ---
+	    &gt; # bonita.hibernate.interceptor             org.ow2.bonita.env.interceptor.H2DescNullFirstInterceptor
+	    &gt; 
+	    &gt; # POSTGRESQL 
+	    &gt; hibernate.dialect org.hibernate.dialect.PostgreSQLDialect
+	    &gt; hibernate.connection.driver_class org.postgresql.Driver 
+	    &gt; hibernate.connection.url jdbc:postgresql://localhost:5432/bonita_history
+	  </programlisting>
+	</para>
+
+	<para>
+	  In bonita-history.properties, apply the following (actually same,
+	  except that bonita_journal is substituted with bonita_history) patch:
+	</para>
+	<para>
+	  <programlisting>
+	    17c17
+	    &lt; hibernate.dialect                        org.hibernate.dialect.H2Dialect
+	    ---
+	    &gt; # hibernate.dialect                        org.hibernate.dialect.H2Dialect
+	    20c20,25
+	    &lt; bonita.hibernate.interceptor             org.ow2.bonita.env.interceptor.H2DescNullFirstInterceptor
+	    ---
+	    &gt; # bonita.hibernate.interceptor             org.ow2.bonita.env.interceptor.H2DescNullFirstInterceptor
+	    &gt; 
+	    &gt; # POSTGRESQL 
+	    &gt; hibernate.dialect org.hibernate.dialect.PostgreSQLDialect
+	    &gt; hibernate.connection.driver_class org.postgresql.Driver 
+	    &gt; hibernate.connection.url jdbc:postgresql://localhost:5432/bonita_history
+	  </programlisting>
+	</para>
+      </section>
+
+      <section id="s.prod.bos.postgresql">
+	<title>PostgreSQL Configuration</title>
+	<para>
+	  Assuming there is a user 'postgres' on the system with all
+	  administrative rights on the PostgreSQL server: Change user to
+	  postgres and issue the the following commands:
+	</para>
+
+	<programlisting>
+	  createuser -D -S -P bonita
+	</programlisting>
+
+	<para>
+	  When prompted for the password, make sure it will match the config
+	  in <xref linkend="s.prod.bos.datasource"/>. 
+	  Then, create the following databases with the createdb command:
+	</para>
+
+	<programlisting>
+	  createdb -O bonita bonita_history
+	  createdb -O bonita bonita_journal
+	</programlisting>
+      </section>
+
+      <section id="s.prod.bos.jdbc-driver">
+	<title>Install PostgreSQL JDBC driver</title>
+	<para>
+	  Locate or download postgresql-9.1-901.jdbc4.jar or later and copy
+	  into $CONTAINER_ROOT/$BOS/lib
+	</para>
+      </section>
+
+      <section id="s.prod.bos.start">
+	<title>Start server</title>
+	<para>
+	  Now server is ready to be started by running
+	  <programlisting>
+	    $CONTAINER_ROOT/$BOS/bin/startup.sh
+	  </programlisting>
+	</para>
+      </section>
+    </section>
+
+    <section id="s.prod.hippo">
+      <title>Hippo content repository</title>
+      <!--
+	  <para>
+	  The Hippo content repository is automatically bootstrapped upon
+	  initialization to mirror the status of the git repository. In order
+	  to initialize the jcr repository with additional content, follow the
+	  following instructions:
+	  </para>
+      -->
+      <para>
+	For reasons that have to do with authentication and access control, we
+	use two containers with webapps which are replicas. This is further
+	explained in <xref linkend="s.prod.openam"/>. We first create these
+	two containers:
+	<programlisting>
+	  cd $CONTAINER_ROOT; tar zxvf apache-tomcat-6.0.36.tar.gz
+	  mv apache-tomcat-6.0.36 $ESERVICE
+	  cd $CONTAINER_ROOT; tar zxvf apache-tomcat-6.0.36.tar.gz
+	  mv apache-tomcat-6.0.36 $KSERVICE
+	</programlisting>
+      </para>
+
+      <para>
+	The next step is to prepare each of these containers according to the
+	following instructions:
+	<ulink
+	    url="http://www.onehippo.org/7_8/library/deployment/create-and-deploy-a-project-distribution.html">
+	  Create and deploy a project distribution, cf. the section
+	  <emphasis>Deploying your project to a Tomcat 6
+	  installation</emphasis>
+	</ulink>
+      </para>
+
+      <section id="s.prod.hippo.containers">
+	<title>Creation of ESERVICE and KSERVICE Containers</title>
+	<section id="s.prod.hippo.containers.eservice">
+	  <title>Creation of Container for ESERVICE</title>
+	  <para>
+	    Create a Tomcat instance for hosting the service ESERVICE in a
+	    subdirectory $ESERVICE of $CONTAINER_ROOT.
+	  </para>
+
+	  <para>
+	    Configure the port numbers of the server.  This is done in
+	    the file
+	    <programlisting>
+	      $CONTAINER_ROOT/$ESERVICE/conf/server.xml
+	    </programlisting>
+	    Apply the following changes from the default setup:
+	  </para>
+	  
+	  <programlisting>
+	    &lt;Server port="8005" shutdown="SHUTDOWN"&gt;
+	    
+	    &lt;Connector port="8080" protocol="HTTP/1.1" 
+	    connectionTimeout="20000" 
+	    redirectPort="8443" /&gt;
+	    
+	    &lt;Connector port="8009" protocol="AJP/1.3" redirectPort="8443"
+	    tomcatAuthentication="false"/&gt;
+	  </programlisting>
+	</section>
+
+	<section id="s.prod.hippo.containers.kservice">
+	  <title>Creation of Container for KSERVICE</title>
+	  <para>
+	    Create a Tomcat instance for hosting the service KSERVICE in a
+	    subdirectory $KSERVICE of $CONTAINER_ROOT
+	  </para>
+
+	  <para>
+	    Configure the port numbers of the server.  This is done in the
+	    file
+	    <programlisting>
+	      $CONTAINER_ROOT/$KSERVICE/conf/server.xml
+	    </programlisting>
+	    Apply the following changes from the default setup:
+	  </para>
+	  
+	  <programlisting>
+	    &lt;Server port="38005" shutdown="SHUTDOWN"&gt;
+	    
+	    &lt;Connector port="38080" protocol="HTTP/1.1" 
+	    connectionTimeout="20000" 
+	    redirectPort="38443" /&gt;
+	    
+	    &lt;Connector port="38009" protocol="AJP/1.3" redirectPort="38443"
+	    tomcatAuthentication="false"/&gt;
+	  </programlisting>
+	</section>
+      </section>
+    </section>
+
+    <section id="s.prod.orbeon">
+      <title>Installation and Configuration of the Orbeon Forms Engine</title>
+      <para>
+	The Orbeon webapp is replicated into both the $ESERVICE and $KSERVICE
+	containers.  The following steps describes how to install and
+	configure the forms engine(s) with a common eXist-db as back-end.
+      </para>
+
+      <section id="s.prod.orbeon.preparation">
+	<title>Preparation and Installation in Containers</title>
+
+	<para>
+	  Perform the base install of Orbeon Forms as explained in the <ulink
+	  url="http://wiki.orbeon.com/forms/doc/developer-guide/admin/installing">Orbeon
+	  Forms Wiki</ulink>.  Perform the initial checks and preparations as
+	  described in that document and proceed to the section for installing
+	  on Apache Tomcat.
+	</para>
+
+	<para>
+	  Unzip the downloaded file orbeon-&lt;version&gt;-CE.zip to a
+	  directory of choice, which creates a directory
+	  orbeon-&lt;version&gt;-CE/. The base installation consists
+	  essentially of extracting the file orbeon.war from this directory
+	  into the directories $CONTAINER_ROOT/$ESERVICE/webapps, and
+	  $CONTAINER_ROOT/$KSERVICE/webapps, and then to configure them.  The
+	  result is a directory named 'orbeon' in both of the containers
+	  ESERVICE and KSERVICE: 
+	  <programlisting>
+	    $CONTAINER_ROOT/$ESERVICE/webapps/orbeon
+	    $CONTAINER_ROOT/$KSERVICE/webapps/orbeon
+	  </programlisting>
+	</para>
+      </section>
+
+      <section id="s.prod.orbeon.config">
+	<title>Configuration of the webapps</title>
+
+	<para>
+	  Configuring Orbeon consists of defining or overriding configuration
+	  properties according to <ulink
+	  url="http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties">the
+	  section on configuration properties</ulink> in the Orbeon Forms
+	  Developer's Guide. The followin description applies to both of the
+	  orbeon webapps in ESERVICE and KSERVICE.
+	</para>
+
+	<para>
+	  The overridden properties should be put in a file
+	  <filename>properties-local.xml</filename>, in the directory
+	  $ESERVICE/webapps/orbeon/WEB-INF/resources/config/ and
+	  $KSERVICE/webapps/orbeon/WEB-INF/resources/config/ respectively.
+	  These directories contain a template for this file with the name
+	  <filename>properties-local.xml.template</filename>, which as a
+	  starting point should be copied to the file
+	  <filename>properties-local.xml</filename> before further
+	  customization.
+	</para>
+
+	<para>
+	  The following listing is an example
+	  <filename>properties-local.xml</filename>.  The properties in this
+	  file are explained, where not obvious, in a comment immediately
+	  preceding the property.
+	</para>
+
+	<programlisting>
+	  &lt;!--
+	  This file, properties-local.xml is created from an empty template,
+	  properties-local.xml.template. We have followed the instructions in:
+
+	  Consult
+	  http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties
+	  to customize this file.
+
+	  For more information on the form runner config properties, consult:
+	  http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties/configuration-properties-form-runner
+	  --&gt;
+
+	  &lt;properties xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	  xmlns:oxf="http://www.orbeon.com/oxf/processors"&gt;
+
+	  &lt;property as="xs:string" name="oxf.fr.default-language.*.*" value="sv"/&gt;
+
+	  &lt;-- no css, use css from other sources --&gt;
+	  &lt;property as="xs:string"  name="oxf.fr.css.uri.*.*"
+	  value=""/&gt;
+
+	  &lt;!-- 
+	  Connecting to eXist-db. The following config implies:
+	  
+	  The eXist-db user is 'orbeon' and the password is 'orb' (NB! protect this
+	  file for unauthorized read access).
+	  The servlet container is deployed on port 48080 on the local machine
+	  The eXist-db WAR is deployed under path /exist
+	  The Form Runner documents are stored under collection /db/orbeon-pe/fr
+
+	  For configuration of the eXist-db database itself, consult
+	  http://wiki.orbeon.com/forms/doc/developer-guide/exist-configuration
+	  --&gt;
+	  &lt;property as="xs:anyURI"
+	  name="oxf.fr.persistence.service.exist.uri"
+	  value="http://orbeon:orb@localhost:48080/exist/rest/db/orbeon-pe/fr"/&gt;
+
+	  &lt;!-- no default logo by setting value to empty string --&gt;
+	  &lt;property as="xs:anyURI" name="oxf.fr.default-logo.uri.*.*" value=""/&gt;
+
+	  &lt;!-- false -&gt; do not show the Orbeon Forms version at the bottom --&gt;
+	  &lt;property as="xs:boolean" name="oxf.fr.version.*.*" value="false"/&gt;
+
+	  &lt;!-- 
+	  Which buttons to show on the detail page (cf. 
+	  http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties/configuration-properties-form-runner#TOC-Buttons-on-the-detail-page )
+	  --&gt;
+	  &lt;property as="xs:string"  name="oxf.fr.detail.buttons.*.*" value="clear save submit"/&gt;
+
+	  &lt;!--
+	  Cf.:
+	  http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties/configuration-properties-form-runner#TOC-View-page
+	  --&gt;
+	  &lt;property as="xs:string"  name="oxf.fr.detail.buttons.view.*.*" value="pdf"/&gt;
+
+	  &lt;property as="xs:string"  name="oxf.fr.detail.submit.buttons.*.*" value="go"/&gt;
+
+	  &lt;!--
+	  The uri of the landing page (result of 'go' action above). The value of
+	  the property is an XPath expression evaluated in the context of the form
+	  instance. This allows you both to have a "dynamic" URI (which depends on
+	  the initial data or data entered by users) or a "static" URI in the form
+	  of a URI between single quote in the XPath expression
+	  --&gt;
+	  &lt;property as="xs:string"
+	  name="oxf.fr.detail.submit.go.uri-xpath.*.*" 
+	  value="concat('view/',xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+	  &lt;property as="xs:string"
+	  name="oxf.fr.detail.submit.go.uri-xpath.BMTest.BMTestForm" 
+	  value="concat('http://eservices.malmo.se/site/bonita/start/miljo/anmalan-ansokan-yrkesmassig-anvandning-av-bekampningsmedel/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+	  &lt;!--
+	  The uri of the landing page (result of 'go' action above). The value of
+	  the property is an XPath expression evaluated in the context of the form
+	  instance. This allows you both to have a "dynamic" URI (which depends on
+	  the initial data or data entered by users) or a "static" URI in the form
+	  of a URI between single quote in the XPath expression
+	  --&gt;
+
+	  &lt;property as="xs:string"
+	  name="oxf.fr.detail.submit.go.uri-xpath.malmo.*" 
+	  value="concat('http://eservices.malmo.se/site/public/mycases/startforms/miljo/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+	  &lt;property as="xs:string" 
+	  name="oxf.fr.detail.submit.go.uri-xpath.start.*" 
+	  value="concat('http://eservices.malmo.se/site/public/mycases/startforms/start/', xxforms:instance('fr-parameters-instance')/form, '/confirm?docId=',xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+	  &lt;property as="xs:string"  
+	  name="oxf.fr.detail.submit.go.uri-xpath.Demo.*" 
+	  value="concat('http://eservices.malmo.se/site/public/mycases/form/confirm?docId=', xxforms:instance('fr-parameters-instance')/document)"/&gt;
+
+	  &lt;property as="xs:string"
+	  name="oxf.fr.resource.*.*.sv.detail.labels.submit-document"
+	  value="Skicka"/&gt;
+
+	  &lt;property as="xs:string"
+	  name="oxf.fr.resource.*.*.sv.detail.labels.clear-document"
+	  value="Rensa"/&gt;
+
+	  &lt;property as="xs:string"
+	  name="oxf.fr.resource.*.*.sv.detail.labels.save-document"
+	  value="Spara"/&gt;
+
+	  &lt;property as="xs:string"
+	  name="oxf.fr.resource.*.*.en.detail.labels.submit-document"
+	  value="Send"/&gt;
+
+	  &lt;property as="xs:string"
+	  name="oxf.fr.resource.*.*.en.detail.labels.clear-document"
+	  value="Clear"/&gt;
+
+	  &lt;property as="xs:string"
+	  name="oxf.fr.resource.*.*.en.detail.labels.save-document"
+	  value="Save"/&gt;
+
+	  &lt;property as="xs:boolean" name="oxf.fr.noscript-link.*.*" value="false"/&gt;
+	  &lt;/properties&gt;
+	</programlisting>
+      </section>
+
+      <section id="s.prod.orbeon.start">
+	<title>Start KSERVICE and ESERVICE servers</title>
+
+	<para>
+	  Now the servers are ready to be started by running
+	  <programlisting>
+	    $CONTAINER_ROOT/$ESERVICE/bin/startup.sh
+	    $CONTAINER_ROOT/$KSERVICE/bin/startup.sh
+	  </programlisting>
+	</para>
+      </section>
+    </section>
+
+    <section id="s.prod.existdb">
+      <title>Installation and Configuration of eXist-db</title>
+      <para>
+	We need to configure eXist-db for use with Orbeon. This is described
+	in more detail in: <ulink
+	url="http://wiki.orbeon.com/forms/doc/developer-guide/exist-configuration">instructions</ulink>
+	in the Orbeon Forms Developer's Guide.  The steps are:
+      </para>
+
+      <section id="s.prod.existdb.container">
+	<title>Creation of Container for eXist-db</title>
+	<para>
+	  Create a Tomcat instance for hosting eXist-db in a subdirectory of
+	  $CONTAINER_ROOT, (e.g. /opt/inherit-platform/orbeon-tomcat-6.0.36/),
+	  which we will call EXIST.
+	</para>
+
+	<para>
+	  Configure the port number of the server to 48080.  This is done in
+	  the file
+	  <programlisting>
+	    $CONTAINER_ROOT/$EXIST/conf/server.xml
+	  </programlisting>
+	  Apply the following changes from the default setup:
+	</para>
+	  
+	<programlisting>
+	  &lt;Server port="48005" shutdown="SHUTDOWN"&gt;
+	  
+	  &lt;Connector port="48080" protocol="HTTP/1.1" 
+	  connectionTimeout="20000" 
+	  redirectPort="8443" /&gt;
+	  
+	  &lt;Connector port="48009" protocol="AJP/1.3" redirectPort="48443"
+	  tomcatAuthentication="false"/&gt;
+	</programlisting>
+      </section>
+
+      <section id="s.prod.existdb.installation">
+	<title>Deployment of the exist webapp to the container</title>
+
+	<itemizedlist>
+
+	  <listitem>
+	    <para>
+	      Build the exist.war according to the <ulink
+	      url="http://wiki.orbeon.com/forms/doc/developer-guide/exist-configuration">instructions</ulink>
+	    </para>
+	    <para>
+	      Extract the exist.war to $EXIST/webapps/exist
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Configure the exist webapp
+	    </para>
+	    <para>
+	      Locate the file $EXIST/webapps/exist/WEB-INF/web.xml
+	      and apply the change:
+	      <programlisting>
+		&lt;   &lt;url-pattern&gt;/rest/db/*&lt;/url-pattern&gt;
+		---
+		&gt;   &lt;url-pattern&gt;/rest/db/betterFORM/*&lt;/url-pattern&gt;
+	      </programlisting>
+	    </para>
+
+	    <para>
+	      Locate the file
+	      $EXIST/webapps/exist/WEB-INF/conf.xml and apply the changes:
+	      <programlisting>
+		&lt;   &lt;db-connection cacheSize="48M" collectionCache="24M" database="native" files="data" pageSize="4096" nodesBuffer="1000" doc-ids="default"&gt;
+		---
+		&gt;   &lt;db-connection cacheSize="48M" collectionCache="24M" database="native" files="/home/inherit/inherit-platform/exist-data" pageSize="4096" nodesBuffer="1000" doc-ids="default"&gt;
+		and
+		&lt;   &lt;recovery enabled="yes" group-commit="no" journal-dir="data" size="100M" sync-on-commit="no" force-restart="no" consistency-check="yes"/&gt;
+		---
+		&gt;   &lt;recovery enabled="yes" group-commit="no" journal-dir="/home/inherit/inherit-platform/exist-data" size="100M" sync-on-commit="no" force-restart="no" consistency-check="yes"/&gt;
+	      </programlisting>
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </section>
+
+      <section id="s.prod.existdb.start">
+	<title>Start server</title>
+
+	<para>
+	  Now server is ready to be started by running
+	  <programlisting>
+	    $EXIST/bin/startup.sh
+	  </programlisting>
+	</para>
+      </section>
+    </section>
+
+
+    <section id="s.prod.openam">
+      <title>
+	Installation and Configuration of OpenAM
+      </title>
+      <para>
+	...
+      </para>
+    </section>
+
+    <section id="s.prod.opendj">
+      <title>
+	Installation and Configuration of OpenDJ
+      </title>
+      <para>
+	The java based directory server OpenDJ (<xref
+	linkend="s.prereq-prod.opendj"/>) is used in the platform to
+	administer users and groups.
+      </para>
+
+      <section id="s.prod.opendj.download">
+	<title>
+	  Download of distribution .zip
+	</title>
+	<para>
+	  Unzip the opendj distribution .zip file: OpenDJ-2.5.0-xxx.zip
+	  into $CONTAINER_ROOT
+	  and create a symlink 'opendj' to the newly created directory:
+	  <programlisting>
+	    ln -s OpenDJ-2.5.0-xxx opendj
+	  </programlisting>
+	</para>
+      </section>
+
+      <section id="s.prod.opendj.config">
+	<title>
+	  Configuration and initial load
+	</title>
+	<para>
+	  Apply the following steps:
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Start new ssh session with X-forwarding enabled
+	    </para>
+
+	    <para>
+	      OpenDJ will be configured in a GUI on the client machine. Start an
+	      ssh session to the target machine X-forwarding:
+	      <programlisting>
+		ssh -X &lt;user&gt;@&lt;target machine&gt;
+	      </programlisting>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Setup the server.
+	      <programlisting>
+		cd opendj
+		./setup
+	      </programlisting>
+	    </para>
+
+	    <para>
+	      If not specified otherwise here, choose the default values.
+	    </para>
+
+	    <para>
+	      Issue the FQD of the machine.
+	      Leave default root user as is: cn="Directory Manager", and issue a
+	      new password.
+	    </para>
+
+	    <para>
+	      Give the following base dn:
+	      <programlisting>
+		ou=Organisation, ou=Malmo, dc=adm, dc=malmo, dc=se
+	      </programlisting>
+	    </para>
+
+	    <para>
+	      Choose to set up as standalone server, and leave database empty.
+	      For the rest, choose default configuration, and finish the setup.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>
+	      Go to the directory opendj/bin and start the control-panel.
+	      Choose ldif import and choose the ldif file provided with base
+	      data for the base dn ou=Organisation, ou=Malmo, dc=adm,
+	      dc=malmo, dc=se.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </section>
+
+      <section id="s.prod.opendj.start">
+	<title>
+	  Start the server
+	</title>
+	<para>
+	  <programlisting>
+	    cd opendj/bin
+	    ./start-ds
+	  </programlisting>
+	</para>
+      </section>
+    </section>
+
+    <section id="s.prod.build">
+      <title>Building the PAWAP Source Components</title>
+      <para>
+	We call the root directories of the source and target
+	BUILD_DIR and CONTAINER_ROOT respectively.
+      </para>
+      <section id="s.prod.checkout">
+	<title>Check out the source code</title>
+	<para>
+	  Go to $BUILD_DIR and check out the code:
+	</para>
+	<programlisting>
+	  cd $BUILD_DIR
+	  git clone https://github.com/malmostad/eservices-platform.git
+	</programlisting>
+      </section>
+
+      <section id="s.prod.build.dist">
+	<title>Build distribution WAR's from the Source</title>
+
+	<orderedlist>
+	  <listitem>
+	    <para>
+	      Build source, and create binary distribution:
+	    </para>
+	    <programlisting>
+	      cd $BUILD_DIR
+	      mvn clean install
+	      cd inherit-portal
+	      mvn -P dist
+	    </programlisting>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      <!-- deploy rest services to runtime -->
+	      Copy the REST services to the target directory:
+	    </para>
+	    <programlisting>
+	      cp $BUILD_DIR/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war \
+	      $CONTAINER_ROOT/BOS-5.6.1-Tomcat-6.0.33/webapps/
+	    </programlisting>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Extract the built snapshot to both the eservice and kservice directories:
+	    </para>
+
+	    <programlisting>
+	      cd ${CONTAINER_ROOT}/${ESERVICE}
+	      tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
+	      cd ${CONTAINER_ROOT}/${KSERVICE}
+	      tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz
+	    </programlisting>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Configure Orbeon according to <xref linkend="s.prod.orbeon"/> in
+	      each of the directories
+	    </para>
+	    <programlisting>
+	      ${CONTAINER_ROOT}/${ESERVICE} and ${CONTAINER_ROOT}/${KSERVICE}
+	    </programlisting>
+	    <para>
+	    </para>
+	  </listitem>
+	</orderedlist>
+      </section>
+
+      <section id="s.prod.build.depl-script">
+	<title>Deployment Script</title>
+	<para>
+	  The entire deployment process including the build operations
+	  described above is automated by means of a script, according to the
+	  following steps:
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Rebuild source
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Stop servlet containers
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Deploy built components on respective servers
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Restart servers
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+	<para>
+	  The  deployment script is located in
+	</para>
+	<programlisting>
+	  $BUILD_DIR/bin/deploy-inherit-platform.sh
+	</programlisting>
+      <para>
+	Before using the script, edit the script variables at the beginning of
+	the script, in order to conform to the
+	local installation directory names. An example is given below:
+      </para>
+      <programlisting>
+# ROOT of build directory
+#BUILD_DIR=${HOME}/workspace/inherit-platform
+BUILD_DIR=${HOME}/inherit-platform-gitclone/eservices-platform
+
+# ROOT of directory holding the j2ee containers
+CONTAINER_ROOT=${HOME}/inherit-platform
+
+# ROOT of Hippo jcr content repository
+CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
+
+# Name of container roots
+EXIST=orbeon-tomcat-6.0.36
+BOS=BOS-5.9-Tomcat-6.0.35
+ESERVICE=hippo-eservice-tomcat-6.0.36
+KSERVICE=hippo-kservice-tomcat-6.0.36
+
+ESERVICEPATCH=eservice.malmo.se
+KSERVICEPATCH=kservice.malmo.se
+
+EXIST_PORT=48080
+BOS_PORT=58080
+ESERVICE_PORT=8080
+KSERVICE_PORT=38080
+
+WITH_KSERVICES=true
+      </programlisting>
+      </section>
+
+      <section id="s.prod.build.postgresql">
+	<title>Prepare PostgreSQL for Inherit Platform</title>
+
+	<para>
+	  We need to create the database InheritPlatform, owned by the user
+	  inherit. As unix user postgres issue the the following;
+	</para>
+
+	<programlisting>
+	  createuser -D -A -P inherit
+	</programlisting>
+
+	<para>
+	  Supply the password of the user 'inherit' upon prompt from this
+	  command.  In the next step, we initialize this database:
+	</para>
+
+	<programlisting>
+	  createdb -O inherit InheritPlatform
+	  cd inherit-service/inherit-taskform-engine
+	  mvn exec:java -P standalone
+	</programlisting>
+
+	<para>
+	  In order to grant access to this database, create a file:
+	  <programlisting>
+	  /usr/local/etc/inherit/platform-db-connect.properties
+	  </programlisting>
+	  Make sure the containing directory and the file itself are owned by
+	  inherit.users, and is read/writeable by this user only.
+	</para>
+
+	<para>
+	  Add the following entries to
+	  <programlisting>
+	  /usr/local/etc/inherit/platform-db-connect.properties
+	  </programlisting>
+	  with the password given in the previous command:
+	</para>
+
+	<programlisting>
+	  hibernate.connection.username=inherit
+	  hibernate.connection.password=XXXX
+	</programlisting>
+      </section>
+    </section>
+
+    <section id="s.prod.apache-http">
+      <title>Configure Apache HTTP Server as Reverse Proxy</title>
+      <!-- TODO elaborate on this (ROL 2013-09-04) -->
+      <para>
+	This task consists of mapping URL-patterns on the standard (http and
+	https) ports to the the various ports of the container
+	services. We create the following apache config files
+      </para>
+
+      <programlisting>
+	/etc/apache2/sites-available/default-ssl
+	/etc/apache2/sites-available/eservice.malmo.se
+	/etc/apache2/sites-available/kservice.malmo.se
+      </programlisting>
+
+      <para>
+	An example illustrates the port mapping:
+      </para>
+      <para>
+      The configuration pattern for the port mapping is given below Edit these files to conform to the local setup.
+      </para>
+
+      <programlisting>
+      &lt;VirtualHost _default_:443&gt;
+         .
+         .
+         .
+         ProxyRequests Off
+         ProxyPass /bonita/ ajp://localhost:58009/bonita/
+         ProxyPassReverse /bonita/ ajp://localhost:58009/bonita/ 
+         &lt;Proxy /bonita/&gt;
+             Order Deny,Allow
+             Allow from All
+         &lt;/Proxy&gt;
+         .
+         .
+         .
+      </programlisting>
+
+
+      <para>
+	Run the folling commands as root user in order to activate the
+	site config:
+      </para>
+
+      <programlisting>
+	# activate the sites
+	a2ensite &lt;site-name&gt;...
+	# reload apache configuration
+	service apache2 reload
+      </programlisting>
+    </section>
+  </section>
+
+  <section id="s.dev-env">
+    <title>Deployment of Development Environment</title>
+    <para>
+      This section describes how to set up an environment ready for
+      development.  It consists mainly of the same steps as for a production
+      environment:
+    </para>
+
+    <itemizedlist>
+      <listitem>
+	<para>
+	  Installation and configuration of run time environment and
+	  development tools. Cf. <xref linkend="s.prereq-prod"/> and <xref
+	  linkend="s.prereq-dev"/>
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Installation and configuration of the Process Engine, cf. <xref
+	  linkend="s.prod.bos"/>
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Installation and coonfiguration of the Orbeon Forms Engine, cf.
+	  <xref linkend="s.prod.orbeon"/>
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Hippo CMS installation, and bootstrap of repository, cf.
+	  <xref linkend="s.prod.hippo"/>
+	</para>
+      </listitem>
+
+      <listitem>
+	<para>
+	  Check out and installation of source code, cd. <xref linkend="s.prod.build"/>
+	</para>
+
+	<para>
+	  Assuming that the Eclipse workspace resides in $HOME/workspace, go to
+	  that  directory and check out the code.
+	</para>
+      </listitem>
+    </itemizedlist>
+
+<!--
+ The additions and differences are outlined in the next
+      section.
+-->
+
+    <section id="s.import.eclipse">
+      <title>Import project to Eclipse</title>
+      <para>
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Start Eclipse and choose menu "File->Import...".
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Select "Maven->Existing Maven Projects" and click next.
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Select root directory "inherit-platform" and finish import.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </para>
+    </section>
+
+    <section id="s.build_inherit.platform">
+      <title>Build PAWAP</title>
+      <para>
+	The previous step created a directory, inherit-platform, relative to
+	the Eclipse workspace ($HOME/workspace). Issue the following commands:
+      </para>
+
+      <programlisting>
+	cd inherit-platform
+	mvn clean install
+      </programlisting>
+
+      <para>
+	The previous step built the platform. We use a container wrapping tool
+	Cargo to run this code in a sandbox, without further deployment. In
+	order to run PAWAP in the development environment,  issue
+	the following Maven command:
+      </para>
+
+      <programlisting>
+	mvn -P cargo.run
+      </programlisting>
+    </section>
+  </section>
+</article>
