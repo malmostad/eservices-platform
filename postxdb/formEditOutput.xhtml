@@ -1,0 +1,1000 @@
+<?xml version="1.0" encoding="UTF-8"?><xhtml:html xmlns:xxi="http://orbeon.org/oxf/xml/xinclude" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:xforms="http://www.w3.org/2002/xforms" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:saxon="http://saxon.sf.net/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:exforms="http://www.exforms.org/exf/1-0" xmlns:sql="http://orbeon.org/oxf/xml/sql" xmlns:fr="http://orbeon.org/oxf/xml/form-runner" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xxforms="http://orbeon.org/oxf/xml/xforms" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <xhtml:head>
+        <xhtml:title>Rescue Application </xhtml:title>
+        <xforms:model id="fr-form-model">
+            <xforms:instance id="fr-form-instance">
+                <form>
+                    <section-1>
+                        <control-1>För- och efternamn</control-1>
+                        <control-2 filename="" mediatype="" size=""></control-2>
+                    </section-1>
+                </form>
+            </xforms:instance>
+            <xforms:bind id="fr-form-binds" nodeset="instance('fr-form-instance')">
+                <xforms:bind id="section-1-bind" nodeset="section-1">
+                    <xforms:bind id="control-1-bind" nodeset="control-1" name="control-1"></xforms:bind>
+                    <xforms:bind id="control-2-bind" name="control-2" nodeset="control-2" type="xs:anyURI"></xforms:bind>
+                </xforms:bind>
+            </xforms:bind>
+            <xforms:instance id="fr-form-metadata" xxforms:readonly="true">
+                <metadata>
+                    <application-name>submarine</application-name>
+                    <form-name>rescue</form-name>
+                    <title xml:lang="sv">Rescue Application </title>
+                    <description xml:lang="sv">Fill in this form for submarine rescue action. Application is promptly processed the next day. In most cases. Obviously not during bank holidays.</description>
+                    <author></author>
+                    <logo filename="soder-logo-100316-final.png" mediatype="image/png" size="18756">/fr/service/exist/crud/orbeon/builder/data/277f56f04a9dc32b3cc316843a5414fb/75b304166dc3354af84f8e6bad327f6f.png</logo>
+                </metadata>
+            </xforms:instance>
+            <xforms:instance id="fr-form-attachments">
+                <attachments>
+                    <css filename="" mediatype="text/css" size=""></css>
+                    <pdf filename="" mediatype="application/pdf" size=""></pdf>
+                </attachments>
+            </xforms:instance>
+            <xforms:instance id="fr-form-resources" xxforms:readonly="false">
+                <resources>
+                    <resource xml:lang="en">
+                        <section-1>
+                            <label>Applicant</label>
+                            <help></help>
+                        </section-1>
+                        <control-1>
+                            <label>Namn</label>
+                            <hint></hint>
+                            <help></help>
+                            <alert></alert>
+                        </control-1>
+                        <control-2>
+                            <label>Snygg bild på mig</label>
+                            <hint></hint>
+                            <help></help>
+                            <alert></alert>
+                        </control-2>
+                    </resource>
+                </resources>
+            </xforms:instance>
+            <xforms:instance xxforms:exclude-result-prefixes="#all" id="fr-service-request-instance">
+                <request></request>
+            </xforms:instance>
+            <xforms:instance xxforms:exclude-result-prefixes="#all" id="fr-service-response-instance">
+                <response></response>
+            </xforms:instance>
+        </xforms:model>
+        <xbl:xbl xmlns:xbl="http://www.w3.org/ns/xbl" xmlns:fb="http://orbeon.org/oxf/xml/form-builder" xmlns:pipeline="java:org.orbeon.oxf.processor.pipeline.PipelineFunctionLibrary">
+            <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                <display-name lang="en">Text Controls</display-name>
+                <display-name lang="fr">Contrôles texte</display-name>
+                <display-name lang="ru">Элементы ввода текста</display-name>
+            </metadata>
+            <xbl:binding xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:exf="http://www.exforms.org/exf/1-0" id="fr-inplace-input-binding" element="fr|inplace-input">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">In-place Input</display-name>
+                    <display-name lang="fr">Entrée en place</display-name>
+                    <display-name lang="ru">Редактируемый текст</display-name>
+                    <icon lang="en">
+                        <small-icon>/forms/orbeon/builder/images/input.png</small-icon>
+                        <large-icon>/forms/orbeon/builder/images/input.png</large-icon>
+                    </icon>
+                    <template>
+                        <fr:inplace-input>
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref=""></xforms:alert>
+                        </fr:inplace-input>
+                    </template>
+                </metadata>
+                <xbl:resources>
+                    <xbl:style>
+                .xbl-fr-inplace-input { display: -moz-inline-box; display: inline-block; *zoom: 1; *display: inline } /* IE 7 hacks */
+                .xbl-fr-inplace-input .fr-inplace-content:hover .xforms-output { background-color: #FFFF88 }
+                .xbl-fr-inplace-input .xforms-input input { background-color: #FFFF88; background-image: none; border: none }
+                .xbl-fr-inplace-input .fr-inplace-buttons { display: block; margin-top:0.5em }
+                .xbl-fr-inplace-input .fr-inplace-buttons .xforms-control { display: inline }
+                .xbl-fr-inplace-input .fr-inplace-hint { font-style: italic }
+
+                .fr-grid-content .xbl-fr-inplace-input { width: 100% }
+            </xbl:style>
+                </xbl:resources>
+                <xbl:implementation>
+                    <xforms:model id="fr-inplace-model">
+                        <xforms:instance id="fr-inplace-instance">
+                            <value></value>
+                        </xforms:instance>
+                    </xforms:model>
+                </xbl:implementation>
+                <xbl:template xxbl:transform="oxf:xslt">
+                    <xsl:transform version="2.0">
+                        <xsl:template match="/*">
+                            <xforms:switch xxbl:scope="outer" xbl:attr="model context ref bind">
+                                <xsl:attribute select="string-join(('fr-component-group', @class), ' ')" name="class"></xsl:attribute>
+                                <xbl:content includes="xforms|label, xforms|alert, xforms|help"></xbl:content>
+                                <xxforms:variable xxbl:scope="inner" name="result" as="node()?">
+                                    <xxforms:sequence xxbl:scope="outer" select="."></xxforms:sequence>
+                                </xxforms:variable>
+                                <xforms:case id="fr-inplace-view" xxbl:scope="inner">
+                                    <xhtml:span class="fr-inplace-content fr-inplace-view">
+                                        <xforms:output ref="." xxbl:scope="outer" xbl:attr="navindex navindex=tabindex">
+                                            <xsl:if test="xforms:hint">
+                                                <xsl:attribute name="class">{for $value in . return
+                                                                        if (normalize-space($value) = '' and not(exf:readonly($value)))
+                                                                          then 'fr-inplace-hint' else ''}</xsl:attribute>
+                                            </xsl:if>
+                                            <xsl:choose>
+                                                <xsl:when test="xforms:hint">
+                                                    <xsl:attribute select="concat('for $value in .                                                                            return if (normalize-space($value) = '''' and not(exf:readonly($value)))                                                                                   then concat(''['', ', if (xforms:hint/@ref) then xforms:hint/@ref else concat('''', xforms:hint, ''''), ', '']'')                                                                                   else $value')" name="value"></xsl:attribute>
+                                                </xsl:when>
+                                                <xsl:otherwise>
+                                                    <xsl:attribute select="'.'" name="value"></xsl:attribute>
+                                                </xsl:otherwise>
+                                            </xsl:choose>
+                                        </xforms:output>
+                                    </xhtml:span>
+                                    <xforms:action if="not(exf:readonly($result))" ev:event="DOMActivate">
+                                        <xforms:setvalue ref="instance('fr-inplace-instance')" value="$result"></xforms:setvalue>
+                                        <xforms:toggle case="fr-inplace-edit"></xforms:toggle>
+                                        <xforms:setfocus control="fr-inplace-input"></xforms:setfocus>
+                                    </xforms:action>
+                                </xforms:case>
+                                <xforms:case id="fr-inplace-edit" xxbl:scope="inner">
+                                    <xforms:group id="fr-inplace-input-edit-group" ref=".[not(exf:readonly($result))]" model="fr-inplace-model" class="fr-inplace-content fr-inplace-edit">
+                                        <xforms:input id="fr-inplace-input" ref="." xbl:attr="navindex navindex=tabindex incremental">
+                                            <xforms:action ev:event="DOMActivate">
+                                                <xforms:setvalue ref="$result" value="context()"></xforms:setvalue>
+                                            </xforms:action>
+                                        </xforms:input>
+                                        <xhtml:span class="fr-inplace-buttons">
+                                            <fr:button class="fr-inplace-rename">
+                                                <xforms:label>Apply</xforms:label>
+                                                <xforms:action ev:event="DOMActivate">
+                                                    <xforms:setvalue ref="$result" value="context()"></xforms:setvalue>
+                                                </xforms:action>
+                                            </fr:button>
+                                    or
+                                    <xforms:trigger appearance="minimal" class="fr-inplace-cancel">
+                                                <xforms:label>Cancel</xforms:label>
+                                            </xforms:trigger>
+                                        </xhtml:span>
+                                        <xforms:action ev:event="DOMActivate">
+                                            <xforms:setvalue ref="."></xforms:setvalue>
+                                            <xforms:toggle case="fr-inplace-view"></xforms:toggle>
+                                        </xforms:action>
+                                    </xforms:group>
+                                </xforms:case>
+                            </xforms:switch>
+                        </xsl:template>
+                    </xsl:transform>
+                </xbl:template>
+            </xbl:binding>
+        </xbl:xbl>
+        <xbl:xbl xmlns:xbl="http://www.w3.org/ns/xbl" xmlns:fb="http://orbeon.org/oxf/xml/form-builder" xmlns:pipeline="java:org.orbeon.oxf.processor.pipeline.PipelineFunctionLibrary">
+            <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                <display-name lang="en">Typed Controls</display-name>
+                <display-name lang="fr">Contrôles typés</display-name>
+                <display-name lang="ru">Типизированные элементы</display-name>
+            </metadata>
+            <xbl:binding xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" id="fr-image-attachment" element="fr|image-attachment">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">Image Attachment</display-name>
+                    <display-name lang="fr">Image jointe</display-name>
+                    <display-name lang="ru">Загрузка изображения</display-name>
+                    <icon lang="en">
+                        <small-icon>/apps/fr/style/images/silk/picture.png</small-icon>
+                        <large-icon>/apps/fr/style/images/silk/picture.png</large-icon>
+                    </icon>
+                    <datatype>xs:anyURI</datatype>
+                    <template>
+                        <fr:image-attachment id="" ref="" class="fr-attachment">
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref="$fr-resources/detail/labels/alert"></xforms:alert>
+                            <xforms:filename ref="@filename"></xforms:filename>
+                            <xforms:mediatype ref="@mediatype"></xforms:mediatype>
+                            <xxforms:size ref="@size"></xxforms:size>
+                        </fr:image-attachment>
+                    </template>
+                </metadata>
+                <xbl:template>
+                    <xforms:group appearance="xxforms:internal" xxbl:scope="outer" xbl:attr="model context ref bind">
+                        <xforms:upload ref=".">
+                            <xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert,xforms|filename,xforms|mediatype,xxforms:size"></xbl:content>
+                        </xforms:upload>
+                        <xforms:output ref=".[normalize-space()]" mediatype="image/*"></xforms:output>
+                    </xforms:group>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:binding xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" id="fr-attachment" element="fr|attachment">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">File Attachment</display-name>
+                    <display-name lang="fr">Fichier joint</display-name>
+                    <display-name lang="ru">Загрузка файла</display-name>
+                    <icon lang="en">
+                        <small-icon>/apps/fr/style/images/silk/attach.png</small-icon>
+                        <large-icon>/apps/fr/style/images/silk/attach.png</large-icon>
+                    </icon>
+                    <datatype>xs:anyURI</datatype>
+                    <template>
+                        <fr:attachment id="" ref="" class="fr-attachment">
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref="$fr-resources/detail/labels/alert"></xforms:alert>
+                            <xforms:filename ref="@filename"></xforms:filename>
+                            <xforms:mediatype ref="@mediatype"></xforms:mediatype>
+                            <xxforms:size ref="@size"></xxforms:size>
+                        </fr:attachment>
+                    </template>
+                </metadata>
+                <xbl:template>
+                    <xforms:group xxbl:scope="outer" class="fr-component-group" xbl:attr="model context ref bind">
+                        <xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert"></xbl:content>
+                        <xforms:upload ref=".">
+                            <xbl:content includes="xforms|filename,xforms|mediatype,xxforms:size"></xbl:content>
+                        </xforms:upload>
+                        <xforms:output ref=".[normalize-space()]" appearance="xxforms:download">
+                            <xforms:label>
+                                <xhtml:img alt="" src="/apps/fr/style/images/pixelmixer/down_16.png"></xhtml:img>
+                                <xhtml:span>Download</xhtml:span>
+                            </xforms:label>
+                            <xbl:content includes="xforms|filename,xforms|mediatype"></xbl:content>
+                        </xforms:output>
+                    </xforms:group>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:binding xmlns:xxf="http://orbeon.org/oxf/xml/xforms" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:exf="http://www.exforms.org/exf/1-0" id="fr-dropdown-date-binding" xxbl:container="span" element="fr|dropdown-date">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">Dropdown Date</display-name>
+                    <display-name lang="fr">Date avec menu</display-name>
+                    <display-name lang="ru">Дата выпадающим меню</display-name>
+                    <icon lang="en">
+                        <small-icon>/ops/images/xforms/calendar.png</small-icon>
+                        <large-icon>/ops/images/xforms/calendar.png</large-icon>
+                    </icon>
+                    <datatype>xforms:date</datatype>
+                    <template>
+                        <fr:dropdown-date>
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref=""></xforms:alert>
+                        </fr:dropdown-date>
+                    </template>
+                </metadata>
+                <xbl:resources>
+                    <xbl:style>
+                .xbl-fr-dropdown-date .fr-component-group select.xforms-select1-appearance-minimal,
+                    .xbl-fr-dropdown-date .fr-component-group span.xforms-select1-appearance-minimal select { width: auto }
+            </xbl:style>
+                </xbl:resources>
+                <xbl:implementation>
+                    <xf:model id="date-model">
+                        <xf:instance id="date-instance">
+                            <date>
+                                <year></year>
+                                <month></month>
+                                <day></day>
+                                <is-valid></is-valid>
+                                <is-readonly></is-readonly>
+                            </date>
+                        </xf:instance>
+                        <xf:bind nodeset="." readonly="is-readonly = 'true'"></xf:bind>
+                        <xf:instance id="years-itemset">
+                            <years></years>
+                        </xf:instance>
+                        <xf:instance id="months-itemset">
+                            <months></months>
+                        </xf:instance>
+                        <xf:instance id="days-itemset">
+                            <days></days>
+                        </xf:instance>
+                        <xf:action ev:event="xforms-model-construct-done">
+                            <xf:action xxf:iterate="(1970 to year-from-date(current-date()))">
+                                <xxf:variable select="." name="year" as="xs:string"></xxf:variable>
+                                <xf:insert origin="xxf:element('year', $year)" context="instance('years-itemset')"></xf:insert>
+                            </xf:action>
+                            <xf:action xxf:iterate="(1 to 12)">
+                                <xxf:variable select="." name="month" as="xs:string"></xxf:variable>
+                                <xf:insert nodeset="*" origin="xxf:element('month', $month)" context="instance('months-itemset')"></xf:insert>
+                            </xf:action>
+                            <xf:action xxf:iterate="(1 to 31)">
+                                <xxf:variable select="." name="day" as="xs:string"></xxf:variable>
+                                <xf:insert nodeset="*" origin="xxf:element('day', $day)" context="instance('days-itemset')"></xf:insert>
+                            </xf:action>
+                        </xf:action>
+                    </xf:model>
+                </xbl:implementation>
+                <xbl:template>
+                    <xf:group xxbl:scope="outer" xbl:attr="model context ref bind">
+                        <xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert"></xbl:content>
+                        <xf:group appearance="xxf:internal" xxbl:scope="inner">
+                            <xxf:variable name="binding" as="node()?">
+                                <xxf:sequence xxbl:scope="outer" select="."></xxf:sequence>
+                            </xxf:variable>
+                            <xxf:variable select="$binding/string()" name="value" as="xs:string">
+                                <xf:action ev:event="xforms-value-changed xforms-enabled">
+                                    <xf:action if="$binding castable as xs:date">
+                                        <xf:setvalue ref="instance('date-instance')/year" value="year-from-date($binding)"></xf:setvalue>
+                                        <xf:setvalue ref="instance('date-instance')/month" value="month-from-date($binding)"></xf:setvalue>
+                                        <xf:setvalue ref="instance('date-instance')/day" value="day-from-date($binding)"></xf:setvalue>
+                                    </xf:action>
+                                    <xf:action if="not($binding castable as xs:date) and normalize-space($binding) = ''">
+                                        <xf:setvalue ref="instance('date-instance')/year"></xf:setvalue>
+                                        <xf:setvalue ref="instance('date-instance')/month"></xf:setvalue>
+                                        <xf:setvalue ref="instance('date-instance')/day"></xf:setvalue>
+                                    </xf:action>
+                                    <xf:action if="not($binding castable as xs:date) and count(tokenize($binding, '-')) ge 3">
+                                        <xf:action xxf:iterate="tokenize($binding, '-')">
+                                            <xxf:variable select="position()" name="position" as="xs:integer"></xxf:variable>
+                                            <xf:setvalue ref="instance('date-instance')/*[$position]" value="if (context() castable as xs:integer) then xs:integer(context()) else ''"></xf:setvalue>
+                                        </xf:action>
+                                    </xf:action>
+                                </xf:action>
+                            </xxf:variable>
+                            <xxf:variable select="exf:readonly($binding)" name="readonly" as="xs:boolean">
+                                <xf:setvalue ref="instance('date-instance')/is-readonly" ev:event="xforms-enabled xforms-value-changed" value="exf:readonly($binding)"></xf:setvalue>
+                            </xxf:variable>
+                            <xf:group class="fr-component-group">
+                                <xf:group ref=".[not(is-readonly = 'true' and property('xxf:readonly-appearance') = 'static')]">
+                                    <xf:select1 ref="year" xbl:attr="navindex navindex=tabindex">
+                                        <xf:itemset nodeset=".[not(context() = instance('years-itemset')/year)]">
+                                            <xf:label>Year</xf:label>
+                                            <xf:value></xf:value>
+                                        </xf:itemset>
+                                        <xf:itemset nodeset="instance('years-itemset')/year">
+                                            <xf:label ref="."></xf:label>
+                                            <xf:value ref="."></xf:value>
+                                        </xf:itemset>
+                                    </xf:select1>
+                                    <xf:select1 ref="month">
+                                        <xf:itemset nodeset=".[not(context() = instance('months-itemset')/month)]">
+                                            <xf:label>Month</xf:label>
+                                            <xf:value></xf:value>
+                                        </xf:itemset>
+                                        <xf:itemset nodeset="instance('months-itemset')/month">
+                                            <xf:label ref="."></xf:label>
+                                            <xf:value ref="."></xf:value>
+                                        </xf:itemset>
+                                    </xf:select1>
+                                    <xf:select1 ref="day">
+                                        <xf:itemset nodeset=".[not(context() = instance('days-itemset')/day)]">
+                                            <xf:label>Day</xf:label>
+                                            <xf:value></xf:value>
+                                        </xf:itemset>
+                                        <xf:itemset nodeset="instance('days-itemset')/day">
+                                            <xf:label ref="."></xf:label>
+                                            <xf:value ref="."></xf:value>
+                                        </xf:itemset>
+                                    </xf:select1>
+                                    <xf:action ev:event="xforms-value-changed">
+                                        <xxf:variable select="normalize-space(string-join((year, month, day), ''))" name="c" as="xs:string"></xxf:variable>
+                                        <xf:action if="$c = ''">
+                                            <xf:setvalue ref="is-valid" value="false()"></xf:setvalue>
+                                            <xf:setvalue ref="$binding"></xf:setvalue>
+                                        </xf:action>
+                                        <xf:action if="$c != ''">
+                                            <xxf:variable select="if (year castable as xs:integer) then format-number(xs:integer(year), '0000') else '____'" name="y" as="xs:string"></xxf:variable>
+                                            <xxf:variable select="if (month castable as xs:integer) then format-number(xs:integer(month), '00') else '__'" name="m" as="xs:string"></xxf:variable>
+                                            <xxf:variable select="if (day castable as xs:integer) then format-number(xs:integer(day), '00') else '__'" name="d" as="xs:string"></xxf:variable>
+                                            <xxf:variable select="string-join(($y, $m, $d), '-')" name="date-string" as="xs:string"></xxf:variable>
+                                            <xf:setvalue ref="is-valid" value="$date-string castable as xs:date"></xf:setvalue>
+                                            <xf:setvalue ref="$binding" value="$date-string"></xf:setvalue>
+                                        </xf:action>
+                                    </xf:action>
+                                </xf:group>
+                                <xf:group ref=".[is-readonly = 'true' and property('xxf:readonly-appearance') = 'static']">
+                                    <xf:output ref="$binding"></xf:output>
+                                </xf:group>
+                            </xf:group>
+                            <xf:action ev:propagate="stop" ev:event="#all"></xf:action>
+                        </xf:group>
+                    </xf:group>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:binding xmlns:xxf="http://orbeon.org/oxf/xml/xforms" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:exf="http://www.exforms.org/exf/1-0" id="fr-fields-date-binding" element="fr|fields-date">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">Fields Date</display-name>
+                    <display-name lang="fr">Date avec champs</display-name>
+                    <display-name lang="ru">Дата: раздельные поля</display-name>
+                    <icon lang="en">
+                        <small-icon>/ops/images/xforms/calendar.png</small-icon>
+                        <large-icon>/ops/images/xforms/calendar.png</large-icon>
+                    </icon>
+                    <datatype>xforms:date</datatype>
+                    <template>
+                        <fr:fields-date>
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref=""></xforms:alert>
+                        </fr:fields-date>
+                    </template>
+                </metadata>
+                <xbl:resources>
+                    <xbl:style>
+                .xbl-fr-fields-date .xforms-control { display: inline; clear: none }
+                .xbl-fr-fields-date .xforms-group .fr-component-group img { vertical-align: bottom }
+
+                .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-2 input { width: 2em }
+                .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-4 input { width: 4em }
+                
+                #doc .fr-grid .fr-grid-td .fr-grid-content .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-2 input { width: 2em }
+                #doc .fr-grid .fr-grid-td .fr-grid-content .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-4 input { width: 4em }
+                #doc2 .fr-grid .fr-grid-td .fr-grid-content .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-2 input { width: 2em }
+                #doc2 .fr-grid .fr-grid-td .fr-grid-content .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-4 input { width: 4em }
+                #doc3 .fr-grid .fr-grid-td .fr-grid-content .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-2 input { width: 2em }
+                #doc3 .fr-grid .fr-grid-td .fr-grid-content .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-4 input { width: 4em }
+                #doc4 .fr-grid .fr-grid-td .fr-grid-content .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-2 input { width: 2em }
+                #doc4 .fr-grid .fr-grid-td .fr-grid-content .xbl-fr-fields-date .xforms-group .fr-component-group .fr-width-4 input { width: 4em }
+            </xbl:style>
+                </xbl:resources>
+                <xbl:implementation>
+                    <xf:model id="date-model">
+                        <xf:instance id="date-instance">
+                            <date>
+                                <year></year>
+                                <month></month>
+                                <day></day>
+                                <is-valid></is-valid>
+                                <is-readonly></is-readonly>
+                            </date>
+                        </xf:instance>
+                        <xf:bind nodeset="." constraint="is-valid = 'true'"></xf:bind>
+                        <xf:bind nodeset="." readonly="is-readonly = 'true'"></xf:bind>
+                    </xf:model>
+                </xbl:implementation>
+                <xbl:template>
+                    <xf:group xxbl:scope="outer" xbl:attr="model context ref bind">
+                        <xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert"></xbl:content>
+                        <xf:group appearance="xxf:internal" xxbl:scope="inner">
+                            <xxf:variable name="binding" as="node()?">
+                                <xxf:sequence xxbl:scope="outer" select="."></xxf:sequence>
+                            </xxf:variable>
+                            <xxf:variable select="$binding/string()" name="value" as="xs:string">
+                                <xf:action ev:event="xforms-value-changed xforms-enabled">
+                                    <xf:action if="$binding castable as xs:date">
+                                        <xf:setvalue ref="instance('date-instance')/year" value="year-from-date($binding)"></xf:setvalue>
+                                        <xf:setvalue ref="instance('date-instance')/month" value="month-from-date($binding)"></xf:setvalue>
+                                        <xf:setvalue ref="instance('date-instance')/day" value="day-from-date($binding)"></xf:setvalue>
+                                    </xf:action>
+                                    <xf:action if="not($binding castable as xs:date) and normalize-space($binding) = ''">
+                                        <xf:setvalue ref="instance('date-instance')/year"></xf:setvalue>
+                                        <xf:setvalue ref="instance('date-instance')/month"></xf:setvalue>
+                                        <xf:setvalue ref="instance('date-instance')/day"></xf:setvalue>
+                                    </xf:action>
+                                    <xf:action if="not($binding castable as xs:date) and count(tokenize($binding, '-')) ge 3">
+                                        <xf:action xxf:iterate="tokenize($binding, '-')">
+                                            <xxf:variable select="position()" name="position" as="xs:integer"></xxf:variable>
+                                            <xf:setvalue ref="instance('date-instance')/*[$position]" value="if (context() castable as xs:integer) then xs:integer(context()) else ''"></xf:setvalue>
+                                        </xf:action>
+                                    </xf:action>
+                                </xf:action>
+                            </xxf:variable>
+                            <xxf:variable select="exf:readonly($binding)" name="readonly" as="xs:boolean">
+                                <xf:setvalue ref="instance('date-instance')/is-readonly" ev:event="xforms-enabled xforms-value-changed" value="exf:readonly($binding)"></xf:setvalue>
+                            </xxf:variable>
+                            <xf:group class="fr-component-group">
+                                <xf:group ref=".[not(is-readonly = 'true' and property('xxf:readonly-appearance') = 'static')]">
+                                    <xf:input ref="month" class="fr-width-2" xbl:attr="navindex navindex=tabindex"></xf:input>
+                                    <xf:input ref="day" class="fr-width-2"></xf:input>
+                                    <xf:input ref="year" class="fr-width-4"></xf:input>
+                                </xf:group>
+                                <xf:action ev:event="xforms-value-changed">
+                                    <xxf:variable select="normalize-space(string-join((year, month, day), ''))" name="c" as="xs:string"></xxf:variable>
+                                    <xf:action if="$c = ''">
+                                        <xf:setvalue ref="is-valid" value="false()"></xf:setvalue>
+                                        <xf:setvalue ref="$binding"></xf:setvalue>
+                                    </xf:action>
+                                    <xf:action if="$c != ''">
+                                        <xxf:variable select="if (year castable as xs:integer) then format-number(xs:integer(year), '0000') else '____'" name="y" as="xs:string"></xxf:variable>
+                                        <xxf:variable select="if (month castable as xs:integer) then format-number(xs:integer(month), '00') else '__'" name="m" as="xs:string"></xxf:variable>
+                                        <xxf:variable select="if (day castable as xs:integer) then format-number(xs:integer(day), '00') else '__'" name="d" as="xs:string"></xxf:variable>
+                                        <xxf:variable select="string-join(($y, $m, $d), '-')" name="date-string" as="xs:string"></xxf:variable>
+                                        <xf:setvalue ref="is-valid" value="$date-string castable as xs:date"></xf:setvalue>
+                                        <xf:setvalue ref="$binding" value="$date-string"></xf:setvalue>
+                                    </xf:action>
+                                </xf:action>
+                                <xf:input ref="$binding" appearance="minimal"></xf:input>
+                            </xf:group>
+                            <xf:action ev:propagate="stop" ev:event="#all"></xf:action>
+                        </xf:group>
+                    </xf:group>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:binding xmlns:xxf="http://orbeon.org/oxf/xml/xforms" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:exf="http://www.exforms.org/exf/1-0" id="fr-date-picker" element="fr|date-picker">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">Date Picker</display-name>
+                    <display-name lang="fr">Sélecteur de date</display-name>
+                    <display-name lang="ru">Дата в строке</display-name>
+                    <icon lang="en">
+                        <small-icon>/apps/fr/style/images/silk/date.png</small-icon>
+                        <large-icon>/apps/fr/style/images/silk/date.png</large-icon>
+                    </icon>
+                    <datatype>xforms:date</datatype>
+                    <template>
+                        <fr:date-picker>
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref=""></xforms:alert>
+                        </fr:date-picker>
+                    </template>
+                </metadata>
+                <xbl:resources>
+                    <xbl:style>
+                .xbl-fr-date-picker .fr-component-group img { vertical-align: bottom }
+                .xbl-fr-date-picker .xforms-readonly .xforms-input { display: none }
+            </xbl:style>
+                </xbl:resources>
+                <xbl:template>
+                    <xf:group xxbl:scope="outer" class="fr-component-group" xbl:attr="model context ref bind">
+                        <xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert"></xbl:content>
+                        <xf:output ref="."></xf:output>
+                        <xf:input ref=".[not(exf:readonly() and property('xxf:readonly-appearance') = 'static')]" appearance="minimal"></xf:input>
+                    </xf:group>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:binding xmlns:xxf="http://orbeon.org/oxf/xml/xforms" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:xf="http://www.w3.org/2002/xforms" xmlns:exf="http://www.exforms.org/exf/1-0" id="fr-phone-binding" xxbl:container="span" element="fr|us-phone">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">US Phone Number</display-name>
+                    <display-name lang="fr">Téléphone US</display-name>
+                    <display-name lang="ru">Телефон в формате США</display-name>
+                    <icon lang="en">
+                        <small-icon>/apps/fr/style/images/silk/telephone.png</small-icon>
+                        <large-icon>/apps/fr/style/images/silk/telephone.png</large-icon>
+                    </icon>
+                    <datatype>xforms:nonNegativeInteger</datatype>
+                    <template>
+                        <fr:us-phone>
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref=""></xforms:alert>
+                        </fr:us-phone>
+                    </template>
+                </metadata>
+                <xbl:implementation>
+                    <xf:model id="number-model">
+                        <xf:instance id="number-instance">
+                            <number>
+                                <area></area>
+                                <local></local>
+                                <is-readonly></is-readonly>
+                            </number>
+                        </xf:instance>
+                        <xf:bind nodeset="area" constraint="for $i in xs:integer(.) return $i ge 100 and $i le 999" type="xs:integer"></xf:bind>
+                        <xf:bind nodeset="local" constraint="matches(normalize-space(), '^[0-9\s]*$') and string-length(translate(normalize-space(), ' ', '')) = 7"></xf:bind>
+                        <xf:bind nodeset="." readonly="is-readonly = 'true'"></xf:bind>
+                    </xf:model>
+                </xbl:implementation>
+                <xbl:template>
+                    <xf:group xxbl:scope="outer" xbl:attr="model context ref bind">
+                        <xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert"></xbl:content>
+                        <xf:group appearance="xxf:internal" xxbl:scope="inner">
+                            <xxf:variable name="binding" as="node()?">
+                                <xxf:sequence xxbl:scope="outer" select="."></xxf:sequence>
+                            </xxf:variable>
+                            <xxf:variable select="$binding/string()" name="value" as="xs:string">
+                                <xf:action if="$binding castable as xs:positiveInteger" ev:event="xforms-value-changed xforms-enabled">
+                                    <xf:setvalue ref="instance('number-instance')/area" value="substring($binding, 1, 3)"></xf:setvalue>
+                                    <xf:setvalue ref="instance('number-instance')/local" value="concat(substring($binding, 4, 3), ' ', substring($binding, 7, 4))"></xf:setvalue>
+                                </xf:action>
+                                <xf:action if="not(normalize-space($binding))" ev:event="xforms-value-changed xforms-enabled">
+                                    <xf:setvalue ref="instance('number-instance')/area"></xf:setvalue>
+                                    <xf:setvalue ref="instance('number-instance')/local"></xf:setvalue>
+                                </xf:action>
+                            </xxf:variable>
+                            <xxf:variable select="exf:readonly($binding)" name="readonly" as="xs:boolean">
+                                <xf:setvalue ref="instance('number-instance')/is-readonly" ev:event="xforms-enabled xforms-value-changed" value="exf:readonly($binding)"></xf:setvalue>
+                            </xxf:variable>
+                            <xf:group class="fr-component-group">
+                        
+                        (<xf:input ref="area" class="fr-us-phone-area fr-width-3em xforms-width-3em" xbl:attr="navindex navindex=tabindex"></xf:input>)
+                        <xf:input ref="local" class="fr-us-phone-local fr-width-7em xforms-width-7em"></xf:input>
+                                <xf:action ev:event="xforms-value-changed">
+                                    <xxf:variable select="translate(concat(area, local), ' ', '')" name="phone-string" as="xs:string"></xxf:variable>
+                                    <xxf:variable select="$phone-string castable as xs:positiveInteger and string-length($phone-string) = 10" name="is-valid-phone-string" as="xs:boolean"></xxf:variable>
+                                    <xf:setvalue ref="$binding" if="$is-valid-phone-string" value="$phone-string"></xf:setvalue>
+                                    <xf:setvalue ref="$binding" if="not($is-valid-phone-string)" value="if ($phone-string = '') then '' else 'INVALID_NUMBER'"></xf:setvalue>
+                                </xf:action>
+                            </xf:group>
+                            <xf:action ev:propagate="stop" ev:event="#all"></xf:action>
+                        </xf:group>
+                    </xf:group>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:binding xmlns:xxf="http://orbeon.org/oxf/xml/xforms" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:xf="http://www.w3.org/2002/xforms" id="fr-us-state-binding" xxbl:container="span" element="fr|us-state">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">US State</display-name>
+                    <display-name lang="fr">Etat US</display-name>
+                    <display-name lang="ru">Штат США</display-name>
+                    <icon lang="en">
+                        <small-icon>/apps/fr/style/images/silk/plugin.png</small-icon>
+                        <large-icon>/apps/fr/style/images/silk/plugin.png</large-icon>
+                    </icon>
+                    <datatype>xforms:string</datatype>
+                    <template>
+                        <fr:us-state>
+                            <xf:label ref=""></xf:label>
+                            <xf:hint ref=""></xf:hint>
+                            <xf:help ref=""></xf:help>
+                            <xf:alert ref=""></xf:alert>
+                        </fr:us-state>
+                    </template>
+                </metadata>
+                <xbl:implementation>
+                    <xf:model>
+                        <xf:instance xxf:cache="true" src="oxf:/xbl/orbeon/us-state/states.xml" xxf:readonly="true"></xf:instance>
+                    </xf:model>
+                </xbl:implementation>
+                <xbl:template>
+                    <xf:select1 appearance="minimal" xxbl:scope="outer" xbl:attr="model context ref bind appearance class">
+                        <xbl:content includes="xforms|label,xforms|help,xforms|hint,xforms|alert"></xbl:content>
+                        <xf:item>
+                            <xf:label></xf:label>
+                            <xf:value></xf:value>
+                        </xf:item>
+                        <xf:itemset ref="instance()/state" xxbl:scope="inner">
+                            <xf:label ref="@name"></xf:label>
+                            <xf:value ref="@abbreviation"></xf:value>
+                        </xf:itemset>
+                    </xf:select1>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:script xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:exf="http://www.exforms.org/exf/1-0" src="/xbl/orbeon/currency/currency.js"></xbl:script>
+            <xbl:binding xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:exf="http://www.exforms.org/exf/1-0" id="fr-currency" element="fr|currency">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">Dollars and Cents</display-name>
+                    <display-name lang="fr">Dollars et cents</display-name>
+                    <display-name lang="ru">Доллары и центы</display-name>
+                    <icon lang="en">
+                        <small-icon>/apps/fr/style/images/silk/money_dollar.png</small-icon>
+                        <large-icon>/apps/fr/style/images/silk/money_dollar.png</large-icon>
+                    </icon>
+                    <datatype>xforms:decimal</datatype>
+                    <template>
+                        <fr:currency>
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref=""></xforms:alert>
+                        </fr:currency>
+                    </template>
+                </metadata>
+                <xbl:resources>
+                    <xbl:style src="/xbl/orbeon/currency/currency.css"></xbl:style>
+                </xbl:resources>
+                <xbl:handlers>
+                    <xbl:handler defaultAction="cancel" event="xforms-focus" phase="target">
+                        <xxforms:script id="xf-sf">YAHOO.xbl.fr.Currency.instance(this).setfocus();</xxforms:script>
+                    </xbl:handler>
+                </xbl:handlers>
+                <xbl:template xxbl:transform="oxf:unsafe-xslt">
+                    <xsl:transform version="2.0">
+                        <xsl:import href="oxf:/oxf/xslt/utils/xbl.xsl"></xsl:import>
+                        <xsl:template match="/*">
+                            <xforms:group xxbl:scope="outer" class="{{if (. != '' and exf:required()) then 'xforms-required-filled' else ''}}" xbl:attr="model context ref bind">
+                                <xbl:content includes="xforms|label"></xbl:content>
+                                <xxforms:script ev:event="xforms-enabled" ev:target="#observer">YAHOO.xbl.fr.Currency.instance(this).init();</xxforms:script>
+                                <xxforms:script ev:event="xforms-disabled" ev:target="#observer">YAHOO.xbl.fr.Currency.instance(this).destroy();</xxforms:script>
+                                <xforms:group appearance="xxforms:internal" xxbl:scope="inner">
+                                    <xxforms:variable name="result" as="node()?">
+                                        <xxforms:sequence xxbl:scope="outer" select="."></xxforms:sequence>
+                                    </xxforms:variable>
+                                    <xforms:input id="currency-input" ref="$result" class="xbl-fr-currency-xforms-input fr-hidden">
+                                        <xxforms:script id="xf-ch" ev:event="xforms-value-changed xxforms-iteration-moved">YAHOO.xbl.fr.Currency.instance(this).update();</xxforms:script>
+                                        <xxforms:script id="xf-ro" ev:event="xforms-readonly">YAHOO.xbl.fr.Currency.instance(this).readonly();</xxforms:script>
+                                        <xxforms:script id="xf-rw" ev:event="xforms-readwrite">YAHOO.xbl.fr.Currency.instance(this).readwrite();</xxforms:script>
+                                    </xforms:input>
+                                    <xsl:copy-of select="xxbl:parameter(., 'prefix')"></xsl:copy-of>
+                                    <xsl:copy-of select="xxbl:parameter(., 'digits-after-decimal')"></xsl:copy-of>
+                                    <xhtml:input class="xbl-fr-currency-visible-input xbl-html-input" xbl:attr="tabindex tabindex=navindex"></xhtml:input>
+                                    <xforms:action ev:propagate="stop" ev:event="#all"></xforms:action>
+                                </xforms:group>
+                                <xbl:content includes="xforms|help,xforms|hint,xforms|alert"></xbl:content>
+                            </xforms:group>
+                        </xsl:template>
+                    </xsl:transform>
+                </xbl:template>
+            </xbl:binding>
+        </xbl:xbl>
+        <xbl:xbl xmlns:xbl="http://www.w3.org/ns/xbl" xmlns:fb="http://orbeon.org/oxf/xml/form-builder" xmlns:pipeline="java:org.orbeon.oxf.processor.pipeline.PipelineFunctionLibrary">
+            <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                <display-name lang="en">Selection Controls</display-name>
+                <display-name lang="fr">Contrôles de sélection</display-name>
+                <display-name lang="ru">Элементы выбора</display-name>
+            </metadata>
+            <xbl:binding xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:exf="http://www.exforms.org/exf/1-0" id="fr-link-select1-binding" element="fr|link-select1">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">Link Selector</display-name>
+                    <display-name lang="fr">Sélection avec liens</display-name>
+                    <display-name lang="ru">Выбор в виде ссылок</display-name>
+                    <icon lang="en">
+                        <small-icon>/apps/fr/style/images/silk/link.png</small-icon>
+                        <large-icon>/apps/fr/style/images/silk/link.png</large-icon>
+                    </icon>
+                    <template>
+                        <fr:link-select1>
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref=""></xforms:alert>
+                            <xforms:itemset nodeset="">
+                                <xforms:label ref="label"></xforms:label>
+                                <xforms:value ref="value"></xforms:value>
+                            </xforms:itemset>
+                        </fr:link-select1>
+                    </template>
+                </metadata>
+                <xbl:template xxbl:transform="oxf:xslt">
+                    <xforms:group xsl:version="2.0" xxbl:scope="outer" xbl:attr="model context ref bind">
+                        <xbl:content includes="fr|link-select1 &gt; xforms|label, fr|link-select1 &gt; xforms|help, fr|link-select1 &gt; xforms|hint, fr|link-select1 &gt; xforms|alert"></xbl:content>
+                        <xforms:group class="fr-component-group">
+                            <xxforms:variable select="." name="result" as="node()?"></xxforms:variable>
+                            <xforms:repeat nodeset="{/*/xforms:itemset/@nodeset}">
+                                <xxforms:variable select="position()" name="position" as="xs:integer"></xxforms:variable>
+                                <xxforms:variable select="{/*/xforms:itemset/xforms:label/(@ref | @value)}" name="label" as="xs:string"></xxforms:variable>
+                                <xxforms:variable select="{/*/xforms:itemset/xforms:value/(@ref | @value)}" name="value" as="xs:string"></xxforms:variable>
+                                <xforms:group ref=".[$position &gt; 1]"> | </xforms:group>
+                                <xforms:group ref=".[$value != $result]">
+                                    <xforms:trigger appearance="minimal">
+                                        <xforms:label value="$label"></xforms:label>
+                                        <xforms:action ev:event="DOMActivate">
+                                            <xforms:setvalue ref="$result" value="$value"></xforms:setvalue>
+                                        </xforms:action>
+                                    </xforms:trigger>
+                                </xforms:group>
+                                <xforms:output ref=".[$value = $result]" value="$label"></xforms:output>
+                            </xforms:repeat>
+                        </xforms:group>
+                    </xforms:group>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:binding xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:exf="http://www.exforms.org/exf/1-0" id="fr-box-select-binding" element="fr|box-select">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">Box Selector</display-name>
+                    <display-name lang="fr">Sélection dans une boîte</display-name>
+                    <display-name lang="ru">Контейнер с галочками</display-name>
+                    <icon lang="en">
+                        <small-icon>/forms/orbeon/builder/images/checkbox.png</small-icon>
+                        <large-icon>/forms/orbeon/builder/images/checkbox.png</large-icon>
+                    </icon>
+                    <template>
+                        <fr:box-select>
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref=""></xforms:alert>
+                            <xforms:itemset nodeset="">
+                                <xforms:label ref="label"></xforms:label>
+                                <xforms:value ref="value"></xforms:value>
+                            </xforms:itemset>
+                        </fr:box-select>
+                    </template>
+                </metadata>
+                <xbl:resources>
+                    <xbl:style>
+                .xbl-fr-box-select ul {
+                    list-style-type: none;
+                    padding: .1em;
+                    margin: 0;
+                    border: 1px solid black;
+                    height: 6em;
+                    width: 15em;
+                    overflow-y: scroll;
+                    background-color: white;
+                }
+                .xbl-fr-box-select ul .xforms-repeat-selected-item-1 { background-color: transparent}
+                .xbl-fr-box-select .fr-component-group { display: inline-block; display: -moz-inline-block }
+                .xbl-fr-box-select ul li { list-style-type: none; margin-left: .2em; margin-top: .2em }
+                .xbl-fr-box-select ul { position: relative }
+
+                #doc .fr-grid .xbl-fr-box-select .xforms-select-appearance-full span label,
+                        #doc4 .fr-grid .xbl-fr-box-select .xforms-select-appearance-full span label {
+                    width: auto;
+                }
+            </xbl:style>
+                </xbl:resources>
+                <xbl:template xxbl:transform="oxf:xslt">
+                    <xforms:group xsl:version="2.0" xxbl:scope="outer" xbl:attr="model context ref bind">
+                        <xbl:content includes="fr|box-select &gt; xforms|label, fr|box-select &gt; xforms|help, fr|box-select &gt; xforms|hint, fr|box-select &gt; xforms|alert"></xbl:content>
+                        <xforms:group class="fr-component-group">
+                            <xxforms:variable select="." name="result" as="node()?"></xxforms:variable>
+                            <xhtml:ul tabindex="-1">
+                                <xforms:repeat nodeset="{/*/xforms:itemset/@nodeset}">
+                                    <xxforms:variable select="position()" name="position" as="xs:integer"></xxforms:variable>
+                                    <xxforms:variable select="{/*/xforms:itemset/xforms:label/(@ref | @value)}" name="label" as="xs:string"></xxforms:variable>
+                                    <xxforms:variable select="{/*/xforms:itemset/xforms:value/(@ref | @value)}" name="value" as="xs:string"></xxforms:variable>
+                                    <xhtml:li>
+                                        <xforms:select ref="$result" appearance="full">
+                                            <xforms:item>
+                                                <xforms:label value="$label"></xforms:label>
+                                                <xforms:value value="$value"></xforms:value>
+                                            </xforms:item>
+                                        </xforms:select>
+                                    </xhtml:li>
+                                </xforms:repeat>
+                            </xhtml:ul>
+                        </xforms:group>
+                    </xforms:group>
+                </xbl:template>
+            </xbl:binding>
+            <xbl:script xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" src="/xbl/orbeon/autocomplete/autocomplete.js"></xbl:script>
+            <xbl:script xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" src="/ops/yui/datasource/datasource.js"></xbl:script>
+            <xbl:script xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" src="/ops/yui/autocomplete/autocomplete.js"></xbl:script>
+            <xbl:binding xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" id="fr-autocomplete" element="fr|autocomplete">
+                <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                    <display-name lang="en">Autocomplete</display-name>
+                    <display-name lang="fr">Auto-complétion</display-name>
+                    <display-name lang="ru">Автозаполнение</display-name>
+                    <icon lang="en">
+                        <small-icon>/forms/orbeon/builder/images/autocomplete.png</small-icon>
+                        <large-icon>/forms/orbeon/builder/images/autocomplete.png</large-icon>
+                    </icon>
+                    <datatype>xforms:string</datatype>
+                    <template>
+                        <fr:autocomplete id="" ref="" appearance="minimal">
+                            <xforms:label ref=""></xforms:label>
+                            <xforms:hint ref=""></xforms:hint>
+                            <xforms:help ref=""></xforms:help>
+                            <xforms:alert ref="$fr-resources/detail/labels/alert"></xforms:alert>
+                            <xforms:itemset nodeset="">
+                                <xforms:label ref="label"></xforms:label>
+                                <xforms:value ref="value"></xforms:value>
+                            </xforms:itemset>
+                        </fr:autocomplete>
+                    </template>
+                </metadata>
+                <xbl:resources>
+                    <xbl:style src="/ops/yui/autocomplete/assets/skins/sam/autocomplete.css"></xbl:style>
+                    <xbl:style src="/xbl/orbeon/autocomplete/autocomplete.css"></xbl:style>
+                    <xbl:style src="/ops/yui/button/assets/skins/sam/button.css"></xbl:style>
+                </xbl:resources>
+                <xbl:handlers>
+                    <xbl:handler event="fr-set-label" phase="target">
+                        <xforms:refresh></xforms:refresh>
+                        <xforms:setvalue ref="textfield-value" value="event('label')"></xforms:setvalue>
+                        <xxforms:script id="arp">YAHOO.xbl.fr.Autocomplete.instance(this).ajaxResponseProcessed();</xxforms:script>
+                    </xbl:handler>
+                </xbl:handlers>
+                <xbl:implementation>
+                    <xforms:model id="autocomplete-model">
+                        <xforms:instance id="autocomplete-instance">
+                            <autocomplete>
+                                <readonly>false</readonly>
+                                <textfield-value></textfield-value>
+                            </autocomplete>
+                        </xforms:instance>
+                        <xforms:bind ref="textfield-value" readonly="../readonly = 'true'"></xforms:bind>
+                    </xforms:model>
+                </xbl:implementation>
+                <xbl:template xxbl:transform="oxf:unsafe-xslt">
+                    <xsl:transform version="2.0">
+                        <xsl:import href="oxf:/oxf/xslt/utils/copy-modes.xsl"></xsl:import>
+                        <xsl:import href="oxf:/oxf/xslt/utils/xbl.xsl"></xsl:import>
+                        <xsl:template match="/*">
+                            <xforms:group xxbl:scope="outer" class="fr-autocomplete-container" xbl:attr="model context ref bind">
+                                <xbl:content includes="fr|autocomplete &gt; xforms|label, fr|autocomplete &gt; xforms|help, fr|autocomplete &gt; xforms|hint, fr|autocomplete &gt; xforms|alert"></xbl:content>
+                                <xforms:group id="component-inner-group" xxbl:scope="inner">
+                                    <xxforms:variable name="external-value" as="node()?">
+                                        <xxforms:sequence xxbl:scope="outer" select="."></xxforms:sequence>
+                                    </xxforms:variable>
+                                    <xxforms:variable name="dynamic-itemset" xbl:attr="xbl:text=dynamic-itemset"></xxforms:variable>
+                                    <xforms:action id="xf-en" ev:event="xforms-enabled" ev:target="component-inner-group" ev:observer="component-inner-group">
+                                        <xxforms:script id="init">YAHOO.xbl.fr.Autocomplete.instance(this).init();</xxforms:script>
+                                    </xforms:action>
+                                    <xhtml:div xbl:attr="class style">
+                                        <xforms:input id="search" ref="instance()/textfield-value" class="fr-autocomplete-search" xbl:attr="tabindex accesskey" incremental="true">
+                                            <xforms:action ev:event="xforms-value-changed">
+                                                <xforms:action if=". = ''">
+                                                    <xforms:setvalue ref="$external-value"></xforms:setvalue>
+                                                </xforms:action>
+                                                <xforms:action if="$dynamic-itemset = 'true'">
+                                                    <xforms:dispatch name="fr-search-changed" targetid="fr-autocomplete">
+                                                        <xxforms:context select="." name="fr-search-value"></xxforms:context>
+                                                    </xforms:dispatch>
+                                                </xforms:action>
+                                            </xforms:action>
+                                        </xforms:input>
+                                        <xsl:if test="not(@dynamic-itemset = 'true') and @show-full-itemset-dropdown = 'true'">
+                                            <fr:select1-button ref="." xxbl:scope="outer">
+                                                <xbl:content includes="xforms|itemset,xforms|item"></xbl:content>
+                                            </fr:select1-button>
+                                        </xsl:if>
+                                        <xhtml:div class="fr-autocomplete-yui-div"></xhtml:div>
+                                    </xhtml:div>
+                                    <xforms:output id="itemset" style="display: none" value="$dynamic-itemset" class="fr-autocomplete-dynamic-itemset"></xforms:output>
+                                    <xsl:copy-of select="xxbl:parameter(., 'max-results-displayed')"></xsl:copy-of>
+                                    <xforms:select1 id="select1" ref="$external-value" appearance="minimal" style="display: none" class="fr-autocomplete-select1" xxforms:encrypt-item-values="false">
+                                        <xsl:apply-templates select="xforms:itemset | xforms:item" mode="copy-label"></xsl:apply-templates>
+                                        <xsl:apply-templates select="xforms:itemset | xforms:item" mode="copy-value"></xsl:apply-templates>
+                                    </xforms:select1>
+                                    <xforms:input id="external-value" ref="$external-value" style="display: none" class="fr-autocomplete-external-value">
+                                        <xforms:setvalue ref="instance()/readonly" ev:event="xforms-readonly">true</xforms:setvalue>
+                                        <xforms:setvalue ref="instance()/readonly" ev:event="xforms-readwrite">false</xforms:setvalue>
+                                        <xforms:action if="not($dynamic-itemset = 'true')" ev:event="xforms-enabled xforms-value-changed">
+                                            <xxforms:variable select="xxforms:itemset('select1', 'xml')//item" name="select-items"></xxforms:variable>
+                                            <xxforms:variable select="($select-items/value)[position() &gt; count($select-items) div 2]" name="values"></xxforms:variable>
+                                            <xxforms:variable select="$select-items[index-of($values, $external-value)]/label" name="label"></xxforms:variable>
+                                            <xforms:setvalue ref="instance()/textfield-value" if="exists($label)" value="$label"></xforms:setvalue>
+                                        </xforms:action>
+                                    </xforms:input>
+                                    <xforms:trigger id="value-selected" style="display: none" class="fr-autocomplete-value-selected">
+                                        <xforms:label></xforms:label>
+                                    </xforms:trigger>
+                                    <xforms:action ev:propagate="stop" ev:event="#all"></xforms:action>
+                                </xforms:group>
+                            </xforms:group>
+                        </xsl:template>
+                        <xsl:template match="xforms:itemset | xforms:item" mode="#all">
+                            <xsl:copy>
+                                <xsl:attribute name="xxbl:scope">outer</xsl:attribute>
+                                <xsl:apply-templates select="@* | node()" mode="#current"></xsl:apply-templates>
+                            </xsl:copy>
+                        </xsl:template>
+                        <xsl:template match="xforms:label" mode="copy-value"></xsl:template>
+                        <xsl:template match="xforms:value" mode="copy-label"></xsl:template>
+                        <xsl:template match="xforms:label" mode="copy-label">
+                            <xsl:copy-of select="."></xsl:copy-of>
+                            <xforms:value>
+                                <xsl:copy-of select="@* | node()"></xsl:copy-of>
+                            </xforms:value>
+                        </xsl:template>
+                        <xsl:template match="xforms:value" mode="copy-value">
+                            <xsl:copy-of select="."></xsl:copy-of>
+                            <xforms:label>
+                                <xsl:copy-of select="@* | node()"></xsl:copy-of>
+                            </xforms:label>
+                        </xsl:template>
+                    </xsl:transform>
+                </xbl:template>
+            </xbl:binding>
+        </xbl:xbl>
+        <xbl:xbl xmlns:xbl="http://www.w3.org/ns/xbl" xmlns:fb="http://orbeon.org/oxf/xml/form-builder" xmlns:pipeline="java:org.orbeon.oxf.processor.pipeline.PipelineFunctionLibrary">
+            <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+                <display-name lang="en">Other Controls</display-name>
+                <display-name lang="fr">Autres contrôles</display-name>
+                <display-name lang="ru">Другие элементы</display-name>
+            </metadata>
+        </xbl:xbl>
+    </xhtml:head>
+    <xhtml:body>
+        <fr:view>
+            <xforms:label ref="instance('fr-form-metadata')/title"></xforms:label>
+            <fr:body>
+                <fr:section id="section-1-section" bind="section-1-bind">
+                    <xforms:label ref="$form-resources/section-1/label"></xforms:label>
+                    <xforms:help ref="$form-resources/section-1/help"></xforms:help>
+                    <fr:grid columns="2">
+                        <xhtml:tr>
+                            <xhtml:td>
+                                <xforms:input id="control-1-control" bind="control-1-bind">
+                                    <xforms:label ref="$form-resources/control-1/label"></xforms:label>
+                                    <xforms:hint ref="$form-resources/control-1/hint"></xforms:hint>
+                                    <xforms:help ref="$form-resources/control-1/help"></xforms:help>
+                                    <xforms:alert ref="$fr-resources/detail/labels/alert"></xforms:alert>
+                                </xforms:input>
+                            </xhtml:td>
+                            <xhtml:td></xhtml:td>
+                        </xhtml:tr>
+                        <xhtml:tr>
+                            <xhtml:td>
+                                <fr:image-attachment xmlns="http://orbeon.org/oxf/xml/form-builder" xmlns:xbl="http://www.w3.org/ns/xbl" xmlns:fb="http://orbeon.org/oxf/xml/form-builder" xmlns:xxbl="http://orbeon.org/oxf/xml/xbl" xmlns:pipeline="java:org.orbeon.oxf.processor.pipeline.PipelineFunctionLibrary" id="control-2-control" class="fr-attachment" bind="control-2-bind">
+                                    <xforms:label ref="$form-resources/control-2/label"></xforms:label>
+                                    <xforms:hint ref="$form-resources/control-2/hint"></xforms:hint>
+                                    <xforms:help ref="$form-resources/control-2/help"></xforms:help>
+                                    <xforms:alert ref="$fr-resources/detail/labels/alert"></xforms:alert>
+                                    <xforms:filename ref="@filename"></xforms:filename>
+                                    <xforms:mediatype ref="@mediatype"></xforms:mediatype>
+                                    <xxforms:size ref="@size"></xxforms:size>
+                                </fr:image-attachment>
+                            </xhtml:td>
+                            <xhtml:td></xhtml:td>
+                        </xhtml:tr>
+                    </fr:grid>
+                </fr:section>
+            </fr:body>
+        </fr:view>
+    </xhtml:body>
+</xhtml:html>
