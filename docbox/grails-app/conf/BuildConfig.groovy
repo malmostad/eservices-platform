@@ -12,6 +12,12 @@ grails.project.source.level = 1.6
 //   run: [maxMemory:1024, minMemory:64, debug:false, maxPerm:256]
 //]
 
+grails.war.resources = { stagingDir ->
+    // Servlet JAR should not be included in the war, causes trouble
+    // See: http://jira.grails.org/browse/GRAILS-9483
+    delete(file:"${stagingDir}/WEB-INF/lib/javax.servlet-api-3.0.1.jar")
+}
+
 grails.project.dependency.resolution = {
   pom true
   // inherit Grails' default dependencies
