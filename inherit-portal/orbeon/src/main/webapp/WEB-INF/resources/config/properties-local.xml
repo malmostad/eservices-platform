@@ -22,7 +22,7 @@
 
 <property as="xs:anyURI"
           name="oxf.fr.persistence.service.exist.uri"
-          value="http://orbeon:orb@localhost:48080/exist/rest/db/orbeon-pe/fr"/>
+          value="http://orbeon:orb@localhost:8080/exist/rest/db/orbeon-pe/fr"/>
 
 <property as="xs:anyURI" name="oxf.fr.default-logo.uri.*.*"
                          value=""/>
