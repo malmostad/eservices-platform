@@ -45,6 +45,8 @@
 	  <module>inherit-service</module>
 	  <module>inherit-portal</module>
 	  <module>inherit-security</module>
+	  <module>postxdb</module>
+	  <module>docbox</module>
         </modules>
 
 	<repositories>
