@@ -212,7 +212,21 @@
             <configuration>
               <configuration>
                 <deployables>
+                   <deployable>
+                    <location>${project.basedir}/../postxdb/target/exist.war</location>
+                    <type>war</type>
+                    <properties>
+                      <context>/exist</context>
+                    </properties>
+                  </deployable>
                   <deployable>
+                    <location>${project.basedir}/../docbox/target/docbox.war</location>
+                    <type>war</type>
+                    <properties>
+                      <context>/docbox</context>
+                    </properties>
+                  </deployable>
+                   <deployable>
                     <location>${project.basedir}/orbeon/target/orbeon.war</location>
                     <type>war</type>
                     <properties>
@@ -241,6 +255,9 @@
                     <tofile>context.xml</tofile>
                   </configfile>
                 </configfiles>
+                <properties>
+                	<cargo.jvmargs>-Xmx1024m -Xms512m -XX:PermSize=256m</cargo.jvmargs>
+                </properties>
               </configuration>
               <container>
                 <systemProperties>
