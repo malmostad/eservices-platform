@@ -12,6 +12,6 @@ import org.junit.*
 class RestDocControllerTests {
 
     void testSomething() {
-       fail "Implement me"
+
     }
 }
