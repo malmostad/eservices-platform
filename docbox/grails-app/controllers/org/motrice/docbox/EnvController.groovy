@@ -1,7 +1,7 @@
 package org.motrice.docbox
 
 import org.motrice.docbox.form.PxdItem
-import org.motrice.docbox.pdf.PdfDoc
+import org.motrice.docbox.doc.BoxDoc
 
 /**
  * Controller for checking the environment of this application
@@ -33,7 +33,7 @@ class EnvController {
     // Check the DOC datasource
     def docDsMsg = null
     try {
-      def rcount = PdfDoc.count()
+      def rcount = BoxDoc.count()
       docDsMsg = 'OK/doc datasource'
     } catch (Exception exc) {
       ++errorCount

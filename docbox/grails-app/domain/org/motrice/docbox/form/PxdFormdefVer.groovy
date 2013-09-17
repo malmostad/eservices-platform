@@ -15,6 +15,7 @@ class PxdFormdefVer {
   String description
   String language
 
+  static belongsTo = [formdef: PxdFormdef]
   static mapping = {
     datasource 'forms'
   }
