@@ -70,7 +70,7 @@ class BoxContents {
   }
 
   String toString() {
-    "[Contents ${id}: ${format}/${size}]"
+    "[Contents ${id}/${name}: ${format}/${size}]"
   }
 
 }
