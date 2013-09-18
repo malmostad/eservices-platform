@@ -20,7 +20,7 @@ class UrlMappings {
       }
     }
 
-    "/"(view:"/index")
+    "/"(controller: 'BoxDoc', action: '/index')
     "500"(view:'/error')
   }
 }
