@@ -236,7 +236,16 @@ class RestService {
 
     return publishedItem
   }
-  
+
+  /**
+   * Publish a resource for a form definition.
+   * New behaviour Orbeon Forms 4, never called in Orbeon 3.
+   * The url used in this op contains the draft version for which the Publish
+   * action was invoked.
+   */
+  PxdItem createPublishedResource(String resource, String xml) {
+  }
+
   /**
    * Create form instance xml
    */
