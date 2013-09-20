@@ -14,6 +14,9 @@ class BoxContents {
   Date dateCreated
   Date lastUpdated
 
+  // Checksum for signing purposes
+  String checksum
+
   // Size: number of characters in text, number of bytes in stream
   Integer size
 
@@ -33,6 +36,7 @@ class BoxContents {
     dateCreated nullable: true
     lastUpdated nullable: true
     format nullable: false, maxSize: 80
+    checksum nullable: true, maxSize: 200
     size range: 0..Integer.MAX_VALUE-1
     text nullable: true
     stream nullable: true

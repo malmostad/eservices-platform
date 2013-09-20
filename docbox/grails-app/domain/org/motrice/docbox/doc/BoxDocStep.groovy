@@ -28,6 +28,7 @@ class BoxDocStep {
   static constraints = {
     step range: 0..999
     docNo maxSize: 16
+    docboxRef maxSize: 200
     signCount range: 0..12
     dateCreated nullable: true
     lastUpdated nullable: true

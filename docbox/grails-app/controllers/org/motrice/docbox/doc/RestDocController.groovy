@@ -10,28 +10,43 @@ class RestDocController {
   def pdfService
 
   /**
-   * Create a PDF/A document given a formDataUuid.
+   * Create a PDF/A document given a formDataUuid and return metadata.
+   * Do not create anything in case the formDataUuid has already been created.
+   * Returns status 201 if the document was created at this time,
+   * 200 if it already existed, 404 if the form was not found.
    */
   def formDataPut(String uuid) {
-    if (log.debugEnabled) log.debug "FORMDATA: ${Util.clean(params)}, ${request.forwardURI}"
-    def docData = pdfService.retrieveDocData(uuid)
-
-    // The document that will carry the PDF
+    if (log.debugEnabled) log.debug "FORM PUT: ${Util.clean(params)}, ${request.forwardURI}"
+    // The document that carries the PDF
     def docStep = null
-    if (docData) docStep = docService.createBoxDocStep(uuid)
+    // Contents of the PDF
+    def contents = null
+    Integer status = 404
 
-    if (docData && docStep) {
-      def outcome = pdfService.generatePdfa(docData, docStep, log.debugEnabled)
-      if (outcome) {
-	render(status: 200, contentType: 'text/json') {
-	  formDataUuid = uuid
-	  docboxRef = outcome.docboxRef
-	  docNo = outcome.docNo
-	  signCount = outcome.signCount
-	}
-      } else {
-	render(status: 404)
+    // Does the document exist?
+    docStep = docService.findStepByUuid(uuid)
+    if (docStep) {
+      // The document exists, get PDF contents.
+      contents = docService.findContents(docStep)
+      status = 200
+    } else {
+      // The document has to be created. Begin by retrieving form data.
+      def docData = pdfService.retrieveDocData(uuid)
+      if (docData) docStep = docService.createBoxDocStep(uuid)
+      if (docData && docStep) {
+	contents = pdfService.generatePdfa(docData, docStep, log.debugEnabled)
+	status = 201
       }
+    }
+
+    if (docStep && contents) {
+	render(status: status, contentType: 'text/json') {
+	  formDataUuid = uuid
+	  docboxRef = docStep.docboxRef
+	  docNo = docStep.docNo
+	  signCount = docStep.signCount
+	  checkSum = contents.checksum
+	}
     } else {
       render(status: 404)
     }
@@ -39,8 +54,9 @@ class RestDocController {
 
   /**
    * Get a document given a document number
+   * DISABLED
    */
-  def docNoGet(String docno) {
+  private def docNoGet(String docno) {
     if (log.debugEnabled) log.debug "BY DOCNO: ${Util.clean(params)}, ${request.forwardURI}"
     def docStep = docService.findStepByDocNo(docno)
     return contentsResponse(docStep, params.item)
