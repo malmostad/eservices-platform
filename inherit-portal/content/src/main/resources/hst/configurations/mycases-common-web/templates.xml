@@ -83,4 +83,20 @@
       <sv:value>jsp/mycases/common/web/myprofile/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
+  <sv:node sv:name="signform.main.content">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/mycases/common/web/signform/main/content.jsp</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="signformconfirm.main.content">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/mycases/common/web/signformconfirm/main/content.jsp</sv:value>
+    </sv:property>
+  </sv:node>
 </sv:node>
