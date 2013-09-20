@@ -118,16 +118,22 @@ class DocService {
   }
 
   BoxDocStep findStepByUuid(String uuid, Integer stepNumber) {
+    if (log.debugEnabled) log.debug "findStepByUuid << ${uuid}, ${stepNumber}"
     if (stepNumber == null) {
       def q = 'select max(step) from BoxDocStep s where s.doc.formDataUuid=?'
       def list = BoxDocStep.executeQuery(q, [uuid])
       stepNumber = list[0]
     }
 
-    if (log.debugEnabled) log.debug "findStepByUuid << ${uuid}, ${stepNumber}"
-    def q = 'from BoxDocStep s where doc.formDataUuid=? and step=?'
-    def docStepList = BoxDocStep.executeQuery(q, [uuid, stepNumber])
-    def docStep = (docStepList?.size() > 0)? docStepList[0] : null
+    if (log.debugEnabled) log.debug "findStepByUuid.stepNumber: ${stepNumber}"
+    def docStep = null
+    // stepNumber is null if there are no steps with the given uuid
+    if (stepNumber != null) {
+      def q = 'from BoxDocStep s where s.doc.formDataUuid=? and s.step=?'
+      def docStepList = BoxDocStep.executeQuery(q, [uuid, stepNumber])
+      docStep = (docStepList?.size() > 0)? docStepList[0] : null
+    }
+
     if (log.debugEnabled) log.debug "findStepByUuid >> ${docStep}"
     return docStep
   }

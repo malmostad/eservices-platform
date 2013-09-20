@@ -24,6 +24,7 @@ class PdfService {
   static transactional = true
 
   def docService
+  def signService
 
   /**
    * Retrieve all database objects relevant for a form instance.
@@ -54,17 +55,16 @@ class PdfService {
    * Convert a form instance to PDF/A
    * @param docData must contain all database objects relevant for a
    * form instance
-   * @return a BoxDoc object
+   * @return a BoxContents object
    */
-  def generatePdfa(DocData docData, BoxDocStep docStep, boolean debug) {
+  BoxContents generatePdfa(DocData docData, BoxDocStep docStep, boolean debug) {
     def formData = new FormData(docData.dataItem.text)
     // if (debug) println "FORM DATA: ${formData}"
     def formDef = new FormDef(docData.formDef.text)
     formDef.build()
     createPreview(docStep, formDef, formData)
     def docbook = createDocBook(docStep, formDef, formData)
-    docbookXmlToPdf(docStep, docData, docbook, debug)
-    return docStep
+    return docbookXmlToPdf(docStep, docData, docbook, debug)
   }
 
   /**
@@ -106,12 +106,13 @@ class PdfService {
   /**
    * Convert a DocBook XML PxdItem, generating a PDF PxdItem
    * Add the new Pdf PxdItem to the data
+   * Return the new contents
    */
-  private docbookXmlToPdf(BoxDocStep docStep, DocData docData, BoxContents docbook,
+  private BoxContents docbookXmlToPdf(BoxDocStep docStep, DocData docData, BoxContents docbook,
 			  boolean debug)
   {
     def processor = new Processor(debug)
-    if (debug) println "docbookXmlToPdf ${docStep} DIR: ${processor.tempDir.absolutePath}"
+    if (debug) println "docbookXmlToPdf ${docStep} << ${processor.tempDir.absolutePath}"
     // Store DocBook xml
     storeBoxContents(docbook, processor.tempDir)
 
@@ -135,17 +136,22 @@ class PdfService {
     // Store the newly generated pdf
     def pdfFile = new File(pdfPath)
     def pdf = docService.createContents(docStep, 'pdf', 'binary')
+    pdf.checksum = signService.computeChecksum(pdf)
     pdf.assignStream(pdfFile.bytes)
     if (!pdf.save(insert: true)) log.error "BoxContents save: ${pdf.errors.allErrors.join(',')}"
 
     // Store the log file
     def logFile = new File(logPath)
-    def log = docService.createContents(docStep, 'convlog', 'text')
-    log.assignText(logFile.text)
-    if (!log.save(insert: true)) log.error "BoxContents save: ${log.errors.allErrors.join(',')}"
+    def conversionLog = docService.createContents(docStep, 'convlog', 'text')
+    conversionLog.assignText(logFile.text)
+    if (!conversionLog.save(insert: true)) {
+      log.error "BoxContents save: ${conversionLog.errors.allErrors.join(',')}"
+    }
 
     // Clean up temp files
     processor.cleanUp()
+    if (log.debugEnabled) log.debug "xmlToPdf >> ${pdf}"
+    return pdf
   }
 
   /**
