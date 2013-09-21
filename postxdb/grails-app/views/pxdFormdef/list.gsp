@@ -37,7 +37,7 @@
 	      <td><g:link action="show" id="${pxdFormdefObj.id}">${fieldValue(bean: pxdFormdefObj, field: "path")}</g:link></td>
 	      <td>${fieldValue(bean: pxdFormdefObj, field: "appName")}</td>
 	      <td>${fieldValue(bean: pxdFormdefObj, field: "formName")}</td>
-	      <td>${fieldValue(bean: pxdFormdefObj, field: "uuid")}</td>
+	      <td><g:abbr text="${pxdFormdefObj.uuid}"/></td>
 	      <td><g:formatDate date="${pxdFormdefObj.dateCreated}" /></td>
 	      <td><g:formatDate date="${pxdFormdefObj.lastUpdated}" /></td>
 	    </tr>

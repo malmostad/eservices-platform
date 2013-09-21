@@ -119,7 +119,7 @@ class RestFormdefController {
       // So far our belief is that this never happens
       log.error "putop called for binary resource: ${Util.clean(params)}, ${request.forwardURI}"
       if (log.debugEnabled) log.debug "putop BIN >> createPublishedResource"
-      itemObj = restService.createPublishedResource(params.uuid, params.resource, request)
+      itemObj = restService.createPublishedResource(params.app, params.form, params.resource, request)
       if (log.debugEnabled) log.debug "putop BIN << ${itemObj}"
     }
 
