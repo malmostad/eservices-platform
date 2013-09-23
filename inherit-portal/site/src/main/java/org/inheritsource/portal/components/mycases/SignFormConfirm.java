@@ -44,12 +44,12 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
 
-		
-		String docBoxId = getPublicRequestParameter(request, "docBoxId"); 
+		String docboxRef = getPublicRequestParameter(request, "docboxRef"); 
+		String docNo = getPublicRequestParameter(request, "docNo"); 
 		String status = getPublicRequestParameter(request, "status"); 
 		String signature = getPublicRequestParameter(request, "signature"); 
 
-		log.error("SignFormConfirm:" + docBoxId);
+		log.info("SignFormConfirm:" + docboxRef + " docNo=" + docNo + " status=" + status + " signature=" + signature);
 
 		UserInfo user = getUserName(request);
 		
@@ -79,7 +79,8 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		// utför aktivitet i processmotor och lagra signatur ... om signaturen är ok....
 		
 		
-		request.setAttribute("docBoxId", docBoxId);
+		request.setAttribute("docboxRef", docboxRef);
+		request.setAttribute("docNo", docNo);
 		request.setAttribute("status", status);
 		request.setAttribute("signature", signature);
 

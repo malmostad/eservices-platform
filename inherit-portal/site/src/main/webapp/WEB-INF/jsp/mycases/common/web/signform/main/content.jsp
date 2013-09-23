@@ -23,7 +23,7 @@
  
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.TextDocument"--%>
-
+s 
 <c:choose>
   <c:when test="${empty document}">
     <tag:pagenotfound/>
@@ -45,8 +45,8 @@
 	<div class="row-fluid">
 		<div class="span12">
 			<form method="post" action="https://idp.test.malmo.se/wa/auth?authmech=e-id-signer">
-			    Dokument: ${pdfUrl}
-			    Kontrollsumma: ${pdfDigest}
+			    Dokument: <a href="${pdfUrl}">${docNo}</a>
+			    Kontrollsumma: ${pdfChecksum}
 				<input type="hidden" name="text" value="${signText}"/>
 				<input type="hidden" name="location" value="${responseUrl}"/>
 				<input type="submit"/>
