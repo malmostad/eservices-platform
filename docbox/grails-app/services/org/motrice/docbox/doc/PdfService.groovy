@@ -61,7 +61,8 @@ class PdfService {
     def formData = new FormData(docData.dataItem.text)
     // if (debug) println "FORM DATA: ${formData}"
     def formDef = new FormDef(docData.formDef.text)
-    formDef.build()
+    formDef.build(log)
+    if (log.debugEnabled) log.debug formDef.dump()
     createPreview(docStep, formDef, formData)
     def docbook = createDocBook(docStep, formDef, formData)
     return docbookXmlToPdf(docStep, docData, docbook, debug)
@@ -76,7 +77,7 @@ class PdfService {
    * RETURN BoxContents containing DocBook XML
    */
   private BoxContents createDocBook(BoxDocStep docStep, formDef, formData) {
-    def map = formDef.generateDocBook(formData)
+    def map = formDef.generateDocBook(formData, log)
     def docbook = docService.createContents(docStep, 'docbook.xml', 'xml')
     docbook.assignText(map.xml)
     if (!docbook.save(insert: true)) {
