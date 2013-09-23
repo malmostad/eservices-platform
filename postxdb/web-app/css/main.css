@@ -574,7 +574,7 @@ th:hover, tr:hover {
 	text-decoration: underline;
 }
 
-.buttons .delete, .buttons .edit, .buttons .save {
+.buttons .delete, .buttons .download, .buttons .edit, .buttons .save {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
@@ -587,6 +587,10 @@ th:hover, tr:hover {
 
 .buttons .delete {
 	background-image: url(../images/skin/database_delete.png);
+}
+
+.buttons .download {
+	background-image: url(../images/skin/download16.png);
 }
 
 .buttons .edit {

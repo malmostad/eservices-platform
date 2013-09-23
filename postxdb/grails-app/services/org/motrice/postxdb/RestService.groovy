@@ -236,17 +236,54 @@ class RestService {
 
     return publishedItem
   }
-  
+
   /**
-   * Create form instance xml
+   * Publish a resource for a form definition.
+   * New behaviour Orbeon Forms 4, never called in Orbeon 3.
+   * The url used in this op contains the draft version for which the Publish
+   * action was invoked.
+   * In the normal case the resource already exists and nothing needs to be done
+   */
+  PxdItem createPublishedResource(String appName, String formName, String resource,
+				 request)
+  {
+    if (log.debugEnabled) {
+      log.debug "createPublishedResource << ${appName}/${formName}/${resource}"
+    }
+    def item = null
+    item = PxdItem.findByPath(resource)
+    if (log.debugEnabled) log.debug "createPublishedResource.item ${item}"
+
+    if (!item) {
+      String formDef = "${appName}/${formName}"
+      item = new PxdItem(path: resource, uuid: uuid, instance: false, format: 'binary')
+      item.assignStream(request.inputStream.bytes).save()
+    }
+
+    if (log.debugEnabled) log.debug "createPublishedResource >> ${item}"
+    return item
+  }
+
+  /**
+   * Create form instance xml, or save form instance xml after editing
+   * NOTE: Unlike normal Grails we cannot check for optimistic lock failure.
    */
   PxdItem createInstanceItem(String appName, String formName, String uuid,
 			     String resource, String xml)
   {
     String itemPath = "${uuid}/data.xml"
     String formDef = "${appName}/${formName}"
-    def item = new PxdItem(path: itemPath, uuid: uuid, formDef: formDef, instance: true,
-    format: 'xml')
+    // Check if this item already exists
+    def item = PxdItem.findByPath(itemPath)
+    if (item) {
+      if (log.debugEnabled) log.debug "createInstanceItem EXISTING item (${resource})"
+    } else {
+      item = new PxdItem(path: itemPath, uuid: uuid, formDef: formDef, instance: true,
+      format: 'xml')
+      if (log.debugEnabled) log.debug "createInstanceItem NEW item (${resource})"
+    }
+
+    // If the item was created now or existed previously, update the xml
     item.assignText(xml)
     if (!item.save()) log.error "createInstanceItem save: ${item.errors.allErrors.join(',')}"
     return item
