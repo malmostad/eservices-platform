@@ -90,6 +90,7 @@ class Processor {
    * RETURN a map containing the following entries:
    * pdf: the full path of the generated Pdf file
    * log: the full path of the process log file
+   * exc: null on success, an exception and its message if conversion failed
    */
   def toPdf() {
     // Standard out goes directly to the log file
@@ -97,6 +98,10 @@ class Processor {
     // Standard error is collected here and then added to the log file
     def err = new StringBuilder()
     def foPath = abspath(FOFILE)
+    // Process exit code
+    Integer exitCode
+    // Std error from a process (String)
+    def procMessage = null
     try {
       // DocBook XML to FO
       def cmd = XSLTPROC.collect {it}
@@ -106,42 +111,62 @@ class Processor {
       def proc = cmd.execute()
       proc.consumeProcessOutput(log, err)
       proc.waitForOrKill(30 * SECOND)
+      exitCode = proc?.exitValue()
     } catch (Exception exc) {
-      err.append(exc.toString())
+      procMessage = exc.toString()
+      err.append(procMessage)
+      exitCode = 1
     } finally {
-      log.append(err.toString())
+      procMessage = err.toString()
+      log.append(procMessage)
+      log.append "xml -> FO: ${exitCode} (${(exitCode == 0)? 'OK' : 'CONFLICT'})\n\n"
       log.flush()
       err.length = 0
     }
 
     // FO to PDF
     def foFile = new File(foPath)
-    if (!foFile.exists()) throw new IllegalStateException('FO generation failed')
     def pdfPath = abspath(PDFFILE)
 
-    try {
-      def cmd = FOP.collect {it}
-      cmd << fopConfigPath
-      cmd << '-fo'
-      cmd << foPath
-      cmd << '-pdf'
-      cmd << pdfPath
-      def proc = cmd.execute()
-      proc.consumeProcessOutput(log, err)
-      proc.waitForOrKill(60 * SECOND)
-    } catch (Exception exc) {
-      log.append(exc.toString())
-    } finally {
-      log.append(err.toString())
-      log.flush()
+    if (success(exitCode) && foFile.exists()) {
+      try {
+	def cmd = FOP.collect {it}
+	cmd << fopConfigPath
+	cmd << '-fo'
+	cmd << foPath
+	cmd << '-pdf'
+	cmd << pdfPath
+	def proc = cmd.execute()
+	proc.consumeProcessOutput(log, err)
+	proc.waitForOrKill(60 * SECOND)
+	exitCode = proc?.exitValue()
+      } catch (Exception exc) {
+	procMessage  = exc.toString()
+	log.append(procMessage)
+	exitCode = 1
+      } finally {
+	procMessage = err.toString()
+	log.append(procMessage)
+	log.append "FO -> PDF: ${exitCode} (${(exitCode == 0)? 'OK' : 'CONFLICT'})\n"
+	log.flush()
+      }
+    } else if (success(exitCode)) {
+      // In case the failure went undetected (should not happen)
+      exitCode = 1
+      procMessage = 'xml -> FO: Conversion failed for unknown reason'
     }
 
     log.close()
-    return [pdf: pdfPath, log: abspath(LOGFILE)]
+    return [pdf: pdfPath, log: abspath(LOGFILE), exc: (success(exitCode)? null : procMessage)]
   }
 
   def abspath(String fileName) {
     new File(tempDir, fileName).absolutePath
+  }
+
+  // Checks an exit code for success
+  Boolean success(Integer exitCode) {
+    exitCode == 0
   }
 
   static final FOP_CONFIG_FILE_NAME = 'fop-config.xml'

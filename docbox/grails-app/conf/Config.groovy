@@ -109,6 +109,6 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-	   debug 'org.motrice.docbox.doc', 'grails.app.controllers',
+	   //debug 'org.motrice.docbox.doc', 'grails.app.controllers',
 	   'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService'
 }

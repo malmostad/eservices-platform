@@ -2,10 +2,12 @@ package org.motrice.docbox.doc
 
 import org.motrice.docbox.DocData
 import org.motrice.docbox.Util
+import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.form.PxdFormdefVer
 import org.motrice.docbox.form.PxdItem
 
 class RestDocController {
+  private final static Integer CONFLICT_STATUS = 409
   def docService
   def pdfService
 
@@ -17,36 +19,41 @@ class RestDocController {
    */
   def formDataPut(String uuid) {
     if (log.debugEnabled) log.debug "FORM PUT: ${Util.clean(params)}, ${request.forwardURI}"
-    // The document that carries the PDF
-    def docStep = null
-    // Contents of the PDF
-    def contents = null
     Integer status = 404
 
     // Does the document exist?
-    docStep = docService.findStepByUuid(uuid)
-    if (docStep) {
-      // The document exists, get PDF contents.
-      contents = docService.findContents(docStep)
+    def docStep = docService.findStepByUuid(uuid)
+    def pdfContents = docStep? docStep.pdfContents() : null
+    if (docStep && pdfContents) {
       status = 200
     } else {
       // The document has to be created. Begin by retrieving form data.
       def docData = pdfService.retrieveDocData(uuid)
-      if (docData) docStep = docService.createBoxDocStep(uuid)
+      if (docData && !docStep) docStep = docService.createBoxDocStep(uuid)
       if (docData && docStep) {
-	contents = pdfService.generatePdfa(docData, docStep, log.debugEnabled)
-	status = 201
+	try {
+	  pdfContents = pdfService.generatePdfa(docData, docStep, log.debugEnabled)
+	  status = 201
+	} catch (DocBoxException exc) {
+	  pdfContents = exc.message
+	  status = CONFLICT_STATUS
+	}
       }
     }
 
-    if (docStep && contents) {
-	render(status: status, contentType: 'text/json') {
-	  formDataUuid = uuid
-	  docboxRef = docStep.docboxRef
-	  docNo = docStep.docNo
-	  signCount = docStep.signCount
-	  checkSum = contents.checksum
-	}
+    if (docStep && pdfContents && status < 300) {
+      render(status: status, contentType: 'text/json') {
+	formDataUuid = uuid
+	docboxRef = docStep.docboxRef
+	docNo = docStep.docNo
+	signCount = docStep.signCount
+	checkSum = pdfContents.checksum
+      }
+    } else if (status == CONFLICT_STATUS) {
+      render(status: status, contentType: 'text/json') {
+	formDataUuid = uuid
+	conflictMessage = pdfContents
+      }
     } else {
       render(status: 404)
     }

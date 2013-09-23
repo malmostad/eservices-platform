@@ -1,5 +1,6 @@
 package org.motrice.docbox.doc
 
+import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.DocData
 import org.motrice.docbox.form.PxdFormdefVer
 import org.motrice.docbox.form.PxdItem
@@ -107,13 +108,16 @@ class PdfService {
   /**
    * Convert a DocBook XML PxdItem, generating a PDF PxdItem
    * Add the new Pdf PxdItem to the data
-   * Return the new contents
+   * Return the new contents or throw a DocBoxException on failure
+   * Throwing a RuntimeException will roll back the transaction
    */
-  private BoxContents docbookXmlToPdf(BoxDocStep docStep, DocData docData, BoxContents docbook,
-			  boolean debug)
+  private BoxContents docbookXmlToPdf(BoxDocStep docStep, DocData docData,
+				      BoxContents docbook, boolean debug)
   {
     def processor = new Processor(debug)
-    if (debug) println "docbookXmlToPdf ${docStep} << ${processor.tempDir.absolutePath}"
+    if (log.debugEnabled) {
+      log.debug "docbookXmlToPdf ${docStep} << ${processor.tempDir.absolutePath}"
+    }
     // Store DocBook xml
     storeBoxContents(docbook, processor.tempDir)
 
@@ -129,27 +133,41 @@ class PdfService {
 
     // Run the conversion pipeline
     def result = processor.toPdf()
+    if (log.debugEnabled) log.debug "toPdf returns ${result}"
     def pdfPath = result.pdf
     def logPath = result.log
+    def excMsg = result.exc
 
     // Store the newly generated pdf
     def pdfFile = new File(pdfPath)
-    def pdf = docService.createContents(docStep, 'pdf', 'binary')
-    pdf.checksum = signService.computeChecksum(pdf)
-    pdf.assignStream(pdfFile.bytes)
-    if (!pdf.save(insert: true)) log.error "BoxContents save: ${pdf.errors.allErrors.join(',')}"
+    def pdf = null
+    if (pdfFile.exists()) {
+      pdf = docService.createContents(docStep, 'pdf', 'binary')
+      pdf.checksum = signService.computeChecksum(pdf)
+      pdf.assignStream(pdfFile.bytes)
+      if (!pdf.save(insert: true)) {
+	log.error "BoxContents (pdf) save: ${pdf.errors.allErrors.join(',')}"
+      }
+    }
 
     // Store the log file
     def logFile = new File(logPath)
-    def conversionLog = docService.createContents(docStep, 'convlog', 'text')
-    conversionLog.assignText(logFile.text)
-    if (!conversionLog.save(insert: true)) {
-      log.error "BoxContents save: ${conversionLog.errors.allErrors.join(',')}"
+    if (logFile.exists()) {
+      def conversionLog = docService.createContents(docStep, 'convlog', 'text')
+      conversionLog.assignText(logFile.text)
+      if (!conversionLog.save(insert: true)) {
+	log.error "BoxContents (log) save: ${conversionLog.errors.allErrors.join(',')}"
+      }
     }
 
     // Clean up temp files
     processor.cleanUp()
-    if (log.debugEnabled) log.debug "xmlToPdf >> ${pdf}"
+    if (excMsg) {
+      log.error "Pdf conversion FAILS: ${excMsg}"
+      throw new DocBoxException(excMsg)
+    }
+
+    if (log.debugEnabled) log.debug "docbookXmlToPdf >> ${pdf}"
     return pdf
   }
 
