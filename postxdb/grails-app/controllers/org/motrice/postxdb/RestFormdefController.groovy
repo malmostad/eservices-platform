@@ -116,8 +116,7 @@ class RestFormdefController {
       itemObj = restService.createPublishedItem(params.resource, request.reader.text)
       if (log.debugEnabled) log.debug "putop XML << ${itemObj}"
     } else {
-      // So far our belief is that this never happens
-      log.error "putop called for binary resource: ${Util.clean(params)}, ${request.forwardURI}"
+      // Happens only in Orbeon 4
       if (log.debugEnabled) log.debug "putop BIN >> createPublishedResource"
       itemObj = restService.createPublishedResource(params.app, params.form, params.resource, request)
       if (log.debugEnabled) log.debug "putop BIN << ${itemObj}"
