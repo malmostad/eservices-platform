@@ -256,7 +256,8 @@ class RestService {
 
     if (!item) {
       String formDef = "${appName}/${formName}"
-      item = new PxdItem(path: resource, uuid: uuid, instance: false, format: 'binary')
+      item = new PxdItem(path: resource, uuid: uuid, formDef: formDef, instance: false,
+      format: 'binary')
       item.assignStream(request.inputStream.bytes).save()
     }
 
@@ -291,15 +292,26 @@ class RestService {
 
   /**
    * Create a resource for a form instance, typically an attachment
+   * Very similar to createPublishedResource
    */
   PxdItem createInstanceResource(String appName, String formName, String uuid,
 				 String resource, request)
   {
-    String formDef = "${appName}/${formName}"
-    def item = new PxdItem(path: resource, uuid: uuid, formDef: formDef, instance: true,
-    format: 'binary')
-    item.assignStream(request.inputStream.bytes).save()
-    if (log.debugEnabled) log.debug "createInstanceResource.item: ${item}"
+    if (log.debugEnabled) {
+      log.debug "createInstanceResource << ${appName}/${formName}/${resource}"
+    }
+    def item = null
+    item = PxdItem.findByPath(resource)
+    if (log.debugEnabled) log.debug "createInstanceResource.item ${item}"
+
+    if (!item) {
+      String formDef = "${appName}/${formName}"
+      item = new PxdItem(path: resource, uuid: uuid, formDef: formDef, instance: true,
+      format: 'binary')
+      item.assignStream(request.inputStream.bytes).save()
+    }
+
+    if (log.debugEnabled) log.debug "createInstanceResource >> ${item}"
     return item
   }
 

@@ -109,5 +109,5 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-	   //debug 'org.motrice.postxdb', 'grails.app.controllers', 'org.motrice.postxdb.RestService'
+	   debug 'org.motrice.postxdb', 'grails.app.controllers', 'org.motrice.postxdb.RestService'
 }
