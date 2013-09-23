@@ -34,6 +34,13 @@ class BoxDocStep {
     lastUpdated nullable: true
   }
 
+  /**
+   * Get pdf contents for this doc step
+   */
+  BoxContents pdfContents() {
+    BoxContents.find('from BoxContents c where c.step.id=? and c.name=?', [this.id, 'pdf'])
+  }
+
   String toString() {
     "[DocStep ${docNo}: ${docboxRef}, ${signCount}, ${contents?.size()}]"
   }

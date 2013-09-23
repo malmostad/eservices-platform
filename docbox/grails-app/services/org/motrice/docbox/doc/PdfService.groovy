@@ -1,5 +1,6 @@
 package org.motrice.docbox.doc
 
+import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.DocData
 import org.motrice.docbox.form.PxdFormdefVer
 import org.motrice.docbox.form.PxdItem
@@ -61,7 +62,8 @@ class PdfService {
     def formData = new FormData(docData.dataItem.text)
     // if (debug) println "FORM DATA: ${formData}"
     def formDef = new FormDef(docData.formDef.text)
-    formDef.build()
+    formDef.build(log)
+    if (log.debugEnabled) log.debug formDef.dump()
     createPreview(docStep, formDef, formData)
     def docbook = createDocBook(docStep, formDef, formData)
     return docbookXmlToPdf(docStep, docData, docbook, debug)
@@ -76,7 +78,7 @@ class PdfService {
    * RETURN BoxContents containing DocBook XML
    */
   private BoxContents createDocBook(BoxDocStep docStep, formDef, formData) {
-    def map = formDef.generateDocBook(formData)
+    def map = formDef.generateDocBook(formData, log)
     def docbook = docService.createContents(docStep, 'docbook.xml', 'xml')
     docbook.assignText(map.xml)
     if (!docbook.save(insert: true)) {
@@ -106,51 +108,66 @@ class PdfService {
   /**
    * Convert a DocBook XML PxdItem, generating a PDF PxdItem
    * Add the new Pdf PxdItem to the data
-   * Return the new contents
+   * Return the new contents or throw a DocBoxException on failure
+   * Throwing a RuntimeException will roll back the transaction
    */
-  private BoxContents docbookXmlToPdf(BoxDocStep docStep, DocData docData, BoxContents docbook,
-			  boolean debug)
+  private BoxContents docbookXmlToPdf(BoxDocStep docStep, DocData docData,
+				      BoxContents docbook, boolean debug)
   {
     def processor = new Processor(debug)
-    if (debug) println "docbookXmlToPdf ${docStep} << ${processor.tempDir.absolutePath}"
+    if (log.debugEnabled) {
+      log.debug "docbookXmlToPdf ${docStep} << ${processor.tempDir.absolutePath}"
+    }
     // Store DocBook xml
     storeBoxContents(docbook, processor.tempDir)
 
     // Copy all pxdItems to the temp directory defined by the processor
     // Attachments
     docData.auxItems.each {pxdItem ->
-      storePxdItem(pxdItem, processor.tempDir)
-      if (log.debugEnabled) log.debug "xmlToPdf attachment: ${pxdItem}"
+      storePxdItem(pxdItem, processor.tempDir, 'attachment')
     }
     // Fixed items
     docData.fixedItems.each {pxdItem ->
-      storePxdItem(pxdItem, processor.tempDir)
-      if (log.debugEnabled) log.debug "xmlToPdf fixed item: ${pxdItem}"
+      storePxdItem(pxdItem, processor.tempDir, 'fixed item')
     }
 
     // Run the conversion pipeline
     def result = processor.toPdf()
+    if (log.debugEnabled) log.debug "toPdf returns ${result}"
     def pdfPath = result.pdf
     def logPath = result.log
+    def excMsg = result.exc
 
     // Store the newly generated pdf
     def pdfFile = new File(pdfPath)
-    def pdf = docService.createContents(docStep, 'pdf', 'binary')
-    pdf.checksum = signService.computeChecksum(pdf)
-    pdf.assignStream(pdfFile.bytes)
-    if (!pdf.save(insert: true)) log.error "BoxContents save: ${pdf.errors.allErrors.join(',')}"
+    def pdf = null
+    if (pdfFile.exists()) {
+      pdf = docService.createContents(docStep, 'pdf', 'binary')
+      pdf.checksum = signService.computeChecksum(pdf)
+      pdf.assignStream(pdfFile.bytes)
+      if (!pdf.save(insert: true)) {
+	log.error "BoxContents (pdf) save: ${pdf.errors.allErrors.join(',')}"
+      }
+    }
 
     // Store the log file
     def logFile = new File(logPath)
-    def conversionLog = docService.createContents(docStep, 'convlog', 'text')
-    conversionLog.assignText(logFile.text)
-    if (!conversionLog.save(insert: true)) {
-      log.error "BoxContents save: ${conversionLog.errors.allErrors.join(',')}"
+    if (logFile.exists()) {
+      def conversionLog = docService.createContents(docStep, 'convlog', 'text')
+      conversionLog.assignText(logFile.text)
+      if (!conversionLog.save(insert: true)) {
+	log.error "BoxContents (log) save: ${conversionLog.errors.allErrors.join(',')}"
+      }
     }
 
     // Clean up temp files
     processor.cleanUp()
-    if (log.debugEnabled) log.debug "xmlToPdf >> ${pdf}"
+    if (excMsg) {
+      log.error "Pdf conversion FAILS: ${excMsg}"
+      throw new DocBoxException(excMsg)
+    }
+
+    if (log.debugEnabled) log.debug "docbookXmlToPdf >> ${pdf}"
     return pdf
   }
 
@@ -171,9 +188,10 @@ class PdfService {
   /**
    * Store pxdItem content in the temp directory
    */
-  private storePxdItem(PxdItem pxdItem, File tempDir) {
+  private storePxdItem(PxdItem pxdItem, File tempDir, String comment) {
     // Do not store anything with a slash in the path
     if (pxdItem.path.indexOf('/') > 0) return
+    if (log.debugEnabled) log.debug "${comment}: ${pxdItem}"
     def tgtFile = new File(tempDir, pxdItem.path)
     if (pxdItem.text) {
       tgtFile.text = pxdItem.text

@@ -49,10 +49,13 @@ class Control {
    * Add bind information (type, required) during build
    * tag must be a bind tag
    */
-  def addBind(Tag tag) {
-    if (tag) {
-      type = tag.attr['type']
-      required = tag.attr['required']?.size() > 0
+  def addBind(Tag bindtag) {
+    if (bindtag) {
+      type = bindtag.attr['type']
+      required = bindtag.attr['required']?.size() > 0
+      if (bindtag.isFixedMedia() && !tag.isFixedMedia()) {
+	tag.mediatype = bindtag.mediatype
+      }
     }
   }
 
@@ -77,7 +80,7 @@ class Control {
   }
 
   def isFixedMedia() {
-    tag.isMedia() && tag.attr.mediatype.size() > 0
+    tag.isFixedMedia()
   }
 
   String toString() {

@@ -47,7 +47,7 @@ class FormDef {
    * Parse the form definition, set up a data structure representing the
    * form definition (without filled-in data)
    */
-  def build() {
+  def build(log) {
     def html = new XmlSlurper().parseText(text)
     // There is only one model
     def model = html.'**'.find {it.@id.text() == 'fr-form-model'}
@@ -56,9 +56,15 @@ class FormDef {
     // data.xml is a form definition in this case, an unfortunate mixture of ideas
     if (!model) throw new IllegalStateException('Failure. Is this in orbeon/builder? Does not work.')
 
+    // Some mediatype info occurs in the body (Orbeon 4)
+    def views = html.'**'.findAll {it.@id.text() ==~ /control-\d+-control/}
+    def mtypeMap = buildMediatype(views)
+    if (log.debugEnabled) log.debug "Formdef.build mtypeMap: ${mtypeMap}"
+
     // Find the bind information
     def bindInst = model.bind.find {it.@id.text() == 'fr-form-binds'}
-    def bindMap = buildBindings(bindInst)
+    def bindMap = buildBindings(bindInst, mtypeMap)
+    if (log.debugEnabled) log.debug "Formdef.build bindMap: ${bindMap}"
 
     // Find the form instance, a list of sections, each containing a list of controls
     // The form instance is defined in the form definition as a kind of template
@@ -115,12 +121,15 @@ class FormDef {
    * Traverse bindings, save the control bindings in a map (String, Tag)
    * where the key is the control name (like "control-5")
    */
-  private buildBindings(bindInst) {
+  private buildBindings(bindInst, mtypeMap) {
     def map = [:]
     bindInst.bind.each {sectBind ->
       sectBind.bind.each {ctrlBind ->
+	def id = ctrlBind.@id.text()
 	def name = ctrlBind.@name.text()
-	map[name] = new Tag(name, ctrlBind.text(), ctrlBind.attributes())
+	def tag = new Tag(name, ctrlBind.text(), ctrlBind.attributes())
+	if (mtypeMap[id] && !tag.isMedia()) tag.mediatype = mtypeMap[id]
+	map[name] = tag
       }
     }
 
@@ -142,6 +151,24 @@ class FormDef {
     }
 
     return new FormMeta(metas)
+  }
+
+  /**
+   * Build a map containing mediainfo from the form body
+   * @return a map (String, String)
+   * The key is a binding name, typically 'control-5-bind'
+   * The value is the value of a mediatype attribute
+   * No map entry for bindings without a mediatype attribute
+   */
+  private buildMediatype(views) {
+    def mediatypeMap = [:]
+    views.each {el ->
+      def bindName = el.@bind.text()
+      def mediatype = el.@mediatype.text()
+      if (mediatype) mediatypeMap[bindName] = mediatype
+    }
+
+    return mediatypeMap
   }
 
   /**
@@ -176,7 +203,7 @@ class FormDef {
    * Data names are assumed to be unique
    * The key is the last part (basename) of the resource
    */
-  def generateDocBook(FormData fd) {
+  def generateDocBook(FormData fd, log) {
     def sw = new StringWriter()
     def pw = new PrintWriter(sw)
     pw.println(PRELUDE)
@@ -208,7 +235,9 @@ class FormDef {
 	      varlistentry() {
 		term(ctrl.label? "${ctrl.label}: " : '') {}
 		listitem() {
-		  if (tag.isMedia()) {
+		  if (log.debugEnabled) log.debug "FormData: ${tag} isMedia: ${tag.isMedia()}"
+		  if (log.debugEnabled) log.debug "Formdef:  ${ctrl} isMedia: ${ctrl?.isFixedMedia()}"
+		  if (tag.isMedia() || ctrl.isFixedMedia()) {
 		    def att = new Attachment(tag)
 		    map[att.basename()] = att
 		    mediaobject() {
@@ -307,7 +336,20 @@ class FormDef {
     return sw
   }
 
- String toString() {
+  /**
+   * Print the data structure
+   */
+  String dump() {
+    def sb = new StringBuilder()
+    sb.append('{FormDef meta=').append(meta)
+    //sb.append('; sections=').append(sections)
+    sb.append('; controlMap=').append(controlMap)
+    sb.append('; resourceList=').append(resourceList)
+    sb.append('}')
+    return sb.toString()
+  }
+
+  String toString() {
     "{FormDef meta=${meta} sections=${sections}}"
   }
 

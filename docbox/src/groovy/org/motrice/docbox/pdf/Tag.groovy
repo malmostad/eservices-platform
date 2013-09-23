@@ -21,11 +21,23 @@ class Tag {
     attr = tagAttr
   }
 
+  String getMediatype() {
+    attr.mediatype
+  }
+
+  def setMediatype(String mediatype) {
+    attr['mediatype'] = mediatype
+  }
+
   /**
    * Our implicit way of determining if this is a media object
    */
   boolean isMedia() {
     attr.mediatype != null
+  }
+
+  boolean isFixedMedia() {
+    isMedia() && attr.mediatype.size() > 0
   }
 
   String toString() {
