@@ -120,13 +120,11 @@ class PdfService {
     // Copy all pxdItems to the temp directory defined by the processor
     // Attachments
     docData.auxItems.each {pxdItem ->
-      storePxdItem(pxdItem, processor.tempDir)
-      if (log.debugEnabled) log.debug "xmlToPdf attachment: ${pxdItem}"
+      storePxdItem(pxdItem, processor.tempDir, 'attachment')
     }
     // Fixed items
     docData.fixedItems.each {pxdItem ->
-      storePxdItem(pxdItem, processor.tempDir)
-      if (log.debugEnabled) log.debug "xmlToPdf fixed item: ${pxdItem}"
+      storePxdItem(pxdItem, processor.tempDir, 'fixed item')
     }
 
     // Run the conversion pipeline
@@ -172,9 +170,10 @@ class PdfService {
   /**
    * Store pxdItem content in the temp directory
    */
-  private storePxdItem(PxdItem pxdItem, File tempDir) {
+  private storePxdItem(PxdItem pxdItem, File tempDir, String comment) {
     // Do not store anything with a slash in the path
     if (pxdItem.path.indexOf('/') > 0) return
+    if (log.debugEnabled) log.debug "${comment}: ${pxdItem}"
     def tgtFile = new File(tempDir, pxdItem.path)
     if (pxdItem.text) {
       tgtFile.text = pxdItem.text
