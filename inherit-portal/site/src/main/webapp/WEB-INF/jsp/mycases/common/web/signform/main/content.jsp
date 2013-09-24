@@ -19,40 +19,60 @@
     e-mail: info _at_ inherit.se 
     mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
     phone: +46 8 641 64 14 
- --%> 
- 
-<%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
+ --%>
+
+<%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.TextDocument"--%>
-s 
+
 <c:choose>
-  <c:when test="${empty document}">
-    <tag:pagenotfound/>
-  </c:when>
-  <c:otherwise>
-    <c:if test="${not empty document.title}">
-      <hst:element var="headTitle" name="title">
-        <c:out value="${document.title}"/>
-      </hst:element>
-      <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
-    </c:if>
-    
-    <c:if test="${not empty guide}">
-		<h1>${guide.title}</h1>
-		<p>${guide.summary}</p>
-		<hst:html hippohtml="${guide.html}"/>
-	</c:if>
-					
-	<div class="row-fluid">
-		<div class="span12">
-			<form method="post" action="https://idp.test.malmo.se/wa/auth?authmech=e-id-signer">
-			    Dokument: <a href="${pdfUrl}">${docNo}</a>
-			    Kontrollsumma: ${pdfChecksum}
-				<input type="hidden" name="text" value="${signText}"/>
-				<input type="hidden" name="location" value="${responseUrl}"/>
-				<input type="submit"/>
-			</form>
+	<c:when test="${empty document}">
+		<tag:pagenotfound />
+	</c:when>
+	<c:otherwise>
+		<c:if test="${not empty document.title}">
+			<hst:element var="headTitle" name="title">
+				<c:out value="${document.title}" />
+			</hst:element>
+			<hst:headContribution keyHint="headTitle" element="${headTitle}" />
+		</c:if>
+
+		<div class="row-fluid">
+			<div class="span12">
+
+				<c:if test="${not empty guide}">
+					<h1>${guide.title}</h1>
+					<p>${guide.summary}</p>
+					<hst:html hippohtml="${guide.html}" />
+				</c:if>
+
+				<c:if test="${not empty document}">
+					<h1>${document.title}</h1>
+					<p>${document.summary}</p>
+					<hst:html hippohtml="${document.html}" />
+				</c:if>
+
+				<table>
+				  <thead>
+				    <tr>
+				      <th>Dokument</th>
+				      <th>Kontrollsumma</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				    <tr>
+				    	<td><a href="${pdfUrl}">${docNo}</a></td>
+				    	<td>${pdfChecksum}</td>
+				    </tr>
+				  </tbody>
+				</table>					    
+
+				<form method="post" action="https://idp.test.malmo.se/wa/auth?authmech=e-id-signer">
+					<input type="hidden" name="text" value="${signText}" />
+					<input type="hidden" name="location" value="${responseUrl}" /> <input
+						type="submit" value="G&aring; till signering"/>
+				</form>
+			</div>
 		</div>
-	</div>    
-    
-  </c:otherwise>  
+
+	</c:otherwise>
 </c:choose>
