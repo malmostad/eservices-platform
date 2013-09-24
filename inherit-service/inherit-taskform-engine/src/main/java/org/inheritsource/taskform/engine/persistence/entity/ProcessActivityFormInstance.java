@@ -33,8 +33,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="mtf_process_activity_form_instance")
 public class ProcessActivityFormInstance {
 	
 	@Id

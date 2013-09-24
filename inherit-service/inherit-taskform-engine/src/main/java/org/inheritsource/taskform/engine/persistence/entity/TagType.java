@@ -26,8 +26,10 @@ package org.inheritsource.taskform.engine.persistence.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="mtf_tag_type")
 public class TagType {
 
 	// system defined tag types
