@@ -21,9 +21,11 @@ import org.apache.commons.logging.LogFactory
  * Logic for converting an Orbeon form to PDF/A.
  */
 class PdfService {
-  private static final log = LogFactory.getLog(this)
   static transactional = true
+  private static final log = LogFactory.getLog(this)
+  static final String PDF_FORMAT_PAT = 'http://motrice.org/spec/docbox/%s/pdf'
 
+  def grailsApplication
   def docService
   def signService
 
@@ -60,13 +62,14 @@ class PdfService {
    */
   BoxContents generatePdfa(DocData docData, BoxDocStep docStep, boolean debug) {
     def formData = new FormData(docData.dataItem.text)
-    // if (debug) println "FORM DATA: ${formData}"
     def formDef = new FormDef(docData.formDef.text)
-    formDef.build(log)
+    def formatSpec = String.format(PDF_FORMAT_PAT,
+				   grailsApplication.metadata['app.version'])
+    formDef.build(docData, docStep, formatSpec, log)
     if (log.debugEnabled) log.debug formDef.dump()
     createPreview(docStep, formDef, formData)
-    def docbook = createDocBook(docStep, formDef, formData)
-    return docbookXmlToPdf(docStep, docData, docbook, debug)
+    def docContents = createDocBook(docStep, formDef, formData)
+    return docbookXmlToPdf(docStep, docData, docContents, debug)
   }
 
   /**
@@ -75,17 +78,26 @@ class PdfService {
    * to form data
    * Also copies any external pxdItems into this form data
    * (Main example is form logo)
-   * RETURN BoxContents containing DocBook XML
+   * RETURN a map containing DocBook and RDF contents, with the following keys:
+   * docbook: BoxContents with DocBook XML
+   * rdf: BoxContents with RDF (metadata) XML fragment
    */
-  private BoxContents createDocBook(BoxDocStep docStep, formDef, formData) {
+  private Map createDocBook(BoxDocStep docStep, formDef, formData) {
     def map = formDef.generateDocBook(formData, log)
+
     def docbook = docService.createContents(docStep, 'docbook.xml', 'xml')
-    docbook.assignText(map.xml)
+    docbook.assignText(map.xmldocbook)
     if (!docbook.save(insert: true)) {
       log.error "BoxContents save: ${docbook.errors.allErrors.join(',')}"
     }
 
-    return docbook
+    def rdf = docService.createContents(docStep, 'rdf.xml', 'xml')
+    rdf.assignText(map.xmlrdf)
+    if (!rdf.save(insert: true)) {
+      log.error "BoxContents save: ${rdf.errors.allErrors.join(',')}"
+    }
+
+    return [docbook: docbook, rdf: rdf]
   }
 
   /**
@@ -112,14 +124,15 @@ class PdfService {
    * Throwing a RuntimeException will roll back the transaction
    */
   private BoxContents docbookXmlToPdf(BoxDocStep docStep, DocData docData,
-				      BoxContents docbook, boolean debug)
+				      Map docContents, boolean debug)
   {
     def processor = new Processor(debug)
     if (log.debugEnabled) {
       log.debug "docbookXmlToPdf ${docStep} << ${processor.tempDir.absolutePath}"
     }
-    // Store DocBook xml
-    storeBoxContents(docbook, processor.tempDir)
+    // Store DocBook and RDF xml
+    storeBoxContents(docContents.docbook, processor.tempDir)
+    storeBoxContents(docContents.rdf, processor.tempDir)
 
     // Copy all pxdItems to the temp directory defined by the processor
     // Attachments

@@ -1,9 +1,13 @@
 package org.motrice.docbox.pdf
 
+import java.text.SimpleDateFormat
+
 /**
  * Form metadata
  */
 class FormMeta {
+  public static final String FMT = 'yyyy-MM-dd HH:mm:ss'
+
   // application-name
   String appName
 
@@ -27,6 +31,18 @@ class FormMeta {
 
   // logo
   Attachment logo
+
+  // Uuid identifying the form instance
+  String instanceUuid
+
+  // Document number of this form instance
+  String docNo
+
+  // PDF creation timestamp
+  Date created
+
+  // PDF format spec (an URL)
+  String pdfFormatSpec
 
   /**
    * Construct from a map of metadata tags (String name to Tag)
@@ -55,8 +71,23 @@ class FormMeta {
     if (tag) logo = new Attachment(tag)
   }
 
+  String getCreatedFormatted() {
+    created?.format(FMT)
+  }
+
+  String getFormdefPath() {
+    "${appName}/${formName}"
+  }
+
   String toString() {
-    "{FormMeta ${appName}/${formName} '${title}'/'${descr}' logo=${logo}}"
+    def sb = new StringBuilder()
+    sb.append('{FormMeta ').append(formdefPath)
+    sb.append(' [').append(title).append('][').append(descr).append(']')
+    sb.append(' docNo=').append(docNo)
+    sb.append(' created=').append(createdFormatted)
+    sb.append(' format=').append(pdfFormatSpec)
+    sb.append('}')
+    return sb.toString()
   }
 
 }

@@ -24,16 +24,20 @@ class Processor {
   // Print stylesheet standard path
   static final PRINTSTYLE = '/usr/share/xml/docbook/stylesheet/docbook-xsl/fo/docbook.xsl'
 
-  // Standard name of DocBook XML file
+  // Name of DocBook XML file
   static final DOCBOOKFILE = 'docbook.xml'
 
-  // Standard name of the FO file
-  static final FOFILE = 'publish.fo'
+  // Names of original FO file and modified (RDF metadata added)
+  static final FOFILE1 = 'publish1.fo'
+  static final FOFILE2 = 'publish2.fo'
 
-  // Standard name of the generated PDF file
+  // Name of the generated PDF file
   static final PDFFILE = 'publish.pdf'
 
-  // Standard name of the log file
+  // Name of the metadata file
+  static final RDFFILE = 'rdf.xml'
+
+  // Name of the log file
   static final LOGFILE = 'publish.log'
 
   // xsltproc command
@@ -52,6 +56,9 @@ class Processor {
   
   // fop command
   static final FOP = ['/usr/bin/fop', '-pdfprofile', 'PDF/A-1a', '-c']
+
+  // Tag after which the FO file is split
+  static final SPLIT_TAG = '</fo:layout-master-set>'
 
   // Should temp files be kept on cleanup?
   boolean keepTempFiles
@@ -97,7 +104,8 @@ class Processor {
     def log = new FileWriter(abspath(LOGFILE))
     // Standard error is collected here and then added to the log file
     def err = new StringBuilder()
-    def foPath = abspath(FOFILE)
+    def foPath1 = abspath(FOFILE1)
+    def foPath2 = abspath(FOFILE2)
     // Process exit code
     Integer exitCode
     // Std error from a process (String)
@@ -105,7 +113,7 @@ class Processor {
     try {
       // DocBook XML to FO
       def cmd = XSLTPROC.collect {it}
-      cmd << foPath
+      cmd << foPath1
       cmd << PRINTSTYLE
       cmd << abspath(DOCBOOKFILE)
       def proc = cmd.execute()
@@ -125,15 +133,17 @@ class Processor {
     }
 
     // FO to PDF
-    def foFile = new File(foPath)
+    def foFile1 = new File(foPath1)
+    def foFile2 = new File(foPath2)
     def pdfPath = abspath(PDFFILE)
 
-    if (success(exitCode) && foFile.exists()) {
+    if (success(exitCode) && foFile1.exists()) {
+      insertMetadata(foFile1, foFile2)
       try {
 	def cmd = FOP.collect {it}
 	cmd << fopConfigPath
 	cmd << '-fo'
-	cmd << foPath
+	cmd << foPath2
 	cmd << '-pdf'
 	cmd << pdfPath
 	def proc = cmd.execute()
@@ -158,6 +168,16 @@ class Processor {
 
     log.close()
     return [pdf: pdfPath, log: abspath(LOGFILE), exc: (success(exitCode)? null : procMessage)]
+  }
+
+  private insertMetadata(File infile, File outfile) {
+    // Split the FO input where metadata is going to be
+    def fo = infile.text
+    def idx = fo.indexOf(SPLIT_TAG) + SPLIT_TAG.length()
+    def rdfFile = new File(abspath(RDFFILE))
+    outfile.text = fo.substring(0, idx)
+    outfile << rdfFile.text
+    outfile << fo.substring(idx)
   }
 
   def abspath(String fileName) {

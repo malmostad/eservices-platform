@@ -4,7 +4,7 @@ import org.motrice.docbox.form.PxdFormdefVer
 import org.motrice.docbox.form.PxdItem
 
 /**
- * Basic document data as retrieved from the database.
+ * Basic document data (definition and instance) as retrieved from the database.
  * Convenience class.
  */
 class DocData {
