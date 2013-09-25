@@ -1,6 +1,8 @@
 package org.motrice.docbox.pdf
 
 import groovy.xml.MarkupBuilder
+import org.motrice.docbox.DocData
+import org.motrice.docbox.doc.BoxDocStep
 
 /**
  * An XForms form definition according to Orbeon, an xhtml document
@@ -47,7 +49,7 @@ class FormDef {
    * Parse the form definition, set up a data structure representing the
    * form definition (without filled-in data)
    */
-  def build(log) {
+  def build(DocData docData, BoxDocStep docStep, String pdfFormatSpec, log) {
     def html = new XmlSlurper().parseText(text)
     // There is only one model
     def model = html.'**'.find {it.@id.text() == 'fr-form-model'}
@@ -78,6 +80,10 @@ class FormDef {
     // Find form metadata
     def formMeta = model.instance.find {it.@id.text() == 'fr-form-metadata'}
     meta = buildMeta(formMeta)
+    meta.instanceUuid = docData.uuid
+    meta.docNo = docStep.docNo
+    meta.created = docStep.dateCreated
+    meta.pdfFormatSpec = pdfFormatSpec
 
     // Find form resources
     // TODO: We assume there is only one set of resources
@@ -196,12 +202,14 @@ class FormDef {
   /**
    * Generate DocBook XML from the filled-in form
    * RETURN a Map containing the following entries
-   * xml: DocBook XML text
+   * xmldocbook: DocBook XML text
+   * xmlrdf: RDF (Dublin Core) metadata as an XML text
    * resources: Resources needed by the XML text
    * The key is a string with the following format: <data>/<resource name>
    * The resource itself must be retrieved from the database
    * Data names are assumed to be unique
    * The key is the last part (basename) of the resource
+   * NOTE: The language (sv) is currently hardcoded
    */
   def generateDocBook(FormData fd, log) {
     def sw = new StringWriter()
@@ -210,9 +218,9 @@ class FormDef {
     pw.flush()
     def xml = new MarkupBuilder(sw)
     def map = [:]
-    xml.article(xmlns: DOCBOOKNS, version: '5.0') {
-      title(meta?.title ?: '--Form Title--')
-      subtitle() {
+    xml.article(xmlns: DOCBOOKNS, version: '5.0', lang: 'sv') {
+      title(meta.title ?: '--Titel saknas--')
+      subtitle(meta.descr ?: '--Beskrivning saknas--') {
 	if (meta?.logo) {
 	  def logo = meta.logo
 	  // Add logo resource
@@ -285,11 +293,75 @@ class FormDef {
 	  } // variablelist
 	} // section
       } // each sections
+      // Administrative data presented as a section
+      section() {
+	title('Om formuläret')
+	table() {
+	  title('Information om detta formulär') {}
+	  tgroup(cols: "2") {
+	    thead() {
+	      row() {
+		entry('Egenskap') {}
+		entry('Värde') {}
+	      }
+	    }
+	    tbody() {
+	      row() {
+		entry('Dokumentnummer') {}
+		entry(meta.docNo) {}
+	      }
+	      row() {
+		entry('Skapat') {}
+		entry(meta.createdFormatted) {}
+	      }
+	      row() {
+		entry('Formulär/utgåva') {}
+		entry(meta.formdefPath) {}
+	      }
+	      row() {
+		entry('Ursprung') {}
+		entry(meta.instanceUuid) {}
+	      }
+	    }
+	  }
+	}
+      }
     } // article
 
     sw.flush()
-    map.xml = sw.toString()
+    map.xmldocbook = sw.toString()
+    map.xmlrdf = generateRdfMeta()
     return map
+  }
+
+  /**
+   * Generate an RDF metadata block (XML text)
+   * The block is later inserted into the FO file
+   * Cannot declare the fo namespace here, printed literally
+   */
+  private String generateRdfMeta() {
+    def sw = new StringWriter()
+    def pw = new PrintWriter(sw)
+    pw.println('<fo:declarations>')
+    pw.flush()
+    def xml = new MarkupBuilder(sw)
+    xml.'x:xmpmeta'('xmlns:x': 'adobe:ns:meta/') {
+      'rdf:RDF'('xmlns:rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#') {
+	'rdf:Description'('rdf:about': meta.pdfFormatSpec, 'xmlns:dc': 'http://purl.org/dc/elements/1.1/') {
+	  'dc:title'(meta.title ?: '--Titel saknas--') {}
+	  'dc:description'(meta.descr ?: '--Beskrivning saknas--') {}
+	  'dc:date'(meta.createdFormatted) {}
+	  'dc:format'(meta.pdfFormatSpec) {}
+	  'dc:identifier'(meta.docNo) {}
+	  'dc:relation'(meta.formdefPath) {}
+	  'dc:source'(meta.instanceUuid) {}
+	}
+      }
+    }
+    sw.flush()
+    pw.println('</fo:declarations>')
+    pw.flush()
+    return sw.toString()
   }
 
   /**
