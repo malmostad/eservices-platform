@@ -219,8 +219,8 @@ class FormDef {
     def xml = new MarkupBuilder(sw)
     def map = [:]
     xml.article(xmlns: DOCBOOKNS, version: '5.0', lang: 'sv') {
-      title(meta?.title ?: '--Form Title--')
-      subtitle() {
+      title(meta.title ?: '--Titel saknas--')
+      subtitle(meta.descr ?: '--Beskrivning saknas--') {
 	if (meta?.logo) {
 	  def logo = meta.logo
 	  // Add logo resource
