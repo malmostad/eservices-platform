@@ -1,0 +1,129 @@
+(function() {
+  $(function() {
+    var Builder, Events, notifyOnChange, onUnderPointerChange, pointerPos, viewPos;
+    Builder = ORBEON.Builder;
+    Events = ORBEON.xforms.Events;
+    onUnderPointerChange = function(f) {
+      $(document).on('mousemove', f);
+      $(window).on('resize', f);
+      return Events.ajaxResponseProcessedEvent.subscribe(f);
+    };
+    Builder.onOffsetMayHaveChanged = function(f) {
+      Events.orbeonLoadedEvent.subscribe(f);
+      Events.ajaxResponseProcessedEvent.subscribe(f);
+      return $(window).on('resize', f);
+    };
+    Builder.findInCache = function(containerCache, top) {
+      return _.find(containerCache, function(container) {
+        return (container.offset.top <= top && top <= container.offset.top + container.height);
+      });
+    };
+    Builder.scrollTop = function() {
+      return f$.scrollTop($('.fb-main'));
+    };
+    Builder.adjustedOffset = function(jQueryObject) {
+      return _.tap(f$.offset(jQueryObject), function(offset) {
+        return offset.top += Builder.scrollTop();
+      });
+    };
+    Builder.currentContainerChanged = function(containerCache, _arg) {
+      var becomesCurrent, notifyChange, wasCurrent;
+      wasCurrent = _arg.wasCurrent, becomesCurrent = _arg.becomesCurrent;
+      notifyChange = notifyOnChange(wasCurrent, becomesCurrent);
+      return onUnderPointerChange(function() {
+        var newContainer, top, _ref;
+        if ((viewPos.left <= (_ref = pointerPos.left) && _ref <= viewPos.right)) {
+          top = pointerPos.top + Builder.scrollTop();
+          newContainer = Builder.findInCache(containerCache, top);
+        }
+        return notifyChange(newContainer);
+      });
+    };
+    Builder.currentRowColChanged = function(gridsCache, _arg) {
+      var becomesCurrentCol, becomesCurrentRow, currentGrid, notifyColChange, notifyRowChange, wasCurrentCol, wasCurrentRow;
+      wasCurrentRow = _arg.wasCurrentRow, becomesCurrentRow = _arg.becomesCurrentRow, wasCurrentCol = _arg.wasCurrentCol, becomesCurrentCol = _arg.becomesCurrentCol;
+      currentGrid = null;
+      (function() {
+        return Builder.currentContainerChanged(gridsCache, {
+          wasCurrent: function() {
+            return currentGrid = null;
+          },
+          becomesCurrent: function(g) {
+            return currentGrid = g;
+          }
+        });
+      })();
+      notifyRowChange = notifyOnChange(wasCurrentRow, becomesCurrentRow);
+      notifyColChange = notifyOnChange(wasCurrentCol, becomesCurrentCol);
+      return onUnderPointerChange(function() {
+        var newCol, newRow;
+        if (currentGrid != null) {
+          newRow = _.find(currentGrid.rows, function(r) {
+            var _ref;
+            return (r.offset.top <= (_ref = pointerPos.top + Builder.scrollTop()) && _ref <= r.offset.top + r.height);
+          });
+          newCol = _.find(currentGrid.cols, function(c) {
+            var _ref;
+            return (c.offset.left <= (_ref = pointerPos.left) && _ref <= c.offset.left + c.width);
+          });
+        }
+        notifyRowChange(newRow);
+        return notifyColChange(newCol);
+      });
+    };
+    viewPos = {
+      left: 0,
+      right: 0
+    };
+    (function() {
+      var updateViewPos;
+      updateViewPos = function() {
+        var fbMain;
+        fbMain = $('.fb-main');
+        viewPos.left = (f$.offset(fbMain)).left;
+        return viewPos.right = viewPos.left + (f$.width(fbMain));
+      };
+      return f$.on('load resize', updateViewPos, $(window));
+    })();
+    pointerPos = {
+      left: 0,
+      top: 0
+    };
+    (function() {
+      return ($(document)).on('mousemove', function(event) {
+        pointerPos.left = event.pageX;
+        return pointerPos.top = event.pageY;
+      });
+    })();
+    return notifyOnChange = function(was, becomes) {
+      var currentValue;
+      currentValue = null;
+      return function(newValue) {
+        var domElementChanged, elementPositionChanged, firstTime;
+        if (newValue != null) {
+          firstTime = function() {
+            return _.isNull(currentValue);
+          };
+          domElementChanged = function() {
+            return !(newValue.el.is(currentValue.el));
+          };
+          elementPositionChanged = function() {
+            return !(_.isEqual(newValue.offset, currentValue.offset));
+          };
+          if (firstTime() || domElementChanged() || elementPositionChanged()) {
+            if (currentValue != null) {
+              was(currentValue);
+            }
+            currentValue = newValue;
+            return becomes(newValue);
+          }
+        } else {
+          if (currentValue != null) {
+            was(currentValue);
+          }
+          return currentValue = null;
+        }
+      };
+    };
+  });
+}).call(this);
