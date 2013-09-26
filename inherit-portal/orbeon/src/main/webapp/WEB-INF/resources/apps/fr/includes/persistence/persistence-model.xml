@@ -1,0 +1,518 @@
+<!--
+  Copyright (C) 2012 Orbeon, Inc.
+
+  This program is free software; you can redistribute it and/or modify it under the terms of the
+  GNU Lesser General Public License as published by the Free Software Foundation; either version
+  2.1 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
+
+  The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+  -->
+<xf:model id="fr-persistence-model"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:xf="http://www.w3.org/2002/xforms"
+        xmlns:exf="http://www.exforms.org/exf/1-0"
+        xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+        xmlns:xxi="http://orbeon.org/oxf/xml/xinclude"
+        xmlns:saxon="http://saxon.sf.net/"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+        xmlns:frf="java:org.orbeon.oxf.fr.FormRunner"
+        xmlns:secure="java:org.orbeon.oxf.util.SecureUtils"
+        xmlns:process="java:org.orbeon.oxf.fr.SimpleProcess">
+
+    <xf:var name="parameters" value="xxf:instance('fr-parameters-instance')" as="element()"/>
+    <xf:var name="app"        value="$parameters/app" as="xs:string"/>
+    <xf:var name="form"       value="$parameters/form" as="xs:string"/>
+    <xf:var name="is-fb"      value="$app = 'orbeon' and $form = 'builder'"/>
+    <xf:var name="document"   value="$parameters/document"/>
+    <xf:var name="mode"       value="$parameters/mode"/>
+
+    <xf:var name="persistence-instance" value="instance('fr-persistence-instance')"/>
+    <xf:var name="autosave" value="$persistence-instance/autosave"/>
+    <!-- Autosave disabled with Form Builder, see https://github.com/orbeon/orbeon-forms/issues/1169 -->
+    <xf:var name="autosave-enabled" value="xxf:property('oxf.fr.support-autosave')
+                                           and exists(xxf:get-remote-user())
+                                           and $mode = ('new', 'edit')
+                                           and not($is-fb)"/>
+    <xf:var name="autosave-delay"   value="xxf:property(string-join(('oxf.fr.detail.autosave-delay', $app, $form), '.'))"/>
+
+    <!-- 1. Model initialization when we have a specific app and form -->
+    <xf:action event="xforms-model-construct-done" if="not($mode = ('summary', 'home')) and $app != '*' and $form != '*'">
+
+        <!-- Initialize parameters to pass to "new" service -->
+        <xf:var name="pass-request-parameters" value="xxf:property(string-join(('oxf.fr.detail.new.service.passing-request-parameters', $app, $form), '.'))"/>
+        <xf:action iterate="xxf:split($pass-request-parameters)">
+            <xf:var name="parameter-name" value="."/>
+            <xf:var name="parameter-value" value="xxf:get-request-parameter($parameter-name)"/>
+            <xf:insert context="instance('fr-service-parameters')" origin="xxf:element($parameter-name, $parameter-value)"/>
+        </xf:action>
+
+        <!-- Handle loading of initial data for new/test/edit/view/pdf/email modes only -->
+        <xf:action if="$mode = ('new', 'test', 'edit', 'view', 'pdf', 'email')">
+
+            <xf:var name="is-new-id" value="normalize-space($document) = ''"/>
+            <xf:var name="is-xml-submit" value="exists(xxf:get-request-attribute('fr-form-data'))"/>
+            <xf:var name="is-submit" value="$is-xml-submit or exists(xxf:get-request-parameter('fr-form-data'))"/>
+
+            <!-- Create random document id if none is provided. This is the default for 'new', but a missing id is also
+                 allowed for 'edit', 'view', etc., when data is posted to the page. -->
+            <xf:setvalue if="$is-new-id" ref="$document" value="secure:randomHexId()"/>
+
+            <!-- Case of 'new' mode where we load the initial data via a service -->
+            <xf:var name="new-from-service" value="$mode = ('new', 'test') and xxf:property(string-join(('oxf.fr.detail.new.service.enable', $app, $form), '.'))"/>
+            <xf:action if="$new-from-service">
+                <xf:message level="xxf:log-debug">Loading new data from service</xf:message>
+                <xf:send submission="fr-get-instance-from-service"/>
+            </xf:action>
+
+            <!-- Keep initial data for clear button. We can argue if we would like instead to keep data submitted to
+                /new below. Would that break in case of switching modes (script/noscript)? Here seems to be a good start. -->
+            <xf:insert ref="instance('fr-initial-instance')" origin="xxf:instance('fr-form-instance')"/>
+
+            <!-- NOTE: We used to do a sort of permission check here for submits. Since #75 is implemented and there is
+                 a proper authorization mechanism, this check is no longer required. -->
+
+            <xf:action if="$is-submit">
+
+                <!-- Do we have data posted to this form as a parameter? -->
+                <xf:action if="not($is-xml-submit)">
+                    <xf:var name="form-data" value="xxf:get-request-parameter('fr-form-data')"/>
+                    <xf:action if="$form-data">
+                        <xf:message level="xxf:log-debug">Loading data submitted to the page as parameter</xf:message>
+                        <xf:var name="xml-data" value="saxon:parse(saxon:base64Binary-to-string(xs:base64Binary($form-data), 'UTF-8'))"/>
+                        <xf:insert ref="xxf:instance('fr-form-instance')" origin="$xml-data"/>
+                    </xf:action>
+                </xf:action>
+
+                <!-- Do we have data posted to this form as XML? -->
+                <xf:action if="$is-xml-submit">
+                    <xf:message level="xxf:log-debug">Loading data submitted to the page as XML</xf:message>
+                    <xf:var name="form-data" value="xxf:get-request-attribute('fr-form-data')" as="document-node()?"/>
+                    <xf:insert ref="xxf:instance('fr-form-instance')" origin="$form-data"/>
+                </xf:action>
+
+                <!-- Set initial data as dirty, because this is the case typically of switching between script/noscript
+                     mode, and we can't really know if the data is clean or dirty but would like to enable the save button -->
+                <xf:setvalue if="$mode = 'edit'" ref="$persistence-instance/initial-data-status">dirty</xf:setvalue>
+            </xf:action>
+
+            <!-- In 'new' mode only, after an external document has been set, recalculate defaults (and rebuild so the refs
+                 in the binds are updated). -->
+            <xf:action if="$new-from-service or ($mode = ('new', 'test') and $is-submit)">
+                <!-- After we get the document from the persistence layer, recalculate defaults (and rebuild so the refs in the binds are updated) -->
+                <xf:message level="xxf:log-debug">Updating initial values for externally-loaded new document</xf:message>
+                <xf:rebuild model="fr-form-model"/>
+                <xf:recalculate xxf:defaults="true" model="fr-form-model"/>
+            </xf:action>
+
+            <!-- Case of modes other than new where the data to be edited or viewed is loaded from the persistence layer -->
+            <xf:action if="not($mode = ('new', 'test')) and not($is-new-id) and not($is-submit)">
+                <!-- Load document with the provided id from persistence layer -->
+                <xf:message level="xxf:log-debug">Loading data by id from persistence layer: <xf:output value="$document"/></xf:message>
+                <xf:var name="draft-requested" value="xxf:get-request-parameter('draft') = 'true'"/>
+                <xf:action if="$draft-requested">
+                    <xf:send submission="fr-get-document-submission">
+                        <xxf:context name="data-or-draft" value="'draft'"/>
+                    </xf:send>
+                </xf:action>
+                <xf:action if="not($draft-requested)">
+                    <xf:insert context="instance('fr-search-drafts-request')/drafts" origin="xxf:attribute('for-document-id', $document)"/>
+                    <xf:send if="$autosave-enabled" submission="fr-search-drafts-submission"/>
+                    <xf:var name="draft-found" value="exists(instance('fr-search-drafts-response')/document)"/>
+
+                    <!-- Remember to show the dialog upon xforms-ready -->
+                    <xf:setvalue
+                        if="$draft-found"
+                        ref="instance('fr-persistence-instance')/initial-dialog-to-show"
+                        value="'found-draft-for-document'"/>
+
+                    <!-- Otherwise just load the data -->
+                    <xf:send if="not($draft-found)" submission="fr-get-document-submission">
+                        <xxf:context name="data-or-draft" value="'data'"/>
+                    </xf:send>
+                </xf:action>
+            </xf:action>
+
+            <!-- For new documents, see if we have drafts -->
+            <xf:action if="$mode = 'new'">
+                <xf:insert context="instance('fr-search-drafts-request')/drafts" origin="xxf:attribute('for-never-saved-document', 'true')"/>
+                <xf:send if="$autosave-enabled" submission="fr-search-drafts-submission"/>
+                <xf:var name="drafts-found" value="count(instance('fr-search-drafts-response')/document)"/>
+
+                <!-- Remember to show the dialog upon xforms-ready -->
+                <xf:setvalue
+                    if="$drafts-found > 0"
+                    ref="instance('fr-persistence-instance')/initial-dialog-to-show"
+                    value="if ($drafts-found = 1) then 'found-draft-for-never-saved' else 'found-drafts-for-never-saved'"/>
+            </xf:action>
+
+            <xf:message level="xxf:log-debug">
+                $is-submit: <xf:output value="$is-submit"/>
+                $mode: <xf:output value="$mode"/>
+                $is-new-id: <xf:output value="$is-new-id"/>
+            </xf:message>
+
+            <!-- Don't allow if we didn't get a submit and we don't have the proper id depending on the mode
+
+                 NOTE: 403 applies well to the first condition. For the second condition, a 404 could also be possible.
+             -->
+            <xf:action if="not($is-submit) and not($is-new-id and $mode = ('new', 'test') or not($mode = ('new', 'test')))" type="xpath">
+                frf:sendError(403)
+            </xf:action>
+        </xf:action>
+
+        <!-- Notify that the data is ready -->
+        <xf:dispatch targetid="fr-form-model" name="fr-data-ready"/>
+
+    </xf:action>
+
+    <!-- 2. Check form availability based on form metadata -->
+    <!-- Do this here as we need fr-form-model to be initialized. -->
+    <xf:action
+        event="xforms-ready"
+        if="xxf:instance('fr-form-metadata')/available = 'false'"
+        type="xpath">frf:sendError(404)</xf:action>
+
+    <!-- 3. Check form permissions for detail modes -->
+    <xf:action event="xforms-ready" if="not($mode = ('summary', 'home'))">
+
+        <!-- Compute authorized operations -->
+        <xf:var name="from-persistence" value="instance('fr-authorized-operations')/@from-persistence"/>
+        <xf:var name="ops" value="if (exists($from-persistence))
+                                  then tokenize($from-persistence, '\s')
+                                  else frf:javaAuthorizedOperationsBasedOnRoles(xxf:instance('fr-form-metadata')/permissions)"/>
+
+        <xf:setvalue
+            ref="instance('fr-authorized-operations')"
+            value="string-join($ops, ' ')"/>
+
+        <xf:message level="xxf:log-debug">
+            AUTHORIZED OPERATIONS ON FORM (DETAIL MODES): <xf:output value="$ops"/>
+        </xf:message>
+
+        <!-- If user can't perform the required operations, deny access to this page -->
+        <!-- Don't require any 'schema', don't require any authorized permission, as this is instead protected as a service -->
+        <xf:var name="unauthorized-access" value="
+            ($mode = ('new', 'test', 'import', 'validate') and not($ops = ('*', 'create'))) or
+            ($mode = 'edit'                                and not($ops = ('*', 'update'))) or
+            ($mode = ('view', 'pdf', 'email')              and not($ops = ('*', 'read'))  ) or
+            not($mode = ('new', 'test', 'import', 'validate', 'edit', 'view', 'pdf', 'email', 'schema'))"/>
+
+        <!-- Send an "Unauthorized" error if the user is unauthorized -->
+        <xf:action if="$unauthorized-access" type="xpath">frf:sendError(403)</xf:action>
+
+        <!-- Show initial dialog if needed -->
+        <xxf:show
+            if="normalize-space(instance('fr-persistence-instance')/initial-dialog-to-show)"
+            dialog="{instance('fr-persistence-instance')/initial-dialog-to-show}"/>
+
+    </xf:action>
+
+
+    <xf:action event="xforms-ready">
+        <!-- Force all this so we can safely set the data status -->
+        <xf:rebuild/>
+        <xf:recalculate/>
+        <xf:revalidate/>
+        <xf:refresh/>
+        <!-- Set the initial data status -->
+        <xf:setvalue iterate="($persistence-instance/data-status, $autosave/status)"
+                     ref="." value="../initial-data-status"/>
+    </xf:action>
+
+    <!-- Clear operation -->
+    <xf:action event="fr-clear">
+        <!-- Case of inline template -->
+        <xf:insert ref="xxf:instance('fr-form-instance')" origin="instance('fr-initial-instance')"/>
+
+        <!-- Notify that the data is reset -->
+        <xf:dispatch targetid="fr-form-model" name="fr-data-reset"/>
+
+        <!-- Perform refresh (above sets RRR flags already) so that after that we can clear error summary -->
+        <xf:refresh/>
+
+        <!-- Clear error summary and focus -->
+        <xf:dispatch name="fr-unvisit-all" targetid="fr-error-summary-model"/>
+        <xf:setfocus control="fr-form-group" input-only="true"/>
+    </xf:action>
+
+    <!-- New document operation -->
+    <xf:setvalue event="fr-new-document" ref="$document" value="secure:randomHexId()"/>
+
+    <!-- Delete operation -->
+    <xf:action event="fr-delete-data">
+        <xf:send submission="fr-delete-document-submission">
+            <xf:property name="document-data-or-draft-id" value="event('document-data-or-draft-id')"/>
+        </xf:send>
+    </xf:action>
+
+    <xf:submission id="fr-delete-document-submission"
+            method="delete"
+            serialization="none"
+            resource="/fr/service/persistence/crud/{$app}/{$form}/{event('document-data-or-draft-id')}/data.xml"
+            replace="none"/>
+
+    <!-- Instance to store the result of the create/update submission -->
+    <xf:instance id="fr-create-update-submission-response">
+        <response xmlns=""/>
+    </xf:instance>
+
+    <!-- Submission to create/update the XML form -->
+    <!-- Note about validate="false": In general, when the user saves data, the data needs to be valid. This will be
+         enforced by the "Save" button being disabled. But there are other cases where we want to call this persistence
+         code and where the data might not be valid. For instance: auto-save, or saving as Draft as soon as a new
+         form instance is created. -->
+    <xf:submission id="fr-create-update-submission"
+            validate="false"
+            relevant="false"
+            method="put"
+            ref="event('holder')"
+            resource="{event('resource')}"
+            replace="text"
+            target="instance('fr-create-update-submission-response')"/>
+
+    <!-- Submission to create/update an attachment -->
+    <xf:submission id="fr-create-update-attachment-submission"
+            method="put"
+            serialization="application/octet-stream"
+            ref="event('holder')"
+            resource="{event('resource')}"
+            replace="none"/>
+
+    <!-- Search for drafts, to possibly warn users there is a newer draft -->
+    <xf:submission id="fr-search-drafts-submission"
+            method="post"
+            resource="/fr/service/persistence/search/{$app}/{$form}"
+            ref="instance('fr-search-drafts-request')"
+            replace="instance"
+            instance="fr-search-drafts-response"/>
+    <xf:instance id="fr-search-drafts-request">
+        <search>
+        	<drafts>only</drafts>
+        	<page-size>10</page-size>
+        	<page-number>1</page-number>
+        	<lang>en</lang>
+        </search>
+    </xf:instance>
+    <xf:instance id="fr-search-drafts-response"><dummy/></xf:instance>
+
+    <!-- Get document -->
+    <xf:submission id="fr-get-document-submission"
+            method="get"
+            serialization="none"
+            resource="/fr/service/persistence/crud/{$app}/{$form}/{event('data-or-draft')}/{$document}/data.xml"
+            replace="instance"
+            xxf:instance="fr-form-instance">
+        <!-- Save value of Orbeon-Operations header -->
+        <xf:action event="xforms-submit-done">
+            <xf:var name="operations-header" value="event('response-headers')[name = 'orbeon-operations']/value"/>
+            <xf:insert if="exists($operations-header)" context="instance('fr-authorized-operations')"
+                       origin="xxf:attribute('from-persistence', $operations-header/string())"/>
+        </xf:action>
+    </xf:submission>
+
+    <!-- Initial instance (to support clear) -->
+    <xf:instance id="fr-initial-instance" xxf:readonly="false"><!-- Set to false so that xf:insert works -->
+        <form xmlns=""/>
+    </xf:instance>
+
+    <!-- Which operations the user can perform -->
+    <xf:instance id="fr-authorized-operations">
+        <operations/>
+    </xf:instance>
+
+    <xf:instance id="fr-service-parameters">
+        <parameters/>
+    </xf:instance>
+
+    <!-- Calls a service to get the initial instance -->
+    <xf:submission id="fr-get-instance-from-service"
+            method="get"
+            separator="&amp;"
+            ref="instance('fr-service-parameters')"
+            resource="{xxf:property(string-join(('oxf.fr.detail.new.service.uri', $app, $form), '.'))}"
+            replace="instance"
+            xxf:instance="fr-form-instance"/>
+
+    <xf:instance id="fr-persistence-instance">
+        <save xmlns="">
+            <!-- Dialog to show upon xforms-ready for handling drafts -->
+            <initial-dialog-to-show/>
+            <!-- Initial data status -->
+            <initial-data-status>clean</initial-data-status>
+            <!-- Whether form data is clean or dirty (i.e. saved or not saved) -->
+            <data-status>clean</data-status>
+            <autosave>
+                <status>clean</status>
+                <change-timestamp/>
+            </autosave>
+            <!-- Success or error message to display -->
+            <message/>
+            <!-- Error document returned -->
+            <error/>
+            <!-- Flag to override data-safe -->
+            <data-safe-override/>
+            <!-- Whether data is safe -->
+            <data-safe/>
+            <!-- Is the captcha valid: start with false, will set it to true when valid -->
+            <captcha>false</captcha>
+        </save>
+    </xf:instance>
+
+    <xf:bind ref="$persistence-instance">
+        <xf:bind ref="data-safe" calculate="../data-status = 'clean' or ../data-safe-override = 'true'"/>
+        <xf:bind ref="captcha" constraint=". = 'true'"/>
+    </xf:bind>
+
+    <!-- Configuration for Saxon serialization -->
+    <xf:instance id="fr-xsl-output-instance">
+        <xsl:output xmlns:xsl="http://www.w3.org/1999/XSL/Transform" method="xml" omit-xml-declaration="yes" indent="yes" saxon:indent-spaces="4"/>
+    </xf:instance>
+
+    <!-- Instance to store suspended processes -->
+    <xf:instance id="fr-processes-instance">
+        <processes/>
+    </xf:instance>
+
+    <xf:instance id="fr-triggers-instance">
+        <triggers xmlns="">
+            <strict-submit/>
+            <can-update/>
+            <can-read/>
+            <pdf/>
+            <other/>
+            <!-- TODO: Move out, this is Form Builder-specific -->
+            <publish/>
+        </triggers>
+    </xf:instance>
+
+    <xf:bind ref="instance('fr-triggers-instance')">
+        <!--
+            NOTE: Don't disable basic save/submit buttons so that user can always press it. This arguably yields a
+            better experience in non-incremental mode and also allows user to force showing errors.
+        -->
+
+        <!-- NOTE: As of 2013-04-04, only used for PDF button which uses fr:href-button -->
+        <xf:bind ref="strict-submit"
+                 readonly="not(property('xxf:noscript'))
+                           and (xxf:instance('fr-error-summary-instance')/valid = false() or xxf:pending-uploads() > 0)"/>
+
+        <!-- Conditions for disabling workflow buttons -->
+        <xf:bind ref="can-update"
+                 relevant="xxf:split(instance('fr-authorized-operations')) = ('*', 'update')"/>
+
+        <xf:bind ref="can-read"
+                 relevant="xxf:split(instance('fr-authorized-operations')) = ('*', 'read')"/>
+
+        <xf:bind ref="pdf"
+                 readonly="xxf:property(string-join(('oxf.fr.detail.pdf.disable-if-invalid', $app, $form), '.'))
+                           and exf:readonly(../strict-submit)"
+                 relevant="exf:relevant(../can-read)"/>
+
+        <!-- Condition for disabling Publish button -->
+        <!-- TODO: Move out, this is Form Builder-specific -->
+        <xf:bind ref="publish"
+                 readonly="not($persistence-instance/data-status = 'clean')
+                           or xxf:instance('fr-error-summary-instance')/valid = false()
+                           or xxf:pending-uploads() > 0"/>
+    </xf:bind>
+
+    <!-- HACK: dependencies: recalculate this model when there is a change in the instance holding error/validity
+         information, so that the above binds are kept in sync. Ideally would need smart dependency system. -->
+    <xf:recalculate event="xxforms-value-changed" observer="fr-error-summary-instance"/>
+
+    <!-- Configurable send -->
+    <!-- TODO: Remove duplication once @replace is an AVT -->
+    <xf:submission id="fr-send-submission-all"
+        resource="{instance('fr-send-submission-params')/@uri}"
+        relevant="{instance('fr-send-submission-params')/@prune}"
+        validate="false"
+        xxf:annotate="{instance('fr-send-submission-params')/@annotate}"
+        method="{instance('fr-send-submission-params')/@method}"
+        serialization="{instance('fr-send-submission-params')/@serialization}"
+        ref="if (xxf:split(instance('fr-send-submission-params')/@content) = 'pdf-url') then instance('fr-pdf-url-instance') else xxf:instance('fr-form-instance')"
+        replace="all">
+        <!-- FIXME: Workaround for https://github.com/orbeon/orbeon-forms/issues/936 -->
+        <xf:action event="xforms-submit">
+            <xf:action iterate="instance('fr-send-submission-params')/@*">
+                <xf:setvalue ref="." value="event(name(context()))"/>
+            </xf:action>
+            <xf:setvalue ref="instance('fr-send-submission-params')/@serialization"
+                         value="if (event('method') = 'get') then 'none' else 'application/xml'"/>
+        </xf:action>
+    </xf:submission>
+
+    <!-- FIXME: Workaround for https://github.com/orbeon/orbeon-forms/issues/936 -->
+    <xf:instance id="fr-send-submission-params">
+        <params uri="" prune="" annotate="" method="" content="" serialization=""/>
+    </xf:instance>
+
+    <xf:submission id="fr-send-submission-none"
+        resource="{event('uri')}"
+        relevant="{event('prune')}"
+        validate="false"
+        xxf:annotate="{instance('fr-send-submission-params')/@annotate}"
+        method="{event('method')}"
+        serialization="{if (event('method') = 'get') then 'none' else 'application/xml'}"
+        ref="if (xxf:split(instance('fr-send-submission-params')/@content) = 'pdf-url') then instance('fr-pdf-url-instance') else xxf:instance('fr-form-instance')"
+        replace="none"/>
+
+    <!-- Call email service -->
+    <xf:submission id="fr-email-service-submission"
+        resource="/fr/service/{$app}/{$form}/email/{$document}?fr-language={xxf:instance('fr-language-instance')}{if (property('xxf:noscript')) then '&amp;fr-noscript=true' else ''}"
+        relevant="false" validate="false" method="post" ref="xxf:instance('fr-form-instance')" replace="none"/>
+
+    <!-- Call PDF service -->
+    <xf:submission id="fr-pdf-service-submission"
+        resource="/fr/service/{$app}/{$form}/pdf/{$document}?fr-language={xxf:instance('fr-language-instance')}{if (property('xxf:noscript')) then '&amp;fr-noscript=true' else ''}"
+        relevant="false" validate="false" method="post" ref="xxf:instance('fr-form-instance')"
+        replace="instance" instance="fr-pdf-url-instance"/>
+
+    <xf:instance id="fr-pdf-url-instance">
+        <uri/>
+    </xf:instance>
+
+    <!-- React to issue loading the document. We consider this fatal. -->
+    <xf:action event="xforms-submit-error" target="fr-get-document-submission" type="xpath">
+        frf:sendError((event('response-status-code'), 500)[1])
+    </xf:action>
+
+    <!-- Clear message -->
+    <xf:action observer="#document" event="DOMFocusIn">
+        <xf:toggle case="fr-message-none" xxf:deferred-updates="false"/>
+        <xf:setvalue ref="$persistence-instance/message"/>
+    </xf:action>
+
+    <!-- React to instance mutation events -->
+    <!-- NOTE: We check the standard fr-form-instance, but also fb-form-instance, which is where Form Builder really does its work  -->
+    <xf:action observer="fr-form-instance fb-form-instance" event="xforms-insert xforms-delete xxforms-replace xxforms-value-changed">
+        <xf:action if="$mode = ('new', 'edit')">
+            <!-- Mark status as dirty if data changes -->
+            <xf:setvalue ref="$persistence-instance/data-status"     value="'dirty'"/>
+            <xf:action if="$autosave-enabled">
+                <xf:setvalue ref="$autosave/status"                  value="'dirty'"/>
+                <xf:setvalue ref="$autosave/change-timestamp"        value="current-dateTime()"/>
+                <xf:dispatch name="maybe-autosave" targetid="fr-persistence-model"
+                             delay="{$autosave-delay}" xxf:show-progress="false"/>
+            </xf:action>
+        </xf:action>
+    </xf:action>
+
+    <xf:action event="maybe-autosave" if="$autosave/status = 'dirty'">
+        <xf:var name="delay" value="xs:dayTimeDuration(concat('PT', $autosave-delay div 1000, 'S'))"/>
+        <xf:var name="autosave-time" value="xs:dateTime($autosave/change-timestamp) + $delay"/>
+        <xf:var name="autosave-now" value="$autosave-time le current-dateTime()"/>
+        <xf:action if="$autosave-now" type="xpath">process:runProcessByName('autosave')</xf:action>
+        <!-- Ideally we'd like delay = $wait, but it would require converting an xs:dateTimeDuration in ms -->
+        <xf:dispatch if="not($autosave-now)"
+                     name="maybe-autosave" targetid="fr-persistence-model"
+                     delay="{$autosave-delay}"
+                     xxf:show-progress="false"/>
+    </xf:action>
+
+</xf:model>
