@@ -31,6 +31,9 @@ class Processor {
   static final FOFILE1 = 'publish1.fo'
   static final FOFILE2 = 'publish2.fo'
 
+  // Name of the generated HTML file
+  static final HTMLFILE = 'publish.html'
+
   // Name of the generated PDF file
   static final PDFFILE = 'publish.pdf'
 
@@ -40,8 +43,8 @@ class Processor {
   // Name of the log file
   static final LOGFILE = 'publish.log'
 
-  // xsltproc command
-  static final XSLTPROC = ['/usr/bin/xsltproc',
+  // xsltproc for generating PDF
+  static final XSLTPDF = ['/usr/bin/xsltproc',
 			   '--stringparam', 'use.extensions', '0',
 			   '--stringparam', 'paper.type', 'A4',
 			   '--stringparam', 'page.margin.inner', '28mm',
@@ -53,12 +56,27 @@ class Processor {
 			   '--stringparam', 'monospace.font.family', 'LiberationMono',
 			   '--output'
 			  ];
+
+  // xsltproc for generating HTML
+  static final XSLTHTML = ['/usr/bin/xsltproc',
+			   '--stringparam', 'use.extensions', '0',
+			   '--stringparam', 'generate.toc', '',
+			   '--stringparam', 'chunker.output.encoding', 'UTF-8',
+			   '--stringparam', 'body.font.family', 'LiberationSerif',
+			   '--stringparam', 'title.font.family', 'LiberationSans',
+			   '--stringparam', 'monospace.font.family', 'LiberationMono',
+			   '--output'
+			  ];
   
   // fop command
   static final FOP = ['/usr/bin/fop', '-pdfprofile', 'PDF/A-1a', '-c']
 
   // Tag after which the FO file is split
   static final SPLIT_TAG = '</fo:layout-master-set>'
+
+  // Prefixes used in the FOP config
+  static final PATH_PREF1 = 'file://'
+  static final PATH_PREF2 = 'file:'
 
   // Should temp files be kept on cleanup?
   boolean keepTempFiles
@@ -112,7 +130,7 @@ class Processor {
     def procMessage = null
     try {
       // DocBook XML to FO
-      def cmd = XSLTPROC.collect {it}
+      def cmd = XSLTPDF.collect {it}
       cmd << foPath1
       cmd << PRINTSTYLE
       cmd << abspath(DOCBOOKFILE)
@@ -157,7 +175,7 @@ class Processor {
       } finally {
 	procMessage = err.toString()
 	log.append(procMessage)
-	log.append "FO -> PDF: ${exitCode} (${(exitCode == 0)? 'OK' : 'CONFLICT'})\n"
+	log.append "FO -> PDF: ${exitCode} (${(exitCode == 0)? 'OK' : 'CONFLICT'})\n\n"
 	log.flush()
       }
     } else if (success(exitCode)) {
@@ -168,6 +186,50 @@ class Processor {
 
     log.close()
     return [pdf: pdfPath, log: abspath(LOGFILE), exc: (success(exitCode)? null : procMessage)]
+  }
+
+  /**
+   * Convert DocBook input to HTML output
+   * RETURN a map containing the following entries:
+   * html: the full path of the generated Pdf file
+   * log: the full path of the process log file
+   * exc: null on success, an exception and its message if conversion failed
+   * TBD: The output is ISO-8859-1. Needs zipping resources together.
+   */
+  def toHtml() {
+    // Standard out appends to the log file
+    def log = new FileWriter(abspath(LOGFILE), true)
+    // Standard error is collected here and then added to the log file
+    def err = new StringBuilder()
+    // Process exit code
+    Integer exitCode
+    // Std error from a process (String)
+    def procMessage = null
+    def htmlPath = abspath(HTMLFILE)
+    try {
+      // DocBook XML to HTML
+      def cmd = XSLTHTML.collect {it}
+      cmd << htmlPath
+      cmd << HTMLSTYLE
+      cmd << abspath(DOCBOOKFILE)
+      def proc = cmd.execute()
+      proc.consumeProcessOutput(log, err)
+      proc.waitForOrKill(30 * SECOND)
+      exitCode = proc?.exitValue()
+    } catch (Exception exc) {
+      procMessage = exc.toString()
+      err.append(procMessage)
+      exitCode = 1
+    } finally {
+      procMessage = err.toString()
+      log.append(procMessage)
+      log.append "xml -> HTML: ${exitCode} (${(exitCode == 0)? 'OK' : 'CONFLICT'})\n"
+      log.flush()
+      err.length = 0
+    }
+
+    log.close()
+    return [html: htmlPath, log: abspath(LOGFILE), exc: (success(exitCode)? null : procMessage)]
   }
 
   private insertMetadata(File infile, File outfile) {
@@ -187,6 +249,34 @@ class Processor {
   // Checks an exit code for success
   Boolean success(Integer exitCode) {
     exitCode == 0
+  }
+
+  /**
+   * Create a map containing the font information in the FOP configuration
+   * Key: A font triplet name:style:weight (String)
+   * Example: 'LiberationSans:italic:bold'
+   * Value: The absolute path of the font file
+   */
+  static Map fopConfigMap() {
+    def fop = new XmlSlurper().parseText(FOP_CONFIG)
+    def fontBase = fop.'font-base'[0].text()
+    def idx = fontBase.indexOf(PATH_PREF1)
+    fontBase = fontBase.substring(idx + PATH_PREF1.length())
+    def fontDir = new File(fontBase)
+    def renderer = fop.'**'.find {it.@mime.text() == 'application/pdf'}
+    def map = [:]
+    renderer.fonts.font.each {fnt ->
+      def path = fnt.@'embed-url'.text()
+      def i = path.indexOf(PATH_PREF2)
+      path = path.substring(i + PATH_PREF2.length())
+      def triplet = fnt.'font-triplet'[0]
+      def name = triplet.@name.text()
+      def style = triplet.@style.text()
+      def weight = triplet.@weight.text()
+      map["${name}:${style}:${weight}" as String] = new File(fontDir, path).absolutePath
+    }
+
+    return map
   }
 
   static final FOP_CONFIG_FILE_NAME = 'fop-config.xml'

@@ -150,16 +150,37 @@ class PdfService {
     def pdfPath = result.pdf
     def logPath = result.log
     def excMsg = result.exc
+    def htmlPath = null
+
+    // Change when HTML conversion is complete
+    if (false) {
+      result = processor.toHtml()
+      if (log.debugEnabled) log.debug "toHtml returns ${result}"
+      htmlPath = result.html
+      logPath = result.log
+    }
 
     // Store the newly generated pdf
     def pdfFile = new File(pdfPath)
     def pdf = null
     if (pdfFile.exists()) {
       pdf = docService.createContents(docStep, 'pdf', 'binary')
-      pdf.checksum = signService.computeChecksum(pdf)
-      pdf.assignStream(pdfFile.bytes)
+      pdf.assignStream(pdfFile.bytes, true)
       if (!pdf.save(insert: true)) {
 	log.error "BoxContents (pdf) save: ${pdf.errors.allErrors.join(',')}"
+      }
+    }
+
+    // Store the generated HTML
+    if (htmlPath) {
+      def htmlFile = new File(htmlPath)
+      def html = null
+      if (htmlFile.exists()) {
+	html = docService.createContents(docStep, 'html', 'xml')
+	html.assignText(htmlFile.text)
+	if (!html.save(insert: true)) {
+	  log.error "BoxContents (html) save: ${html.errors.allErrors.join(',')}"
+	}
       }
     }
 
