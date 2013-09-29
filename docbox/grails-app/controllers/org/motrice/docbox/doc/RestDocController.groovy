@@ -70,14 +70,14 @@ class RestDocController {
     if (log.debugEnabled) log.debug "SIGPUT: ${Util.clean(params)}, ${request.forwardURI}"
     def docStep = docService.findStepByRef(docboxref)
     if (docStep) {
-      render(status: 200, 'text/json') {
+      render(status: 200, contentType: 'text/json') {
 	docboxRef = '3125af95-b830-4536-bad5-529207650da5'
 	docNo = '8SJPTG-1'
 	signCount = 1
 	checkSum = 'A32n2HnwEHO9L6V6FtVd598u/ae//NS366yAlEFwO1w='
       }
     } else {
-      response.status = 404
+      render(status: 404)
     }
   }
 
