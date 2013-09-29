@@ -6,6 +6,7 @@ import java.util.UUID
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.util.CrockfordBase32
 
 // The only way to create a logger with a predictable name?
@@ -49,12 +50,17 @@ class DocService {
    * Create and save a BoxDocStep
    */
   BoxDocStep createBoxDocStep(BoxDoc parent) {
+    createBoxDocStep(parent, null)
+  }
+
+  BoxDocStep createBoxDocStep(BoxDoc parent, Integer signCount) {
     def q = 'select count(id) from BoxDocStep s where s.doc.id=?'
     def stepCountList = BoxDocStep.executeQuery(q, [parent.id])
     def stepCount = stepCountList[0]
     String docNo = "${parent.docNo}-${stepCount}"
     def uuid = UUID.randomUUID().toString()
-    def step = new BoxDocStep(step: stepCount, docNo: docNo, docboxRef: uuid, signCount: 0)
+    def step = new BoxDocStep(step: stepCount, docNo: docNo, docboxRef: uuid,
+    signCount: (signCount != null)? signCount : 0)
     parent.addToSteps(step)
     if (!step.save(insert: true)) log.error "BoxDocStep save: ${step.errors.allErrors.join(',')}"
     if (log.debugEnabled) log.debug "createBoxDocStep: ${step}"
@@ -69,6 +75,10 @@ class DocService {
     def contents = new BoxContents(name: name, format: format)
     step.addToContents(contents)
     return contents
+  }
+
+  BoxContents createPdfContents(BoxDocStep step) {
+    createContents(step, 'pdf', 'binary')
   }
 
   /**
@@ -113,6 +123,28 @@ class DocService {
     return docStep
   }
 
+  /**
+   * Find a doc step, given a docboxRef, and check that it is the latest step
+   * Return BoxDocStep if found, otherwise null
+   * Throws an exception if there are later doc steps
+   */
+  BoxDocStep findAndCheckByRef(String docboxRef) {
+    if (log.debugEnabled) log.debug "findAndCheckByRef << ${docboxRef}"
+    def docStep = BoxDocStep.findByDocboxRef(docboxRef)
+    if (docStep) {
+      def q = 'select count(id) from BoxDocStep s where s.doc.id=? and s.step > ?'
+      def list = BoxDocStep.executeQuery(q, [docStep.doc.id, docStep.step])
+      Integer count = list[0]
+      if (count > 0) {
+	def msg = "Doc step ${docStep.docNo} has ${count} later steps"
+	log.error msg
+	throw new DocBoxException(msg)
+      }
+    }
+    if (log.debugEnabled) log.debug "findAndCheckByRef >> ${docStep}"
+    return docStep
+  }
+
   BoxDocStep findStepByUuid(String uuid) {
     findStepByUuid(uuid, null)
   }
@@ -138,7 +170,7 @@ class DocService {
     return docStep
   }
 
-  BoxContents findContents(BoxDocStep docStep) {
+  BoxContents findPdfContents(BoxDocStep docStep) {
     findContents(docStep, null)
   }
 

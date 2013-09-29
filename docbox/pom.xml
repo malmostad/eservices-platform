@@ -6,7 +6,7 @@
   <groupId>org.motrice</groupId>
   <artifactId>docbox</artifactId>
   <packaging>grails-app</packaging>
-  <version>0.4.0</version>
+  <version>0.5.0</version>
   <name>docbox</name>
   <description>docbox</description>
 
@@ -37,16 +37,19 @@
       <version>${grails.version}</version>
       <scope>test</scope>
     </dependency>
-
     
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>9.2-1002.jdbc4</version>
       <scope>runtime</scope>
-      
     </dependency>
-    
+
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itextpdf</artifactId>
+      <version>5.4.4</version>
+    </dependency>
 
     <dependency>
       <groupId>org.grails.plugins</groupId>

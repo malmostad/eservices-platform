@@ -60,28 +60,6 @@ class RestDocController {
   }
 
   /**
-   * Add a XML-DSIG signature to an existing document.
-   * @param docboxref identifies the document step where the sig is added
-   * Returns 200 on success, 404 if the document step was not found,
-   * 409 on concurrent update conflict.
-   * XXX TBD: This is a dummy
-   */
-  def docboxSigPut(String docboxref) {
-    if (log.debugEnabled) log.debug "SIGPUT: ${Util.clean(params)}, ${request.forwardURI}"
-    def docStep = docService.findStepByRef(docboxref)
-    if (docStep) {
-      render(status: 200, contentType: 'text/json') {
-	docboxRef = '3125af95-b830-4536-bad5-529207650da5'
-	docNo = '8SJPTG-1'
-	signCount = 1
-	checkSum = 'A32n2HnwEHO9L6V6FtVd598u/ae//NS366yAlEFwO1w='
-      }
-    } else {
-      render(status: 404)
-    }
-  }
-
-  /**
    * Get a document given a document number
    * DISABLED
    */
