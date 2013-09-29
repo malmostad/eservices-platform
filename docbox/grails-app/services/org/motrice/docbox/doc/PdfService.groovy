@@ -165,8 +165,7 @@ class PdfService {
     def pdf = null
     if (pdfFile.exists()) {
       pdf = docService.createContents(docStep, 'pdf', 'binary')
-      pdf.checksum = signService.computeChecksum(pdf)
-      pdf.assignStream(pdfFile.bytes)
+      pdf.assignStream(pdfFile.bytes, true)
       if (!pdf.save(insert: true)) {
 	log.error "BoxContents (pdf) save: ${pdf.errors.allErrors.join(',')}"
       }

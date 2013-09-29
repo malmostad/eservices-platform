@@ -1,5 +1,7 @@
 package org.motrice.docbox.doc
 
+import java.security.MessageDigest
+
 /**
  * Contents of a DocBox document
  */
@@ -42,12 +44,24 @@ class BoxContents {
     stream nullable: true
   }
 
-  // Assign stream
-  def assignStream(byte[] stream) {
+  // Assign stream, conditionally compute checksum
+  // Return this BoxContents
+  def assignStream(byte[] stream, boolean createChecksum) {
     this.size = stream.length
     this.stream = stream
     this.text = null
+    if (createChecksum) {
+      def digest = MessageDigest.getInstance('SHA-256').digest(stream)
+      def sw = new StringWriter()
+      digest.encodeBase64().writeTo(sw)
+      checksum = sw.toString()
+    }
     return this
+  }
+
+  // Assign stream, no checksum
+  def assignStream(byte[] stream) {
+    return assignStream(stream, false)
   }
 
   // Assign text

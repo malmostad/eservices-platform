@@ -13,6 +13,9 @@ class UrlMappings {
     "/doc/no/$docno"(controller: 'RestDoc') {
       action = [GET: 'docNoGet']
     }
+    "/doc/sig/$docboxref"(controller: 'RestDoc') {
+      action = [POST: 'docboxSigPut']
+    }
 
     "/$controller/$action?/$id?"{
       constraints {

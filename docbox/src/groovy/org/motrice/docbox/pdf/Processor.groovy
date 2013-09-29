@@ -74,6 +74,10 @@ class Processor {
   // Tag after which the FO file is split
   static final SPLIT_TAG = '</fo:layout-master-set>'
 
+  // Prefixes used in the FOP config
+  static final PATH_PREF1 = 'file://'
+  static final PATH_PREF2 = 'file:'
+
   // Should temp files be kept on cleanup?
   boolean keepTempFiles
 
@@ -245,6 +249,34 @@ class Processor {
   // Checks an exit code for success
   Boolean success(Integer exitCode) {
     exitCode == 0
+  }
+
+  /**
+   * Create a map containing the font information in the FOP configuration
+   * Key: A font triplet name:style:weight (String)
+   * Example: 'LiberationSans:italic:bold'
+   * Value: The absolute path of the font file
+   */
+  static Map fopConfigMap() {
+    def fop = new XmlSlurper().parseText(FOP_CONFIG)
+    def fontBase = fop.'font-base'[0].text()
+    def idx = fontBase.indexOf(PATH_PREF1)
+    fontBase = fontBase.substring(idx + PATH_PREF1.length())
+    def fontDir = new File(fontBase)
+    def renderer = fop.'**'.find {it.@mime.text() == 'application/pdf'}
+    def map = [:]
+    renderer.fonts.font.each {fnt ->
+      def path = fnt.@'embed-url'.text()
+      def i = path.indexOf(PATH_PREF2)
+      path = path.substring(i + PATH_PREF2.length())
+      def triplet = fnt.'font-triplet'[0]
+      def name = triplet.@name.text()
+      def style = triplet.@style.text()
+      def weight = triplet.@weight.text()
+      map["${name}:${style}:${weight}" as String] = new File(fontDir, path).absolutePath
+    }
+
+    return map
   }
 
   static final FOP_CONFIG_FILE_NAME = 'fop-config.xml'
