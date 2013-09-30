@@ -13,7 +13,7 @@ class UrlMappings {
     "/doc/no/$docno"(controller: 'RestDoc') {
       action = [GET: 'docNoGet']
     }
-    "/doc/sig/$docboxref"(controller: 'RestDoc') {
+    "/doc/sig/$docboxref"(controller: 'RestSig') {
       action = [POST: 'docboxSigPut']
     }
 

@@ -38,7 +38,8 @@ class XmlDsig {
   final byte[] signatureXml
 
   // Certificate chain (set by the validateSignature method)
-  // List of X509Certificate
+  // List of java.security.cert.X509Certificate
+  // Note that javax.security.cert.X509Certificate is deprecated
   List certChain
 
   // Signed text (set by the validateSignature method)
@@ -48,17 +49,33 @@ class XmlDsig {
   // Text is accumulated as validation progresses
   List report = []
 
+  // Log for debugging
+  def log
+
   /**
    * Construct and initialize signature data
    * After instantiation, call validateSignature and then validateCerts
    */
-  def XmlDsig(String signatureB64) {
+  def XmlDsig(String signatureB64, log) {
     this.signatureB64 = signatureB64
+    this.log = log
     try {
       signatureXml = signatureB64.decodeBase64()
     } catch (Exception exc) {
       throw new XMLSignatureException('Problem Base64-decoding signature. ', exc)
     }
+  }
+
+  //===================== Get signature info =====================
+
+  /**
+   * Get the first certificate of the certificate chain
+   * It should be the signing user's certificate
+   */
+  def getFirstCert() {
+    if (certChain == null) certChain = extractCertChain()
+    if (log.debugEnabled) log.debug "certChain entries: ${certChain?.size()}"
+    return certChain[0]
   }
 
   //===================== Signature Validation =====================
@@ -99,8 +116,7 @@ class XmlDsig {
 
     // We assume the signature is sealed with a certificate chain
     // Get the public key from the first certificate = end user certificate by convention
-    certChain = extractCertChain()
-    def cert = certChain[0]
+    def cert = getFirstCert()
     def pubKey = cert.publicKey
     doSigValidate(sigFact, signatureElement, pubKey)
   }
@@ -220,6 +236,7 @@ class XmlDsig {
 
   /**
    * Get the thumbprint of a certificate as a hexadecimal string
+   * TBD: Is this correct?
    */
   private thumbPrint(cert) {
     byte[] der = cert.encoded

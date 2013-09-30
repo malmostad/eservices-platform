@@ -319,7 +319,7 @@ class FormDef {
 		entry(meta.formdefPath) {}
 	      }
 	      row() {
-		entry('Ursprung') {}
+		entry('Ursprungskod') {}
 		entry(meta.instanceUuid) {}
 	      }
 	    }
