@@ -52,6 +52,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itext-pdfa</artifactId>
+      <version>5.4.4</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.grails.plugins</groupId>
       <artifactId>tomcat</artifactId>
       <version>${grails.version}</version>
