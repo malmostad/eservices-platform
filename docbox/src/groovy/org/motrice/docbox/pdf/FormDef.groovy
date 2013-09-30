@@ -365,6 +365,27 @@ class FormDef {
   }
 
   /**
+   * Generate XML connecting section and control names to their labels
+   * Return an XML document as a String
+   */
+  def generateFormLabelXref(FormData fd) {
+    def sw = new StringWriter()
+    def xml = new MarkupBuilder(sw)
+    xml.form(title: meta.title, uuid: meta.instanceUuid) {
+      sections.each {sect ->
+	section(name: sect.name) {
+	  label(sect.label) {}
+	  sect.controls.each {ctrl ->
+	    control(name: ctrl.name, ctrl.label) {}
+	  }
+	}
+      }
+    }
+    
+    return sw.toString()
+  }
+
+  /**
    * Generate a text preview, an unformatted rendering of all relevant text
    * RETURN a StringWriter containing the preview text
    */
