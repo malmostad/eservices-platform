@@ -1,98 +1,27 @@
-.fr-grid {
-   border: 0;
-   width:100%;
+.orbeon .container, .orbeon .span12 { width: 95% }
+
+.orbeon .fr-section-title {
+  background-image: none;
+  background-color: #FFFFFF;
 }
 
-.fr-grid tbody tr {
- background-color:white;
+.orbeon .xbl-fr-section .fr-section-title .fr-section-label a {
+   font-size: large;
 }
 
-.fr-grid-content .xforms-label {
-  width:150px;
-  display: inline-block;
-}
-
-.fr-buttons {
-  text-align: right;
-}
-
-.fr-section-title {
-  background-color: rgb(0, 105, 60);
-  padding: 7px;
-  border-radius: 8px;
-  box-shadow:2px 2px 3px grey;
-  margin-bottom: 20px;
-}
-
-.fr-footer {
-  background: rgb(0, 105, 60);
-  min-height: 1px;
-}
-
-.fr-section-title .fr-section-arrow {
-    background-color: rgb(0, 105, 60);
-    margin: 0;
-    padding: 0;
-}
-
-.fr-section-arrow a {
-  color: white !important;
-}
-
-a.fr-section-label:link, a.fr-section-label:visited, a.fr-section-label:active {
-  color: white !important;
-}
-
-.fr-top {
-  background-image: none; 
+.orbeon .navbar-inverse  .navbar-inner {
+  background-image: none;
   background-color: rgb(0, 105, 60);
 }
 
-#doc4 {
-    width: 100%;
+.orbeon .navbar-inverse .navbar-inner .container h1 {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: x-large;
 }
 
-ul li {
-   list-style-type: none;
-}
-
-.fr-separator {
-   background-color: rgb(0, 105, 60);
-   height: 1px; 
-}
-
-h1 {
-    margin: 0px 0px 0.3em;
-    line-height: 1.13636;
-    font-weight: normal;
-    text-decoration: none;
-    color: black;
-}
-
-h2 {
-    font-size: 1.57143em;
-    font-weight: normal;
-    line-height: 1.13636;
-    margin: 0 0 0.3em;
-    color: black;
-}
-
-h3 {
-    font-size: 1em;
-    line-height: 1.28571;
-    font-weight: bold;
-    font-style: italic;
-    margin: 0px;
-    color: black;
-}
-
-h4 {
-    margin: 0.25em 0px;
-    font-size: 1em;
-    font-weight: bold;
-    color: black;
-}
-
-@media print {
-
+.orbeon .btn-primary {
+  background-color: rgb(0, 105, 60);
+  background-image: none;
+  font-weight: bold;
 }

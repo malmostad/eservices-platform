@@ -39,7 +39,8 @@ public class OrbeonService
 	
 	public static final Logger log = Logger.getLogger(OrbeonService.class.getName());
 	
-	private String persistenceApiBaseUrl = "http://localhost:8080/orbeon/fr/service/exist/crud/";
+	private String persistenceApiBaseUrl = "http://localhost:8080/exist/rest/db/orbeon-pe/fr/";
+			//3.9 "http://localhost:8080/orbeon/fr/service/exist/crud/";
 	
 	
 	private String parseUniqueXPathExpr(String xmlDataUri, String uniqueXPathExpr) {

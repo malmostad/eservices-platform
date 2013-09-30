@@ -162,11 +162,17 @@ public class ProcessActivityFormInstance {
 	}
 
 	public String calcViewUrl() {
-		return getFormPath() + "/view/" + getFormDocId() + "?orbeon-embeddable=true";
+		// TODO Since orbeon 4.3 Iframe work-around exclude: orbeon-embeddable=true";
+		//      note: remeber to include orbeon-embeddable=true when rendering
+		//            in div tag
+		//            It is imortant to exclude orbeon-embeddable=true when rendering in 
+		//            IFRAME...
+		
+		return getFormPath() + "/view/" + getFormDocId() + "?"; 
 	}
 
 	public String calcPdfUrl() {
-		return getFormPath() + "/pdf/" + getFormDocId() + "?orbeon-embeddable=true";
+		return getFormPath() + "/pdf/" + getFormDocId();
 	}
 	
 	public boolean isStartForm() {
