@@ -1,5 +1,6 @@
 package org.motrice.docbox.doc
 
+import org.motrice.docbox.DocData
 import org.motrice.docbox.sign.XmlDsig
 
 import com.itextpdf.text.Element
@@ -24,13 +25,14 @@ import com.itextpdf.text.pdf.PdfString
 // The only way to create a logger with a predictable name?
 import org.apache.commons.logging.LogFactory
 
+import org.springframework.transaction.annotation.Transactional
+
 /**
  * Services related to signing and storing the signature in a PDF/A document
  * A page is added to the document to carry signature data
  */
 class SigService {
   private static final log = LogFactory.getLog(this)
-  static transactional = true
 
   static final HEADER_FONT = 'headerFont'
   static final TEXT_FONT = 'textFont'
@@ -38,10 +40,10 @@ class SigService {
   // Left margin in points
   static final LEFT = 79.3f
 
-  static final RESOURCE_NAME = 'org.motrice.docbox.info'
-
+  def grailsApplication
   def docService
 
+  @Transactional
   def addSignature(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
     def bytes = addPage(docStep, pdfContents, sig)
     def nextStep = docService.createBoxDocStep(docStep.doc, docStep.signCount + 1)
@@ -90,8 +92,12 @@ class SigService {
     info.put(new PdfName('DocNo'), new PdfString(docStep.docNo))
     info.put(new PdfName('Signature'), new PdfString(sig.signatureB64))
     info.put(new PdfName('Timestamp'), new PdfDate())
+    def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
+				   grailsApplication.metadata['app.version'])
+    info.put(new PdfName('Format'), new PdfString(formatSpec))
     def additional = new PdfDictionary()
-    additional.put(new PdfName(RESOURCE_NAME), info)
+    def docboxKey = grailsApplication.config.docbox.dictionary.key
+    additional.put(new PdfName(docboxKey), info)
     templ.additional = additional
     canvas.addTemplate(templ, 200.0f, 200.0f)
 
@@ -173,6 +179,43 @@ class SigService {
     phrase = new Phrase(signer(sig), fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
     return table
+  }
+
+  /**
+   * Post-process PDF generated from form data: Insert form data in its first page.
+   * @param formXref must be a form data cross-reference (XML as String)
+   * @return a new PDF document as a byte array
+   */
+  def byte[] pdfPostProcess(File pdfFile, DocData docData, String formXref) {
+    if (log.debugEnabled) log.debug "pdfPostProcess << ${pdfFile}"
+    def reader = new PdfReader(pdfFile.bytes)
+    def output = new ByteArrayOutputStream()
+    // This stamper does not create a new document revision
+    def stamper = new PdfAStamper(reader, output, 0 as char, false,
+				  PdfAConformanceLevel.PDF_A_1A)
+    def canvas = stamper.getOverContent(1)
+    // Add a template where the signature itself is stored as "additional information"
+    def templ = canvas.createTemplate(20.0f, 20.0f)
+    templ.rectangle(templ.boundingBox)
+    def info = new PdfDictionary()
+    info.put(new PdfName('FormData'), new PdfString(docData.dataItem.text))
+    info.put(new PdfName('FormXref'), new PdfString(formXref))
+    info.put(new PdfName('Timestamp'), new PdfDate())
+    def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
+				   grailsApplication.metadata['app.version'])
+    info.put(new PdfName('Format'), new PdfString(formatSpec))
+    def additional = new PdfDictionary()
+    def docboxKey = grailsApplication.config.docbox.dictionary.key
+    additional.put(new PdfName(docboxKey), info)
+    templ.additional = additional
+    canvas.addTemplate(templ, 25.0f, 25.0f)
+
+    // Write the output
+    stamper.close()
+    reader.close()
+    def outputBytes = output.toByteArray()
+    if (log.debugEnabled) log.debug "pdfPostProcess >> ${outputBytes?.length}"
+    return outputBytes
   }
 
 }

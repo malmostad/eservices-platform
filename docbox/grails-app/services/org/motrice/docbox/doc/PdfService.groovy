@@ -23,11 +23,12 @@ import org.apache.commons.logging.LogFactory
 class PdfService {
   static transactional = true
   private static final log = LogFactory.getLog(this)
+  // Also used by SigService
   static final String PDF_FORMAT_PAT = 'http://motrice.org/spec/docbox/%s/pdf'
 
   def grailsApplication
   def docService
-  def signService
+  def sigService
 
   /**
    * Retrieve all database objects relevant for a form instance.
@@ -81,6 +82,7 @@ class PdfService {
    * RETURN a map containing DocBook and RDF contents, with the following keys:
    * docbook: BoxContents with DocBook XML
    * rdf: BoxContents with RDF (metadata) XML fragment
+   * xref: Form cross-reference as an XML structure (String)
    */
   private Map createDocBook(BoxDocStep docStep, formDef, formData) {
     def map = formDef.generateDocBook(formData, log)
@@ -97,7 +99,8 @@ class PdfService {
       log.error "BoxContents save: ${rdf.errors.allErrors.join(',')}"
     }
 
-    return [docbook: docbook, rdf: rdf]
+    def formXref = formDef.generateFormLabelXref(formData)
+    return [docbook: docbook, rdf: rdf, xref: formXref]
   }
 
   /**
@@ -165,7 +168,17 @@ class PdfService {
     def pdf = null
     if (pdfFile.exists()) {
       pdf = docService.createContents(docStep, 'pdf', 'binary')
-      pdf.assignStream(pdfFile.bytes, true)
+      // Insert form data into the generated PDF
+      def pdfBytes = null
+      try {
+	pdfBytes = sigService.pdfPostProcess(pdfFile, docData, docContents.xref)
+      } catch (Exception exc) {
+	log.error "SigService.pdfPostProcess: ${exc.message}"
+	// Don't let this feature spoil the show
+	pdfBytes = pdfFile.bytes
+      }
+
+      pdf.assignStream(pdfBytes, true)
       if (!pdf.save(insert: true)) {
 	log.error "BoxContents (pdf) save: ${pdf.errors.allErrors.join(',')}"
       }
