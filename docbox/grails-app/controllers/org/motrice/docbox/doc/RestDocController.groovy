@@ -8,6 +8,7 @@ import org.motrice.docbox.form.PxdItem
 
 class RestDocController {
   private final static Integer CONFLICT_STATUS = 409
+  private final static CONT_DISP = 'Content-Disposition'
   def docService
   def pdfService
 
@@ -102,13 +103,16 @@ class RestDocController {
 
     if (contents) {
       if (log.debugEnabled) log.debug "FOUND: ${contents}"
+      String contDisp = "attachment;filename=${contents.fileName}"
       if (contents.binary) {
+	response.setHeader(CONT_DISP, contDisp)
 	response.status = 200
 	response.contentType = contents.contentType
 	response.getOutputStream().withStream {stream ->
 	  stream.bytes = contents.stream
 	}
       } else {
+	response.setHeader(CONT_DISP, contDisp)
 	render(status: 200, text: contents.text, contentType: contents.contentType,
 	encoding: 'UTF-8')
       }
