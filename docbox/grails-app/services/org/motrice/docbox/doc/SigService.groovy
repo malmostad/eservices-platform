@@ -1,5 +1,6 @@
 package org.motrice.docbox.doc
 
+import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.DocData
 import org.motrice.docbox.sign.XmlDsig
 
@@ -21,6 +22,12 @@ import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.PdfStamper
 import com.itextpdf.text.pdf.PdfString
+
+import javax.xml.transform.Source
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
+import javax.xml.validation.Validator
+import org.xml.sax.SAXParseException
 
 // The only way to create a logger with a predictable name?
 import org.apache.commons.logging.LogFactory
@@ -216,6 +223,26 @@ class SigService {
     def outputBytes = output.toByteArray()
     if (log.debugEnabled) log.debug "pdfPostProcess >> ${outputBytes?.length}"
     return outputBytes
+  }
+
+  /**
+   * Validate signature input
+   * Throw DocBoxException on failure, silent otherwise
+   */
+  def validateSignature(String sigBase64, InputStream schemaStream) {
+    if (log.debugEnabled) log.debug "validateSignature << (${sigBase64?.length()} chars)"
+    def factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema")
+    def schemaSource = new StreamSource(schemaStream)
+    def schema = factory.newSchema(schemaSource)
+    def validator = schema.newValidator()
+    def sigSource = new StreamSource(new ByteArrayInputStream(sigBase64.decodeBase64()))
+    try { 
+      validator.validate(sigSource)
+      if (log.debugEnabled) log.debug "validateSignature >> VALIDATED"
+    } catch (SAXParseException exc) {
+      if (log.debugEnabled) log.debug "validateSignature >> FAIL ${exc}"
+      throw new DocBoxException(exc.message)
+    }
   }
 
 }

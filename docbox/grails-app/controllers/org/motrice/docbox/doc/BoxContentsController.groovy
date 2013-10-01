@@ -3,8 +3,8 @@ package org.motrice.docbox.doc
 import org.springframework.dao.DataIntegrityViolationException
 
 class BoxContentsController {
-
   static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+  private final static CONT_DISP = 'Content-Disposition'
 
   def index() {
     redirect(action: "list", params: params)
@@ -50,13 +50,12 @@ class BoxContentsController {
     }
 
     def fname = boxContentsObj.name
-    response.setHeader('Content-Disposition', "attachment;filename=${fname}")
-    if (boxContentsObj.text != null) {
-      response.contentType = 'application/xml;charset=UTF-8'
-      response.outputStream << boxContentsObj.text
-    } else if (boxContentsObj.stream != null) {
-      response.contentType = 'application/octet-stream'
+    response.setHeader(CONT_DISP, "attachment;filename=${boxContentsObj.fileName}")
+    response.contentType = boxContentsObj.contentType
+    if (boxContentsObj.binary) {
       response.outputStream << boxContentsObj.stream
+    } else {
+      response.outputStream << boxContentsObj.text
     }
 
     render(view: 'show', model: [boxContentsObj: boxContentsObj])
