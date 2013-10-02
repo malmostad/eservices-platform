@@ -1,5 +1,7 @@
 package org.motrice.docbox.doc
 
+import org.motrice.docbox.DocBoxException
+import org.motrice.docbox.DocData
 import org.motrice.docbox.sign.XmlDsig
 
 import com.itextpdf.text.Element
@@ -21,8 +23,16 @@ import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.PdfStamper
 import com.itextpdf.text.pdf.PdfString
 
+import javax.xml.transform.Source
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
+import javax.xml.validation.Validator
+import org.xml.sax.SAXParseException
+
 // The only way to create a logger with a predictable name?
 import org.apache.commons.logging.LogFactory
+
+import org.springframework.transaction.annotation.Transactional
 
 /**
  * Services related to signing and storing the signature in a PDF/A document
@@ -30,7 +40,6 @@ import org.apache.commons.logging.LogFactory
  */
 class SigService {
   private static final log = LogFactory.getLog(this)
-  static transactional = true
 
   static final HEADER_FONT = 'headerFont'
   static final TEXT_FONT = 'textFont'
@@ -38,10 +47,12 @@ class SigService {
   // Left margin in points
   static final LEFT = 79.3f
 
-  static final RESOURCE_NAME = 'org.motrice.docbox.info'
+  static final SIGNATURE_KEY = new PdfName('Signature')
 
+  def grailsApplication
   def docService
 
+  @Transactional
   def addSignature(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
     def bytes = addPage(docStep, pdfContents, sig)
     def nextStep = docService.createBoxDocStep(docStep.doc, docStep.signCount + 1)
@@ -88,10 +99,14 @@ class SigService {
     templ.rectangle(templ.boundingBox)
     def info = new PdfDictionary()
     info.put(new PdfName('DocNo'), new PdfString(docStep.docNo))
-    info.put(new PdfName('Signature'), new PdfString(sig.signatureB64))
+    info.put(SIGNATURE_KEY, new PdfString(sig.signatureB64))
     info.put(new PdfName('Timestamp'), new PdfDate())
+    def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
+				   grailsApplication.metadata['app.version'])
+    info.put(new PdfName('Format'), new PdfString(formatSpec))
     def additional = new PdfDictionary()
-    additional.put(new PdfName(RESOURCE_NAME), info)
+    def docboxKey = grailsApplication.config.docbox.dictionary.key
+    additional.put(new PdfName(docboxKey), info)
     templ.additional = additional
     canvas.addTemplate(templ, 200.0f, 200.0f)
 
@@ -168,11 +183,131 @@ class SigService {
     table.addCell(new PdfPCell(phrase))
     phrase = new Phrase(checkSum, fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
+    phrase = new Phrase('Underskriven text', fontMap[TEXT_FONT])
+    table.addCell(new PdfPCell(phrase))
+    phrase = new Phrase(sig.signedText, fontMap[TEXT_FONT])
+    table.addCell(new PdfPCell(phrase))
     phrase = new Phrase('Underskrift av', fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
     phrase = new Phrase(signer(sig), fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
     return table
+  }
+
+  /**
+   * Post-process PDF generated from form data: Insert form data in its first page.
+   * @param formXref must be a form data cross-reference (XML as String)
+   * @return a new PDF document as a byte array
+   */
+  def byte[] pdfPostProcess(File pdfFile, DocData docData, String formXref) {
+    if (log.debugEnabled) log.debug "pdfPostProcess << ${pdfFile}"
+    def reader = new PdfReader(pdfFile.bytes)
+    def output = new ByteArrayOutputStream()
+    // This stamper does not create a new document revision
+    def stamper = new PdfAStamper(reader, output, 0 as char, false,
+				  PdfAConformanceLevel.PDF_A_1A)
+    def canvas = stamper.getOverContent(1)
+    // Add a template where the signature itself is stored as "additional information"
+    def templ = canvas.createTemplate(20.0f, 20.0f)
+    templ.rectangle(templ.boundingBox)
+    def info = new PdfDictionary()
+    info.put(new PdfName('FormData'), new PdfString(docData.dataItem.text))
+    info.put(new PdfName('FormXref'), new PdfString(formXref))
+    info.put(new PdfName('Timestamp'), new PdfDate())
+    def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
+				   grailsApplication.metadata['app.version'])
+    info.put(new PdfName('Format'), new PdfString(formatSpec))
+    def additional = new PdfDictionary()
+    def docboxKey = grailsApplication.config.docbox.dictionary.key
+    additional.put(new PdfName(docboxKey), info)
+    templ.additional = additional
+    canvas.addTemplate(templ, 25.0f, 25.0f)
+
+    // Write the output
+    stamper.close()
+    reader.close()
+    def outputBytes = output.toByteArray()
+    if (log.debugEnabled) log.debug "pdfPostProcess >> ${outputBytes?.length}"
+    return outputBytes
+  }
+
+  /**
+   * Find a signature in pdf contents
+   * @param pdfContents must contain a pdf document
+   * @return a List of String where each element is a Base64-encoded signature
+   * The list is empty if there are no signatures in the document
+   */
+  def findAllSignatures(BoxContents pdfContents) {
+    findAllSignatures(pdfContents.stream)
+  }
+
+  def findAllSignatures(byte[] pdf) {
+    if (log.debugEnabled) log.debug "findAllSignatures << ${pdf.length} bytes"
+    def reader = new PdfReader(pdf)
+    def pageCount = reader.numberOfPages
+    // The first page that may contain a signature is page 2
+    if (pageCount < 2) return null
+    def sigList = []
+    def docboxKey = new PdfName(grailsApplication.config.docbox.dictionary.key)
+    (2..pageCount).each {pageNo ->
+      def page = reader.getPageN(pageNo)
+      def resources = page.getDirectObject(PdfName.RESOURCES)
+      if (resources) {
+	def xobjDict = resources.getDirectObject(PdfName.XOBJECT)
+	xobjDict.keys.each {key1 ->
+	  def xobj = xobjDict.getDirectObject(key1)
+	  if (xobj.stream) {
+	    xobj.keys.each {key2 ->
+	      if (docboxKey.equals(key2)) {
+		def docboxDict = xobj.get(key2)
+		def sig = docboxDict.get(SIGNATURE_KEY)
+		if (sig) sigList.add(String.valueOf(sig))
+	      }
+	    }
+	  }
+	}
+      }
+    }
+
+    if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
+    return sigList
+  }
+
+  /**
+   * Validate signature input
+   * Throw DocBoxException on failure, silent otherwise
+   */
+  def validateSigSyntax(String sigBase64, InputStream schemaStream) {
+    if (log.debugEnabled) log.debug "validateSigSyntax << (${sigBase64?.length()} chars)"
+    def factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema")
+    def schemaSource = new StreamSource(schemaStream)
+    def schema = factory.newSchema(schemaSource)
+    def validator = schema.newValidator()
+    def sigSource = new StreamSource(new ByteArrayInputStream(sigBase64.decodeBase64()))
+    try { 
+      validator.validate(sigSource)
+      if (log.debugEnabled) log.debug "validateSigSyntax >> VALIDATED"
+    } catch (SAXParseException exc) {
+      if (log.debugEnabled) log.debug "validateSigSyntax >> FAIL ${exc}"
+      throw new DocBoxException(exc.message)
+    }
+  }
+
+  /**
+   * Validate a signature
+   * @param sigBase64 must contain the signature Base64-encoded
+   * @return a map containing:
+   * sigValid: (boolean) the outcome of signature validation
+   * certValid: (boolean) the outcome of certificate validation
+   * sigData: XmlDsig instance
+   */
+  def validateSignature(String sigBase64) {
+    def sig = new XmlDsig(sigBase64, log)
+    def map = [:]
+    map.coreValid = sig.validateSignature()
+    map.certValid = sig.validateCertificates()
+    map.sigData = sig
+    return map
   }
 
 }

@@ -110,4 +110,9 @@ log4j = {
            'net.sf.ehcache.hibernate'
 
 	   //debug 'org.motrice.docbox.doc', 'grails.app.controllers', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService'
+
 }
+
+// Application-specific constants
+// Key used in PDF dictionaries for docbox data
+docbox.dictionary.key="org.motrice.docbox.info"

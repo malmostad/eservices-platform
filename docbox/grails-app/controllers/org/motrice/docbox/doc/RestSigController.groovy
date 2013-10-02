@@ -5,7 +5,8 @@ import org.motrice.docbox.Util
 import org.motrice.docbox.sign.XmlDsig
 
 class RestSigController {
-  private final static Integer CONFLICT_STATUS = 409
+  // Path to the XMLDSIG schema
+  static final XMLDSIG_SCHEMA = '/xsd/xmldsig-core-schema.xsd'
 
   def docService
   def sigService
@@ -19,29 +20,36 @@ class RestSigController {
    */
   def docboxSigPut(String docboxref) {
     if (log.debugEnabled) log.debug "SIGPUT: ${Util.clean(params)}, ${request.forwardURI}"
-    // TBD: Validate the signature
-    def sig = new XmlDsig(request.reader.text, log)
     Integer status = 404
     def docStep = null
-    def pdfContents
+    def pdfContents = null
     def msg = null
+    def sigB64 = request.reader.text
 
     try {
+      status = 400
+      sigService.validateSigSyntax(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
+      status = 409
       docStep = docService.findAndCheckByRef(docboxref)
+      status = 404
       if (docStep) {
 	pdfContents = docService.findPdfContents(docStep)
-	if (!docStep) msg = "PDF contents not found for ${docStep?.docNo}"
+	if (pdfContents) {
+	  status = 200
+	} else {
+	  msg = "PDF contents not found for ${docStep?.docNo}"
+	}
       } else {
 	msg = "DocStep not found for ${docboxref}"
       }
     } catch (DocBoxException exc) {
       msg = exc.message
-      status = CONFLICT_STATUS
     }
 
     if (msg) {
       render(status: status, contentType: 'text/plain', text: msg)
     } else {
+      def sig = new XmlDsig(sigB64, log)
       def result = sigService.addSignature(docStep, pdfContents, sig)
       def nextStep = result.step
       def nextContents = result.contents
@@ -51,6 +59,64 @@ class RestSigController {
 	docNo = nextStep.docNo
 	signCount = nextStep.signCount
 	checkSum = nextContents.checksum
+      }
+    }
+  }
+
+  def sigValidate(String docboxref) {
+    if (log.debugEnabled) log.debug "VALIDATE: ${Util.clean(params)}, ${request.forwardURI}"
+    def pdfContents = null
+    def sigBase64 = null
+    String msg = null
+    Integer status = 404
+
+    def docStep = docService.findStepByRef(docboxref)
+    def prevChecksum
+    if (docStep) {
+      if (docStep.signCount > 0) {
+	pdfContents = docService.findPdfContents(docStep)
+	def prevStep = docService.findPredecessor(docStep)
+	if (prevStep) {
+	  def prevContents = docService.findPdfContents(prevStep)
+	  prevChecksum = prevContents.checksum
+	}
+      } else {
+	status = 400
+	msg = "Document has no signature: ${docboxref}"
+      }
+    } else {
+      msg = "Document step not found: ${docboxref}"
+    }
+
+    Map outcome = null
+    if (pdfContents) {
+      def sigList = sigService.findAllSignatures(pdfContents)
+      if (sigList.empty) {
+	status = 500
+	msg = "No signature found: ${docboxref}"
+      } else {
+	outcome = sigService.validateSignature(sigList[-1])
+      }
+    } else {
+      msg = "No PDF found for ${docboxref}"
+    }
+
+    if (msg) {
+      render(status: status, contentType: 'text/plain', text: msg)
+    } else {
+      XmlDsig dsig = outcome.sigData
+      def coreSigValidation = outcome.coreValid
+      def certsValidation = outcome.certValid
+      status = (coreSigValidation && certsValidation)? 200 : 409
+      render(status: 409, contentType: 'text/json') {
+	docboxRef = docStep.docboxRef
+	docNo = docStep.docNo
+	signCount = docStep.signCount
+	signedChecksum = prevChecksum
+	signedText = dsig.signedText
+	coreSigValid = coreSigValidation
+	certValid = certsValidation
+	validationReport = dsig.report.join('|')
       }
     }
   }

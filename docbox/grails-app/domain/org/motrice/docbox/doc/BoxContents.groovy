@@ -29,7 +29,7 @@ class BoxContents {
   byte[] stream
 
   static belongsTo = [step: BoxDocStep]
-  static transients = ['binary', 'contentType']
+  static transients = ['binary', 'contentType', 'fileName']
   static mapping = {
     text type: 'text'
   }
@@ -85,6 +85,25 @@ class BoxContents {
   String getContentType() {
     binary? 'application/octet-stream' :
     ((format == 'xml')? 'application/xml;charset=UTF-8' : 'text/plain;charset=UTF-8')
+  }
+
+  /**
+   * Create a credible file name for downloading
+   */
+  String getFileName() {
+    def docNo = step.docNo
+    def fileName
+    if (name.endsWith('.xml')) {
+      fileName = "${docNo}-${name}"
+    } else if (name == 'pdf') {
+      fileName = "${docNo}.pdf"
+    } else if (binary) {
+      fileName = "${docNo}-${name}.bin"
+    } else {
+      fileName = "${docNo}-${name}.txt"
+    }
+
+    return fileName
   }
 
   String toString() {
