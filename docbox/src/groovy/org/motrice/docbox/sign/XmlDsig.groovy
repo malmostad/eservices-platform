@@ -24,7 +24,6 @@ import org.xml.sax.InputSource
  * more powerful.
  * Mixing the two models is not optimal for performance.
  * However, for this application no optimization attempt is made.
- * Several other factors keep this class below production quality.
  * All exceptions are converted to XMLSignatureException
  */
 class XmlDsig {
@@ -71,20 +70,39 @@ class XmlDsig {
   /**
    * Get the first certificate of the certificate chain
    * It should be the signing user's certificate
+   * @return java.security.cert.X509Certificate
    */
   def getFirstCert() {
     if (certChain == null) certChain = extractCertChain()
-    if (log.debugEnabled) log.debug "certChain entries: ${certChain?.size()}"
+    if (log.debugEnabled) log.debug "XmlDsig.certChain entries: ${certChain?.size()}"
     return certChain[0]
+  }
+
+  /**
+   * Get the last certificate of the certificate chain
+   * This is the self-signed trust anchor of the chain
+   * @return java.security.cert.X509Certificate
+   */
+  def getLastCert() {
+    if (certChain == null) certChain = extractCertChain()
+    if (log.debugEnabled) log.debug "XmlDsig.certChain entries: ${certChain?.size()}"
+    return certChain[-1]
+  }
+
+  /**
+   * Get the text that was shown to the user to sign
+   */
+  def getSignedText() {
+    if (signedText == null) signedText = extractUsrVisibleData()
+    return signedText
   }
 
   //===================== Signature Validation =====================
 
   /**
    * Validate the signature
-   * SIDE EFFECT: sets the certChain field
-   * RETURN List of String containing the lines of a primitive
-   * validation report.
+   * SIDE EFFECT: sets the certChain field, add text lines to report
+   * @return boolean, did validation succeed?
    */
   def validateSignature() {
     // Create the document to be validated
@@ -112,13 +130,13 @@ class XmlDsig {
     def sigFact = XMLSignatureFactory.getInstance('DOM')
 
     // Extract the signed text
-    signedText = extractUsrVisibleData()
+    signedText = getSignedText()
 
     // We assume the signature is sealed with a certificate chain
     // Get the public key from the first certificate = end user certificate by convention
     def cert = getFirstCert()
     def pubKey = cert.publicKey
-    doSigValidate(sigFact, signatureElement, pubKey)
+    return doSigValidate(sigFact, signatureElement, pubKey)
   }
 
   // DOM gets in the way
@@ -149,7 +167,6 @@ class XmlDsig {
     if (coreValidity) {
       report << "Core signature validation PASSED."
       report << "  Signature integrity checked. Encryption key matched."
-      report << "Signed text: ${signedText}"
       report << "Signed by: ${certChain[0].subjectDN}"
       report << ''
     } else {
@@ -171,7 +188,12 @@ class XmlDsig {
 
   //===================== Certificate Validation =====================
 
-  // ASSUMES you have run validateSignature
+  /**
+   * Validate certificates (except the root because it is self-signed)
+   * ASSUMES you have run validateSignature
+   * SIDE EFFECT: Adds lines to report
+   * @return boolean, was validation successful?
+   */
   def validateCertificates() {
     def cf = CertificateFactory.getInstance("X.509")
     // The certificate chain begins with the signer and ends with
@@ -181,15 +203,17 @@ class XmlDsig {
     // Get the trust anchor
     def anchorCert = certChain[-1]
     def certStruct = [certPath: certPath, anchorCert: anchorCert]
+    boolean success = false
     try {
       def valResult = doCertValidate(certStruct)
       report << "Certificate chain is VALID (revocation check: ${REVOCATION_CHECK})"
       report << '  except that the trust anchor is not verified.'
       report << "Claims to be issued by: ${anchorCert.issuerDN}"
-      report << "Thumbprint: ${thumbPrint(anchorCert)}"
-      report << ''
-      report << 'Cert validation details follow'
-      report << valResult.toString()
+      report << "Fingerprint: ${fingerprint(anchorCert)}"
+      //report << ''
+      //report << 'Cert validation details follow'
+      //report << valResult.toString()
+      success = true
     } catch (CertPathValidatorException exc) {
       def certList = certs.certPath.certificates
       def problemCert = certList[exc.index]
@@ -200,6 +224,8 @@ class XmlDsig {
     } catch (Exception exc) {
       report << "Exception: ${exc}"
     }
+
+    return success
   }
 
   // DOM gets in the way
@@ -235,10 +261,9 @@ class XmlDsig {
   }
 
   /**
-   * Get the thumbprint of a certificate as a hexadecimal string
-   * TBD: Is this correct?
+   * Get the fingerprint of a certificate as a hexadecimal string
    */
-  private thumbPrint(cert) {
+  private fingerprint(cert) {
     byte[] der = cert.encoded
     def md = MessageDigest.getInstance('SHA-1')
     md.update(der)

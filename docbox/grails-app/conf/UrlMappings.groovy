@@ -16,6 +16,9 @@ class UrlMappings {
     "/doc/sig/$docboxref"(controller: 'RestSig') {
       action = [POST: 'docboxSigPut']
     }
+    "/doc/sig/validate/$docboxref"(controller: 'RestSig') {
+      action = [GET: 'sigValidate']
+    }
 
     "/$controller/$action?/$id?"{
       constraints {

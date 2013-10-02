@@ -95,8 +95,6 @@ class BoxContents {
     def fileName
     if (name.endsWith('.xml')) {
       fileName = "${docNo}-${name}"
-    } else if (name == 'preview' || name == 'convlog') {
-      fileName = "${docNo}-${name}.txt"
     } else if (name == 'pdf') {
       fileName = "${docNo}.pdf"
     } else if (binary) {
