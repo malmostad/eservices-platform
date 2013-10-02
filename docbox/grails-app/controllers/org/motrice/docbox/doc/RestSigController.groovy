@@ -28,7 +28,7 @@ class RestSigController {
 
     try {
       status = 400
-      sigService.validateSignature(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
+      sigService.validateSigSyntax(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
       status = 409
       docStep = docService.findAndCheckByRef(docboxref)
       status = 404
@@ -59,6 +59,64 @@ class RestSigController {
 	docNo = nextStep.docNo
 	signCount = nextStep.signCount
 	checkSum = nextContents.checksum
+      }
+    }
+  }
+
+  def sigValidate(String docboxref) {
+    if (log.debugEnabled) log.debug "VALIDATE: ${Util.clean(params)}, ${request.forwardURI}"
+    def pdfContents = null
+    def sigBase64 = null
+    String msg = null
+    Integer status = 404
+
+    def docStep = docService.findStepByRef(docboxref)
+    def prevChecksum
+    if (docStep) {
+      if (docStep.signCount > 0) {
+	pdfContents = docService.findPdfContents(docStep)
+	def prevStep = docService.findPredecessor(docStep)
+	if (prevStep) {
+	  def prevContents = docService.findPdfContents(prevStep)
+	  prevChecksum = prevContents.checksum
+	}
+      } else {
+	status = 400
+	msg = "Document has no signature: ${docboxref}"
+      }
+    } else {
+      msg = "Document step not found: ${docboxref}"
+    }
+
+    Map outcome = null
+    if (pdfContents) {
+      def sigList = sigService.findAllSignatures(pdfContents)
+      if (sigList.empty) {
+	status = 500
+	msg = "No signature found: ${docboxref}"
+      } else {
+	outcome = sigService.validateSignature(sigList[-1])
+      }
+    } else {
+      msg = "No PDF found for ${docboxref}"
+    }
+
+    if (msg) {
+      render(status: status, contentType: 'text/plain', text: msg)
+    } else {
+      XmlDsig dsig = outcome.sigData
+      def coreSigValidation = outcome.coreValid
+      def certsValidation = outcome.certValid
+      status = (coreSigValidation && certsValidation)? 200 : 409
+      render(status: 409, contentType: 'text/json') {
+	docboxRef = docStep.docboxRef
+	docNo = docStep.docNo
+	signCount = docStep.signCount
+	signedChecksum = prevChecksum
+	signedText = dsig.signedText
+	coreSigValid = coreSigValidation
+	certValid = certsValidation
+	validationReport = dsig.report.join('|')
       }
     }
   }

@@ -170,6 +170,15 @@ class DocService {
     return docStep
   }
 
+  BoxDocStep findPredecessor(BoxDocStep docStep) {
+    if (log.debugEnabled) log.debug "findPredecessor << ${docStep}"
+    def q = 'from BoxDocStep s where s.doc.id=? and s.step=?'
+    def docStepList = BoxDocStep.executeQuery(q, [docStep.doc.id, docStep.step - 1])
+    def prevStep = (docStepList?.size() > 0)? docStepList[0] : null
+    if (log.debugEnabled) log.debug "findPredecessor >> ${prevStep}"
+    return prevStep
+  }
+
   BoxContents findPdfContents(BoxDocStep docStep) {
     findContents(docStep, null)
   }

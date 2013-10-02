@@ -47,6 +47,8 @@ class SigService {
   // Left margin in points
   static final LEFT = 79.3f
 
+  static final SIGNATURE_KEY = new PdfName('Signature')
+
   def grailsApplication
   def docService
 
@@ -97,7 +99,7 @@ class SigService {
     templ.rectangle(templ.boundingBox)
     def info = new PdfDictionary()
     info.put(new PdfName('DocNo'), new PdfString(docStep.docNo))
-    info.put(new PdfName('Signature'), new PdfString(sig.signatureB64))
+    info.put(SIGNATURE_KEY, new PdfString(sig.signatureB64))
     info.put(new PdfName('Timestamp'), new PdfDate())
     def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
 				   grailsApplication.metadata['app.version'])
@@ -181,6 +183,10 @@ class SigService {
     table.addCell(new PdfPCell(phrase))
     phrase = new Phrase(checkSum, fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
+    phrase = new Phrase('Underskriven text', fontMap[TEXT_FONT])
+    table.addCell(new PdfPCell(phrase))
+    phrase = new Phrase(sig.signedText, fontMap[TEXT_FONT])
+    table.addCell(new PdfPCell(phrase))
     phrase = new Phrase('Underskrift av', fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
     phrase = new Phrase(signer(sig), fontMap[TEXT_FONT])
@@ -226,11 +232,53 @@ class SigService {
   }
 
   /**
+   * Find a signature in pdf contents
+   * @param pdfContents must contain a pdf document
+   * @return a List of String where each element is a Base64-encoded signature
+   * The list is empty if there are no signatures in the document
+   */
+  def findAllSignatures(BoxContents pdfContents) {
+    findAllSignatures(pdfContents.stream)
+  }
+
+  def findAllSignatures(byte[] pdf) {
+    if (log.debugEnabled) log.debug "findAllSignatures << ${pdf.length} bytes"
+    def reader = new PdfReader(pdf)
+    def pageCount = reader.numberOfPages
+    // The first page that may contain a signature is page 2
+    if (pageCount < 2) return null
+    def sigList = []
+    def docboxKey = new PdfName(grailsApplication.config.docbox.dictionary.key)
+    (2..pageCount).each {pageNo ->
+      def page = reader.getPageN(pageNo)
+      def resources = page.getDirectObject(PdfName.RESOURCES)
+      if (resources) {
+	def xobjDict = resources.getDirectObject(PdfName.XOBJECT)
+	xobjDict.keys.each {key1 ->
+	  def xobj = xobjDict.getDirectObject(key1)
+	  if (xobj.stream) {
+	    xobj.keys.each {key2 ->
+	      if (docboxKey.equals(key2)) {
+		def docboxDict = xobj.get(key2)
+		def sig = docboxDict.get(SIGNATURE_KEY)
+		if (sig) sigList.add(String.valueOf(sig))
+	      }
+	    }
+	  }
+	}
+      }
+    }
+
+    if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
+    return sigList
+  }
+
+  /**
    * Validate signature input
    * Throw DocBoxException on failure, silent otherwise
    */
-  def validateSignature(String sigBase64, InputStream schemaStream) {
-    if (log.debugEnabled) log.debug "validateSignature << (${sigBase64?.length()} chars)"
+  def validateSigSyntax(String sigBase64, InputStream schemaStream) {
+    if (log.debugEnabled) log.debug "validateSigSyntax << (${sigBase64?.length()} chars)"
     def factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema")
     def schemaSource = new StreamSource(schemaStream)
     def schema = factory.newSchema(schemaSource)
@@ -238,11 +286,28 @@ class SigService {
     def sigSource = new StreamSource(new ByteArrayInputStream(sigBase64.decodeBase64()))
     try { 
       validator.validate(sigSource)
-      if (log.debugEnabled) log.debug "validateSignature >> VALIDATED"
+      if (log.debugEnabled) log.debug "validateSigSyntax >> VALIDATED"
     } catch (SAXParseException exc) {
-      if (log.debugEnabled) log.debug "validateSignature >> FAIL ${exc}"
+      if (log.debugEnabled) log.debug "validateSigSyntax >> FAIL ${exc}"
       throw new DocBoxException(exc.message)
     }
+  }
+
+  /**
+   * Validate a signature
+   * @param sigBase64 must contain the signature Base64-encoded
+   * @return a map containing:
+   * sigValid: (boolean) the outcome of signature validation
+   * certValid: (boolean) the outcome of certificate validation
+   * sigData: XmlDsig instance
+   */
+  def validateSignature(String sigBase64) {
+    def sig = new XmlDsig(sigBase64, log)
+    def map = [:]
+    map.coreValid = sig.validateSignature()
+    map.certValid = sig.validateCertificates()
+    map.sigData = sig
+    return map
   }
 
 }
