@@ -106,8 +106,15 @@ ALTER TABLE ONLY mtf_activity_form_definition
 -- mtf_tag_type
 --
 
-COPY mtf_tag_type (tagtypeid, label, name) FROM stdin;
-1	Diarienr	diary_no
-2	Ansökan av	application_by
-10000	Annan	other
-\.
+INSERT INTO mtf_tag_type(
+            tagtypeid, label, name)
+    VALUES (1, 'Diarienr', 'diary_no');
+
+INSERT INTO mtf_tag_type(
+            tagtypeid, label, name)
+    VALUES (2, 'Ansökan av', 'application_by');
+
+INSERT INTO mtf_tag_type(
+            tagtypeid, label, name)
+    VALUES (10000, 'Annan', 'other');
+
