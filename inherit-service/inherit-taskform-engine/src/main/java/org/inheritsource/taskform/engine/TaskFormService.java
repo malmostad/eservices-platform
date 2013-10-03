@@ -48,6 +48,7 @@ import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
+import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.orbeon.OrbeonService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
@@ -59,6 +60,9 @@ public class TaskFormService {
 
 	public static final Logger log = Logger.getLogger(TaskFormService.class
 			.getName());
+
+	private static final String MYPROFILEFORMPATH="malmo/profil";
+
 
 	TaskFormDb taskFormDb;
 	BonitaEngineServiceImpl bonitaClient;
@@ -783,7 +787,12 @@ public class TaskFormService {
 		return viewUrl;
 	}
 
-
+	public MyProfile getMyProfile(String Uuid) {
+		MyProfile result = new MyProfile(Uuid);
+		result.setEmail(orbeonService.getFormDataValue(
+				MYPROFILEFORMPATH, Uuid, "//section-1/email"));
+		return result;
+	}
 	
 	private String searchForBonitaUser(String searchForUserId) {
 		String searchForBonitaUser = searchForUserId;
