@@ -15,8 +15,8 @@ if [ -z "$1" ]
     export DB_USER=$2    
 fi
 
-su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.box.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.hibernate.sql"'
+su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.box.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.mtf.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.pxd.sql"'
 
