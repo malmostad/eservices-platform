@@ -52,6 +52,12 @@
 	    <span class="property-value" aria-labelledby="size-label"><g:fieldValue bean="${boxContentsObj}" field="size"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${boxContentsObj?.checksum}">
+	  <li class="fieldcontain">
+	    <span id="checksum-label" class="property-label"><g:message code="boxContents.checksum.label" default="Checksum" /></span>
+	    <span class="property-value" aria-labelledby="checksum-label"><g:fieldValue bean="${boxContentsObj}" field="checksum"/></span>
+	  </li>
+	</g:if>
 	<g:if test="${boxContentsObj?.text}">
 	  <li class="fieldcontain">
 	    <span id="text-label" class="property-label"><g:message code="boxContents.text.label" default="Text" /></span>
