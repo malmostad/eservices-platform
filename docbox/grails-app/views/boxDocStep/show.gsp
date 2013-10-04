@@ -39,6 +39,12 @@
 	    <span class="property-value" aria-labelledby="docboxRef-label"><g:fieldValue bean="${boxDocStepObj}" field="docboxRef"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${boxDocStepObj?.doc}">
+	  <li class="fieldcontain">
+	    <span id="doc-label" class="property-label"><g:message code="boxDocStep.doc.label" default="Doc" /></span>
+	    <span class="property-value" aria-labelledby="doc-label"><g:link controller="boxDoc" action="show" id="${boxDocStepObj?.doc?.id}">${boxDocStepObj?.doc?.display().encodeAsHTML()}</g:link></span>
+	  </li>
+	</g:if>
 	<g:if test="${boxDocStepObj?.signCount != null}">
 	  <li class="fieldcontain">
 	    <span id="signCount-label" class="property-label"><g:message code="boxDocStep.signCount.label" default="Sign Count" /></span>
@@ -61,14 +67,8 @@
 	  <li class="fieldcontain">
 	    <span id="contents-label" class="property-label"><g:message code="boxDocStep.contents.label" default="Contents" /></span>
 	    <g:each in="${boxDocStepObj.contents}" var="c">
-	      <span class="property-value" aria-labelledby="contents-label"><g:link controller="boxContents" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></span>
+	      <span class="property-value" aria-labelledby="contents-label"><g:link controller="boxContents" action="show" id="${c.id}">${c?.display()?.encodeAsHTML()}</g:link></span>
 	    </g:each>
-	  </li>
-	</g:if>
-	<g:if test="${boxDocStepObj?.doc}">
-	  <li class="fieldcontain">
-	    <span id="doc-label" class="property-label"><g:message code="boxDocStep.doc.label" default="Doc" /></span>
-	    <span class="property-value" aria-labelledby="doc-label"><g:link controller="boxDoc" action="show" id="${boxDocStepObj?.doc?.id}">${boxDocStepObj?.doc?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>
