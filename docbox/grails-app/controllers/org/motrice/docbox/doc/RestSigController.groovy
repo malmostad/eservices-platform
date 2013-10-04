@@ -28,14 +28,20 @@ class RestSigController {
 
     try {
       status = 400
-      sigService.validateSigSyntax(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
+      sigService.basicSignatureCheck(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
       status = 409
       docStep = docService.findAndCheckByRef(docboxref)
       status = 404
       if (docStep) {
 	pdfContents = docService.findPdfContents(docStep)
 	if (pdfContents) {
-	  status = 200
+	  try {
+	    status = 200
+	    sigService.signedTextCheck(sigB64, docStep, pdfContents)
+	  } catch (DocBoxException exc) {
+	    status = 403
+	    msg = exc.message
+	  }
 	} else {
 	  msg = "PDF contents not found for ${docStep?.docNo}"
 	}

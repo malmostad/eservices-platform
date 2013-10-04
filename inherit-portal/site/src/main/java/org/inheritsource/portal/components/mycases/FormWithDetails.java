@@ -43,6 +43,8 @@ public class FormWithDetails extends Form  {
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
 		super.doBeforeRender(request, response);
 				
+		// TODO jag undrar varför jag plockar upp taskUuid här och inte alltid plockar från
+		//      request.getAttribute("activity") som hanterar detta i basklassen.
 		String activityInstanceUuid = getPublicRequestParameter(request,
 				"taskUuid"); // TODO change to activityInstanceUuid???
 

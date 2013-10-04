@@ -116,19 +116,19 @@ class RestFormdefController {
       itemObj = restService.createPublishedItem(params.resource, request.reader.text)
       if (log.debugEnabled) log.debug "putop XML << ${itemObj}"
     } else {
-      // So far our belief is that this never happens
-      log.error "putop called for binary resource: ${Util.clean(params)}, ${request.forwardURI}"
+      // Happens only in Orbeon 4
       if (log.debugEnabled) log.debug "putop BIN >> createPublishedResource"
-      itemObj = restService.createPublishedResource(params.uuid, params.resource, request)
+      itemObj = restService.createPublishedResource(params.app, params.form, params.resource, request)
       if (log.debugEnabled) log.debug "putop BIN << ${itemObj}"
     }
 
     if (itemObj) {
-      render(status: 201, text: "Saved to ${itemObj.path}", contentType: 'text/plain')
+      // The response must be empty, or Orbeon chokes
+      render(status: 201)
     } else {
-      def msg = 'PxdItem not found'
-      log.warn "putop CONFLICT: ${msg}"
-      render(status: 409, text: 'CONFLICT ' + msg, contentType: 'text/plain')
+      def msg = 'CONFLICT PxdItem not found'
+      log.warn "putop ${msg}"
+      render(status: 409, text: msg, contentType: 'text/plain')
     }
   }
 

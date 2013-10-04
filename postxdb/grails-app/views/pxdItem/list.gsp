@@ -36,7 +36,7 @@
 	      <td><g:link action="show" id="${pxdItemObj.id}">${fieldValue(bean: pxdItemObj, field: "path")}</g:link></td>
 	      <td><g:instflag flag="${pxdItemObj?.instance}"/></td>
 	      <td>${fieldValue(bean: pxdItemObj, field: "format")}</td>
-	      <td>${fieldValue(bean: pxdItemObj, field: "uuid")}</td>
+	      <td><g:abbr text="${pxdItemObj.uuid}"/></td>
 	      <td>${fieldValue(bean: pxdItemObj, field: "formDef")}</td>
 	      <td><g:formatDate date="${pxdItemObj.dateCreated}" /></td>
 	    </tr>

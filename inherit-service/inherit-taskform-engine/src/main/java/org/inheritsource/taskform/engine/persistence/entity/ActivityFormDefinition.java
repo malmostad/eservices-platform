@@ -28,6 +28,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Define which form to use with a specific activity definition. 
@@ -40,6 +41,7 @@ import javax.persistence.ManyToOne;
  *
  */
 @Entity
+@Table(name="mtf_activity_form_definition")
 public class ActivityFormDefinition {
 
 	public static final String ENTRY_UUID = "ENTRY";

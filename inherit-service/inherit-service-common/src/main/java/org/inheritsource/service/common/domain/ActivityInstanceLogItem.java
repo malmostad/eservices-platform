@@ -57,6 +57,7 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 	public String getViewUrl() {
 		return viewUrl;
 	}
+	
 	public void setViewUrl(String viewUrl) {
 		this.viewUrl = viewUrl;
 	}

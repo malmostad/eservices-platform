@@ -420,6 +420,7 @@ public class TaskFormService {
 				result.setActivityLabel(startActivity.getFormPath());
 				result.setPerformedByUser(taskFormDb
 						.getUserByUuid(startActivity.getUserId()));
+				result.setFormDocId(startActivity.getFormDocId());
 			}
 		}
 
@@ -504,6 +505,8 @@ public class TaskFormService {
 			item.setProcessActivityFormInstanceId(activityFormInstance
 					.getProcessActivityFormInstanceId().longValue());
 		}
+		
+		item.setFormDocId(activityFormInstance.getFormDocId());
 	}
 
 	public ActivityInstanceItem getActivityInstanceItem(

@@ -71,11 +71,12 @@ class RestResourceController {
     }
 
     if (itemObj) {
-      render(status: 201, text: "Saved to ${itemObj.path}", contentType: 'text/plain')
+      // Too bad, but Orbeon chokes if we return anything, response must be empty.
+      render(status: 201)
     } else {
-      def msg = 'PxdItem not found'
-      log.warn "putop CONFLICT ${msg}"
-      render(status: 409, text: 'CONFLICT ' + msg, contentType: 'text/plain')
+      String msg = 'CONFLICT PxdItem not found'
+      log.warn "putop ${msg}"
+      render(status: 409, text: msg, contentType: 'text/plain')
     }
   }
 

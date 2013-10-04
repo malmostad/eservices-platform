@@ -23,6 +23,7 @@
  
 package org.inheritsource.service.rest.client;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -37,6 +38,7 @@ import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
@@ -50,11 +52,14 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 
 /**
  * A ready to use REST client implementation to inherit-service-rest-server.
@@ -67,15 +72,18 @@ public class InheritServiceClient {
 	
 	String serverBaseUrl;
 	XStream xstream;
+	XStream jsonxstream;
 	
 	public InheritServiceClient() {
 		serverBaseUrl = "http://localhost:58080/inherit-service-rest-server-1.0-SNAPSHOT/";
 		xstream = initXStream();
+		jsonxstream = initJsonXStream();
 	}
 
 	public InheritServiceClient(String serverBaseUrl) {
 		this.serverBaseUrl = serverBaseUrl;
 		xstream = initXStream();
+		jsonxstream = initJsonXStream();
 	}
 	
 	private XStream initXStream() {
@@ -101,8 +109,17 @@ public class InheritServiceClient {
 		xstream.alias("PagedProcessInstanceSearchResult", PagedProcessInstanceSearchResult.class);
 		xstream.alias("Tag", Tag.class);
 		xstream.alias("UserInfo", UserInfo.class);
-		
+				
 		return xstream;
+	}
+
+	private XStream initJsonXStream() {
+		XStream jsonxstream = new XStream(new JettisonMappedXmlDriver());
+		jsonxstream.setMode(XStream.NO_REFERENCES);
+		
+		jsonxstream.alias("DocBoxFormData", DocBoxFormData.class);
+		
+		return jsonxstream;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -528,6 +545,26 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public DocBoxFormData getDocBoxFormData(String formDataUuid) {
+		DocBoxFormData result = null;
+		String uri;
+		
+		uri = "http://localhost:8080/docbox/doc/formdata/" 
+				+ ParameterEncoder.encode(formDataUuid);
+		
+		log.severe("getDocBoxFormData uri: " + uri);
+		
+		String response = putAndCatchRE(uri, new DocBoxFormData());
+		
+		if (response != null) {
+			log.severe("response: " + response);
+			response = "{DocBoxFormData: " + response + "}";
+			result = (DocBoxFormData)jsonxstream
+					.fromXML(response);
+		}
+		return result;
+	}
+	
 	private boolean parseBooleanResponse(String val) {
 		boolean result = false;
 		try {
@@ -588,6 +625,44 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	private String putAndCatchRE(String uri, Object o) {
+		String result = null;
+		try {
+			Client client = new Client(new Context(), Protocol.HTTP);
+			
+			ClientResource cr = new ClientResource(uri);
+			cr.setNext(client);
+		
+			cr.setChallengeResponse(ChallengeScheme.HTTP_BASIC, "restuser", "restbpm");
+				
+			final String RESTLET_HTTP_HEADERS = "org.restlet.http.headers";
+	        Map<String, Object> reqAttribs = cr.getRequestAttributes();
+	        Form headers = (Form)reqAttribs.get(RESTLET_HTTP_HEADERS);
+	        if (headers == null) {
+	            headers = new Form();
+	            reqAttribs.put(RESTLET_HTTP_HEADERS, headers);
+	        } 
+	        //headers.add("options", "user:" + bonitaUser); 
+	        
+	        Representation r = cr.put(null);
+	        log.severe("r=" + r);
+	        if (r != null) {
+	        	try {
+					result = r.getText();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	        }
+	        			
+		} catch (ResourceException e) {
+			log.severe("call ResourceException: " + e);
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
 	private String call(String uri) throws ResourceException {
 		String result;
 		Client client = new Client(new Context(), Protocol.HTTP);
@@ -609,16 +684,23 @@ public class InheritServiceClient {
 		result = (String)cr.post(null, String.class);
 		return result;
 	}
+
+	
 	
 	public static void main(String args[]) {
 		System.out.println("Testa InheritServiceClient");
 		
 		InheritServiceClient c = new InheritServiceClient();
+		
+		System.out.println("DocBox form data: " + c.getDocBoxFormData("bmtestid1"));
+		
+		/*
 		c.emailToInitiator(
 				"procInstanceUuid",
 				"Miljoforvaltningen_hemkompostering_matavfall--1.0--6--Delgivning--it1--mainActivityInstance--noLoop",
 				"Re: mailSubjectLine",
 				"<BodyText>");
+				*/
 		//System.out.println("InheritServiceClient, Resultat: " + res);
 
 		/*

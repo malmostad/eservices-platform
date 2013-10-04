@@ -29,6 +29,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * A given form path can have an associated processDefinitionUuid that will 
@@ -38,6 +39,7 @@ import javax.persistence.Id;
  *
  */
 @Entity
+@Table(name="mtf_start_form_definition")
 public class StartFormDefinition { 
 
 	/**

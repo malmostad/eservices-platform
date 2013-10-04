@@ -3,10 +3,12 @@ package org.motrice.docbox.doc
 import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.DocData
 import org.motrice.docbox.sign.XmlDsig
+import org.motrice.docbox.util.Exxtractor
 
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
 import com.itextpdf.text.FontFactory
+import com.itextpdf.text.Image
 import com.itextpdf.text.PageSize
 import com.itextpdf.text.Phrase
 import com.itextpdf.text.pdf.BaseFont
@@ -23,6 +25,10 @@ import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.PdfStamper
 import com.itextpdf.text.pdf.PdfString
 
+import net.glxn.qrgen.QRCode
+import net.glxn.qrgen.image.ImageType
+
+import java.util.UUID
 import javax.xml.transform.Source
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
@@ -54,8 +60,10 @@ class SigService {
 
   @Transactional
   def addSignature(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
-    def bytes = addPage(docStep, pdfContents, sig)
-    def nextStep = docService.createBoxDocStep(docStep.doc, docStep.signCount + 1)
+    // Create the docboxRef for the next step
+    def nextRef = UUID.randomUUID().toString()
+    def bytes = addPage(docStep, pdfContents, sig, nextRef)
+    def nextStep = docService.createBoxDocStep(docStep.doc, docStep.signCount + 1, nextRef)
     def nextContents = docService.createPdfContents(nextStep)
     nextContents.assignStream(bytes, true)
     if (log.debugEnabled) log.debug "addSignature: ${nextContents}"
@@ -66,9 +74,12 @@ class SigService {
    * Add a page to the document step
    * It contains visible info about the signature
    * It also contains the signature (XML-DSIG) as an invisible resource
+   * @param nextRef must be the docboxRef of the new step to be created
    * Return a byte array containing the new PDF
    */
-  private byte[] addPage(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
+  private byte[] addPage(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig,
+			 String nextRef)
+  {
     // Set up for reading the existing PDF and writing a new one
     def reader = new PdfReader(pdfContents.stream)
     def pages = reader.numberOfPages
@@ -109,6 +120,16 @@ class SigService {
     additional.put(new PdfName(docboxKey), info)
     templ.additional = additional
     canvas.addTemplate(templ, 200.0f, 200.0f)
+
+    // Experimental: generate QR code
+    def baseurl = grailsApplication.config.docbox.signed.doc.base.url
+    if (baseurl) {
+      def url = "${baseurl}/${nextRef}"
+      def qr = QRCode.from(url).to(ImageType.GIF).stream()
+      def qrimg = Image.getInstance(qr.toByteArray())
+      qrimg.setAbsolutePosition(100.0f, 60.0f)
+      canvas.addImage(qrimg)
+    }
 
     // Write the output
     stamper.close()
@@ -274,11 +295,11 @@ class SigService {
   }
 
   /**
-   * Validate signature input
-   * Throw DocBoxException on failure, silent otherwise
+   * Check signature syntax and that the signed text matches this document.
+   * Throw DocBoxException on failure, silent otherwise.
    */
-  def validateSigSyntax(String sigBase64, InputStream schemaStream) {
-    if (log.debugEnabled) log.debug "validateSigSyntax << (${sigBase64?.length()} chars)"
+  def basicSignatureCheck(String sigBase64, InputStream schemaStream) {
+    if (log.debugEnabled) log.debug "basicSignatureCheck << (${sigBase64?.length()} chars)"
     def factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema")
     def schemaSource = new StreamSource(schemaStream)
     def schema = factory.newSchema(schemaSource)
@@ -286,11 +307,46 @@ class SigService {
     def sigSource = new StreamSource(new ByteArrayInputStream(sigBase64.decodeBase64()))
     try { 
       validator.validate(sigSource)
-      if (log.debugEnabled) log.debug "validateSigSyntax >> VALIDATED"
     } catch (SAXParseException exc) {
-      if (log.debugEnabled) log.debug "validateSigSyntax >> FAIL ${exc}"
+      if (log.debugEnabled) log.debug "basicSignatureCheck >> FAIL ${exc}"
       throw new DocBoxException(exc.message)
     }
+
+    if (log.debugEnabled) log.debug "basicSignatureCheck >> OK"
+  }
+
+  /**
+   * Check that the signed text contains two fields, a document number and
+   * a checksum.
+   * The check is not done if the config property
+   * 'docbox.signed.text.strict.check' is 'false'.
+   */
+  def signedTextCheck(String sigBase64, BoxDocStep docStep, BoxContents pdfContents) {
+    def strictProp = grailsApplication.config.docbox.signed.text.check.strict
+    boolean lenientFlag = strictProp == 'false'
+    if (lenientFlag) {
+      if (log.debugEnabled) log.debug "signedTextCheck: LENIENT"
+    } else {
+      def sig = new XmlDsig(sigBase64, log)
+      def extr = new Exxtractor(sig.signedText)
+      def fieldList = extr.extract()
+      if (log.debugEnabled) log.debug "signedTextCheck: STRICT ${fieldList}"
+      if (fieldList.size() != 2) {
+	exc("2 fields expected in signed text, got ${fieldList.size()}")
+      }
+
+      boolean docNumberFound = fieldList.find {it == docStep.docNo}
+      boolean checksumFound = fieldList.find {it == pdfContents.checksum}
+      if (!docNumberFound) exc('Document number not found in signed text')
+      if (!checksumFound) exc('Checksum not found in signed text')
+    }
+
+    if (log.debugEnabled) log.debug "signedTextCheck >> VALIDATED"
+  }
+
+  private exc(String message) {
+    if (log.debugEnabled) log.debug "EXCEPTION: ${message}"
+    throw new DocBoxException(message)
   }
 
   /**
