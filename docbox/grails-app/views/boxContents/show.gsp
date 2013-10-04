@@ -67,7 +67,7 @@
 	<g:if test="${boxContentsObj?.step}">
 	  <li class="fieldcontain">
 	    <span id="step-label" class="property-label"><g:message code="boxContents.step.label" default="Step" /></span>
-	    <span class="property-value" aria-labelledby="step-label"><g:link controller="boxDocStep" action="show" id="${boxContentsObj?.step?.id}">${boxContentsObj?.step?.encodeAsHTML()}</g:link></span>
+	    <span class="property-value" aria-labelledby="step-label"><g:link controller="boxDocStep" action="show" id="${boxContentsObj?.step?.id}">${boxContentsObj?.step?.display()?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>
