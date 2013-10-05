@@ -29,11 +29,11 @@ import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
-import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.rest.client.InheritServiceClient;
+import org.inheritsource.service.rest.client.domain.DocBoxFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +59,8 @@ public class SignForm extends Form  {
 		//         => sign process instance start form 
 		//         
 		
+		ActivityInstanceItem activity = (ActivityInstanceItem)request.getAttribute("activity");
+		
 		String startFormDocId = null;
 		
 		InheritServiceClient isc = new InheritServiceClient();
@@ -66,7 +68,7 @@ public class SignForm extends Form  {
 		if (formDocId == null || formDocId.trim().length() == 0 ) {
 			// alternative 2 (no formDocId)
 			ProcessInstanceDetails piDetails = null;
-			ActivityInstanceItem activity = (ActivityInstanceItem)request.getAttribute("activity");
+			
 			if (activity != null && activity.getActivityInstanceUuid()!=null) {
 				piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activity.getActivityInstanceUuid());
 				
@@ -96,9 +98,6 @@ public class SignForm extends Form  {
 			formDocId = startFormDocId;
 		}
 
-		
-		// TODO fråga DocBox efter pdf & checksum
-		// look up pdf/a from docbox and checksum TODO hårkodat nu...
 		DocBoxFormData docBoxFormData = isc.getDocBoxFormData(formDocId);
 		
 		String portStr = request.getLocalPort() == 80 ? "" : ":" + request.getLocalPort();
@@ -113,8 +112,11 @@ public class SignForm extends Form  {
 		responseUrl.append(docboxRef);
 		responseUrl.append("&docNo=");
 		responseUrl.append(docNo);
+		responseUrl.append("&formDocId=");
+		responseUrl.append(activity.getFormDocId());  // the BPM activity formDocId, important not the form to be signed... 
 		
-		String signText = "Härmed undertecknar jag dokumentet " + pdfUrl + " med dokumentnummer " + docNo + " och kontrollsumman " + pdfChecksum;
+		
+		String signText = "Härmed undertecknar jag dokumentet " + pdfUrl + " med dokumentnummer [" + docNo + "] och kontrollsumman [" + pdfChecksum + "]";
 		
 		request.setAttribute("pdfUrl", pdfUrl);
 		request.setAttribute("docNo", docNo);

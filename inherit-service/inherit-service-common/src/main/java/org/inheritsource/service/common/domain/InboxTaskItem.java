@@ -32,7 +32,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 public class InboxTaskItem implements Serializable, Comparable{
 	
 	private static final long serialVersionUID = -5668377849020426352L;
-	
+		
 	String processLabel;
 	String activityLabel;
 	Date activityCreated;
@@ -45,6 +45,8 @@ public class InboxTaskItem implements Serializable, Comparable{
 	String taskUuid;
 	String processDefinitionUuid;
 	String activityDefinitionUuid;
+	
+	String externalUrl = null;
 	
 	/** 
 	 * The FORM_PATH that identifies the StartFormDefinition that started the case 
@@ -121,7 +123,10 @@ public class InboxTaskItem implements Serializable, Comparable{
 	
 	public String getEditFormUrl() {
 		String result = null;
-		if (getProcessActivityFormInstanceId() != null && getProcessActivityFormInstanceId().longValue()>0) {
+		if (externalUrl != null) {
+			result = externalUrl;
+		}
+		else if (getProcessActivityFormInstanceId() != null && getProcessActivityFormInstanceId().longValue()>0) {
 			result = "form?processActivityFormInstanceId=" +  getProcessActivityFormInstanceId();
 		}
 		else if (getTaskUuid() != null) {
@@ -146,9 +151,18 @@ public class InboxTaskItem implements Serializable, Comparable{
 		this.startedByFormPath = startedByFormPath;
 	}
 
+	public String getExternalUrl() {
+		return externalUrl;
+	}
+
+	public void setExternalUrl(String externalUrl) {
+		this.externalUrl = externalUrl;
+	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
 
 	@Override
 	public int hashCode() {
@@ -164,6 +178,8 @@ public class InboxTaskItem implements Serializable, Comparable{
 				+ ((activityLabel == null) ? 0 : activityLabel.hashCode());
 		result = prime * result
 				+ ((expectedEndDate == null) ? 0 : expectedEndDate.hashCode());
+		result = prime * result
+				+ ((externalUrl == null) ? 0 : externalUrl.hashCode());
 		result = prime
 				* result
 				+ ((processActivityFormInstanceId == null) ? 0
@@ -186,7 +202,7 @@ public class InboxTaskItem implements Serializable, Comparable{
 				+ ((taskUuid == null) ? 0 : taskUuid.hashCode());
 		return result;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -215,6 +231,11 @@ public class InboxTaskItem implements Serializable, Comparable{
 			if (other.expectedEndDate != null)
 				return false;
 		} else if (!expectedEndDate.equals(other.expectedEndDate))
+			return false;
+		if (externalUrl == null) {
+			if (other.externalUrl != null)
+				return false;
+		} else if (!externalUrl.equals(other.externalUrl))
 			return false;
 		if (processActivityFormInstanceId == null) {
 			if (other.processActivityFormInstanceId != null)
@@ -260,9 +281,10 @@ public class InboxTaskItem implements Serializable, Comparable{
 				+ processInstanceUuid + ", taskUuid=" + taskUuid
 				+ ", processDefinitionUuid=" + processDefinitionUuid
 				+ ", activityDefinitionUuid=" + activityDefinitionUuid
-				+ ", startedByFormPath=" + startedByFormPath + "]";
+				+ ", externalUrl=" + externalUrl + ", startedByFormPath="
+				+ startedByFormPath + "]";
 	}
-
+	
 	@Override
 	public int compareTo(Object o) {
 		int result = -1;

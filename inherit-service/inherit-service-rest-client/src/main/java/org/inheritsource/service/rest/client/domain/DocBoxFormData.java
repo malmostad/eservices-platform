@@ -21,7 +21,7 @@
  *  phone: +46 8 641 64 14 
  */ 
  
-package org.inheritsource.service.common.domain;
+package org.inheritsource.service.rest.client.domain;
 
 import java.io.Serializable;
 

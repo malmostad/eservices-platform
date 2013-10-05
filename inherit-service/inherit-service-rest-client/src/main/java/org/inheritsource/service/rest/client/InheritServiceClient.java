@@ -38,7 +38,6 @@ import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
-import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
@@ -48,12 +47,14 @@ import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.common.util.ParameterEncoder;
+import org.inheritsource.service.rest.client.domain.DocBoxFormData;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
@@ -565,6 +566,60 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public DocBoxFormData addDocBoxSignature(String docBoxRef, String signature) {
+		DocBoxFormData result = null;
+		
+		String uri;
+		
+		uri = "http://localhost:8080/docbox/doc/sig/" 
+				+ ParameterEncoder.encode(docBoxRef);
+		
+		String response = null;
+		try {
+			response = call(uri, signature);
+		}
+		catch (ResourceException e) {
+			
+			if (Status.CLIENT_ERROR_CONFLICT.equals(e.getStatus())) {
+				 // 409 (Conflict) on concurrent update conflict 
+				log.info("optimistic lock conflict:  signature of old version cannot be added. uri=[" +
+				 uri + "] and response = [" + response + "]");
+				result = null;
+				// TODO propagate and handle in gui
+					
+			} 
+			else if (Status.CLIENT_ERROR_FORBIDDEN.equals(e.getStatus())) {
+				// 403 (Forbidden) if the document number and/or the checksum 
+				// in the signed text do not agree with the document being signed
+				log.warning("the document number and/or the checksum in the signed text do not agree with the document being signed. uri=[" +
+						 uri + "] and response = [" + response + "]");
+				result = null;
+					
+			} 
+			else if (Status.CLIENT_ERROR_NOT_FOUND.equals(e.getStatus())) {
+				 // 404 (Not found) if the document was not found
+				log.severe("the document was not found. uri=[" +
+						 uri + "] and response = [" + response + "]");
+				result = null;
+					
+			} 
+			else {
+				log.severe("Exception uri=[" +
+						 uri + "] and response = [" + response + "] exception: " + e);
+				result = null;
+			}
+			
+		}
+		
+		if (response != null) {
+			log.severe("response: " + response);
+			response = "{DocBoxFormData: " + response + "}";
+			result = (DocBoxFormData)jsonxstream
+					.fromXML(response);
+		}
+		return result;
+	}
+	
 	private boolean parseBooleanResponse(String val) {
 		boolean result = false;
 		try {
@@ -664,6 +719,10 @@ public class InheritServiceClient {
 	}
 	
 	private String call(String uri) throws ResourceException {
+		return call(uri, null);
+	}
+	
+	private String call(String uri, String body) throws ResourceException {
 		String result;
 		Client client = new Client(new Context(), Protocol.HTTP);
 
@@ -679,9 +738,10 @@ public class InheritServiceClient {
 			headers = new Form();
 			reqAttribs.put(RESTLET_HTTP_HEADERS, headers);
 		} 
+		
 		//headers.add("options", "user:" + bonitaUser); 
 
-		result = (String)cr.post(null, String.class);
+		result = (String)cr.post(body, String.class);
 		return result;
 	}
 

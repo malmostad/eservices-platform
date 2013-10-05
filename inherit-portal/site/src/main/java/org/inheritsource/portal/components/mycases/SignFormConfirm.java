@@ -29,6 +29,7 @@ import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.rest.client.InheritServiceClient;
+import org.inheritsource.service.rest.client.domain.DocBoxFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,7 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		String docNo = getPublicRequestParameter(request, "docNo"); 
 		String status = getPublicRequestParameter(request, "status"); 
 		String signature = getPublicRequestParameter(request, "signature"); 
+		String formDocId = getPublicRequestParameter(request, "formDocId");
 
 		log.info("SignFormConfirm:" + docboxRef + " docNo=" + docNo + " status=" + status + " signature=" + signature);
 
@@ -74,8 +76,13 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		request.setAttribute("document",doc);
 
 		InheritServiceClient isc = new InheritServiceClient();
-
+        DocBoxFormData formData = isc.addDocBoxSignature(docboxRef, signature);
 		
+        log.error("formData=" + formData);
+        
+        if (formData != null) {
+        	isc.submitForm(formDocId, userUuid);
+        }
 		// utför aktivitet i processmotor och lagra signatur ... om signaturen är ok....
 		
 		
@@ -84,6 +91,7 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		request.setAttribute("status", status);
 		request.setAttribute("signature", signature);
 
+		
 		
 	}
 }
