@@ -5,7 +5,7 @@ import java.security.MessageDigest
 /**
  * Contents of a DocBox document
  */
-class BoxContents implements Comparable {
+class BoxContents {
   // A name distinguishing this from other contents of the same step
   String name
 
@@ -113,24 +113,6 @@ class BoxContents implements Comparable {
 
   String toString() {
     "[Contents ${id}/${name}: ${format}/${size}]"
-  }
-
-  //-------------------- Comparable --------------------
-
-  int hashCode() {
-    id.hashCode()
-  }
-
-  boolean equals(Object obj) {
-    (obj instanceof BoxContents) && ((BoxContents)obj).id == id
-  }
-
-  // Highest version and highest draft number comes first.
-  int compareTo(Object obj) {
-    def other = (BoxContents)obj
-    int outcome = step.id.compareTo(other.step.id)
-    if (outcome == 0) outcome = name.compareTo(other.name)
-    return outcome
   }
 
 }

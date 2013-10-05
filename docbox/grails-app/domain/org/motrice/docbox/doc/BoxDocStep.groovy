@@ -24,7 +24,6 @@ class BoxDocStep implements Comparable {
     docboxRef index: 'DocboxRef_Idx'
   }
   static belongsTo = [doc: BoxDoc]
-  SortedSet contents
   static hasMany = [contents: BoxContents]
   static constraints = {
     step range: 0..999
