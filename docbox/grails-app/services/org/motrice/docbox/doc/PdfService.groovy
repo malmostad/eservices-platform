@@ -23,8 +23,6 @@ import org.apache.commons.logging.LogFactory
 class PdfService {
   static transactional = true
   private static final log = LogFactory.getLog(this)
-  // Also used by SigService
-  static final String PDF_FORMAT_PAT = 'http://motrice.org/spec/docbox/%s/pdf'
 
   def grailsApplication
   def docService
@@ -64,8 +62,7 @@ class PdfService {
   BoxContents generatePdfa(DocData docData, BoxDocStep docStep, boolean debug) {
     def formData = new FormData(docData.dataItem.text)
     def formDef = new FormDef(docData.formDef.text)
-    def formatSpec = String.format(PDF_FORMAT_PAT,
-				   grailsApplication.metadata['app.version'])
+    def formatSpec = sigService.pdfFormatName()
     formDef.build(docData, docStep, formatSpec, log)
     if (log.debugEnabled) log.debug formDef.dump()
     createPreview(docStep, formDef, formData)
