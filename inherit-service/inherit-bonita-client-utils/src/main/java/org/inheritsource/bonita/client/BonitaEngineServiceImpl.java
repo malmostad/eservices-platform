@@ -976,7 +976,7 @@ public class BonitaEngineServiceImpl {
 		taskItem.setProcessInstanceUuid(activity.getProcessInstanceUUID().getValue());
 		taskItem.setActivityDefinitionUuid(activity.getActivityDefinitionUUID().getValue());
 		taskItem.setProcessDefinitionUuid(activity.getProcessDefinitionUUID().getValue());
-
+		
 		return taskItem;
 		
 	}
