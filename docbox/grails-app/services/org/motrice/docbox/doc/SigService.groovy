@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional
  */
 class SigService {
   private static final log = LogFactory.getLog(this)
+  static final String PDF_FORMAT_PAT = 'http://motrice.org/spec/docbox/%s/pdf'
 
   static final HEADER_FONT = 'headerFont'
   static final TEXT_FONT = 'textFont'
@@ -112,9 +113,7 @@ class SigService {
     info.put(new PdfName('DocNo'), new PdfString(docStep.docNo))
     info.put(SIGNATURE_KEY, new PdfString(sig.signatureB64))
     info.put(new PdfName('Timestamp'), new PdfDate())
-    def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
-				   grailsApplication.metadata['app.version'])
-    info.put(new PdfName('Format'), new PdfString(formatSpec))
+    info.put(new PdfName('Format'), new PdfString(pdfFormatName()))
     def additional = new PdfDictionary()
     def docboxKey = grailsApplication.config.docbox.dictionary.key
     additional.put(new PdfName(docboxKey), info)
@@ -292,6 +291,14 @@ class SigService {
 
     if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
     return sigList
+  }
+
+  /**
+   * Get a name identifying the Pdf format.
+   * In this case "format" means the way docbox inserts data in a Pdf document.
+   */
+  String pdfFormatName() {
+    String.format(PDF_FORMAT_PAT, grailsApplication.metadata['app.version'])
   }
 
   /**
