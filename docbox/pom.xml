@@ -6,7 +6,7 @@
   <groupId>org.motrice</groupId>
   <artifactId>docbox</artifactId>
   <packaging>grails-app</packaging>
-  <version>0.5.3</version>
+  <version>0.5.5</version>
   <name>docbox</name>
   <description>docbox</description>
 
@@ -55,6 +55,12 @@
       <groupId>com.itextpdf</groupId>
       <artifactId>itext-pdfa</artifactId>
       <version>5.4.4</version>
+    </dependency>
+
+    <dependency>
+        <groupId>net.glxn</groupId>
+        <artifactId>qrgen</artifactId>
+        <version>1.3</version>
     </dependency>
 
     <dependency>

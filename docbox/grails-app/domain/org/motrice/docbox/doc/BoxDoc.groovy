@@ -6,7 +6,7 @@ package org.motrice.docbox.doc
  * The primary key is a 30-bit integer, randomly chosen
  * When shown to a user it is converted to a readable format
  */
-class BoxDoc {
+class BoxDoc implements Comparable {
   // The id on display format, called the document number
   String docNo
 
@@ -23,6 +23,7 @@ class BoxDoc {
     id generator: 'assigned'
     formDataUuid index: 'FormDataUuid_Idx'
   }
+  SortedSet steps
   static hasMany = [steps: BoxDocStep]
   static constraints = {
     docNo maxSize: 16
@@ -31,8 +32,28 @@ class BoxDoc {
     lastUpdated nullable: true
   }
 
+  String display() {
+    "${docNo} (${formDataUuid})"
+  }
+
   String toString() {
     "[Doc ${docNo}: ${formDataUuid}, ${steps?.size()}]"
+  }
+
+  //-------------------- Comparable --------------------
+
+  int hashCode() {
+    docNo.hashCode()
+  }
+
+  boolean equals(Object obj) {
+    (obj instanceof BoxDoc) && ((BoxDoc)obj).docNo == docNo
+  }
+
+  // Comparison based on the document number
+  int compareTo(Object obj) {
+    def other = (BoxDoc)obj
+    return docNo.compareTo(other.docNo)
   }
 
 }

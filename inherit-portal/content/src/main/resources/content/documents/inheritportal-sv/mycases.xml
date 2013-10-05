@@ -715,12 +715,12 @@
 &lt;li&gt;och något till&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Denna uppgift utförs genom att &lt;/p&gt;
+&lt;p&gt;Denna uppgift utförs genom att &lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;en sak&lt;/li&gt;
 &lt;li&gt;en annan sak&lt;/li&gt;
-&lt;li&gt;och en tredje sak &lt;/li&gt;
+&lt;li&gt;och en tredje sak &lt;/li&gt;
 &lt;/ol&gt;
 
 &lt;p&gt;Därefter bla bla lite annat&lt;/p&gt;
@@ -1804,7 +1804,7 @@
           <sv:value>&lt;html&gt;
 &lt;body&gt;
 
-&lt;p&gt; &lt;/p&gt;
+&lt;p&gt; &lt;/p&gt;
 
 &lt;/body&gt;
 &lt;/html&gt;</sv:value>

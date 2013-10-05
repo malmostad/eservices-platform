@@ -52,6 +52,12 @@
 	    <span class="property-value" aria-labelledby="size-label"><g:fieldValue bean="${boxContentsObj}" field="size"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${boxContentsObj?.checksum}">
+	  <li class="fieldcontain">
+	    <span id="checksum-label" class="property-label"><g:message code="boxContents.checksum.label" default="Checksum" /></span>
+	    <span class="property-value" aria-labelledby="checksum-label"><g:fieldValue bean="${boxContentsObj}" field="checksum"/></span>
+	  </li>
+	</g:if>
 	<g:if test="${boxContentsObj?.text}">
 	  <li class="fieldcontain">
 	    <span id="text-label" class="property-label"><g:message code="boxContents.text.label" default="Text" /></span>
@@ -61,7 +67,7 @@
 	<g:if test="${boxContentsObj?.step}">
 	  <li class="fieldcontain">
 	    <span id="step-label" class="property-label"><g:message code="boxContents.step.label" default="Step" /></span>
-	    <span class="property-value" aria-labelledby="step-label"><g:link controller="boxDocStep" action="show" id="${boxContentsObj?.step?.id}">${boxContentsObj?.step?.encodeAsHTML()}</g:link></span>
+	    <span class="property-value" aria-labelledby="step-label"><g:link controller="boxDocStep" action="show" id="${boxContentsObj?.step?.id}">${boxContentsObj?.step?.display()?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>
