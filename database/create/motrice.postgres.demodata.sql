@@ -59,7 +59,7 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'miljoforvaltningen/anmalan-hemkompostering--v002',
-            'Arendeprocess',
+            'ArendeprocessSignStartForm',
             'Miljoforvaltningen_hemkompostering_matavfall'
 );
            
@@ -152,6 +152,105 @@ INSERT INTO mtf_activity_form_definition(
             'basprocess/beslut--v002', 
             NULL
 );
+
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            'Arendeprocess--1.0--Registrering', 
+            'basprocess/registrera--v002', 
+            NULL
+);
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            'Arendeprocess--1.0--Handlaggning', 
+            'basprocess/handlagga--v002', 
+            NULL
+);
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            'Arendeprocess--1.0--Beslut', 
+            'basprocess/beslut--v002', 
+            NULL
+);
+
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            'ArendeprocessSignStartForm--1.0--Registrering', 
+            'basprocess/registrera--v002', 
+            NULL
+);
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            'ArendeprocessSignStartForm--1.0--SignStartForm', 
+            'signstartform', 
+            NULL
+);
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            'ArendeprocessSignStartForm--1.0--Handlaggning', 
+            'basprocess/handlagga--v002', 
+            NULL
+);
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            'ArendeprocessSignStartForm--1.0--Beslut', 
+            'basprocess/beslut--v002', 
+            NULL
+);
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            'ArendeprocessSignStartForm--1.0--SignBeslut', 
+            'signactivity/Beslut',
+            NULL
+);
+
 INSERT INTO mtf_activity_form_definition(
             activityformdefinitionid, 
             activitydefinitionuuid, 
