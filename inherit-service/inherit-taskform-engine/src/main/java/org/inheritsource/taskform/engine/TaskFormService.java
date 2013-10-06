@@ -355,6 +355,7 @@ public class TaskFormService {
 						String viewUrl = activity.calcViewUrl();
 						logItem.setFormUrl(viewUrl);
 						logItem.setViewUrl(viewUrl);
+						logItem.setFormDocId(activity.getFormDocId());
 					}
 				}
 			}
