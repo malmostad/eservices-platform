@@ -76,22 +76,23 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		request.setAttribute("document",doc);
 
 		InheritServiceClient isc = new InheritServiceClient();
-        DocBoxFormData formData = isc.addDocBoxSignature(docboxRef, signature);
-		
-        log.error("formData=" + formData);
-        
-        if (formData != null) {
+        DocBoxFormData docBoxFormData = isc.addDocBoxSignature(docboxRef, signature);
+		        
+        if (docBoxFormData != null) {
         	isc.submitForm(formDocId, userUuid);
+
+    		String portStr = request.getLocalPort() == 80 ? "" : ":" + request.getLocalPort();
+    		String pdfUrl = "http://" + request.getServerName() + portStr +  "/docbox/doc/ref/" + docBoxFormData.getDocboxRef();
+    		
+    		request.setAttribute("pdfUrl", pdfUrl);
+
         }
 		// utför aktivitet i processmotor och lagra signatur ... om signaturen är ok....
 		
-		
-		request.setAttribute("docboxRef", docboxRef);
-		request.setAttribute("docNo", docNo);
-		request.setAttribute("status", status);
-		request.setAttribute("signature", signature);
 
 		
+		request.setAttribute("docboxRef", docboxRef);
+		request.setAttribute("docNo", docNo);		
 		
 	}
 }

@@ -96,7 +96,7 @@ public class Confirm extends MyCasesBaseComponent {
 			}
 		}
 
-		request.setAttribute("formUrl", viewUrl);
+		request.setAttribute("formUrl", viewUrl + "orbeon-embeddable=true");
 
 		if (viewUrl == null) {
 			// render a fail url???
