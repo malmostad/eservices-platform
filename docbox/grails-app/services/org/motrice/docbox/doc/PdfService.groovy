@@ -171,6 +171,10 @@ class PdfService {
 	pdfBytes = sigService.pdfPostProcess(pdfFile, docData, docContents.xref)
       } catch (Exception exc) {
 	log.error "SigService.pdfPostProcess: ${exc.message}"
+	def sw = new StringWriter()
+	def pw = new PrintWriter(sw)
+	exc.printStackTrace(pw)
+	log.error sw.toString()
 	// Don't let this feature spoil the show
 	pdfBytes = pdfFile.bytes
       }

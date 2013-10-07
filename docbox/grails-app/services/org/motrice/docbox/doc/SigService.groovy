@@ -2,6 +2,8 @@ package org.motrice.docbox.doc
 
 import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.DocData
+import org.motrice.docbox.pdf.PdfFormdataDict
+import org.motrice.docbox.sign.PdfSignatureDict
 import org.motrice.docbox.sign.XmlDsig
 import org.motrice.docbox.util.Exxtractor
 
@@ -109,14 +111,10 @@ class SigService {
     // Add a template where the signature itself is stored as "additional information"
     def templ = canvas.createTemplate(20.0f, 20.0f)
     templ.rectangle(templ.boundingBox)
-    def info = new PdfDictionary()
-    info.put(new PdfName('DocNo'), new PdfString(docStep.docNo))
-    info.put(SIGNATURE_KEY, new PdfString(sig.signatureB64))
-    info.put(new PdfName('Timestamp'), new PdfDate())
-    info.put(new PdfName('Format'), new PdfString(pdfFormatName()))
+    def info = new PdfSignatureDict(pdfContents.checksum, docStep.docNo, sig.signatureB64)
     def additional = new PdfDictionary()
     def docboxKey = grailsApplication.config.docbox.dictionary.key
-    additional.put(new PdfName(docboxKey), info)
+    additional.put(new PdfName(docboxKey), info.toDictionary(pdfFormatName()))
     templ.additional = additional
     canvas.addTemplate(templ, 200.0f, 200.0f)
 
@@ -230,16 +228,10 @@ class SigService {
     // Add a template where the signature itself is stored as "additional information"
     def templ = canvas.createTemplate(20.0f, 20.0f)
     templ.rectangle(templ.boundingBox)
-    def info = new PdfDictionary()
-    info.put(new PdfName('FormData'), new PdfString(docData.dataItem.text))
-    info.put(new PdfName('FormXref'), new PdfString(formXref))
-    info.put(new PdfName('Timestamp'), new PdfDate())
-    def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
-				   grailsApplication.metadata['app.version'])
-    info.put(new PdfName('Format'), new PdfString(formatSpec))
+    def info = new PdfFormdataDict(docData.dataItem.text, formXref)
     def additional = new PdfDictionary()
     def docboxKey = grailsApplication.config.docbox.dictionary.key
-    additional.put(new PdfName(docboxKey), info)
+    additional.put(new PdfName(docboxKey), info.toDictionary(pdfFormatName()))
     templ.additional = additional
     canvas.addTemplate(templ, 25.0f, 25.0f)
 
@@ -254,7 +246,7 @@ class SigService {
   /**
    * Find a signature in pdf contents
    * @param pdfContents must contain a pdf document
-   * @return a List of String where each element is a Base64-encoded signature
+   * @return a List of PdfSignatureDict where each element is a Base64-encoded signature
    * The list is empty if there are no signatures in the document
    */
   def findAllSignatures(BoxContents pdfContents) {
@@ -280,8 +272,8 @@ class SigService {
 	    xobj.keys.each {key2 ->
 	      if (docboxKey.equals(key2)) {
 		def docboxDict = xobj.get(key2)
-		def sig = docboxDict.get(SIGNATURE_KEY)
-		if (sig) sigList.add(String.valueOf(sig))
+		def sig = PdfSignatureDict.create(docboxDict)
+		if (sig) sigList.add(sig)
 	      }
 	    }
 	  }
@@ -289,12 +281,51 @@ class SigService {
       }
     }
 
-    if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
+    //if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
+    if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList}"
     return sigList
   }
 
   /**
-   * Get a name identifying the Pdf format.
+   * Find a signature in pdf contents
+   * @param pdfContents must contain a pdf document
+   * @return a PdfFormdataDict or null if not found
+   */
+  PdfFormdataDict findFormdata(BoxContents pdfContents) {
+    findFormdata(pdfContents.stream)
+  }
+
+  PdfFormdataDict findFormdata(byte[] pdf) {
+    if (log.debugEnabled) log.debug "findFormdata << ${pdf.length} bytes"
+    def reader = new PdfReader(pdf)
+    def pageCount = reader.numberOfPages
+    def docboxKey = new PdfName(grailsApplication.config.docbox.dictionary.key)
+    // Formdata is always on page 1
+    def page = reader.getPageN(1)
+    def formData = null
+    def resources = page.getDirectObject(PdfName.RESOURCES)
+    if (resources) {
+      def xobjDict = resources.getDirectObject(PdfName.XOBJECT)
+      xobjDict.keys.each {key1 ->
+	def xobj = xobjDict.getDirectObject(key1)
+	if (xobj.stream) {
+	  xobj.keys.each {key2 ->
+	    if (docboxKey.equals(key2)) {
+	      def docboxDict = xobj.get(key2)
+	      if (!formData) formData = PdfFormdataDict.create(docboxDict)
+	    }
+	  }
+	}
+      }
+    }
+
+    //if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
+    if (log.debugEnabled) log.debug "findFormdata >> ${formData}"
+    return formData
+  }
+
+  /**
+   * Get a name identifying the application creating this Pdf format.
    * In this case "format" means the way docbox inserts data in a Pdf document.
    */
   String pdfFormatName() {
@@ -371,6 +402,10 @@ class SigService {
     map.certValid = sig.validateCertificates()
     map.sigData = sig
     return map
+  }
+
+  def validateSignature(PdfSignatureDict dict) {
+    validateSignature(dict.signature)
   }
 
 }
