@@ -11,6 +11,7 @@ class RestDocController {
   private final static CONT_DISP = 'Content-Disposition'
   def docService
   def pdfService
+  def sigService
 
   /**
    * Create a PDF/A document given a formDataUuid and return metadata.
@@ -61,13 +62,36 @@ class RestDocController {
   }
 
   /**
-   * Get a document given a document number
-   * DISABLED
+   * Get original form data
    */
-  private def docNoGet(String docno) {
-    if (log.debugEnabled) log.debug "BY DOCNO: ${Util.clean(params)}, ${request.forwardURI}"
-    def docStep = docService.findStepByDocNo(docno)
-    return contentsResponse(docStep, params.item)
+  def docboxFormData(String docboxref) {
+    if (log.debugEnabled) log.debug "FORMDATA: ${Util.clean(params)}, ${request.forwardURI}"
+    def pdfContents = null
+    String msg = null
+    Integer status = 404
+
+    def docStep = docService.findStepByRef(docboxref)
+    if (docStep) {
+	pdfContents = docService.findPdfContents(docStep)
+	if (!pdfContents) msg = "PDF contents not found: ${docboxref}"
+    } else {
+      msg = "Document step not found: ${docboxref}"
+    }
+
+    if (msg) {
+      render(status: status, contentType: 'text/plain', text: msg)
+    } else {
+      def xmlInput = sigService.findFormdata(pdfContents)
+      if (xmlInput) {
+	render(status: 200, contentType: 'text/json') {
+	  formData = xmlInput.formData
+	  formXref = xmlInput.formXref
+	  timestamp = xmlInput.timestamp
+	}
+      } else {
+	render(status: 409, contentType: 'text/plain', text: "Form data not found in ${docboxref}")
+      }
+    }
   }
 
   /**

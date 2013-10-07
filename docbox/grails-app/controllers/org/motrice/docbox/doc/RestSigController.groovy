@@ -69,6 +69,62 @@ class RestSigController {
     }
   }
 
+  /**
+   * Get all signatures of a document
+   */
+  def docboxSigGet(String docboxref) {
+    if (log.debugEnabled) log.debug "SIGGET: ${Util.clean(params)}, ${request.forwardURI}"
+    def pdfContents = null
+    String msg = null
+    Integer status = 404
+
+    def docStep = docService.findStepByRef(docboxref)
+    if (docStep) {
+      if (docStep.signCount > 0) {
+	pdfContents = docService.findPdfContents(docStep)
+      } else {
+	status = 400
+	msg = "Document has no signature: ${docboxref}"
+      }
+    } else {
+      msg = "Document step not found: ${docboxref}"
+    }
+
+    def sigList = null
+    if (pdfContents) {
+      sigList = sigService.findAllSignatures(pdfContents)
+      if (sigList.empty) {
+	status = 409
+	msg = "No signature found: ${docboxref}"
+      }
+    } else {
+      msg = "No PDF found for ${docboxref}"
+    }
+
+    if (msg) {
+      render(status: status, contentType: 'text/plain', text: msg)
+    } else {
+      status = 200
+      def sigContentList = sigList.collect {sigDict ->
+	def xmlSig = new XmlDsig(sigDict.signature, log)
+	[signedDoc: sigDict.docNo,
+	signedChecksum: sigDict.checksum,
+	signedText: xmlSig.signedText,
+	signedBy: xmlSig.firstCert.subjectX500Principal.toString()]
+      }
+      render(status: status, contentType: 'text/json') {
+	docboxRef = docStep.docboxRef
+	docNo = docStep.docNo
+	signCount = docStep.signCount
+	signExtracted = sigList.size()
+	signatures = sigContentList
+      }
+    }
+  }
+
+  /**
+   * Validate the last signature of a document.
+   */
   def sigValidate(String docboxref) {
     if (log.debugEnabled) log.debug "VALIDATE: ${Util.clean(params)}, ${request.forwardURI}"
     def pdfContents = null
@@ -114,7 +170,7 @@ class RestSigController {
       def coreSigValidation = outcome.coreValid
       def certsValidation = outcome.certValid
       status = (coreSigValidation && certsValidation)? 200 : 409
-      render(status: 409, contentType: 'text/json') {
+      render(status: status, contentType: 'text/json') {
 	docboxRef = docStep.docboxRef
 	docNo = docStep.docNo
 	signCount = docStep.signCount

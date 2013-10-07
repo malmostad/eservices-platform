@@ -371,7 +371,7 @@ class FormDef {
   def generateFormLabelXref(FormData fd) {
     def sw = new StringWriter()
     def xml = new MarkupBuilder(sw)
-    xml.form(title: meta.title, uuid: meta.instanceUuid) {
+    xml.xref(title: meta.title, uuid: meta.instanceUuid) {
       sections.each {sect ->
 	section(name: sect.name) {
 	  label(sect.label) {}
