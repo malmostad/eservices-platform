@@ -356,6 +356,9 @@ public class TaskFormService {
 						logItem.setFormUrl(viewUrl);
 						logItem.setViewUrl(viewUrl);
 						logItem.setFormDocId(activity.getFormDocId());
+						
+						logItem.setPerformedByUser(taskFormDb
+								.getUserByUuid(activity.getUserId()));
 					}
 				}
 			}
