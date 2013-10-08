@@ -79,7 +79,8 @@ public class SignFormConfirm extends MyCasesBaseComponent {
         DocBoxFormData docBoxFormData = isc.addDocBoxSignature(docboxRef, signature);
 		        
         if (docBoxFormData != null) {
-        	isc.submitForm(formDocId, userUuid);
+        	// save DocboxRef as formDocId. 
+        	isc.submitForm(formDocId, userUuid, docBoxFormData.getDocboxRef());
 
     		String portStr = request.getLocalPort() == 80 ? "" : ":" + request.getLocalPort();
     		String pdfUrl = "http://" + request.getServerName() + portStr +  "/docbox/doc/ref/" + docBoxFormData.getDocboxRef();

@@ -35,21 +35,7 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
-
-	<c:if test="${not empty activity}">
-    	<script type="text/javascript" charset="utf-8">
-		        $(document).ready(function () {
-		             $("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
-		                if (typeof ORBEON != "undefined") { 
-		                    if (!document.all) {
-		                        ORBEON.xforms.Init.document(); 
-		                    } 
-		                } 
-		        	    }); 
-					});
-		</script>
-    </c:if>
-			
+		
     <h1><fmt:message key="mycases.activity.column.lbl"/></h1>	   
 
     <p> ${activity.activityLabel} i ${processInstanceDetails.processLabel}</p>
@@ -57,7 +43,18 @@
 	<!--  activity form (ajax load after page is loaded) -->
 	<div class="row-fluid">
 		<div class="span12">
-    		<div id="xform" class="komin-xform">Loading form...please wait...</div>
+			    <c:choose>
+		         <c:when test="${fn:startsWith(activity.formUrl, 'none/')}">
+		    		<form method="post" action="noform/confirm">
+							<input type="hidden" name="document" value="${activity.formDocId}" />
+							<input type="submit" value="Klart! Skicka vidare"/>
+					</form>
+				</c:when>
+			  	<c:otherwise>
+			  	   <fmt:message key="mycases.noform.cannothandle"/>
+			  	</c:otherwise>
+			   </c:choose>
+		   
 		</div>
 	</div>    
     

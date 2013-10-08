@@ -44,11 +44,12 @@ public class SubmitForm extends ServerResource {
 		String result;
 		String docId = ParameterEncoder.decode((String) getRequestAttributes().get("docId"));
 		String userId = ParameterEncoder.decode((String) getRequestAttributes().get("userId"));
-
+		String newDocId = ParameterEncoder.decode((String) getRequestAttributes().get("newDocId"));
+		
 		log.fine("REST getUserInstancesList with parameter userid=[" + userId
 				+ "]");
 		try {
-			result = engine.submitActivityForm(docId, userId);
+			result = engine.submitActivityForm(docId, userId, newDocId);
 		} catch (Exception e) {
 			// TODO The status message is not transferred to the client side (ROL)
 			setStatus(new Status(Status.SERVER_ERROR_INTERNAL,"Error in service layer, Start form not submitted"));

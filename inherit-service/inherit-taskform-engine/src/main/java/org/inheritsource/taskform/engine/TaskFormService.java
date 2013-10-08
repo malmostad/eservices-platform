@@ -298,7 +298,7 @@ public class TaskFormService {
 		
 		if ("none".equals(formPath)) {
 			// activity form is not defined
-			externalUrl = "noform?activityUrlIdStr";
+			externalUrl = "noform?" + activityUrlIdStr;
 		}
 		else if (formPath.startsWith("signstartform")) {
 			externalUrl = "signform?" + activityUrlIdStr;
@@ -715,14 +715,16 @@ public class TaskFormService {
 		}
 	}
 
+	
 	/**
 	 * submit form
 	 * 
 	 * @param docId
 	 * @param userId 
+	 * @param newDocId Replace docId with a new one on submit. 
 	 * @return confirmation form viewUrl. null if submission fails.
 	 */
-	public String submitActivityForm(String docId, String userId)
+	public String submitActivityForm(String docId, String userId, String newDocId)
 			throws Exception {
 		String viewUrl = null;
 		
@@ -739,6 +741,10 @@ public class TaskFormService {
 				Date tstamp = new Date();
 				activity.setSubmitted(tstamp);
 				activity.setUserId(userId);
+				
+				if (newDocId != null) {
+					activity.setFormDocId(newDocId);
+				}
 				
 				boolean success = false;
 

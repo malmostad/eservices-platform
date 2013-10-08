@@ -75,7 +75,19 @@
 								<c:when test="${not empty logItem.viewUrl}">
 									<c:choose>
 										<c:when test="${logItem.user.uuid == userInfo.uuid}">
-										   	<iframe class="iframe-orbeon-panel" scrolling="no" frameborder="0" width="100%" height="100"></iframe>									
+										   <c:choose>
+	   										  <c:when test="${fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
+											    <p> <fmt:message key="mycases.signeddocument"/>&nbsp;
+													<a href="${logItem.viewUrl}"><fmt:message key="mycases.signeddocumentlink"/></a>
+												</p>
+											   </c:when>
+											   <c:when test="${not fn:startsWith(logItem.viewUrl, 'none/') and not fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
+												 <iframe class="iframe-orbeon-panel" scrolling="no" frameborder="0" width="100%" height="100"></iframe>
+											   </c:when>
+											   <c:otherwise>
+								                 <p><fmt:message key="mycases.nomoredetails"/></p>
+											   </c:otherwise>
+											</c:choose>									
 										</c:when>
 										<c:otherwise>
 										   <p><fmt:message key="mycases.activityPerformed"/></p>
@@ -87,7 +99,7 @@
 								</c:otherwise>
 							</c:choose>
 						  </div>
-						  <c:if test="${logItem.user.uuid == userInfo.uuid and not empty logItem.viewUrl}">
+						  <c:if test="${logItem.user.uuid == userInfo.uuid and not empty logItem.viewUrl and not fn:startsWith(logItem.viewUrl, 'none/') and not fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
 						  	<a class="view-url" href="<fmt:message key="orbeonbase.portal.url"/>${logItem.viewUrl}"></a>
 						  </c:if>
 						</li>

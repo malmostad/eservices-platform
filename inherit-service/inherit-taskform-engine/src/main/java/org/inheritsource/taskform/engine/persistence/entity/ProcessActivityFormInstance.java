@@ -167,8 +167,12 @@ public class ProcessActivityFormInstance {
 		//            in div tag
 		//            It is imortant to exclude orbeon-embeddable=true when rendering in 
 		//            IFRAME...
+		String viewUrl = getFormPath() + "/view/" + getFormDocId() + "?";
 		
-		return getFormPath() + "/view/" + getFormDocId() + "?"; 
+		if (formPath != null && (formPath.startsWith("signactivity/") || formPath.equals("signstartform"))) {
+			viewUrl = "/docbox/doc/ref/" + formDocId;
+	    }
+		return  viewUrl;
 	}
 
 	public String calcPdfUrl() {

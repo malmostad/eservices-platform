@@ -16,7 +16,7 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'start/demo-ansokan--v002',
-            'Spridning_bekampningsmedel',
+            'ArendeprocessSignStartForm',
             ''
 );
 INSERT INTO mtf_start_form_definition(
@@ -59,10 +59,9 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'miljoforvaltningen/anmalan-hemkompostering--v002',
-            'ArendeprocessSignStartForm',
-            'Miljoforvaltningen_hemkompostering_matavfall'
+            'Arendeprocess',
+            ''
 );
-           
 
 --
 -- mtf_activity_form_definition
@@ -199,7 +198,7 @@ INSERT INTO mtf_activity_form_definition(
        VALUES (
             nextval('hibernate_sequence'), 
             'ArendeprocessSignStartForm--1.0--Registrering', 
-            'basprocess/registrera--v002', 
+            'none', 
             NULL
 );
 INSERT INTO mtf_activity_form_definition(
@@ -223,7 +222,7 @@ INSERT INTO mtf_activity_form_definition(
        VALUES (
             nextval('hibernate_sequence'), 
             'ArendeprocessSignStartForm--1.0--Handlaggning', 
-            'basprocess/handlagga--v002', 
+            'none', 
             NULL
 );
 INSERT INTO mtf_activity_form_definition(

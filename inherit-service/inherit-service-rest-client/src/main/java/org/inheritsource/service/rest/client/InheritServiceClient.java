@@ -281,6 +281,20 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public String submitForm(String docId, String userId, String newDocId) {
+		String result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "submitForm/" 
+				+ ParameterEncoder.encode(docId) + "/" 
+				+ ParameterEncoder.encode(userId) + "/" + ParameterEncoder.encode(newDocId) + "?media=xml";
+		log.severe("submitStartForm uri: " + uri);
+		/* ROL let the caller take care of the exception */
+		//result = (String) callAndCatchRE(uri);
+		result = (String) call(uri);
+		return result;
+	}
+	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userid, String remainingDays) {
 		DashOpenActivities result = null;
 		String uri;		
