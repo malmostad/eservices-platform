@@ -100,8 +100,9 @@ public class SignForm extends Form  {
 
 		DocBoxFormData docBoxFormData = isc.getDocBoxFormData(formDocId);
 		
-		String portStr = request.getLocalPort() == 80 ? "" : ":" + request.getLocalPort();
-		String pdfUrl = "http://" + request.getServerName() + portStr +  "/docbox/doc/ref/" + docBoxFormData.getDocboxRef();
+		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();
+		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
+		String pdfUrl = protocolStr + "://" +  request.getServerName() + portStr +  "/docbox/doc/ref/" + docBoxFormData.getDocboxRef();
 		
 		String docNo = docBoxFormData.getDocNo();
 		String pdfChecksum = docBoxFormData.getCheckSum();
