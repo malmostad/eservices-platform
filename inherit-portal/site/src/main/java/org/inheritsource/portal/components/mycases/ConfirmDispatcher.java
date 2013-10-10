@@ -23,6 +23,7 @@
  
 package org.inheritsource.portal.components.mycases;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +50,7 @@ public class ConfirmDispatcher extends MyCasesBaseComponent {
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
 		
-		String[] docIdParams =  getPublicRequestParameters(request, "document");
+		String docIdParam =  getPublicRequestParameter(request, "document");
 		// default confirm path
 		String path = "/mycases/form/confirm";
 	
@@ -85,10 +86,24 @@ public class ConfirmDispatcher extends MyCasesBaseComponent {
 			path = confirmUrl.toString() + "/form/confirm";
 		}
 		
-		log.error("path: " + path);
+		log.error("path: " + path + " isSecure=" + request.isSecure() + " protocol=" + request.getProtocol());
 		
-		Map<String, String[]> params = new HashMap<String, String[]>();
-		params.put("document", docIdParams);
-		HstResponseUtils.sendRedirect(request, response, path, params);
+		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443)? "" : ":" + request.getLocalPort();
+		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
+		String redirectUrl = protocolStr + "://" + request.getServerName() + portStr +  "/site" + path + "?document=" + docIdParam;
+
+		log.error("portStr: " + portStr + " protocolStr=" + protocolStr + " redirectUrl=" + redirectUrl + " request.getLocalPort()" + request.getLocalPort());
+
+		try {
+			response.sendRedirect(redirectUrl);
+		} catch (IOException e) {
+			log.error("Could not send redirect response: " + e);
+		}
+		
+		//Map<String, String[]> params = new HashMap<String, String[]>();
+		//params.put("document", docIdParams);
+		
+		//HstResponseUtils.sendRedirect(request, response, path, params);
+		
 	}
 }
