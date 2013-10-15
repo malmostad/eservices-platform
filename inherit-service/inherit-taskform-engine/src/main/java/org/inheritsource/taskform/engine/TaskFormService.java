@@ -504,11 +504,10 @@ public class TaskFormService {
 
 		if (ui != null) {
 			dbUi = taskFormDb.getUserByUuid(ui.getUuid());
+			log.severe("UserInfo[" + ui.getUuid() + "]=" + dbUi);
 		}
 
-		log.severe("UserInfo[" + ui.getUuid() + "]=...");
 		if (dbUi == null) {
-			log.severe("null");
 			dbUi = ui;
 		} else {
 			log.severe(dbUi.getLabel());
@@ -522,7 +521,9 @@ public class TaskFormService {
 		if (activityInstancePendingItem.getCandidates() != null) {
 			Set<UserInfo> candidates = new TreeSet<UserInfo>();
 			for (UserInfo ui : activityInstancePendingItem.getCandidates()) {
-				candidates.add(appendTaskFormServiceUserData(ui));
+				if (ui != null) {
+					candidates.add(appendTaskFormServiceUserData(ui));
+				}
 			}
 			activityInstancePendingItem.setCandidates(candidates);
 		}
