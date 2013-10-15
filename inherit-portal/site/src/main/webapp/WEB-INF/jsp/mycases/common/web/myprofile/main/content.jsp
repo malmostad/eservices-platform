@@ -40,7 +40,7 @@
 		        jQuery.noConflict();
 		        var $j = jQuery;
 		        $j(document).ready(function () {
-		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${document.formPath}/edit/${user.uuid}", function(data) {
+		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${document.formPath}/edit/${user.uuid}?orbeon-embeddable=true", function(data) {
 		                if (typeof ORBEON != "undefined") { 
 		                    if (!document.all) {
 		                        ORBEON.xforms.Init.document(); 
