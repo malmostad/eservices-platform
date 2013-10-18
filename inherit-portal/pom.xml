@@ -66,6 +66,9 @@
     <freemarker.version>2.3.18</freemarker.version>
     <filesync.override>false</filesync.override>
     <maven.plugins.filesync.version>1.0.0</maven.plugins.filesync.version>
+
+    <cargo.tomcat.major.version>7</cargo.tomcat.major.version> 
+    <cargo.tomcat.full.version>7.0.42</cargo.tomcat.full.version>
   </properties>
 
   <repositories>
@@ -181,6 +184,21 @@
           </archive>
         </configuration>
       </plugin>
+      
+      <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <version>3.1</version>
+		<configuration>
+			<source>1.7</source>
+			<target>1.7</target>
+			<compilerArguments>
+				<verbose/>
+				<bootclasspath>${java.home}/lib/rt.jar</bootclasspath>
+			</compilerArguments>
+		</configuration>
+      </plugin>
+      
     </plugins>
   </build>
 
@@ -316,6 +334,24 @@
       </build>
     </profile>
 
+    <profile>
+      <id>tools</id>
+      <activation>
+        <property>
+          <name>java.vendor</name>
+          <value>Sun Microsystems Inc.</value>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>com.sun</groupId>
+          <artifactId>tools</artifactId>
+          <version>${java.version}</version>
+          <scope>system</scope>
+          <systemPath>${java.home}/../lib/tools.jar</systemPath>
+        </dependency>
+      </dependencies>
+    </profile>
   </profiles>
 
 </project>
