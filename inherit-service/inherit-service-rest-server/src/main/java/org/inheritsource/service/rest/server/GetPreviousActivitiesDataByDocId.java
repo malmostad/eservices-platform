@@ -48,7 +48,7 @@ public class GetPreviousActivitiesDataByDocId extends ServerResource {
 		String currentActivityFormDocId = ParameterEncoder.decode((String)getRequestAttributes().get("currentActivityFormDocId"));
 		
 		log.fine("REST getPreviousActivitiesDataByDocId with parameter currentActivityFormDocId=[" + currentActivityFormDocId+  "]" );
-		StringRepresentation sr = new StringRepresentation(engine.getPrevoiusActivitiesData(currentActivityFormDocId));
+		StringRepresentation sr = new StringRepresentation(engine.getPreviousActivitiesData(currentActivityFormDocId));
 	    sr.setMediaType(MediaType.TEXT_XML);
 	    
 		return sr;
