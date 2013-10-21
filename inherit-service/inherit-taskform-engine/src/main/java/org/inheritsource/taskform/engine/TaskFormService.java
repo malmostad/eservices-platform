@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
 import org.inheritsource.bonita.client.BonitaEngineServiceImpl;
+import org.inheritsource.service.common.domain.ActivityDefinitionInfo;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
@@ -42,6 +43,8 @@ import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
+import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
+import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.ProcessInstanceListItem;
 import org.inheritsource.service.common.domain.StartLogItem;
@@ -74,6 +77,21 @@ public class TaskFormService {
 				"ou=IDMGroups,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"); // Base
 																				// DN
 	}
+
+	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
+		return bonitaClient.getProcessDefinitions();
+	}
+	
+	public ProcessDefinitionDetails getProcessDefinitionDetails(String processDefinitionUUIDStr) {
+		ProcessDefinitionDetails details = bonitaClient.getProcessDefinitionDetailsByUuid(processDefinitionUUIDStr);
+		for (ActivityDefinitionInfo adi :details.getActivities()) {
+			ActivityFormDefinition def = taskFormDb.getActivityFormDefinition(adi.getUuid(), null);
+			if (def != null) {
+				adi.setFormPath(def.getFormPath());
+			}
+		}
+		return details;
+	}	
 	
 	public String getPrevoiusActivitiesData(String currentActivityFormDocId) {
 		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
