@@ -78,8 +78,8 @@ public class TaskFormService {
 				"ou=IDMGroups,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"); // Base
 																				// DN
 	}
-	
-	public String getPrevoiusActivitiesData(String currentActivityFormDocId) {
+
+	public String getPreviousActivitiesData(String currentActivityFormDocId) {
 		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
 		return currentActivity==null ? "" : getProcessInstanceActivitiesData(currentActivity.getProcessInstanceUuid());
 	}
@@ -97,18 +97,18 @@ public class TaskFormService {
 	public String getProcessInstanceActivityData(String processInstanceUuid, String activityName, String uniqueXPathExpr) {
 		String result = "";
 		
-		ProcessActivityFormInstance prevoiusActivity = null;
+		ProcessActivityFormInstance previousActivity = null;
 		if ("startform".equalsIgnoreCase(activityName)) {
-			prevoiusActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
+			previousActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
 		}
 		else {
-			String prevoiusActivityUuid = bonitaClient.getActivityInstanceUuid(processInstanceUuid, activityName);
-			if (prevoiusActivityUuid != null) {
-				prevoiusActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(prevoiusActivityUuid);
+			String previousActivityUuid = bonitaClient.getActivityInstanceUuid(processInstanceUuid, activityName);
+			if (previousActivityUuid != null) {
+				previousActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(previousActivityUuid);
 			}
 		}
-		if (prevoiusActivity!=null) {
-			result = orbeonService.getFormDataValue(prevoiusActivity.getFormPath(), prevoiusActivity.getFormDocId(), uniqueXPathExpr);
+		if (previousActivity!=null) {
+			result = orbeonService.getFormDataValue(previousActivity.getFormPath(), previousActivity.getFormDocId(), uniqueXPathExpr);
 		}
 		
 		return result;
@@ -120,6 +120,9 @@ public class TaskFormService {
 		result.append("<pawap><process processInstanceUuid=\"");
 		result.append(processInstanceUuid);
 		result.append("\">");
+		
+		// anropa bonitaClient och gör där en ny metod som returnerar alla processvariabler
+		// bygg upp xml av dem
 		
 		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
 

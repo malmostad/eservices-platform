@@ -23,7 +23,7 @@ su -c 'sh -s' postgres  << EOF
 # -D : Tablespace
 # -l : locale
 
-createdb -U postgres -O ${DB_OWNER} -E 'UTF8' -D pg_default -l 'sv_SE.UTF-8' ${DB_NAME}
+createdb -U postgres -O ${DB_OWNER} -T template0 -E 'UTF8' -D pg_default -l 'sv_SE.UTF-8' ${DB_NAME}
 
 EOF
 exit

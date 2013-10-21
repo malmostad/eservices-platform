@@ -27,30 +27,26 @@ import java.util.logging.Logger;
 
 import org.inheritsource.service.common.util.ParameterEncoder;
 import org.inheritsource.taskform.engine.TaskFormService;
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
+public class GetPreviousActivityDataByProcessInstanceUuid extends ServerResource {
 
-
-public class GetPreviousActivitiesDataByDocId extends ServerResource {
-
-	public static final Logger log = Logger.getLogger(GetPreviousActivitiesDataByDocId.class.getName());
+	public static final Logger log = Logger.getLogger(GetPreviousActivityDataByProcessInstanceUuid.class.getName());
 	
 	TaskFormService engine = new TaskFormService();
 	
 	@Post
-	@Get
-	public StringRepresentation getPreviousActivitiesDataByDocId() {
+	public String getPreviousActivityDataByProcessInstanceUuid() {
 		
-		String currentActivityFormDocId = ParameterEncoder.decode((String)getRequestAttributes().get("currentActivityFormDocId"));
+		String processInstanceUuid = ParameterEncoder.decode((String)getRequestAttributes().get("processInstanceUuid"));
+		String previousActivityName = ParameterEncoder.decode((String)getRequestAttributes().get("previousActivityName"));
+		String uniqueXPathExpr = ParameterEncoder.decode((String)getRequestAttributes().get("uniqueXPathExpr"));
 		
-		log.fine("REST getPreviousActivitiesDataByDocId with parameter currentActivityFormDocId=[" + currentActivityFormDocId+  "]" );
-		StringRepresentation sr = new StringRepresentation(engine.getPreviousActivitiesData(currentActivityFormDocId));
-	    sr.setMediaType(MediaType.TEXT_XML);
-	    
-		return sr;
+		log.fine("REST getPreviousActivityDataByProcessInstanceUuid with parameter processInstanceUuid=[" + processInstanceUuid +  
+				"] previousActivityName=[" + previousActivityName +  
+				"] uniqueXPathExpr=[" + uniqueXPathExpr +  "]" );
+		
+		return engine.getProcessInstanceActivityData(processInstanceUuid, previousActivityName, uniqueXPathExpr);
 	}
 }

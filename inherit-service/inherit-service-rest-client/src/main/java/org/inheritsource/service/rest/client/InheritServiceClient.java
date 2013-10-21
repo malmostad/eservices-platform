@@ -562,7 +562,22 @@ public class InheritServiceClient {
 		result = (String) call(uri);
 		return result;
 	}
+
+	public String getPreviousActivityDataByProcessInstanceUuid(String processInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
+
+		String result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getPreviousActivityDataByProcessInstanceUuid/" 
+				+ ParameterEncoder.encode(processInstanceUuid) + "/" 
+				+ ParameterEncoder.encode(previousActivityName)  + "/" 
+				+ ParameterEncoder.encode(uniqueXPathExpr) + "?media=xml";
+		log.severe("getPreviousActivityDataByProcessInstanceUuid uri: " + uri);
+		result = (String) call(uri);
+		return result;
+	}
 	
+
 	public String getPreviousActivityDataByInstanceUuid(String currentActivityInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
 		String result = null;
 		String uri;
