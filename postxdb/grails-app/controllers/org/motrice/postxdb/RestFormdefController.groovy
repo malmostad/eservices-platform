@@ -36,7 +36,7 @@ class RestFormdefController {
     if (params?.value) {
       // The request comes with search parameters
       def map = restService.extractSearchParameters(params.value, params?.path)
-      formInfo = restService.doSearch(map)
+      formInfo = restService.formSearch(map)
     } else {
       // This is a plain list
       formInfo = restService.findEditableForms(max, offset)
@@ -51,7 +51,7 @@ class RestFormdefController {
 	  for (doc in list) {
 	    def path = new FormdefPath(doc.path)
 	    // The value of the 'name' attribute must be the uuid
-	    document(created: doc.createdf(), 'last-modified': doc.updatedf(), offline: "",
+	    document(created: doc.createdf(), 'last-modified': doc.updatedf(), draft: "false",
 	    name: doc?.formdef?.uuid)
 	    {
 	      details {
