@@ -24,7 +24,8 @@ class RestFormdefController {
    * RETURNS an XML document.
    */
   def list() {
-    if (log.debugEnabled) log.debug "LIST: ${Util.clean(params)}, ${request.forwardURI}"
+    def sessionId = g.cookie(name: 'JSESSIONID')
+    if (log.debugEnabled) log.debug "LIST: ${Util.clean(params)}, ${request.forwardURI}, session ${sessionId}"
     Integer max = params?.'page-size' as Integer
     if (!max || max <= 0 || max > 100) max = 15
     Integer page = params?.'page-number' as Integer
@@ -73,7 +74,8 @@ class RestFormdefController {
    * Currently only form definition itself, an xml document.
    */
   def getop() {
-    if (log.debugEnabled) log.debug "GETOP: ${Util.clean(params)}, ${request.forwardURI}"
+    def sessionId = g.cookie(name: 'JSESSIONID')
+    if (log.debugEnabled) log.debug "GETOP: ${Util.clean(params)}, ${request.forwardURI}, session ${sessionId}"
     def path = new FormdefPath("${params?.app}/${params?.form}")
     def itemObj = null
     if (params?.resource == 'form.xhtml') {
@@ -108,7 +110,8 @@ class RestFormdefController {
    * If this is the first form definition version a new Formdef is created.
    */
   def putop() {
-    if (log.debugEnabled) log.debug "PUTOP: ${Util.clean(params)}, ${request.forwardURI}"
+    def sessionId = g.cookie(name: 'JSESSIONID')
+    if (log.debugEnabled) log.debug "PUTOP: ${Util.clean(params)}, ${request.forwardURI}, session ${sessionId}"
     def itemObj = null
     // Two distinct flows depending on the input
     if (request.format == 'xml') {
