@@ -8,6 +8,16 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <files>
     <file>
+      <source>../docbox/target/docbox.war</source>
+      <outputDirectory>/webapps</outputDirectory>
+      <destName>docbox.war</destName>
+    </file>
+    <file>
+      <source>../postxdb/target/exist.war</source>
+      <outputDirectory>/webapps</outputDirectory>
+      <destName>exist.war</destName>
+    </file>
+    <file>
       <source>cms/target/cms.war</source>
       <outputDirectory>/webapps</outputDirectory>
       <destName>cms.war</destName>

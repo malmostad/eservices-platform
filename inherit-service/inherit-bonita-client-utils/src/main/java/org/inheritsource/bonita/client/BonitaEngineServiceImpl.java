@@ -830,10 +830,13 @@ public class BonitaEngineServiceImpl {
 	}
 	
 	private UserInfo createTemporaryUserInfo(String bonitaUser) {
-		UserInfo userInfo = new UserInfo();
-		userInfo.setUuid(bonitaUser);
-		userInfo.setLabelShort(bonitaUser);
-		userInfo.setLabel(bonitaUser);
+		UserInfo userInfo = null;
+		if (bonitaUser != null && bonitaUser.trim().length()>0) {
+			userInfo = new UserInfo();
+			userInfo.setUuid(bonitaUser);
+			userInfo.setLabelShort(bonitaUser);
+			userInfo.setLabel(bonitaUser);
+		}
 		return userInfo;
 	}
 	
@@ -976,7 +979,7 @@ public class BonitaEngineServiceImpl {
 		taskItem.setProcessInstanceUuid(activity.getProcessInstanceUUID().getValue());
 		taskItem.setActivityDefinitionUuid(activity.getActivityDefinitionUUID().getValue());
 		taskItem.setProcessDefinitionUuid(activity.getProcessDefinitionUUID().getValue());
-
+		
 		return taskItem;
 		
 	}

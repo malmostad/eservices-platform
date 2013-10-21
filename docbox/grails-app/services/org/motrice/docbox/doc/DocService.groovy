@@ -50,17 +50,27 @@ class DocService {
    * Create and save a BoxDocStep
    */
   BoxDocStep createBoxDocStep(BoxDoc parent) {
-    createBoxDocStep(parent, null)
+    createBoxDocStep(parent, null, null)
   }
 
   BoxDocStep createBoxDocStep(BoxDoc parent, Integer signCount) {
+    createBoxDocStep(parent, signCount, null)
+  }
+
+  /**
+   * Create and save a BoxDocStep
+   * @param parent must be the BoxDoc to which the new step belongs
+   * @param signCount must be the number of signatures in the new step or null
+   * Null is taken as zero.
+   */
+  BoxDocStep createBoxDocStep(BoxDoc parent, Integer signCount, String uuid) {
     def q = 'select count(id) from BoxDocStep s where s.doc.id=?'
     def stepCountList = BoxDocStep.executeQuery(q, [parent.id])
     def stepCount = stepCountList[0]
     String docNo = "${parent.docNo}-${stepCount}"
-    def uuid = UUID.randomUUID().toString()
-    def step = new BoxDocStep(step: stepCount, docNo: docNo, docboxRef: uuid,
-    signCount: (signCount != null)? signCount : 0)
+    def docboxRef = uuid ?: UUID.randomUUID().toString()
+    def step = new BoxDocStep(step: stepCount, docNo: docNo, docboxRef: docboxRef,
+    signCount: signCount ?: 0)
     parent.addToSteps(step)
     if (!step.save(insert: true)) log.error "BoxDocStep save: ${step.errors.allErrors.join(',')}"
     if (log.debugEnabled) log.debug "createBoxDocStep: ${step}"

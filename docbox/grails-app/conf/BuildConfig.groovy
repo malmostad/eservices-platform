@@ -49,6 +49,7 @@ grails.project.dependency.resolution = {
   dependencies {
     // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes e.g.
     compile "com.itextpdf:itextpdf:5.4.4"
+    compile "net.glxn:qrgen:1.3"
 
     // runtime 'mysql:mysql-connector-java:5.1.22'
     runtime "postgresql:postgresql:9.2-1002.jdbc4"

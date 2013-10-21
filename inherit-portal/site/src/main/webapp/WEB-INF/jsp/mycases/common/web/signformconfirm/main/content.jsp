@@ -45,9 +45,16 @@
   </c:otherwise>  
 </c:choose>
 
-Länk till pdf som signerats med ${docBoxId}
-<h1>status</h1>
-<p>${status}</p>
-<h1>signatur</h1>
-<p>${signature}</p>
+				<table>
+				  <thead>
+				    <tr>
+				      <th>Signerade dokument</th>
+				    </tr>
+				  </thead>
+				  <tbody>
+				    <tr>
+				    	<td><a href="${pdfUrl}">${docNo}</a></td>
+				    </tr>
+				  </tbody>
+				</table>					    
 

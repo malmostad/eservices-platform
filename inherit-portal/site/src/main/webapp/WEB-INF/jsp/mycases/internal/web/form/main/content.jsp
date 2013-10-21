@@ -25,11 +25,11 @@
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
 
 <c:choose>
-  <c:when test="${empty document}">
+  <c:when test="${empty activity}">
     <tag:pagenotfound/>
   </c:when>
   <c:otherwise>
-    <c:if test="${not empty document.title}">
+    <c:if test="${not empty activity and not empty processInstanceDetails}">
       <hst:element var="headTitle" name="title">
         <c:out value="${activity.activityLabel}--${processInstanceDetails.processLabel}"/>
       </hst:element>
@@ -135,7 +135,12 @@
 							<c:when test="${not empty logItem.description}">
 								<p>${logItem.description}</p>
 							</c:when>
-							<c:when test="${not empty logItem.viewUrl}">
+							<c:when test="${not empty logItem.viewUrl and fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
+							    <p> <fmt:message key="mycases.signeddocument"/>&nbsp;
+								  <a href="${logItem.viewUrl}"><fmt:message key="mycases.signeddocumentlink"/></a>
+								</p>
+							</c:when>
+							<c:when test="${not empty logItem.viewUrl and not fn:startsWith(logItem.viewUrl, 'none/') and not fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
 								<iframe class="iframe-orbeon-panel" scrolling="no" frameborder="0" width="100%" height="100"></iframe>
 							</c:when>
 							<c:otherwise>
@@ -143,7 +148,7 @@
 							</c:otherwise>
 						</c:choose>
 					  </div>
-					  <c:if test="${not empty logItem.viewUrl}">
+					  <c:if test="${not empty logItem.viewUrl and not fn:startsWith(logItem.viewUrl, 'none/') and not fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
 					  	<a class="view-url" href="<fmt:message key="orbeonbase.portal.url"/>${logItem.viewUrl}"></a>
 					  </c:if>
 					</li>

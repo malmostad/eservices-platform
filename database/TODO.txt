@@ -1,5 +1,0 @@
-Man kan vilja skräddarsy olika datakonfigurationsfiler och lägga dem i data-katalogen.
-Denna fil kan sedan köras med execute_file.sh.
-
-För tillfället innhåller "base"-filen lite spretigt data med miljöförvaltning, demo m.m.
-

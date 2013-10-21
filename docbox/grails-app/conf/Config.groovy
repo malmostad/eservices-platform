@@ -116,3 +116,6 @@ log4j = {
 // Application-specific constants
 // Key used in PDF dictionaries for docbox data
 docbox.dictionary.key="org.motrice.docbox.info"
+
+// Classes corresponding to docbox dictionaries in Pdf
+docbox.dictionary.classes = ['org.motrice.docbox.sign.PdfSignatureDict', 'org.motrice.docbox.pdf.PdfFormdataDict']

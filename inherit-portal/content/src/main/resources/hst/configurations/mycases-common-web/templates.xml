@@ -99,4 +99,20 @@
       <sv:value>jsp/mycases/common/web/signformconfirm/main/content.jsp</sv:value>
     </sv:property>
   </sv:node>
+  <sv:node sv:name="noform.main.content">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/mycases/common/web/noform/main/content.jsp</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="noformconfirm.main.content">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/mycases/common/web/noformconfirm/main/content.jsp</sv:value>
+    </sv:property>
+  </sv:node>
 </sv:node>

@@ -7,14 +7,14 @@ class UrlMappings {
     "/doc/formdata/$uuid"(controller: 'RestDoc') {
       action = [GET: 'formDataGet', PUT: 'formDataPut']
     }
+    "/doc/input/$docboxref"(controller: 'RestDoc') {
+      action = [GET: 'docboxFormData']
+    }
     "/doc/ref/$docboxref"(controller: 'RestDoc') {
       action = [GET: 'docboxRefGet']
     }
-    "/doc/no/$docno"(controller: 'RestDoc') {
-      action = [GET: 'docNoGet']
-    }
     "/doc/sig/$docboxref"(controller: 'RestSig') {
-      action = [POST: 'docboxSigPut']
+      action = [GET: 'docboxSigGet', POST: 'docboxSigPut']
     }
     "/doc/sig/validate/$docboxref"(controller: 'RestSig') {
       action = [GET: 'sigValidate']

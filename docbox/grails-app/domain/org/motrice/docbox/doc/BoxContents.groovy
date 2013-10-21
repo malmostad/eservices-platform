@@ -106,6 +106,11 @@ class BoxContents {
     return fileName
   }
 
+  // To show in the gui
+  String display() {
+    "${name} (size ${size})"
+  }
+
   String toString() {
     "[Contents ${id}/${name}: ${format}/${size}]"
   }

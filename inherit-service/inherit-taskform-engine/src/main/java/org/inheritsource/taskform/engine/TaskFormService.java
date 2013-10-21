@@ -247,15 +247,28 @@ public class TaskFormService {
 				// existing form
 				item.setProcessActivityFormInstanceId(form
 						.getProcessActivityFormInstanceId());
-
+				item.setExternalUrl(calcExternalUrl(form.getFormPath(), form.getProcessActivityFormInstanceId(), taskUuid));
 				forms.remove(form);
+			} else {
+				// analyze activity form
+				ActivityFormDefinition activity = taskFormDb.getActivityFormDefinition(item.getActivityDefinitionUuid(), startedByForm == null ? null : startedByForm.getStartFormDefinition().getStartFormDefinitionId());
+				if (activity == null) {
+					// activity form is not defined
+					item.setExternalUrl(calcExternalUrl("none", null, taskUuid));
+				}
+				else {
+					item.setExternalUrl(calcExternalUrl(activity.getFormPath(), null, taskUuid));
+				}
 			}
+			
+			
 			// else {
 			// no one has opened this activity form yet
 			// i.e. no ProcessActivityFormInstance has been stored in database
 			// so far
 			// The ProcessActivityFormInstance is created on first time
 			// }
+			
 		}
 
 		// partially filled forms
@@ -280,6 +293,26 @@ public class TaskFormService {
 		log.severe("=======> getInboxTaskItems " + userId + " size="
 				+ (inbox == null ? 0 : inbox.size()));
 		return inbox;
+	}
+	
+	private String calcExternalUrl(String formPath, Long processActivityFormInstanceId, String taskUuid) {
+		String externalUrl = null;
+		
+		String activityUrlIdStr = processActivityFormInstanceId == null ? "taskUuid=" + taskUuid : "processActivityFormInstanceId=" + processActivityFormInstanceId; 
+		
+		if ("none".equals(formPath)) {
+			// activity form is not defined
+			externalUrl = "noform?" + activityUrlIdStr;
+		}
+		else if (formPath.startsWith("signstartform")) {
+			externalUrl = "signform?" + activityUrlIdStr;
+		}
+		else if (formPath.startsWith("signactivity/")) {
+			String activityName = formPath.substring(13);
+			externalUrl = "signform?" + activityUrlIdStr + "&signActivityName=" + activityName;
+		}
+		
+		return externalUrl;
 	}
 
 	public ProcessInstanceDetails getProcessInstanceDetails(
@@ -326,6 +359,10 @@ public class TaskFormService {
 						String viewUrl = activity.calcViewUrl();
 						logItem.setFormUrl(viewUrl);
 						logItem.setViewUrl(viewUrl);
+						logItem.setFormDocId(activity.getFormDocId());
+						
+						logItem.setPerformedByUser(taskFormDb
+								.getUserByUuid(activity.getUserId()));
 					}
 				}
 			}
@@ -471,11 +508,10 @@ public class TaskFormService {
 
 		if (ui != null) {
 			dbUi = taskFormDb.getUserByUuid(ui.getUuid());
+			log.severe("UserInfo[" + ui.getUuid() + "]=" + dbUi);
 		}
 
-		log.severe("UserInfo[" + ui.getUuid() + "]=...");
 		if (dbUi == null) {
-			log.severe("null");
 			dbUi = ui;
 		} else {
 			log.severe(dbUi.getLabel());
@@ -489,7 +525,9 @@ public class TaskFormService {
 		if (activityInstancePendingItem.getCandidates() != null) {
 			Set<UserInfo> candidates = new TreeSet<UserInfo>();
 			for (UserInfo ui : activityInstancePendingItem.getCandidates()) {
-				candidates.add(appendTaskFormServiceUserData(ui));
+				if (ui != null) {
+					candidates.add(appendTaskFormServiceUserData(ui));
+				}
 			}
 			activityInstancePendingItem.setCandidates(candidates);
 		}
@@ -685,14 +723,16 @@ public class TaskFormService {
 		}
 	}
 
+	
 	/**
 	 * submit form
 	 * 
 	 * @param docId
 	 * @param userId 
+	 * @param newDocId Replace docId with a new one on submit. 
 	 * @return confirmation form viewUrl. null if submission fails.
 	 */
-	public String submitActivityForm(String docId, String userId)
+	public String submitActivityForm(String docId, String userId, String newDocId)
 			throws Exception {
 		String viewUrl = null;
 		
@@ -709,6 +749,10 @@ public class TaskFormService {
 				Date tstamp = new Date();
 				activity.setSubmitted(tstamp);
 				activity.setUserId(userId);
+				
+				if (newDocId != null) {
+					activity.setFormDocId(newDocId);
+				}
 				
 				boolean success = false;
 

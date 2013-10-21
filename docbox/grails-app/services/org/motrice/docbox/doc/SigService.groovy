@@ -2,11 +2,15 @@ package org.motrice.docbox.doc
 
 import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.DocData
+import org.motrice.docbox.pdf.PdfFormdataDict
+import org.motrice.docbox.sign.PdfSignatureDict
 import org.motrice.docbox.sign.XmlDsig
+import org.motrice.docbox.util.Exxtractor
 
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
 import com.itextpdf.text.FontFactory
+import com.itextpdf.text.Image
 import com.itextpdf.text.PageSize
 import com.itextpdf.text.Phrase
 import com.itextpdf.text.pdf.BaseFont
@@ -23,6 +27,10 @@ import com.itextpdf.text.pdf.PdfReader
 import com.itextpdf.text.pdf.PdfStamper
 import com.itextpdf.text.pdf.PdfString
 
+import net.glxn.qrgen.QRCode
+import net.glxn.qrgen.image.ImageType
+
+import java.util.UUID
 import javax.xml.transform.Source
 import javax.xml.transform.stream.StreamSource
 import javax.xml.validation.SchemaFactory
@@ -40,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional
  */
 class SigService {
   private static final log = LogFactory.getLog(this)
+  static final String PDF_FORMAT_PAT = 'http://motrice.org/spec/docbox/%s/pdf'
 
   static final HEADER_FONT = 'headerFont'
   static final TEXT_FONT = 'textFont'
@@ -54,8 +63,10 @@ class SigService {
 
   @Transactional
   def addSignature(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
-    def bytes = addPage(docStep, pdfContents, sig)
-    def nextStep = docService.createBoxDocStep(docStep.doc, docStep.signCount + 1)
+    // Create the docboxRef for the next step
+    def nextRef = UUID.randomUUID().toString()
+    def bytes = addPage(docStep, pdfContents, sig, nextRef)
+    def nextStep = docService.createBoxDocStep(docStep.doc, docStep.signCount + 1, nextRef)
     def nextContents = docService.createPdfContents(nextStep)
     nextContents.assignStream(bytes, true)
     if (log.debugEnabled) log.debug "addSignature: ${nextContents}"
@@ -66,9 +77,12 @@ class SigService {
    * Add a page to the document step
    * It contains visible info about the signature
    * It also contains the signature (XML-DSIG) as an invisible resource
+   * @param nextRef must be the docboxRef of the new step to be created
    * Return a byte array containing the new PDF
    */
-  private byte[] addPage(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
+  private byte[] addPage(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig,
+			 String nextRef)
+  {
     // Set up for reading the existing PDF and writing a new one
     def reader = new PdfReader(pdfContents.stream)
     def pages = reader.numberOfPages
@@ -97,18 +111,22 @@ class SigService {
     // Add a template where the signature itself is stored as "additional information"
     def templ = canvas.createTemplate(20.0f, 20.0f)
     templ.rectangle(templ.boundingBox)
-    def info = new PdfDictionary()
-    info.put(new PdfName('DocNo'), new PdfString(docStep.docNo))
-    info.put(SIGNATURE_KEY, new PdfString(sig.signatureB64))
-    info.put(new PdfName('Timestamp'), new PdfDate())
-    def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
-				   grailsApplication.metadata['app.version'])
-    info.put(new PdfName('Format'), new PdfString(formatSpec))
+    def info = new PdfSignatureDict(pdfContents.checksum, docStep.docNo, sig.signatureB64)
     def additional = new PdfDictionary()
     def docboxKey = grailsApplication.config.docbox.dictionary.key
-    additional.put(new PdfName(docboxKey), info)
+    additional.put(new PdfName(docboxKey), info.toDictionary(pdfFormatName()))
     templ.additional = additional
     canvas.addTemplate(templ, 200.0f, 200.0f)
+
+    // Experimental: generate QR code
+    def baseurl = grailsApplication.config.docbox.signed.doc.base.url
+    if (baseurl) {
+      def url = "${baseurl}/${nextRef}"
+      def qr = QRCode.from(url).to(ImageType.GIF).stream()
+      def qrimg = Image.getInstance(qr.toByteArray())
+      qrimg.setAbsolutePosition(100.0f, 60.0f)
+      canvas.addImage(qrimg)
+    }
 
     // Write the output
     stamper.close()
@@ -210,16 +228,10 @@ class SigService {
     // Add a template where the signature itself is stored as "additional information"
     def templ = canvas.createTemplate(20.0f, 20.0f)
     templ.rectangle(templ.boundingBox)
-    def info = new PdfDictionary()
-    info.put(new PdfName('FormData'), new PdfString(docData.dataItem.text))
-    info.put(new PdfName('FormXref'), new PdfString(formXref))
-    info.put(new PdfName('Timestamp'), new PdfDate())
-    def formatSpec = String.format(PdfService.PDF_FORMAT_PAT,
-				   grailsApplication.metadata['app.version'])
-    info.put(new PdfName('Format'), new PdfString(formatSpec))
+    def info = new PdfFormdataDict(docData.dataItem.text, formXref)
     def additional = new PdfDictionary()
     def docboxKey = grailsApplication.config.docbox.dictionary.key
-    additional.put(new PdfName(docboxKey), info)
+    additional.put(new PdfName(docboxKey), info.toDictionary(pdfFormatName()))
     templ.additional = additional
     canvas.addTemplate(templ, 25.0f, 25.0f)
 
@@ -234,7 +246,7 @@ class SigService {
   /**
    * Find a signature in pdf contents
    * @param pdfContents must contain a pdf document
-   * @return a List of String where each element is a Base64-encoded signature
+   * @return a List of PdfSignatureDict where each element is a Base64-encoded signature
    * The list is empty if there are no signatures in the document
    */
   def findAllSignatures(BoxContents pdfContents) {
@@ -260,8 +272,8 @@ class SigService {
 	    xobj.keys.each {key2 ->
 	      if (docboxKey.equals(key2)) {
 		def docboxDict = xobj.get(key2)
-		def sig = docboxDict.get(SIGNATURE_KEY)
-		if (sig) sigList.add(String.valueOf(sig))
+		def sig = PdfSignatureDict.create(docboxDict)
+		if (sig) sigList.add(sig)
 	      }
 	    }
 	  }
@@ -269,16 +281,63 @@ class SigService {
       }
     }
 
-    if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
+    //if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
+    if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList}"
     return sigList
   }
 
   /**
-   * Validate signature input
-   * Throw DocBoxException on failure, silent otherwise
+   * Find a signature in pdf contents
+   * @param pdfContents must contain a pdf document
+   * @return a PdfFormdataDict or null if not found
    */
-  def validateSigSyntax(String sigBase64, InputStream schemaStream) {
-    if (log.debugEnabled) log.debug "validateSigSyntax << (${sigBase64?.length()} chars)"
+  PdfFormdataDict findFormdata(BoxContents pdfContents) {
+    findFormdata(pdfContents.stream)
+  }
+
+  PdfFormdataDict findFormdata(byte[] pdf) {
+    if (log.debugEnabled) log.debug "findFormdata << ${pdf.length} bytes"
+    def reader = new PdfReader(pdf)
+    def pageCount = reader.numberOfPages
+    def docboxKey = new PdfName(grailsApplication.config.docbox.dictionary.key)
+    // Formdata is always on page 1
+    def page = reader.getPageN(1)
+    def formData = null
+    def resources = page.getDirectObject(PdfName.RESOURCES)
+    if (resources) {
+      def xobjDict = resources.getDirectObject(PdfName.XOBJECT)
+      xobjDict.keys.each {key1 ->
+	def xobj = xobjDict.getDirectObject(key1)
+	if (xobj.stream) {
+	  xobj.keys.each {key2 ->
+	    if (docboxKey.equals(key2)) {
+	      def docboxDict = xobj.get(key2)
+	      if (!formData) formData = PdfFormdataDict.create(docboxDict)
+	    }
+	  }
+	}
+      }
+    }
+
+    //if (log.debugEnabled) log.debug "findAllSignatures >> ${sigList.collect {it.size()}} chars"
+    if (log.debugEnabled) log.debug "findFormdata >> ${formData}"
+    return formData
+  }
+
+  /**
+   * Get a name identifying the application creating this Pdf format.
+   * In this case "format" means the way docbox inserts data in a Pdf document.
+   */
+  String pdfFormatName() {
+    String.format(PDF_FORMAT_PAT, grailsApplication.metadata['app.version'])
+  }
+
+  /**
+   * Check signature syntax and that the signed text matches this document.
+   * Throw DocBoxException on failure, silent otherwise.
+   */
+  def basicSignatureCheck(String sigBase64, InputStream schemaStream) {
+    if (log.debugEnabled) log.debug "basicSignatureCheck << (${sigBase64?.length()} chars)"
     def factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema")
     def schemaSource = new StreamSource(schemaStream)
     def schema = factory.newSchema(schemaSource)
@@ -286,11 +345,46 @@ class SigService {
     def sigSource = new StreamSource(new ByteArrayInputStream(sigBase64.decodeBase64()))
     try { 
       validator.validate(sigSource)
-      if (log.debugEnabled) log.debug "validateSigSyntax >> VALIDATED"
     } catch (SAXParseException exc) {
-      if (log.debugEnabled) log.debug "validateSigSyntax >> FAIL ${exc}"
+      if (log.debugEnabled) log.debug "basicSignatureCheck >> FAIL ${exc}"
       throw new DocBoxException(exc.message)
     }
+
+    if (log.debugEnabled) log.debug "basicSignatureCheck >> OK"
+  }
+
+  /**
+   * Check that the signed text contains two fields, a document number and
+   * a checksum.
+   * The check is not done if the config property
+   * 'docbox.signed.text.strict.check' is 'false'.
+   */
+  def signedTextCheck(String sigBase64, BoxDocStep docStep, BoxContents pdfContents) {
+    def strictProp = grailsApplication.config.docbox.signed.text.check.strict
+    boolean lenientFlag = strictProp == 'false'
+    if (lenientFlag) {
+      if (log.debugEnabled) log.debug "signedTextCheck: LENIENT"
+    } else {
+      def sig = new XmlDsig(sigBase64, log)
+      def extr = new Exxtractor(sig.signedText)
+      def fieldList = extr.extract()
+      if (log.debugEnabled) log.debug "signedTextCheck: STRICT ${fieldList}"
+      if (fieldList.size() != 2) {
+	exc("2 fields expected in signed text, got ${fieldList.size()}")
+      }
+
+      boolean docNumberFound = fieldList.find {it == docStep.docNo}
+      boolean checksumFound = fieldList.find {it == pdfContents.checksum}
+      if (!docNumberFound) exc('Document number not found in signed text')
+      if (!checksumFound) exc('Checksum not found in signed text')
+    }
+
+    if (log.debugEnabled) log.debug "signedTextCheck >> VALIDATED"
+  }
+
+  private exc(String message) {
+    if (log.debugEnabled) log.debug "EXCEPTION: ${message}"
+    throw new DocBoxException(message)
   }
 
   /**
@@ -308,6 +402,10 @@ class SigService {
     map.certValid = sig.validateCertificates()
     map.sigData = sig
     return map
+  }
+
+  def validateSignature(PdfSignatureDict dict) {
+    validateSignature(dict.signature)
   }
 
 }
