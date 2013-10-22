@@ -111,3 +111,6 @@ log4j = {
 
 	   //debug 'org.motrice.postxdb', 'grails.app.controllers', 'org.motrice.postxdb.RestService'
 }
+
+// Timestamp format in responses to Orbeon
+postxdb.tstamp.fmt = "yyyy-MM-dd'T'HH:mm:ss.SSS"

@@ -24,7 +24,8 @@ class RestFormdefController {
    * RETURNS an XML document.
    */
   def list() {
-    if (log.debugEnabled) log.debug "LIST: ${Util.clean(params)}, ${request.forwardURI}"
+    def sessionId = g.cookie(name: 'JSESSIONID')
+    if (log.debugEnabled) log.debug "LIST: ${Util.clean(params)}, ${request.forwardURI}, session ${sessionId}"
     Integer max = params?.'page-size' as Integer
     if (!max || max <= 0 || max > 100) max = 15
     Integer page = params?.'page-number' as Integer
@@ -36,7 +37,7 @@ class RestFormdefController {
     if (params?.value) {
       // The request comes with search parameters
       def map = restService.extractSearchParameters(params.value, params?.path)
-      formInfo = restService.doSearch(map)
+      formInfo = restService.formSearch(map)
     } else {
       // This is a plain list
       formInfo = restService.findEditableForms(max, offset)
@@ -51,7 +52,7 @@ class RestFormdefController {
 	  for (doc in list) {
 	    def path = new FormdefPath(doc.path)
 	    // The value of the 'name' attribute must be the uuid
-	    document(created: doc.createdf(), 'last-modified': doc.updatedf(), offline: "",
+	    document(created: doc.createdf(), 'last-modified': doc.updatedf(), draft: "false",
 	    name: doc?.formdef?.uuid)
 	    {
 	      details {
@@ -73,7 +74,8 @@ class RestFormdefController {
    * Currently only form definition itself, an xml document.
    */
   def getop() {
-    if (log.debugEnabled) log.debug "GETOP: ${Util.clean(params)}, ${request.forwardURI}"
+    def sessionId = g.cookie(name: 'JSESSIONID')
+    if (log.debugEnabled) log.debug "GETOP: ${Util.clean(params)}, ${request.forwardURI}, session ${sessionId}"
     def path = new FormdefPath("${params?.app}/${params?.form}")
     def itemObj = null
     if (params?.resource == 'form.xhtml') {
@@ -108,7 +110,8 @@ class RestFormdefController {
    * If this is the first form definition version a new Formdef is created.
    */
   def putop() {
-    if (log.debugEnabled) log.debug "PUTOP: ${Util.clean(params)}, ${request.forwardURI}"
+    def sessionId = g.cookie(name: 'JSESSIONID')
+    if (log.debugEnabled) log.debug "PUTOP: ${Util.clean(params)}, ${request.forwardURI}, session ${sessionId}"
     def itemObj = null
     // Two distinct flows depending on the input
     if (request.format == 'xml') {

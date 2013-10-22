@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import javax.security.auth.login.LoginContext;
 
 import org.inheritsource.bonita.client.util.BonitaUtil;
+import org.inheritsource.service.common.domain.ActivityDefinitionInfo;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
@@ -43,6 +44,8 @@ import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
+import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
+import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.ProcessInstanceListItem;
 import org.inheritsource.service.common.domain.UserInfo;
@@ -67,6 +70,7 @@ import org.ow2.bonita.facade.uuid.ActivityInstanceUUID;
 import org.ow2.bonita.facade.uuid.ProcessDefinitionUUID;
 import org.ow2.bonita.facade.uuid.ProcessInstanceUUID;
 import org.ow2.bonita.light.LightActivityInstance;
+import org.ow2.bonita.light.LightProcessDefinition;
 import org.ow2.bonita.light.LightProcessInstance;
 import org.ow2.bonita.util.AccessorUtil;
 
@@ -434,6 +438,76 @@ public class BonitaEngineServiceImpl {
 		result.setNumberOfHits(numberOfHits);
 		return result;
 	}
+	
+	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
+		Set<ProcessDefinitionInfo> result = new HashSet<ProcessDefinitionInfo>();
+		try {
+			LoginContext loginContext = BonitaUtil.login();
+			Set<LightProcessDefinition> processDefs = AccessorUtil.getQueryDefinitionAPI().getLightProcesses();
+			for (LightProcessDefinition processDef : processDefs) {
+				result.add(lightProcessDefinition2ProcessDefinitionInfo(processDef));
+			}
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		return result;
+	}
+	
+	private ProcessDefinitionInfo lightProcessDefinition2ProcessDefinitionInfo(
+			LightProcessDefinition definition) {
+		ProcessDefinitionInfo defInfo = null;
+		
+		if (definition != null) {
+		    defInfo = new ProcessDefinitionInfo();
+			defInfo.setLabel(definition.getLabel());
+			defInfo.setName(definition.getName());
+			defInfo.setUuid(definition.getUUID().getValue());
+		}
+		
+		return defInfo;
+	} 
+	
+	private ActivityDefinitionInfo activityDefinition2ActivityDefinitionInfo(ActivityDefinition definition) {
+		ActivityDefinitionInfo defInfo = null;
+		
+		if (definition != null) {
+		    defInfo = new ActivityDefinitionInfo();
+			defInfo.setLabel(definition.getLabel());
+			defInfo.setName(definition.getName());
+			defInfo.setUuid(definition.getUUID().getValue());
+		}
+		
+		return defInfo;
+	} 
+	
+	
+	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(String processDefinitionUUIDStr) {
+		ProcessDefinitionDetails result = null;
+		try {
+			LoginContext loginContext = BonitaUtil.login();
+			ProcessDefinitionUUID processDefinitionUUID = new ProcessDefinitionUUID(processDefinitionUUIDStr);
+			ProcessDefinition processDef = AccessorUtil.getQueryDefinitionAPI().getProcess(processDefinitionUUID);
+			
+			result = new ProcessDefinitionDetails();
+			result.setProcess(lightProcessDefinition2ProcessDefinitionInfo(processDef));
+			
+			Set<ActivityDefinition> activities = processDef.getActivities();
+			for (ActivityDefinition activity : activities) {
+				if (activity.isTask()) {
+					result.getActivities().add(activityDefinition2ActivityDefinitionInfo(activity));
+				}
+			}
+		
+			loginContext.logout();
+		}
+		catch (Exception e) {
+			log.severe("Exception while loading ActivityDefinitions for processDefinitionUUIDStr=[" + processDefinitionUUIDStr + "]");
+		}
+		return result;
+	}
+
 	
 	/**
 	 * @param processDefinitionUUIDStr Specifies which process to start in the BPM engine. The engine will try to find latest version of process if version is omitted. (process name instead of uuid)
