@@ -495,7 +495,9 @@ public class BonitaEngineServiceImpl {
 			
 			Set<ActivityDefinition> activities = processDef.getActivities();
 			for (ActivityDefinition activity : activities) {
-				result.getActivities().add(activityDefinition2ActivityDefinitionInfo(activity));
+				if (activity.isTask()) {
+					result.getActivities().add(activityDefinition2ActivityDefinitionInfo(activity));
+				}
 			}
 		
 			loginContext.logout();

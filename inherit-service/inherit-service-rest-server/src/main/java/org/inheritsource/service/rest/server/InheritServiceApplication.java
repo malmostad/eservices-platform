@@ -79,6 +79,7 @@ public class InheritServiceApplication extends Application {
 		
 		router.attach("/getProcessDefinitionDetails/{processDefinitionUUID}", GetProcessDefinitionDetails.class);
 		router.attach("/getProcessDefinitions", GetProcessDefinitions.class);
+		router.attach("/setActivityForm/{activityDefinitionUuid}/{formPath}", SetActivityForm.class);
 		
 		return router;
 	}
