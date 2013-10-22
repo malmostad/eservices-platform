@@ -51,6 +51,7 @@ import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
+import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.orbeon.OrbeonService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
@@ -62,6 +63,9 @@ public class TaskFormService {
 
 	public static final Logger log = Logger.getLogger(TaskFormService.class
 			.getName());
+
+	private static final String MYPROFILEFORMPATH="malmo/profil";
+
 
 	TaskFormDb taskFormDb;
 	BonitaEngineServiceImpl bonitaClient;
@@ -125,18 +129,18 @@ public class TaskFormService {
 	public String getProcessInstanceActivityData(String processInstanceUuid, String activityName, String uniqueXPathExpr) {
 		String result = "";
 		
-		ProcessActivityFormInstance prevoiusActivity = null;
+		ProcessActivityFormInstance previousActivity = null;
 		if ("startform".equalsIgnoreCase(activityName)) {
-			prevoiusActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
+			previousActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
 		}
 		else {
-			String prevoiusActivityUuid = bonitaClient.getActivityInstanceUuid(processInstanceUuid, activityName);
-			if (prevoiusActivityUuid != null) {
-				prevoiusActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(prevoiusActivityUuid);
+			String previousActivityUuid = bonitaClient.getActivityInstanceUuid(processInstanceUuid, activityName);
+			if (previousActivityUuid != null) {
+				previousActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(previousActivityUuid);
 			}
 		}
-		if (prevoiusActivity!=null) {
-			result = orbeonService.getFormDataValue(prevoiusActivity.getFormPath(), prevoiusActivity.getFormDocId(), uniqueXPathExpr);
+		if (previousActivity!=null) {
+			result = orbeonService.getFormDataValue(previousActivity.getFormPath(), previousActivity.getFormDocId(), uniqueXPathExpr);
 		}
 		
 		return result;
@@ -148,6 +152,9 @@ public class TaskFormService {
 		result.append("<pawap><process processInstanceUuid=\"");
 		result.append(processInstanceUuid);
 		result.append("\">");
+		
+		// anropa bonitaClient och gör där en ny metod som returnerar alla processvariabler
+		// bygg upp xml av dem
 		
 		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
 
@@ -862,7 +869,12 @@ public class TaskFormService {
 		return viewUrl;
 	}
 
-
+	public MyProfile getMyProfile(String Uuid) {
+		MyProfile result = new MyProfile(Uuid);
+		result.setEmail(orbeonService.getFormDataValue(
+				MYPROFILEFORMPATH, Uuid, "//section-1/email"));
+		return result;
+	}
 	
 	private String searchForBonitaUser(String searchForUserId) {
 		String searchForBonitaUser = searchForUserId;

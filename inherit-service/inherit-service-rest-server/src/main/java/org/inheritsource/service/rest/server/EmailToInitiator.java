@@ -30,8 +30,8 @@ import javax.activation.*;
 
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
+import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.common.util.ParameterEncoder;
-import org.inheritsource.service.orbeon.MyProfile;
 import org.inheritsource.taskform.engine.TaskFormService;
 import org.restlet.resource.ServerResource;
 import org.restlet.resource.Get;
@@ -48,7 +48,7 @@ public class EmailToInitiator extends ServerResource {
 	private static final String ERRORMESG1 = "Mail till processInitiator, fel: processInstanceDetails == null";
 	private static final String ERRORMESG2 = "Mail till processInitiator, fel: processInstanceUuid tom eller null";
 	TaskFormService engine = new TaskFormService();
-	MyProfile myProfile = new MyProfile();
+	MyProfile myProfile = null;
 	
 	@Post
 	public  void emailToInitiator() {
@@ -94,7 +94,8 @@ public class EmailToInitiator extends ServerResource {
 		if (processInstanceUuid != null && ( processInstanceUuid.trim().length() > 0 )){
 			ProcessInstanceDetails processInstanceDetails = engine.getProcessInstanceDetails(processInstanceUuid);
 			if (processInstanceDetails != null) {
-				to = myProfile.getEmail(processInstanceDetails.getStartedBy());
+				myProfile = engine.getMyProfile(processInstanceDetails.getStartedBy());
+				to = myProfile.getEmail();
 			} else {
 				to=ERRORRECIPIENT;
 				mailBody = ERRORMESG1; 

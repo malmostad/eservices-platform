@@ -20,37 +20,27 @@
  *  mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
  *  phone: +46 8 641 64 14 
  */ 
- 
+
 package org.inheritsource.service.rest.server;
 
 import java.util.logging.Logger;
-
 import org.inheritsource.service.common.util.ParameterEncoder;
+import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.taskform.engine.TaskFormService;
-import org.restlet.data.MediaType;
-import org.restlet.representation.StringRepresentation;
-import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
+public class GetMyProfileByUserId extends ServerResource{
 
-
-public class GetPreviousActivitiesDataByDocId extends ServerResource {
-
-	public static final Logger log = Logger.getLogger(GetPreviousActivitiesDataByDocId.class.getName());
-	
+	public static final Logger log = Logger.getLogger(GetMyProfileByUserId.class.getName());
 	TaskFormService engine = new TaskFormService();
-	
+
 	@Post
-	@Get
-	public StringRepresentation getPreviousActivitiesDataByDocId() {
-		
-		String currentActivityFormDocId = ParameterEncoder.decode((String)getRequestAttributes().get("currentActivityFormDocId"));
-		
-		log.fine("REST getPreviousActivitiesDataByDocId with parameter currentActivityFormDocId=[" + currentActivityFormDocId+  "]" );
-		StringRepresentation sr = new StringRepresentation(engine.getPreviousActivitiesData(currentActivityFormDocId));
-	    sr.setMediaType(MediaType.TEXT_XML);
-	    
-		return sr;
+	public MyProfile getMyProfile() {
+		MyProfile result = null; 
+		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
+		log.fine("REST getMyProfile with parameter userid=[" + userId + "]" );
+		result = engine.getMyProfile(userId);
+		return result;
 	}
 }

@@ -40,6 +40,7 @@ import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.InboxTaskItem;
+import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
 import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
@@ -114,7 +115,7 @@ public class InheritServiceClient {
 		xstream.alias("PagedProcessInstanceSearchResult", PagedProcessInstanceSearchResult.class);
 		xstream.alias("Tag", Tag.class);
 		xstream.alias("UserInfo", UserInfo.class);
-				
+		xstream.alias("MyProfile", MyProfile.class);
 		return xstream;
 	}
 
@@ -465,7 +466,22 @@ public class InheritServiceClient {
 		//return result;
 		return;
 	}
-	//{}/{}
+
+	public void emailTo(
+			String  mailTo,
+			String  mailFrom,
+			String  mailSubject,
+			String  mailBody) {
+		String uri = serverBaseUrl + "emailTo/" +
+			ParameterEncoder.encode(mailTo) +
+			"/" + ParameterEncoder.encode(mailFrom) +
+			"/" + ParameterEncoder.encode(mailSubject) +
+			"/" + ParameterEncoder.encode(mailBody) + "?media=xml";
+		log.severe("emailTo uri: " + uri);
+		String response = callAndCatchRE(uri);
+		log.severe("response emailTo: [" + response + "]");
+		return;
+	}
 	
 	public Set<String> getUsersByRoleAndActivity(String roleName, String activityInstanceUuid) {
 		Set<String> result = null;
@@ -550,7 +566,22 @@ public class InheritServiceClient {
 		result = (String) call(uri);
 		return result;
 	}
+
+	public String getPreviousActivityDataByProcessInstanceUuid(String processInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
+
+		String result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getPreviousActivityDataByProcessInstanceUuid/" 
+				+ ParameterEncoder.encode(processInstanceUuid) + "/" 
+				+ ParameterEncoder.encode(previousActivityName)  + "/" 
+				+ ParameterEncoder.encode(uniqueXPathExpr) + "?media=xml";
+		log.severe("getPreviousActivityDataByProcessInstanceUuid uri: " + uri);
+		result = (String) call(uri);
+		return result;
+	}
 	
+
 	public String getPreviousActivityDataByInstanceUuid(String currentActivityInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
 		String result = null;
 		String uri;
@@ -580,6 +611,17 @@ public class InheritServiceClient {
 			response = "{DocBoxFormData: " + response + "}";
 			result = (DocBoxFormData)jsonxstream
 					.fromXML(response);
+		}
+		return result;
+	}
+
+	public MyProfile getMyProfile(String userId) {
+		MyProfile result = null;
+		String uri = serverBaseUrl + "getMyProfile" + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		String response = callAndCatchRE(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (MyProfile)xstream.fromXML(response);
 		}
 		return result;
 	}
@@ -762,26 +804,30 @@ public class InheritServiceClient {
 		result = (String)cr.post(body, String.class);
 		return result;
 	}
-
-	
 	
 	public static void main(String args[]) {
 		System.out.println("Testa InheritServiceClient");
 		
 		InheritServiceClient c = new InheritServiceClient();
-		
 		System.out.println("DocBox form data: " + c.getDocBoxFormData("bmtestid1"));
 		
-		/*
 		c.emailToInitiator(
 				"procInstanceUuid",
 				"Miljoforvaltningen_hemkompostering_matavfall--1.0--6--Delgivning--it1--mainActivityInstance--noLoop",
 				"Re: mailSubjectLine",
 				"<BodyText>");
-				*/
+		/*
+
+		MyProfile profBean = c.getMyProfile("john");
+		System.out.println(profBean.getUuid());
+		System.out.println(profBean.getEmail());
+
+
+		c.emailTo("info@inherit.se",
+			  "Re: mailSubjectLine",
+			  "<BodyText>");
 		//System.out.println("InheritServiceClient, Resultat: " + res);
 
-		/*
 		PagedProcessInstanceSearchResult hits = c.searchProcessInstancesStartedByUser("john", 0, 5 , "started", "desc", "STARTED", "james");
 		System.out.println("searchProcessInstancesStartedByUser");
 		for (ProcessInstanceListItem item : hits.getHits()) {

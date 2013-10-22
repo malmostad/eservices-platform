@@ -579,312 +579,443 @@
     </section>
   </section>
 
-  <section id="s.dev-env">
-    <title>Development Environment</title>
-    <para>
-      <!-- TODO -->
-      This section describes how to set up an environment ready for
-      development:
-    </para>
-
-    <itemizedlist>
-      <listitem>
-	<para>
-	  Installation and configuration of run time environment and
-	  development tools
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Installation and configuration of databases: <xref
-	  linkend="gle.postgresql"/> and <xref linkend="gle.existdb"/>
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Installation of the Process and Forms Engines
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Bootstrapping Hippo CMS installation, Check out and installation of 
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Check out and installation of source code
-	</para>
-      </listitem>
-    </itemizedlist>
+  <section id="s.install-config">
+    <title>Installation and Configuration</title>
 
     <para>
-      A brief howto-guide for the development of web applications on the
-      platform is provided in... <xref linkend="s.app-dev-on-pawap"/>.
-    </para>
-    
-    <section id="s.dev-env.prereq">
-      <title>Prerequisites</title>
-      <para>
-	Certain tools are mandatory for development on PAWAP. These include
-	the Java Development Kit, Apache Maven, Eclipse IDE and Git. For
-	preparing the development environment, follow the steps in
-	<xref linkend="app.dev-rt-comp"/>.
-      </para>
-
-    </section>
-
-    <section id="s.dev-env.bos">
-      <title>Download, configure and start the Process Engine</title>
-
-      <!-- 
-	   TODO: include config ow REST services in the description below
-	   <para>
-	   Running BOS server with Inherit's additional REST services
-	   <programlisting>
-	   scp -P 2212 adminherit@pluto.inherit.se:_
-	   ./inherit-platform-server-components/inherit-platform-BOS-5.6.1-Tomcat-6.0.33.tgz .
-	   tar xzf inherit-platform-BOS-5.6.1-Tomcat-6.0.33.tgz
-	   cd BOS-5.6.1-Tomcat-6.0.33/bin
-	   ./starup.sh
-	   ./tail -f ../logs/catalina.out
-	   </programlisting>
-	   </para>
-      -->
-
-      <para>
-	The process engine acts as the central coordinator when the
-	process-aware  applications are running. It keeps track of the tasks of the
-	various process instances, and allocates those that are ready for
-	execution to the appropirate users (or groups of users belonging to
-	different roles). The development environment needs a running process
-	engine for developing and testing the process-aware web
-	applications. The process engine is accessed via a <xref
-	linkend="gle.rest"/> interface.
-      </para>
-
-      <para>
-	<xref linkend="app.bos-config"/> describes how to install and
-	configure the process engine with PostgreSQL as back-end.
-      </para>
-    </section>
-
-    <section id="s.dev-env.orbeon">
-      <title>Download, configure and start the Forms Engine</title>
-      <para>
-	The forms engine is the main data collection component for the human
-	tasks of the busines process. Dedicated forms are presented when
-	starting a new process, and in general for each human task.
-      </para>
-
-      <para>
-	<xref linkend="app.orbeon"/> describes how to install and configure
-	the forms engine.
-      </para>
-    </section>
-
-    <section id="s.checkout.code">
-      <title>Check out the source code</title>
-      <para>
-	Assuming that the Eclipse workspace resides in $HOME/workspace, go to
-	that directory and check out the code:
-	<programlisting>
-	  cd ~/workspace/
-	  git clone gitosis@pluto.inherit.se:inherit-platform.git
-	</programlisting>
-      </para>
-    </section>
-
-    <section id="s.import.eclipse">
-      <title>Import project to Eclipse</title>
-      <para>
-	<itemizedlist>
-	  <listitem>
-	    <para>
-	      Start Eclipse and choose menu "File->Import...".
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Select "Maven->Existing Maven Projects" and click next.
-	    </para>
-	  </listitem>
-
-	  <listitem>
-	    <para>
-	      Select root directory "inherit-platform" and finish import.
-	    </para>
-	  </listitem>
-	</itemizedlist>
-      </para>
-    </section>
-
-    <section id="s.build_inherit.platform">
-      <title>Build PAWAP</title>
-      <para>
-	The previous step created a directory, inherit-platform, relative to
-	the Eclipse workspace ($HOME/workspace). Issue the following commands:
-      </para>
-      <programlisting>
-	cd inherit-platform
-	mvn clean install
-      </programlisting>
-    </section>
-
-    <section id="s.app-dev-on-pawap">
-      <title>Development on PAWAP</title>
-      <para>
-	...
-      </para>
-    </section>
-  </section>
-
-  <section id="s.prod-depl">
-    <title>Production Deployment</title>
-
-   <para>
-      This section describes how to set up an environment ready for
-      production. This implies installing the necessary run time and server
-      components:
+      PAWAP lives in a Server Side Java (JEE) based Ecosystem. This makes the
+      program suite platform independent as far as a certified Java run time
+      environment is implemented on the platform in question. In this
+      document, development and deployment on an Ubuntu Linux v. 12.04 LTS
+      (Long Time Support) is described.
     </para>
 
-    <itemizedlist>
-      <listitem>
-	<para>
-	  Installation and setup of Java run time environment
-	</para>
-      </listitem>
+    <para>
+      Unless specifically mentioned, we use the Ubuntu/Debian package system
+      for the prerequsites, thus taking advantage of the ease of installation
+      and update mechanisms of Ubuntu Linux.
+    </para>
 
-      <listitem>
-	<para>
-	  Installation of the Process and Forms Engines
-	</para>
-      </listitem>
+    <para>
+      The base installation mainly consists of setting up and configuring a
+      set of servlet (Tomcat) containers and underlying persistence
+      components, as well as Apache web server, which is used as a reverse
+      proxy (a web front for the various services). Thereafter, we deploy
+      the various web applications (.war files) to their corresponding
+      containers. 
+    </para>
 
-      <listitem>
-	<para>
-	  Hippo CMS and Content Repository installation
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Install and configure Apache2 Reverse Proxy
-	</para>
-      </listitem>
-
-      <listitem>
-	<para>
-	  Check out and installation of source code
-	</para>
-      </listitem>
-    </itemizedlist>
-
-    <!--
-	<para>
-	PAWAP is developed and runs in a Server Side Java (JEE)
-	Ecosystem.
-	</para>
-      
-	BOS-5.9-Tomcat-6.0.35 
-	hippo-tomcat-6.0.36
-	orbeon-tomcat-6.0.36
-	inherit-portal
-	inherit-service
-	inherit-security
-    -->
-
-    <section id="s.prod-depl.prereq">
+    <section id="s.sw-prerequisites">
       <title>Prerequisites</title>
       <para>
-	In the production environment we need the Java Development Kit In
-	order to install these, follow the corresponding steps in <xref
-	linkend="s.dev-rt-comp.java"/>.
-
-	<!--
-	  ROL: Actually, we only need the JRE?  , and Apache Maven.  <xref
-	  linkend="s.dev-rt-comp.mvn"/>.
-        -->
+	The platform itself depends on the following components which are
+	assumed to be installed upon installation of PAWAP:
       </para>
-    </section>
-
-    <section id="s.prod-depl.bos">
-      <title>Download, configure and start the Process and Forms Engines</title>
-
-      <para>
-	The installation is the same as for the develpment server: <xref
-	linkend="app.bos-config"/> and 	<xref linkend="app.orbeon"/> respectively. 
-      </para>
-    </section>
-    <section id="s.server.pre-req-hippo-jcr">
-      <title>Hippo content repository</title>
-      <para>
-	The Hippo content repository is automatically bootstrapped upon
-	initialization to mirror the status of the git repository. In order
-	to initialize the jcr repository with additional content, follow the
-	following instructions:
-      </para>
-      <para>
-	      <!-- TODO -->
-	...
-      </para>
-    </section>
-
-    <section id="s.deploy.server">
-      <title>Deploy on Server</title>
-      <programlisting>
-	cd inherit-platform
-	mvn clean install
-	cd inherit-portal
-	mvn -P dist
-      </programlisting>
 
       <itemizedlist>
 	<listitem>
 	  <para>
-	    <!-- deploy rest services to runtime -->
-	    Copy
-	    <programlisting>inherit-platform/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war</programlisting>
-	    to the target machine's
-	    <programlisting>
-	      /opt/inherit-platform/BOS-5.6.1-Tomcat-6.0.33/webapps/
-	    </programlisting>
+	    Git
+	  </para>
+
+	  <para>
+	    The project uses <ulink url="http://git-scm.com/">Git</ulink> as
+	    version control system and the source code resides on <ulink
+	    url="https://github.com">GitHub</ulink>. Therefore, Git needs to
+	    be installed on the system, cf. <xref
+	    linkend="s.dev-rt-comp.git"/> for installation instructions.
 	  </para>
 	</listitem>
 
 	<listitem>
 	  <para>
-	    tar xzf inherit-platform/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz to demo vm's /opt/inherit-platform/apache-tomcat-6.0.35 
+	    Java
+	  </para>
+
+	  <para>
+	    We use a scripted build from the source tree, also when deploying
+	    for production. Thereefore, both a Java Runtime (JRE) and a Java
+	    Developer's kit (JDK) is required. See <xref
+	    linkend="s.dev-rt-comp.java"/> for instructions on how to setup
+	    the Java environment.
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Tomcat Servlet Container
+	  </para>
+
+	  <para>
+	    ...
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    PostgreSQL
+	  </para>
+
+	  <para>
+	    ...
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Maven
+	  </para>
+
+	  <para>
+	    ...
+	  </para>
+
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Apache 2 Web Server
+	  </para>
+	  <para>
+	    ...
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    OpenSSL
+	  </para>
+	  <para>
+	    OpenSSL v. 1.0.1
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    OpenAM
+	  </para>
+	  <para>
+	    ...
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    OpenDJ
+	  </para>
+	  <para>
+	    ...
 	  </para>
 	</listitem>
       </itemizedlist>
     </section>
-    
-    <section id="s.apache2.front">
-      <title>Install and configure Apache2 Reverse Proxy</title>
-      <programlisting>
-	sudo apt-get install apache2
-	sudo a2enmod proxy_ajp
-      </programlisting>
+
+    <!--
+	  BOS-5.9-Tomcat-6.0.35 
+	  hippo-tomcat-6.0.36
+	  orbeon-tomcat-6.0.36
+	  inherit-portal
+	  inherit-service
+	  inherit-security
+      -->
+
+
+    <section id="s.prod-depl">
+      <title>Production Deployment</title>
 
       <para>
-	Create config file /etc/apache2/sites-available/XXXXXX Run a2ensite
-	and restart/reload apache2 in order to activate the site config:
+	This section describes how to set up an environment ready for
+	production. This implies installing the necessary run time and server
+	components:
       </para>
 
-      <programlisting>
-	sudo a2ensite XXXXXX
-	sudo service apache2 restart
-      </programlisting>
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Installation and setup of Java run time environment
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Installation of the Process and Forms Engines
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Hippo CMS and Content Repository installation
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Install and configure Apache2 Reverse Proxy
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Check out and installation of source code
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <section id="s.prod-depl.prereq">
+	<title>Prerequisites</title>
+	<para>
+	  In the production environment we need the Java Development Kit In
+	  order to install these, follow the corresponding steps in <xref
+	  linkend="s.dev-rt-comp.java"/>.
+
+	  <!--
+	      ROL: Actually, we only need the JRE?  , and Apache Maven.  <xref
+	      linkend="s.dev-rt-comp.mvn"/>.
+	  -->
+	</para>
+      </section>
+
+      <section id="s.prod-depl.bos">
+	<title>Download, configure and start the Process and Forms Engines</title>
+
+	<para>
+	  The installation is the same as for the develpment server: <xref
+	  linkend="app.bos-config"/> and 	<xref linkend="app.orbeon"/> respectively. 
+	</para>
+      </section>
+      <section id="s.server.pre-req-hippo-jcr">
+	<title>Hippo content repository</title>
+	<para>
+	  The Hippo content repository is automatically bootstrapped upon
+	  initialization to mirror the status of the git repository. In order
+	  to initialize the jcr repository with additional content, follow the
+	  following instructions:
+	</para>
+	<para>
+	  <!-- TODO -->
+	  ...
+	</para>
+      </section>
+
+      <section id="s.deploy.server">
+	<title>Deploy on Server</title>
+	<programlisting>
+	  cd inherit-platform
+	  mvn clean install
+	  cd inherit-portal
+	  mvn -P dist
+	</programlisting>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      <!-- deploy rest services to runtime -->
+	      Copy
+	      <programlisting>inherit-platform/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war</programlisting>
+	      to the target machine's
+	      <programlisting>
+		/opt/inherit-platform/BOS-5.6.1-Tomcat-6.0.33/webapps/
+	      </programlisting>
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      tar xzf inherit-platform/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz to demo vm's /opt/inherit-platform/apache-tomcat-6.0.35 
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </section>
+      
+      <section id="s.apache2.front">
+	<title>Install and configure Apache2 Reverse Proxy</title>
+	<para>
+	  Enable ssl and proxying modules:
+	</para>
+	<programlisting>
+	  sudo apt-get install apache2
+	  sudo a2enmod proxy_ajp ssl
+	</programlisting>
+
+	<para>
+	  Create config file /etc/apache2/sites-available/XXXXXX Run a2ensite
+	  and restart/reload apache2 in order to activate the site config:
+	</para>
+
+	<programlisting>
+	  sudo a2ensite XXXXXX
+	  sudo service apache2 restart
+	</programlisting>
+      </section>
+
     </section>
 
-  </section>
+    <section id="s.dev-env">
+      <title>Development Environment</title>
+      <para>
+	<!-- TODO -->
+	This section describes how to set up an environment ready for
+	development:
+      </para>
 
-  <glossary id="glossary">
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Installation and configuration of run time environment and
+	    development tools
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Installation and configuration of databases: <xref
+	    linkend="gle.postgresql"/> and <xref linkend="gle.existdb"/>
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Installation of the Process and Forms Engines
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Bootstrapping Hippo CMS installation, Check out and installation of 
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Check out and installation of source code
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <para>
+	A brief howto-guide for the development of web applications on the
+	platform is provided in... <xref linkend="s.app-dev-on-pawap"/>.
+      </para>
+      
+      <section id="s.dev-env.prereq">
+	<title>Prerequisites</title>
+	<para>
+	  Certain tools are mandatory for development on PAWAP. These include
+	  the Java Development Kit, Apache Maven, Eclipse IDE and Git. For
+	  preparing the development environment, follow the steps in
+	  <xref linkend="app.dev-rt-comp"/>.
+	</para>
+
+      </section>
+
+      <section id="s.dev-env.bos">
+	<title>Download, configure and start the Process Engine</title>
+
+	<!-- 
+	     TODO: include config ow REST services in the description below
+	     <para>
+	     Running BOS server with Inherit's additional REST services
+	     <programlisting>
+	     scp -P 2212 adminherit@pluto.inherit.se:_
+	     ./inherit-platform-server-components/inherit-platform-BOS-5.6.1-Tomcat-6.0.33.tgz .
+	     tar xzf inherit-platform-BOS-5.6.1-Tomcat-6.0.33.tgz
+	     cd BOS-5.6.1-Tomcat-6.0.33/bin
+	     ./starup.sh
+	     ./tail -f ../logs/catalina.out
+	     </programlisting>
+	     </para>
+	-->
+
+	<para>
+	  The process engine acts as the central coordinator when the
+	  process-aware  applications are running. It keeps track of the tasks of the
+	  various process instances, and allocates those that are ready for
+	  execution to the appropirate users (or groups of users belonging to
+	  different roles). The development environment needs a running process
+	  engine for developing and testing the process-aware web
+	  applications. The process engine is accessed via a <xref
+	  linkend="gle.rest"/> interface.
+	</para>
+
+	<para>
+	  <xref linkend="app.bos-config"/> describes how to install and
+	  configure the process engine with PostgreSQL as back-end.
+	</para>
+      </section>
+
+      <section id="s.dev-env.orbeon">
+	<title>Download, configure and start the Forms Engine</title>
+	<para>
+	  The forms engine is the main data collection component for the human
+	  tasks of the busines process. Dedicated forms are presented when
+	  starting a new process, and in general for each human task.
+	</para>
+
+	<para>
+	  <xref linkend="app.orbeon"/> describes how to install and configure
+	  the forms engine.
+	</para>
+      </section>
+
+      <section id="s.checkout.code">
+	<title>Check out the source code</title>
+	<para>
+	  Assuming that the Eclipse workspace resides in $HOME/workspace, go to
+	  that directory and check out the code:
+	  <programlisting>
+	    cd ~/workspace/
+	    git clone gitosis@pluto.inherit.se:inherit-platform.git
+	  </programlisting>
+	</para>
+      </section>
+
+      <section id="s.import.eclipse">
+	<title>Import project to Eclipse</title>
+	<para>
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		Start Eclipse and choose menu "File->Import...".
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Select "Maven->Existing Maven Projects" and click next.
+	      </para>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Select root directory "inherit-platform" and finish import.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</para>
+      </section>
+
+      <section id="s.build_inherit.platform">
+	<title>Build PAWAP</title>
+	<para>
+	  The previous step created a directory, inherit-platform, relative to
+	  the Eclipse workspace ($HOME/workspace). Issue the following commands:
+	</para>
+	<programlisting>
+	  cd inherit-platform
+	  mvn clean install
+	</programlisting>
+      </section>
+
+      <section id="s.app-dev-on-pawap">
+	<title>Development on PAWAP</title>
+	<para>
+	  ...
+	</para>
+      </section>
+    </section>
+  </section>
+  
+<glossary id="glossary">
     <glossentry id="gle.ajax">
       <glossterm><acronym>AJAX</acronym></glossterm>
       <glossdef>
@@ -1351,81 +1482,181 @@
   <appendix id="app.dev-rt-comp">
     <title>Development and Runtime Components</title>
 
+    <section id="s.dev-rt-comp.git">
+      <title>
+	Source code repository and version/configuration management
+      </title>
+
+      <para>
+	For this purpose, <ulink url="http://git-scm.com/">GIT
+	(v. 1.7.9.5)</ulink> is used. The source code repository is located
+	at: pluto.inherit.se:inherit-platform.git Cf. <xref
+	linkend="s.checkout.code"/> for instructions on how to check out the
+	source code of PAWAP.
+      </para>
+    </section>
+
     <section id="s.dev-rt-comp.java">
       <title>
 	Java
       </title>
 
       <para>
-	The JDK (Java Development Kit) used is <ulink
-	url="http://www.oracle.com/technetwork/java/javase/overview/index.html">Oracle
-	JDK version 1.6</ulink>. Make sure this JDK is installed on your
-	machine, and verify that the environment variable JAVA_HOME is set,
-	either system wide, or by adding it to the appropriate init script,
-	e.g.:
-	<programlisting>
-	  export JAVA_HOME=/usr/lib/jvm/java-6-sun
-     Ubuntu GNU/Linux 12.04 LTS (Precise Pangolin) released. I wanted to manually install the Sun JDK 6 and 7 on Ubuntu.
-     
-     Installing Sun JDK 6 on Ubuntu 12.04:
-     Download the sun jdk 6 bin from here:
-       http://www.oracle.com/technetwork/java/javase/downloads/
-     
-     Assume root permissions: sudo -s / &lt;password&gt;
-     
-     Make the bin file executeable:
-     
-     chmod +x jdk-6u37-linux-x64.bin
-     
-     Extract the bin file:
-     ./jdk-6u37-linux-x64.bin
-     
-     This creates a subdirectory: jdk1.6.0_37
-     
-     mkdir /usr/lib/jvm
-     
-     mv jdk1.6.0_37 /usr/lib/jvm
-     
-     Symlink to generic name (we use this in update alternatives, in order to make
-     more robust against minor version changes
-     
-     ln -s jdk1.6.0_37 java-6-sun  
-     
-     Install new java source in system:
-     
-     update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-6-sun/bin/javac 1
-     update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-6-sun/bin/java 1
-     update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/java-6-sun/bin/javaws 1
-     
-     Choose default java:
-     update-alternatives --config javac
-     update-alternatives --config java
-     update-alternatives --config javaws
-     
-     java version test:
-     java -version
-     
-     Verify the symlinks all point to the new java location:
-     ls -la /etc/alternatives/java*
-     
-     set JAVA_HOME in /etc/environment:
-     
-     JAVA_HOME=/usr/lib/jvm/java-6-sun
-	</programlisting>
-
+	OpenJDK 6 is already present in the package repository of Ubuntu
+	12.04. This flavour of the Java Runtime is mature and should work well
+	for all Java dependent components in PAWAP. However, for Hippo, the
+	official recommendation is still to use the Sun Java 6 version.
+	Therefore we also describe how to install this version in a subsequent
+	section.
       </para>
 
-      <note>
-	<simpara>
-	  The licensing of this JDK is not open source compatible. Some
-	  of the program components of PAWAP require the Oracle JDK
-	  rather than OpenJDK) (We expect this problem to be solved in
-	  the near future, when all components are expected to be
-	  compatible with <ulink url="http://openjdk.java.net/">OpenJDK
-	  7</ulink>
-	</simpara>
-      </note>
+      <section id="s.dev-rt-comp.openjdk">
+	<title>Installation of OpenJDK  6 on Ubuntu 12.04</title>
+	<para>
+	  The following commands will insall OpenJDK 6 JDK and JRE:
+	</para>
 
+	<programlisting>
+	  apt-get install openjdk-6-jre
+	  apt-get install openjdk-6-jdk
+	</programlisting>
+      </section>
+
+      <section id="s.dev-rt-comp.sunjava">
+	<title>Installing Sun JDK 6 on Ubuntu 12.04</title>
+	<para>
+	  The JDK (Java Development Kit) used is <ulink
+	  url="http://www.oracle.com/technetwork/java/javase/overview/index.html">Oracle
+	  JDK version 1.6</ulink>. Make sure this JDK is installed on your
+	  machine, and verify that the environment variable JAVA_HOME is set,
+	  either system wide, or by adding it to the appropriate init script,
+	  e.g.:
+	  <programlisting>
+	    export JAVA_HOME=/usr/lib/jvm/java-6-sun
+	    Ubuntu GNU/Linux 12.04 LTS (Precise Pangolin) released. I wanted to manually install the Sun JDK 6 and 7 on Ubuntu.
+	    
+	    Installing Sun JDK 6 on Ubuntu 12.04:
+	    Download the sun jdk 6 bin from here:
+	    http://www.oracle.com/technetwork/java/javase/downloads/
+	    
+	    Assume root permissions: sudo -s / &lt;password&gt;
+	    
+	    Make the bin file executeable:
+	    
+	    chmod +x jdk-6u37-linux-x64.bin
+	    
+	    Extract the bin file:
+	    ./jdk-6u37-linux-x64.bin
+	    
+	    This creates a subdirectory: jdk1.6.0_37
+	    
+	    mkdir /usr/lib/jvm
+	    
+	    mv jdk1.6.0_37 /usr/lib/jvm
+	    
+	    Symlink to generic name (we use this in update alternatives, in order to make
+	    more robust against minor version changes
+	    
+	    ln -s jdk1.6.0_37 java-6-sun  
+	    
+	    Install new java source in system:
+	    
+	    update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java-6-sun/bin/javac 1
+	    update-alternatives --install /usr/bin/java java /usr/lib/jvm/java-6-sun/bin/java 1
+	    update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/java-6-sun/bin/javaws 1
+	    
+	    Choose default java:
+	    update-alternatives --config javac
+	    update-alternatives --config java
+	    update-alternatives --config javaws
+	    
+	    java version test:
+	    java -version
+	    
+	    Verify the symlinks all point to the new java location:
+	    ls -la /etc/alternatives/java*
+	    
+	    set JAVA_HOME in /etc/environment:
+	    
+	    JAVA_HOME=/usr/lib/jvm/java-6-sun
+	  </programlisting>
+
+	</para>
+
+	<note>
+	  <simpara>
+	    The licensing of this JDK is not open source compatible. Some
+	    of the program components of PAWAP require the Oracle JDK
+	    rather than OpenJDK) (We expect this problem to be solved in
+	    the near future, when all components are expected to be
+	    compatible with <ulink url="http://openjdk.java.net/">OpenJDK
+	    7</ulink>
+	  </simpara>
+	</note>
+      </section>
+    </section>
+
+    <section id="s.dev-rt-comp.tomcat">
+      <title>
+	Tomcat Servlet Container
+      </title>
+      <para>
+	...
+      </para>
+    </section>
+
+    <section id="s.dev-rt-comp.postgresql">
+      <title>
+	PostgreSQL
+      </title>
+      <para>
+	...
+      </para>
+    </section>
+
+    <section id="s.dev-rt-comp.maven">
+      <title>
+	Maven
+      </title>
+      <para>
+	...
+      </para>
+    </section>
+
+    <section id="s.dev-rt-comp.apache2">
+      <title>
+	Apache 2 Web Server
+      </title>
+      <para>
+	...
+      </para>
+    </section>
+
+    <section id="s.dev-rt-comp.openssl">
+      <title>
+	OpenSSL v. 1.0.1
+      </title>
+      <para>
+	...
+      </para>
+    </section>
+
+    <section id="s.dev-rt-comp.openam">
+      <title>
+	OpenAM
+      </title>
+      <para>
+	...
+      </para>
+    </section>
+
+    <section id="s.dev-rt-comp.opendj">
+      <title>
+	OpenDJ
+      </title>
+      <para>
+	...
+      </para>
     </section>
 
     <section id="s.dev-rt-comp.posgtresql">
@@ -1446,16 +1677,22 @@
 	  apt-get install postgresql-9.1
 	</programlisting>
       </section>
+    </section>
 
+    <section id="s.dev-rt-comp.config">
+      <title>
+	Configuration
+      </title>
+      
       <section id="s.dev-rt-comp.posgtresql.config">
 	<title>
-	  Configuration
+	  Postgresql 9 Configuration
 	</title>
 	<para>
 	  Prepare PostgreSQL for Bonita
 	</para>
 	<para>
-	  After the initial install of the database, change user to postgresql
+	  After the initial install of the database, change user to postgres
 	  and issue the the following commands:
 	</para>
 
@@ -1479,7 +1716,24 @@
 	</para>
 
 	<para>
-	  Still as unix user postgresql and issue the the following;
+	  First create a file:
+	  /usr/local/etc/inherit/platform-db-connect.properties.  Make sure
+	  the containing directory and the file itslef are owned by
+	  inherit.users, and is read/writable by this user only.
+	</para>
+
+	<para>
+	  Add the following entries to platform-db-connect.properties:
+
+	</para>
+
+	<programlisting>
+	  hibernate.connection.username=inherit
+	  hibernate.connection.password=XXXXXXXXXXX
+	</programlisting>
+
+	<para>
+	  Now as unix user postgres issue the the following;
 	</para>
 
 	<programlisting>
@@ -1535,20 +1789,6 @@
 	Integration). For installation information, refer to the <ulink
 	url="http://www.eclipse.org/m2e/download/">Eclipse Maven Plugin
 	Download Site</ulink>.
-      </para>
-    </section>
-
-    <section id="s.dev-rt-comp.git">
-      <title>
-	Source code repository and version/configuration management
-      </title>
-
-      <para>
-	For this purpose, <ulink url="http://git-scm.com/">GIT
-	(v. 1.7.9.5)</ulink> is used. The source code repository is located
-	at: pluto.inherit.se:inherit-platform.git Cf. <xref
-	linkend="s.checkout.code"/> for instructions on how to check out the
-	source code of PAWAP.
       </para>
     </section>
   </appendix>

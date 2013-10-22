@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # ROOT of build directory
 #BUILD_DIR=${HOME}/workspace/inherit-platform
@@ -64,7 +64,7 @@ fi
 echo "EXIST_PORT: $EXIST_PORT"
 echo "BOS_PORT: $BOS_PORT"
 echo "ESERVICE_PORT: $ESERVICE_PORT"
-echo "KSERVICE_PORT: KESERVICE_PORT"
+echo "KSERVICE_PORT: $KSERVICE_PORT"
 
 if [ -z "${EXIST_PORT}" ] || [ -z "${BOS_PORT}" ] || [ -z "${ESERVICE_PORT}" ] || [ -z "${KSERVICE_PORT}" ]
 then
@@ -74,7 +74,7 @@ then
 fi
 
 echo "ESERVICEPATCH: $ESERVICEPATCH"
-echo "KSERVICEPATCH: KSERVICEPATCH"
+echo "KSERVICEPATCH: $KSERVICEPATCH"
 
 if [ -z "${ESERVICEPATCH}" ] || [ -z "${KSERVICEPATCH}" ]
 then
@@ -165,39 +165,36 @@ fi
     popd
 
 # 9. Stop j2ee containers
-pushd ${CONTAINER_ROOT}
-cd $EXIST/bin/
-EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ "${EXIST_PID}" ] 
-then 
-    echo "Shutting down eXist, pid: " ${EXIST_PID}
-    ./shutdown.sh
-    sleep 1
-    LOOPVAR=0
-    while [ -n "${EXIST_PID}" -a  ${LOOPVAR} -lt 6  ]
-    do
-	LOOPVAR=$(expr ${LOOPVAR} + 1)
+    pushd ${CONTAINER_ROOT}
+    cd $EXIST/bin/
+    EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+    if [ "${EXIST_PID}" ] 
+    then 
+	echo "Shutting down eXist, pid: " ${EXIST_PID}
+	./shutdown.sh
 	sleep 1
-	EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-    done
-fi
+	LOOPVAR=0
+	while ps -p ${EXIST_PID} && [ ${LOOPVAR} -lt 6  ]
+	do
+	    LOOPVAR=$(expr ${LOOPVAR} + 1)
+	    sleep 1
+	done
 
-EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-  # If proper shutdown did not bite
-if [ "${EXIST_PID}" ] 
-then 
-    echo "Force shutting down eXist, pid: " ${EXIST_PID}
-    kill  ${EXIST_PID}
-    sleep 1
-fi
+    # If proper shutdown did not bite
+	if ps -p ${EXIST_PID}
+	then 
+	    echo "Force shutting down eXist, pid: " ${EXIST_PID}
+	    kill  ${EXIST_PID}
+	    sleep 1
+	fi
 
-EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-  # If still did not bite
-if [ "${EXIST_PID}" ] 
-then 
-    echo "Failed to shut down eXist, pid: " ${EXIST_PID}
-    ERRORSTATUS=1
-fi
+    # If still did not bite
+	if ps -p ${EXIST_PID}
+	then 
+	    echo "Failed to shut down eXist, pid: " ${EXIST_PID}
+	    ERRORSTATUS=1
+	fi
+    fi
 
 cd ../../${BOS}/bin/
 
@@ -208,30 +205,28 @@ then
     ./shutdown.sh
     sleep 1
     LOOPVAR=0
-    while [ "${BOS_PID}" -a  ${LOOPVAR} -lt 6  ]
+    while ps -p ${BOS_PID} && [ ${LOOPVAR} -lt 6  ]
     do
 	LOOPVAR=$(expr ${LOOPVAR} + 1)
 	sleep 1
-	BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
     done
-fi
 
-BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
   # If proper shutdown did not bite
-if [ "${BOS_PID}" ] 
-then 
-    echo "Force shutting down BOS, pid: " ${BOS_PID}
-    kill  ${BOS_PID}
-    sleep 6
+    if ps -p ${BOS_PID}
+    then 
+	echo "Force shutting down BOS, pid: " ${BOS_PID}
+	kill  ${BOS_PID}
+	sleep 6
+    fi
+
+  # If still did not bite
+    if ps -p ${BOS_PID}
+    then 
+	echo "Failed to shut down BOS, pid: " ${BOS_PID}
+	ERRORSTATUS=1
+    fi
 fi
 
-BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-  # If still did not bite
-if [ "${BOS_PID}" ] 
-then 
-    echo "Failed to shut down BOS, pid: " ${BOS_PID}
-    ERRORSTATUS=1
-fi
 
 cd ../../${ESERVICE}/bin/
 
@@ -242,29 +237,26 @@ then
     ./shutdown.sh
     sleep 1
     LOOPVAR=0
-    while [ "${ESERVICE_PID}" -a  ${LOOPVAR} -lt 6  ]
+    while ps -p ${ESERVICE_PID} && [ ${LOOPVAR} -lt 6  ]
     do
 	LOOPVAR=$(expr ${LOOPVAR} + 1)
 	sleep 1
-	ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
     done
-fi
 
-# If proper shutdown did not bite
-ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ "${ESERVICE_PID}" ] 
-then 
-    echo "Force shutting down eservice, pid: " ${ESERVICE_PID}
-    kill  ${ESERVICE_PID}
-    sleep 6
-fi
+    # If proper shutdown did not bite
+    if ps -p ${ESERVICE_PID}
+    then 
+	echo "Force shutting down eservice, pid: " ${ESERVICE_PID}
+	kill  ${ESERVICE_PID}
+	sleep 6
+    fi
 
-# If still did not bite
-ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ "${ESERVICE_PID}" ] 
-then 
-    echo "Failed to shut down eservice, pid: " ${ESERVICE_PID}
-    ERRORSTATUS=1
+    # If still did not bite
+    if ps -p ${ESERVICE_PID}
+    then 
+	echo "Failed to shut down eservice, pid: " ${ESERVICE_PID}
+	ERRORSTATUS=1
+    fi
 fi
 
 if ${WITH_KSERVICES}
@@ -277,31 +269,28 @@ then
 	./shutdown.sh
 	sleep 1
 	LOOPVAR=0
-	while [ "${KSERVICE_PID}" -a  ${LOOPVAR} -lt 6  ]
+	while ps -p ${KSERVICE_PID} &&  [ ${LOOPVAR} -lt 6  ]
 	do
   	    LOOPVAR=$(expr ${LOOPVAR} + 1)
   	    sleep 1
-  	    KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 	done
-    fi
-
-    KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
     # If proper shutdown did not bite
-    if [ "${KSERVICE_PID}" ] 
-    then 
-	echo "Force shutting down kservice, pid: " ${KSERVICE_PID}
-	kill  ${KSERVICE_PID}
-	sleep 6
-    fi
+	if ps -p ${KSERVICE_PID}
+	then 
+	    echo "Force shutting down kservice, pid: " ${KSERVICE_PID}
+	    kill  ${KSERVICE_PID}
+	    sleep 6
+	fi
 
-    KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
    # If still did not bite
-    if [ "${KSERVICE_PID}" ] 
-    then 
-	echo "Failed to shut down kservice, pid: " ${KSERVICE_PID}
-	ERRORSTATUS=1
+	if ps -p ${KSERVICE_PID}
+	then 
+	    echo "Failed to shut down kservice, pid: " ${KSERVICE_PID}
+	    ERRORSTATUS=1
+	fi
     fi
 fi
+
 popd
 
 if [ ${ERRORSTATUS} -eq 1 ]
@@ -411,7 +400,7 @@ cd ${ESERVICE}/bin/
 ./startup.sh 
 LOOPVAR=0
 ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-while [ -z "${ESERVICE_PID}" -a  ${LOOPVAR} -lt 20  ]
+while [ -z "${ESERVICE_PID}" -a  ${LOOPVAR} -lt 30  ]
 do
     LOOPVAR=$(expr ${LOOPVAR} + 1)
     sleep 1
@@ -432,7 +421,7 @@ then
     ./startup.sh 
     LOOPVAR=0
     KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-    while [ -z "${KSERVICE_PID}" -a  ${LOOPVAR} -lt 20  ]
+    while [ -z "${KSERVICE_PID}" -a  ${LOOPVAR} -lt 30  ]
     do
 	LOOPVAR=$(expr ${LOOPVAR} + 1)
 	sleep 1

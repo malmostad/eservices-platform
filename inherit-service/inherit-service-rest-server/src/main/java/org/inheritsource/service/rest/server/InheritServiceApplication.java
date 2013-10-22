@@ -23,6 +23,7 @@
  
 package org.inheritsource.service.rest.server;
 
+import org.inheritsource.service.common.util.ParameterEncoder;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.routing.Router;
@@ -46,7 +47,8 @@ public class InheritServiceApplication extends Application {
 		router.attach("/processInstanceDetailsByUuid/{processInstanceUuid}", ProcessInstanceDetailByUuid.class); 
 		router.attach("/getPreviousActivityDataByDocId/{currentActivityFormDocId}/{previousActivityName}/{uniqueXPathExpr}", GetPreviousActivityDataByDocId.class); 
 		router.attach("/getPreviousActivityDataByInstanceUuid/{currentActivityInstanceUuid}/{previousActivityName}/{uniqueXPathExpr}", GetPreviousActivityDataByInstanceUuid.class); 
-		router.attach("/getPreviousActivitiesDataByDocId/{currentActivityFormDocId}", GetPreviousActivitiesDataByDocId.class); 
+		router.attach("/getPreviousActivitiesDataByDocId/{currentActivityFormDocId}", GetPreviousActivitiesDataByDocId.class);
+		router.attach("/getPreviousActivityDataByProcessInstanceUuid/{processInstanceUuid}/{previousActivityName}/{uniqueXPathExpr}", GetPreviousActivityDataByProcessInstanceUuid.class);
 		
 		// TODO take user from login instead of parameter userid
 		router.attach("/addComment/{activityInstanceUuid}/{comment}/{userid}", AddComment.class); 
@@ -76,11 +78,11 @@ public class InheritServiceApplication extends Application {
 		router.attach("/getUserByDn/{dn}", GetUserByDn.class);
 		router.attach("/getUserBySerial/{serial}/{certificateSubject}", GetUserBySerial.class);
 		router.attach("/emailToInitiator/{processInstanceUuid}/{activityInstanceUuid}/{mailSubject}/{mailBody}", EmailToInitiator.class);
-		
+		router.attach("/emailTo/{mailTo}/{mailFrom}/{mailSubject}/{mailBody}", EmailTo.class);
+		router.attach("/getMyProfile/{userid}", GetMyProfileByUserId.class);
 		router.attach("/getProcessDefinitionDetails/{processDefinitionUUID}", GetProcessDefinitionDetails.class);
 		router.attach("/getProcessDefinitions", GetProcessDefinitions.class);
 		router.attach("/setActivityForm/{activityDefinitionUuid}/{formPath}", SetActivityForm.class);
-		
 		return router;
 	}
 }

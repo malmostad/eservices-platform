@@ -318,8 +318,9 @@
 	Authentication and Access Control.
       </para>
       <para>
-	We currently use v. 10.0.1 of the product.  It can be downloaded from
-	<ulink url="http://forgerock.com/download-stack/">The download page of
+	We currently use v. 10.0.1 of OpenAM, and v. 3.1.0 of OpenAM Java EE
+	Policy Agent. They can be downloaded from <ulink
+	url="http://forgerock.com/download-stack/">The download page of
 	ForgeRock</ulink>.
       </para>
     </section>
@@ -960,7 +961,7 @@
 	  </programlisting>
 	  Apply the following changes from the default setup:
 	</para>
-	  
+	
 	<programlisting>
 	  &lt;Server port="48005" shutdown="SHUTDOWN"&gt;
 	  
@@ -1031,24 +1032,13 @@
       </section>
     </section>
 
-
-    <section id="s.prod.openam">
-      <title>
-	Installation and Configuration of OpenAM
-      </title>
-      <para>
-	...
-      </para>
-    </section>
-
     <section id="s.prod.opendj">
       <title>
 	Installation and Configuration of OpenDJ
       </title>
       <para>
-	The java based directory server OpenDJ (<xref
-	linkend="s.prereq-prod.opendj"/>) is used in the platform to
-	administer users and groups.
+	This section describes how to install and set up the java based
+	directory server, cf. <xref linkend="s.prereq-prod.opendj"/>.
       </para>
 
       <section id="s.prod.opendj.download">
@@ -1140,6 +1130,354 @@
 	    ./start-ds
 	  </programlisting>
 	</para>
+      </section>
+    </section>
+
+    <section id="s.prod.openam">
+      <title>
+	Installation and Configuration of OpenAM and Java EE Policy Agent
+      </title>
+      <para>
+	The java based, open source product OpenAm (<xref
+	linkend="s.prereq-prod.openam"/>) is used in the platform to handle
+	authentication, federation, single-Sign-On, and access control.
+      </para>
+
+      <para>
+	The OpenAm server is deployed as a web application (.war) in a Tomcat
+	container. In order to enforce access control policies, a JEE Policy
+	Agent is deployed locally i.e. in each container and for each webapp
+	whose access needs to be restricted. The steps involved in deploying
+	OpenAM are the following:
+      </para>
+
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    Download the OpenAM distribution
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Configuration of the OpenAM server
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Download of the JEE Policy Agent distribution
+	  </para>
+	</listitem>
+
+	<listitem>
+	  <para>
+	    Configuration of the JEE Policy Agents
+	  </para>
+	</listitem>
+      </itemizedlist>
+
+      <section id="s.prod.openam.server">
+	<title>Configuration of the OpenAM server</title>
+	<para>
+	  Download the OpenAM distribution and extract it to a directory of
+	  choice.
+	</para>
+
+	<para>
+	  Follow the steps outlined in <ulink
+	  url="https://wikis.forgerock.org/confluence/display/openam/Deploy+OpenAM">the
+	  OpenAM installation wiki</ulink> in order to obtain a base
+	  installation and configuration of OpenAM.
+	</para>
+
+	<para>
+	  The steps involved are
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Preparation of a JEE container for OpenAM
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Deployment of the openam .war to the container
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Starting the openam web application, which performs a guided
+	      configuration the first time it is run:
+	    </para>
+
+	    <para>
+	      This involves defining a uid/password for the server, setting the
+	      URI and the cookie domain of the server, the location of the
+	      config file which will be created. This is further explained in
+	      Installation guide. The default values will do in most cases. In
+	      the basic configuration we choose OpenAM as configuration
+	      store. This means that an embedded instance of OpenDJ will be
+	      used.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+
+	<para>
+	  Next step in the configuration of OpenAM is the more detailed
+	  configuration of those services we make use of:
+	</para>
+
+	<itemizedlist>
+	  <listitem>
+	    <para>
+	      Configuration of Federation
+	    </para>
+	  </listitem>
+
+	  <listitem>
+	    <para>
+	      Centralized configuration of the JEE Policy Agent
+	    </para>
+	    <para>
+	      This is further described in <xref
+	      linkend="s.prod.openam.jee-policy-ag"/>.
+	    </para>
+	  </listitem>
+	</itemizedlist>
+      </section>
+
+      <section id="s.prod.openam.jee-policy-ag">
+	<title>Configuration of the JEE Policy Agents</title>
+	<para>
+	  The JEE Policy Agents can be configured locally or centrally.  In
+	  the latter case, the configuration is kept on the openAM server, and
+	  bootstrapped to the local containers (those with the webapp(s) to be
+	  protected) upon startup of the container.
+	</para>
+
+	<para>
+	  We have chosen to use a centralized configuration, but this
+	  nevertheless implies some initial config in the local containers as
+	  well as on the OpenAM server side.
+	</para>
+
+	<section>
+	  <title>
+	    Local configuration of the JEE Policy Agents
+	  </title>
+
+	  <para>
+	    The process is further explained in the installation wiki: <ulink
+	    url="http://openam.forgerock.org/openam-documentation/openam-doc-source/doc/jee-install-guide/index.html#chap-apache-tomcat">
+	    OpenAM Java EE Policy Agent 3.2.0 Installation Guide</ulink>. An
+	    overview is presented below, slightly modfied, since we configure
+	    two policy agents:
+	  </para>
+
+	  <itemizedlist>
+	    <listitem>
+	      <para>
+		Download of the JEE Policy Agent distribution and unzip the
+		file in the directory where the J2EE policy agent is to be
+		installed.
+	      </para>
+	      <para>
+		Let us call this directory AGENT_ROOT. The agent you install
+		stores its configuration and logs under $AGENT_ROOT/j2ee_agents.
+		The directory structure after unzip will be like this:
+	      </para>
+
+	      <programlisting>
+		$AGENT_ROOT
+		   j2ee_agents
+		      tomcat_v6_agent
+		         .
+			 .
+			 .
+	      </programlisting>
+
+	      <para>
+		OpenAM uses the concept <emphasis>realm</emphasis> <!--TODO (<xref
+		linkend="c"/> )--> , which roughly can be described as a zone of
+		protection. We have two different realms to configure, the
+		<emphasis>/medb</emphasis> realm (hippo-eservice) and the
+		<emphasis>/komin</emphasis> realm (hippo-kservice). We create
+		and configure one policy agent for each realm. Therefore, we
+		rename the directory
+		<programlisting>tomcat_v6_agent</programlisting> to
+		<programlisting>eservice-tomcat_v6_agent</programlisting> We
+		then repeat the extraction process into the same root
+		directory. This creates a new sibling directory,
+		<programlisting>tomcat_v6_agent</programlisting> which we rename to
+		<programlisting>kservice-tomcat_v6_agent</programlisting>
+		We now have the structure:
+	      </para>
+	      <programlisting>
+		$AGENT_ROOT
+		   j2ee_agents
+		      eservice-tomcat_v6_agent
+		         .
+			 .
+			 .
+		      kservice-tomcat_v6_agent
+		         .
+			 .
+			 .
+	      </programlisting>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		Prepare a temporary file with the password of the amAdmin user of
+		the openAM server
+	      </para>
+
+	      <programlisting>
+		cat &lt;password&gt;  $AGENT_ROOT/j2ee_agents/pwd.txt
+	      </programlisting>
+	    </listitem>
+
+	    <listitem>
+	      <para>
+		For <emphasis>each of the agents</emphasis>,Run the installation procedure 
+	      </para>
+	      <programlisting>
+		cd $AGENT_ROOT/j2ee_agents/eservice-tomcat_v6_agent/bin
+		./agentadmin --install
+
+		cd $AGENT_ROOT/j2ee_agents/kservice-tomcat_v6_agent/bin
+		./agentadmin --install
+	      </programlisting>
+
+	      <para>
+		The installation procedure will prompt for information
+		regarding the existing environment and setup. Cf the <ulink
+		url="http://openam.forgerock.org/openam-documentation/openam-doc-source/doc/jee-install-guide/index.html#chap-apache-tomcat">installation
+		wiki
+	      </ulink>
+	      for details.
+	      </para>
+	      <para>
+		When the questions are answered, a brief overview of these are
+		presented before proceeding to installation, with the choice
+		to proceed or correct. Example:
+	      </para>
+
+	      <programlisting>
+		SUMMARY OF YOUR RESPONSES
+		-----------------------------------------------
+		Tomcat Server Config Directory :
+		/home/inherit/inherit_platform/hippo-eservice-tomcat-6.0.36/conf 
+		OpenAM server URL : https://eservicetest.malmo.se:443/openam 
+		$CATALINA_HOME environment variable :
+		/home/inherit/inherit_platform/hippo-eservice-tomcat-6.0.36 
+		Tomcat global web.xml filter install : true 
+		Agent URL : ...
+		Agent Profile name : Tomcat Medb Agent 
+		Agent Profile Password file name :
+		/home/inherit/tmp/j2ee_agents/pwd.txt 
+	      </programlisting>
+
+	      <para>
+		The installation consists of making the JEE container and
+		webapps that are to be protected aware of the agents, so that
+		it can delegate policy requests to them before serving the
+		client. The following is a summary of the steps involved:
+	      </para>
+
+	      <itemizedlist>
+		<listitem>
+		  <para>
+		    Updating the setenv.sh of the protected container with
+		    agent configuration
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Creating directory layout and configuring Agent file for
+		    Agent_001 instance
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Reading data from the temporary password file given and
+		    encrypting it
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Creating OpenSSOAgentBootstrap.properties file for instance
+		    Agent_001
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Generating audit log file name
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Adding OpenAM Tomcat Agent Realm to
+		    $PROTECTED_CONTAINER/conf/server.xml after creating backup
+		    of that file
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Adding filter to Global deployment descriptor file:
+		    $PROTECTED_CONTAINER/conf/web.xml after creating backup of
+		    that file
+		  </para>
+		</listitem>
+
+		<listitem>
+		  <para>
+		    Adding OpenAM Tomcat Agent Filter and Form login
+		    authentication to selected Web applications
+		  </para>
+		</listitem>
+	      </itemizedlist>
+	    </listitem>
+	    <listitem>
+	      <para>
+		Post installation procedure 
+	      </para>
+	  
+	      <para>
+		After the installation step, it is important to add the following properties to
+	      </para>
+
+	      <programlisting>
+		/eservice-tomcat_v6_agent/Agent_001/config/OpenSSOAgentBootstrap.properties:
+		com.sun.identity.agents.config.organization.name = /medbrealm
+
+		/kservice-tomcat_v6_agent/Agent_001/config/OpenSSOAgentBootstrap.properties:
+		com.sun.identity.agents.config.organization.name= /kominrealm
+	      </programlisting>
+	      <para>
+		This completes the local agent installation procedure.
+	      </para>
+	    </listitem>
+	  </itemizedlist>
+	</section>
+
+	<section>
+	  <title>
+	    Centralized configuration of the JEE Policy Agents
+	  </title>
+	  <para>
+	  </para>
+	</section>
       </section>
     </section>
 
@@ -1254,38 +1592,38 @@
 	<programlisting>
 	  $BUILD_DIR/bin/deploy-inherit-platform.sh
 	</programlisting>
-      <para>
-	Before using the script, edit the script variables at the beginning of
-	the script, in order to conform to the
-	local installation directory names. An example is given below:
-      </para>
-      <programlisting>
-# ROOT of build directory
-#BUILD_DIR=${HOME}/workspace/inherit-platform
-BUILD_DIR=${HOME}/inherit-platform-gitclone/eservices-platform
+	<para>
+	  Before using the script, edit the script variables at the beginning of
+	  the script, in order to conform to the
+	  local installation directory names. An example is given below:
+	</para>
+	<programlisting>
+	  # ROOT of build directory
+	  #BUILD_DIR=${HOME}/workspace/inherit-platform
+	  BUILD_DIR=${HOME}/inherit-platform-gitclone/eservices-platform
 
-# ROOT of directory holding the j2ee containers
-CONTAINER_ROOT=${HOME}/inherit-platform
+	  # ROOT of directory holding the j2ee containers
+	  CONTAINER_ROOT=${HOME}/inherit-platform
 
-# ROOT of Hippo jcr content repository
-CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
+	  # ROOT of Hippo jcr content repository
+	  CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
 
-# Name of container roots
-EXIST=orbeon-tomcat-6.0.36
-BOS=BOS-5.9-Tomcat-6.0.35
-ESERVICE=hippo-eservice-tomcat-6.0.36
-KSERVICE=hippo-kservice-tomcat-6.0.36
+	  # Name of container roots
+	  EXIST=orbeon-tomcat-6.0.36
+	  BOS=BOS-5.9-Tomcat-6.0.35
+	  ESERVICE=hippo-eservice-tomcat-6.0.36
+	  KSERVICE=hippo-kservice-tomcat-6.0.36
 
-ESERVICEPATCH=eservice.malmo.se
-KSERVICEPATCH=kservice.malmo.se
+	  ESERVICEPATCH=eservice.malmo.se
+	  KSERVICEPATCH=kservice.malmo.se
 
-EXIST_PORT=48080
-BOS_PORT=58080
-ESERVICE_PORT=8080
-KSERVICE_PORT=38080
+	  EXIST_PORT=48080
+	  BOS_PORT=58080
+	  ESERVICE_PORT=8080
+	  KSERVICE_PORT=38080
 
-WITH_KSERVICES=true
-      </programlisting>
+	  WITH_KSERVICES=true
+	</programlisting>
       </section>
 
       <section id="s.prod.build.postgresql">
@@ -1314,7 +1652,7 @@ WITH_KSERVICES=true
 	<para>
 	  In order to grant access to this database, create a file:
 	  <programlisting>
-	  /usr/local/etc/inherit/platform-db-connect.properties
+	    /usr/local/etc/inherit/platform-db-connect.properties
 	  </programlisting>
 	  Make sure the containing directory and the file itself are owned by
 	  inherit.users, and is read/writeable by this user only.
@@ -1323,7 +1661,7 @@ WITH_KSERVICES=true
 	<para>
 	  Add the following entries to
 	  <programlisting>
-	  /usr/local/etc/inherit/platform-db-connect.properties
+	    /usr/local/etc/inherit/platform-db-connect.properties
 	  </programlisting>
 	  with the password given in the previous command:
 	</para>
@@ -1354,24 +1692,24 @@ WITH_KSERVICES=true
 	An example illustrates the port mapping:
       </para>
       <para>
-      The configuration pattern for the port mapping is given below Edit these files to conform to the local setup.
+	The configuration pattern for the port mapping is given below Edit these files to conform to the local setup.
       </para>
 
       <programlisting>
-      &lt;VirtualHost _default_:443&gt;
-         .
-         .
-         .
-         ProxyRequests Off
-         ProxyPass /bonita/ ajp://localhost:58009/bonita/
-         ProxyPassReverse /bonita/ ajp://localhost:58009/bonita/ 
-         &lt;Proxy /bonita/&gt;
-             Order Deny,Allow
-             Allow from All
-         &lt;/Proxy&gt;
-         .
-         .
-         .
+	&lt;VirtualHost _default_:443&gt;
+	.
+	.
+	.
+	ProxyRequests Off
+	ProxyPass /bonita/ ajp://localhost:58009/bonita/
+	ProxyPassReverse /bonita/ ajp://localhost:58009/bonita/ 
+	&lt;Proxy /bonita/&gt;
+	Order Deny,Allow
+	Allow from All
+	&lt;/Proxy&gt;
+	.
+	.
+	.
       </programlisting>
 
 
@@ -1439,10 +1777,10 @@ WITH_KSERVICES=true
       </listitem>
     </itemizedlist>
 
-<!--
- The additions and differences are outlined in the next
-      section.
--->
+    <!--
+	The additions and differences are outlined in the next
+	section.
+    -->
 
     <section id="s.import.eclipse">
       <title>Import project to Eclipse</title>
