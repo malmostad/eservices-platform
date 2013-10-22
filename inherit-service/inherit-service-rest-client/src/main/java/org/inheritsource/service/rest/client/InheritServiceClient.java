@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.inheritsource.service.common.domain.ActivityDefinitionInfo;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
@@ -41,6 +42,7 @@ import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
+import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
 import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.ProcessInstanceListItem;
@@ -98,6 +100,8 @@ public class InheritServiceClient {
 		
 		xstream.alias("InboxTaskItem", InboxTaskItem.class);
 		xstream.alias("ProcessDefinitionInfo", ProcessDefinitionInfo.class);
+		xstream.alias("ProcessDefinitionDetails", ProcessDefinitionDetails.class);
+		xstream.alias("ActivityDefinitionInfo", ActivityDefinitionInfo.class);
 		xstream.alias("ProcessInstanceListItem", ProcessInstanceListItem.class);
 		xstream.alias("CommentFeedItem", CommentFeedItem.class);
 		

@@ -80,6 +80,9 @@ public class InheritServiceApplication extends Application {
 		router.attach("/emailToInitiator/{processInstanceUuid}/{activityInstanceUuid}/{mailSubject}/{mailBody}", EmailToInitiator.class);
 		router.attach("/emailTo/{mailTo}/{mailFrom}/{mailSubject}/{mailBody}", EmailTo.class);
 		router.attach("/getMyProfile/{userid}", GetMyProfileByUserId.class);
+		router.attach("/getProcessDefinitionDetails/{processDefinitionUUID}", GetProcessDefinitionDetails.class);
+		router.attach("/getProcessDefinitions", GetProcessDefinitions.class);
+		router.attach("/setActivityForm/{activityDefinitionUuid}/{formPath}", SetActivityForm.class);
 		return router;
 	}
 }

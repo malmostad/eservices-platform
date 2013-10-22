@@ -163,8 +163,8 @@ class RestService {
     // The version number, if present, is included in the form name
     // as extracted by the meta extractor
     def meta = MetaExtractor.extract(xml)
+    // This will be the path of the incoming version (including version and draft)
     def path = new FormdefPath("${meta.app}/${meta.form}")
-    def latestDraft = new FormdefPath(path)
     if (log.debugEnabled) log.debug "createPublishedItem initial path: ${path}"
 
     // There should already be a Formdef
@@ -199,7 +199,13 @@ class RestService {
     def publishedItem = item
 
     //----- From here: Create a new current draft for the next version -----
+    // We cannot use the incoming version because the user may have saved several times
+    // making the incoming version number out of synch.
+    // Instead, use the current draft, called "latest draft" here because we also
+    // update the current draft.
+    def latestDraft = formdef.currentDraft
     path = new FormdefPath(latestDraft)
+    if (log.debugEnabled) log.debug "createPublishedItem copy next draft from ${path}"
     formdef.currentDraft = path.nextVersion().toString()
     if (!formdef.save()) log.error "Formdef next draft save: ${formdef.errors.allErrors.join(',')}"
       
