@@ -111,7 +111,7 @@ public class TaskFormService {
 		return result;
 	}
 	
-	public String getPrevoiusActivitiesData(String currentActivityFormDocId) {
+	public String getPreviousActivitiesData(String currentActivityFormDocId) {
 		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
 		return currentActivity==null ? "" : getProcessInstanceActivitiesData(currentActivity.getProcessInstanceUuid());
 	}
