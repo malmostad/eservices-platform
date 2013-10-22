@@ -93,6 +93,20 @@ public class TaskFormService {
 		return details;
 	}	
 	
+	public boolean setActivityForm(String activityDefinitionUuid, String formPath) {
+		boolean result = true;
+		try {
+		ActivityFormDefinition def = taskFormDb.getActivityFormDefinition(activityDefinitionUuid, null);
+		def.setFormPath(formPath);
+		taskFormDb.save(def);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+			result = false;
+		}
+		return result;
+	}
+	
 	public String getPrevoiusActivitiesData(String currentActivityFormDocId) {
 		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
 		return currentActivity==null ? "" : getProcessInstanceActivitiesData(currentActivity.getProcessInstanceUuid());
