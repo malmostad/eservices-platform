@@ -120,6 +120,28 @@ public class BonitaEngineServiceImpl {
 		return activityInstanceUuid;
 	}
 	
+	/**
+	 * 
+	 * @param processInstanceUuid
+	 * @param activityName
+	 * @return parentProcessInstanceUuid
+	 */
+	public String getParentProcessInstanceUuid(String processInstanceUuid) {
+		ProcessInstanceUUID processInstanceUUID = new ProcessInstanceUUID(processInstanceUuid);
+		LightProcessInstance thisPrInstance = null;
+		ProcessInstanceUUID parentProcessInstUUID = null;
+		try {
+            LoginContext loginContext = BonitaUtil.login(); 
+			thisPrInstance = AccessorUtil.getAPIAccessor().getQueryRuntimeAPI().getLightProcessInstance(processInstanceUUID);
+			parentProcessInstUUID = thisPrInstance.getParentInstanceUUID();
+            BonitaUtil.logout(loginContext);
+		} catch (InstanceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return (parentProcessInstUUID==null ? null : parentProcessInstUUID.toString());
+	}
+
 	public boolean createUser(String userName) {
 		boolean result = false;
 		try {
