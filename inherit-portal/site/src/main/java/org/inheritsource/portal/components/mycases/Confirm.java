@@ -24,12 +24,14 @@
 package org.inheritsource.portal.components.mycases;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.portal.beans.EServiceDocument;
+import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.rest.client.InheritServiceClient;
 import org.restlet.resource.ResourceException;
@@ -129,5 +131,12 @@ public class Confirm extends MyCasesBaseComponent {
 				}
 			}
 		}
+		
+		InboxTaskItem nextTask = null;
+		if (!UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
+	        nextTask = isc.getNextActivityInstanceItemByDocId(docId, user.getUuid());
+	        appendChannelLabels(request, nextTask);
+		}
+		request.setAttribute("nextTask", nextTask);
 	}
 }

@@ -267,35 +267,10 @@ public class TaskFormService {
 			String taskUuid = item.getTaskUuid();
 			log.severe("=======> TASK bonita: " + item);
 
-			// TODO optimize ???
-			ProcessActivityFormInstance startedByForm = taskFormDb
-					.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item
-							.getProcessInstanceUuid());
-			if (startedByForm != null) {
-				item.setStartedByFormPath(startedByForm.getFormPath());
-			}
-
 			ProcessActivityFormInstance form = forms.get(taskUuid);
-			if (form != null) {
-				// partial filled not submitted form exist for task
-				// assign id to inbox item that can be used later to edit/view
-				// existing form
-				item.setProcessActivityFormInstanceId(form
-						.getProcessActivityFormInstanceId());
-				item.setExternalUrl(calcExternalUrl(form.getFormPath(), form.getProcessActivityFormInstanceId(), taskUuid));
+			if (appendTaskFormServiceData(item, form)) {
 				forms.remove(form);
-			} else {
-				// analyze activity form
-				ActivityFormDefinition activity = taskFormDb.getActivityFormDefinition(item.getActivityDefinitionUuid(), startedByForm == null ? null : startedByForm.getStartFormDefinition().getStartFormDefinitionId());
-				if (activity == null) {
-					// activity form is not defined
-					item.setExternalUrl(calcExternalUrl("none", null, taskUuid));
-				}
-				else {
-					item.setExternalUrl(calcExternalUrl(activity.getFormPath(), null, taskUuid));
-				}
 			}
-			
 			
 			// else {
 			// no one has opened this activity form yet
@@ -328,6 +303,45 @@ public class TaskFormService {
 		log.severe("=======> getInboxTaskItems " + userId + " size="
 				+ (inbox == null ? 0 : inbox.size()));
 		return inbox;
+	}
+	
+	/**
+	 * 
+	 * @param item
+	 * @param form
+	 * @return true if partial filled not submitted form exist for task
+	 */
+	private boolean appendTaskFormServiceData(InboxTaskItem item, ProcessActivityFormInstance form) {
+		boolean result = false;
+		
+		// TODO optimize ???
+		ProcessActivityFormInstance startedByForm = taskFormDb
+				.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item
+						.getProcessInstanceUuid());
+		if (startedByForm != null) {
+			item.setStartedByFormPath(startedByForm.getFormPath());
+		}
+					
+		if (form != null) {
+			// partial filled not submitted form exist for task
+			// assign id to inbox item that can be used later to edit/view
+			// existing form
+			item.setProcessActivityFormInstanceId(form
+					.getProcessActivityFormInstanceId());
+			item.setExternalUrl(calcExternalUrl(form.getFormPath(), form.getProcessActivityFormInstanceId(), item.getTaskUuid()));
+			result = true; 
+		} else {
+			// analyze activity form
+			ActivityFormDefinition activity = taskFormDb.getActivityFormDefinition(item.getActivityDefinitionUuid(), startedByForm == null ? null : startedByForm.getStartFormDefinition().getStartFormDefinitionId());
+			if (activity == null) {
+				// activity form is not defined
+				item.setExternalUrl(calcExternalUrl("none", null, item.getTaskUuid()));
+			}
+			else {
+				item.setExternalUrl(calcExternalUrl(activity.getFormPath(), null, item.getTaskUuid()));
+			}
+		}
+		return result;
 	}
 	
 	private String calcExternalUrl(String formPath, Long processActivityFormInstanceId, String taskUuid) {
@@ -586,6 +600,28 @@ public class TaskFormService {
 		item.setFormDocId(activityFormInstance.getFormDocId());
 	}
 
+	public InboxTaskItem getNextActivityInstanceItemByDocId(String docId, String userId) {
+		InboxTaskItem result = null;
+		
+		try {
+			ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(docId);
+			String currentProcessInstance = currentActivity.getProcessInstanceUuid();
+			
+			InboxTaskItem item = bonitaClient.getNextInboxTaskItem(currentProcessInstance, userId);
+		    if (item != null) {
+		    	ProcessActivityFormInstance form = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(item.getTaskUuid());
+		    	appendTaskFormServiceData(item, form);
+		    	result = item;
+		    }
+		    
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		
+		return result;
+	}
+	
 	public ActivityInstanceItem getActivityInstanceItem(
 			String activityInstanceUuid, String userId) {
 		ActivityInstanceItem result = null;

@@ -36,25 +36,46 @@
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
     
-    <c:if test="${not empty guide}">
-		<h1>${guide.title}</h1>
-		<p>${guide.summary}</p>
-		<hst:html hippohtml="${guide.html}"/>
-	</c:if>		
-    
+   
   </c:otherwise>  
 </c:choose>
 
-				<table>
-				  <thead>
-				    <tr>
-				      <th>Signerade dokument</th>
-				    </tr>
-				  </thead>
-				  <tbody>
-				    <tr>
-				    	<td><a href="${pdfUrl}">${docNo}</a></td>
-				    </tr>
-				  </tbody>
-				</table>					    
+	<div class="row-fluid">
+			<div class="span12">
+			
+		    <c:if test="${not empty guide}">
+				<h1>${guide.title}</h1>
+				<p>${guide.summary}</p>
+				<hst:html hippohtml="${guide.html}"/>
+			</c:if>		
+ 
+ 
+ <c:choose>
+				  <c:when test="${empty pdfUrl or empty docNo}">
+				  	<fmt:message key="mycases.noformtoload.lbl"/>
+				  </c:when>
+				  <c:otherwise>
+						<table>
+						  <thead>
+						    <tr>
+						      <th>Signerade dokument</th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						    <tr>
+						    	<td><a href="${pdfUrl}">${docNo}</a></td>
+						    </tr>
+						  </tbody>
+						</table>		
+				  </c:otherwise>
+				</c:choose>
+				
+				
+				<c:if test="${not empty nextTask}">
+	    		<p>
+	    			<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.editFormUrl}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
+	    		</p>
+    		    </c:if>			    
 
+			</div>
+	</div>

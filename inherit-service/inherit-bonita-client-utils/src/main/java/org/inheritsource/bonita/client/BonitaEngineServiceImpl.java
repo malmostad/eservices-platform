@@ -341,6 +341,49 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
+	public InboxTaskItem getNextInboxTaskItem(String processInstanceUuid, String userId) { // ArrayList<ProcessInstanceListItem>
+		InboxTaskItem result = null;
+
+		try {
+			LoginContext loginContext = BonitaUtil.login(); 
+			Collection<TaskInstance> taskList = AccessorUtil.getQueryRuntimeAPI().getTaskList(userId, ActivityState.READY);
+			
+			
+			TaskInstance taskInSameProcessInstance = null;
+			TaskInstance taskInSubProcessInstance = null;
+			TaskInstance taskInAnyProcessInstance = null;
+			
+			for (TaskInstance taskItem : taskList) {
+				if (taskItem.getProcessInstanceUUID().getValue().equals(processInstanceUuid)) {
+					taskInSameProcessInstance = taskItem;
+				}
+				LightProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getLightProcessInstance(taskItem.getProcessInstanceUUID());
+				if (pi.getParentInstanceUUID() != null && pi.getParentInstanceUUID().getValue().equals(processInstanceUuid)) {
+					taskInSubProcessInstance = taskItem;
+				}
+				taskInAnyProcessInstance = taskItem;
+			}
+			
+			TaskInstance taskInstance = taskInSubProcessInstance;
+			if (taskInstance == null) {
+				taskInstance = taskInSameProcessInstance;
+			}
+			if (taskInstance == null) {
+				taskInstance = taskInAnyProcessInstance;
+			}
+			if (taskInstance != null) {
+				result = lightActivityInstance2InboxTaskItem(taskInstance);
+			}
+			
+			
+			BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		return result;
+	}
+
 	
 	private ProcessInstanceCriterion str2ProcessInstanceCriterion(String sortBy, String sortOrder) {
 		ProcessInstanceCriterion result = ProcessInstanceCriterion.DEFAULT;

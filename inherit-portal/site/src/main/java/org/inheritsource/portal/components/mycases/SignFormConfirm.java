@@ -27,6 +27,7 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.rest.client.InheritServiceClient;
 import org.inheritsource.service.rest.client.domain.DocBoxFormData;
@@ -91,7 +92,12 @@ public class SignFormConfirm extends MyCasesBaseComponent {
         }
 		// utför aktivitet i processmotor och lagra signatur ... om signaturen är ok....
 		
-
+        InboxTaskItem nextTask = null;
+		if (!UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
+	        nextTask = isc.getNextActivityInstanceItemByDocId(docBoxFormData.getDocboxRef(), user.getUuid());
+	        appendChannelLabels(request, nextTask);
+		}
+		request.setAttribute("nextTask", nextTask);
 		
 		request.setAttribute("docboxRef", docboxRef);
 		request.setAttribute("docNo", docNo);		
