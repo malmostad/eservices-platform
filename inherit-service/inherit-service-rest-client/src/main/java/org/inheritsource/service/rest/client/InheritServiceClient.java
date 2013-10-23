@@ -205,6 +205,18 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public InboxTaskItem getNextActivityInstanceItemByDocId(String docId, String userId) {
+		InboxTaskItem result = null;
+		String uri = serverBaseUrl + "getNextActivityInstanceItemByDocId/" + ParameterEncoder.encode(docId) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		String response = callAndCatchRE(uri);
+		System.out.println(response);
+		if (response != null) {
+			result = (InboxTaskItem)xstream.fromXML(response);
+		}
+		
+		return result;
+	}
+	
 	public ActivityInstanceItem getActivityInstanceItem(String activityInstanceUuid, String userId) {
 		ActivityInstanceItem result = null;
 		String uri = serverBaseUrl + "getActivityInstanceItem/" + ParameterEncoder.encode(activityInstanceUuid) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
@@ -811,13 +823,16 @@ public class InheritServiceClient {
 		InheritServiceClient c = new InheritServiceClient();
 		System.out.println("DocBox form data: " + c.getDocBoxFormData("bmtestid1"));
 		
+		System.out.println("Next activity inbox item: " + c.getNextActivityInstanceItemByDocId("74e40834-43fd-4c63-8bee-00219562fe85", "john"));
+		
+		/*
+
 		c.emailToInitiator(
 				"procInstanceUuid",
 				"Miljoforvaltningen_hemkompostering_matavfall--1.0--6--Delgivning--it1--mainActivityInstance--noLoop",
 				"Re: mailSubjectLine",
 				"<BodyText>");
-		/*
-
+		
 		MyProfile profBean = c.getMyProfile("john");
 		System.out.println(profBean.getUuid());
 		System.out.println(profBean.getEmail());

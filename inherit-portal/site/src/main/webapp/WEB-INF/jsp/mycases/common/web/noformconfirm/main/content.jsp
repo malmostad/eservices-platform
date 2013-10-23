@@ -42,7 +42,13 @@
 				<h2>${document.title}</h2>
 				<p>${document.summary}</p>
 				<hst:html hippohtml="${document.html}" />
-			</c:if>	    
+			</c:if>	   
+			
+			<c:if test="${not empty nextTask}">
+	    		<p>
+	    			<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.editFormUrl}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
+	    		</p>
+    		</c:if> 
 		</div>
 	</div>    
     
