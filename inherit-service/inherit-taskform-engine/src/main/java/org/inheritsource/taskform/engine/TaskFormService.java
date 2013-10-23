@@ -113,7 +113,7 @@ public class TaskFormService {
 	
 	public String getPreviousActivitiesData(String currentActivityFormDocId) {
 		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
-		return currentActivity==null ? "" : getProcessInstanceActivitiesData(currentActivity.getProcessInstanceUuid());
+		return currentActivity==null ? "" : getProcessInstanceChainActivitiesData(currentActivity.getProcessInstanceUuid());
 	}
 	
 	public String getPreviousActivityDataByInstanceUuid(String currentActivityInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
@@ -146,18 +146,33 @@ public class TaskFormService {
 		return result;
 	}
 	
-	public String getProcessInstanceActivitiesData(String processInstanceUuid) {
+	public String getProcessInstanceChainActivitiesData(String processInstanceUuid) {
 		StringBuffer result = new StringBuffer();
-		
-		result.append("<pawap><process processInstanceUuid=\"");
-		result.append(processInstanceUuid);
-		result.append("\">");
-		
-		// anropa bonitaClient och gör där en ny metod som returnerar alla processvariabler
-		// bygg upp xml av dem
-		
-		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
+		result.append("<pawap><formdata>");
 
+		if (processInstanceUuid != null && !processInstanceUuid.isEmpty()) {
+			getProcessInstanceActivitiesFormData(processInstanceUuid, result);
+		}
+
+		result.append("</formdata>");
+
+		//result.append("<processdata>");
+		  // anropa bonitaClient och gör där en ny metod som returnerar alla processvariabler
+		  // bygg upp xml av dem
+		//result.append("</processdata>");
+		result.append("</pawap>");
+		return result.toString();
+	}
+	
+	public void getProcessInstanceActivitiesFormData(String processInstanceUuid, StringBuffer buf) {
+		String parentProcessInstanceUuid = bonitaClient.getParentProcessInstanceUuid(processInstanceUuid);
+		if (parentProcessInstanceUuid != null && !parentProcessInstanceUuid.isEmpty()) {
+			getProcessInstanceActivitiesFormData(parentProcessInstanceUuid,buf);
+		}
+		buf.append("<process processInstanceUuid=\"");
+		buf.append(processInstanceUuid);
+		buf.append("\">");
+		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
 		if (pafis != null) {
 			for (ProcessActivityFormInstance pafi : pafis) {
 				if (pafi.getSubmitted() != null) {
@@ -165,37 +180,33 @@ public class TaskFormService {
 							pafi.getFormPath(), pafi.getFormDocId());
 					if (formDataFragment != null) {
 						if (pafi.isStartForm()) {
-							result.append("<startform>");
-							result.append(formDataFragment);
-							result.append("</startform>");
+							buf.append("<startform>");
+							buf.append(formDataFragment);
+							buf.append("</startform>");
 						} else {
 							// activity form
-
 							ActivityInstanceItem activityItem = bonitaClient
 									.getActivityInstanceItem(pafi
 											.getActivityInstanceUuid());
-
 							if (activityItem != null) {
-								result.append("<activity uuid=\"");
-								result.append(pafi.getActivityInstanceUuid());
-								result.append("\" activityName=\"");
-								result.append(activityItem.getActivityName());
-								result.append("\" activityDefinitionUuid=\"");
-								result.append(activityItem
+								buf.append("<activity uuid=\"");
+								buf.append(pafi.getActivityInstanceUuid());
+								buf.append("\" activityName=\"");
+								buf.append(activityItem.getActivityName());
+								buf.append("\" activityDefinitionUuid=\"");
+								buf.append(activityItem
 										.getActivityDefinitionUuid());
-								result.append("\">");
-								result.append(formDataFragment);
-								result.append("</activity>");
+								buf.append("\">");
+								buf.append(formDataFragment);
+								buf.append("</activity>");
 							}
 						}
 					}
 				}
 			}
+			buf.append("</process>");
 		}
-		
-		result.append("</process></pawap>");
-		
-		return result.toString();
+		return;
 	}
  
 
