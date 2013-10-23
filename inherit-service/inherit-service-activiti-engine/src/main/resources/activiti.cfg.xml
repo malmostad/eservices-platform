@@ -10,7 +10,7 @@
     <property name="jdbcUsername" value="motriceuser" />
     <property name="jdbcPassword" value="hemlis" />
     
-    <property name="databaseSchemaUpdate" value="true" />
+    <property name="databaseSchemaUpdate" value="false" />
     
     <property name="jobExecutorActivate" value="false" />
     
