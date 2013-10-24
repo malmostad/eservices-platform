@@ -1,6 +1,6 @@
 package org.motrice.coordinatrice.bonita
 
-class BnActDef {
+class BnActDef implements Comparable {
 
   String uuid
 
@@ -33,6 +33,24 @@ class BnActDef {
   }
 
   String toString() {
-    "[Activity: ${uuid}]"
+    "[${uuid}]"
   }
+
+  //-------------------- Comparable --------------------
+
+  int hashCode() {
+    uuid.hashCode()
+  }
+
+  boolean equals(Object obj) {
+    (obj instanceof BnActDef) && ((BnActDef)obj).uuid == uuid
+  }
+
+  // This comparison is different from comparing paths.
+  // Highest version and highest draft number comes first.
+  int compareTo(Object obj) {
+    def other = (BnActDef)obj
+    return uuid.compareTo(obj.uuid)
+  }
+
 }

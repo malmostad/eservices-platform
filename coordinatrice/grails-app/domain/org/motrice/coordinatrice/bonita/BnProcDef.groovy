@@ -1,6 +1,8 @@
 package org.motrice.coordinatrice.bonita
 
-class BnProcDef {
+import java.text.SimpleDateFormat
+
+class BnProcDef implements Comparable {
 
   String uuid
 
@@ -18,6 +20,7 @@ class BnProcDef {
 
   Long undeployedMillis
 
+  SortedSet activities
   static hasMany = [activities: BnActDef]
   static mapping = {
     datasource 'bonita'
@@ -32,7 +35,7 @@ class BnProcDef {
     deployedMillis column: 'deployed_date_'
     undeployedMillis column: 'undeployed_date_'
   }
-  static transients = ['deployedDate', 'undeployedDate']
+  static transients = ['deployedTime', 'undeployedTime']
   static constraints = {
     uuid nullable: true, maxSize: 255, unique: true
     state nullable: true, maxSize: 255
@@ -42,15 +45,37 @@ class BnProcDef {
     type nullable: true, maxSize: 255
   }
 
-  Date getDeployedDate() {
-    new java.util.Date(deployedMillis)
+  // Formatted deploy time
+  String getDeployedTime() {
+    def fmt = new SimpleDateFormat(grailsApplication.config.coordinatrice.tstamp.coarse.fmt)
+    return fmt.format(new java.util.Date(deployedMillis))
   }
 
-  Date getUndeployedDate() {
-    new java.util.Date(undeployedMillis)
+  // Formatted undeploy time
+  Date getUndeployedTime() {
+    def fmt = new SimpleDateFormat(grailsApplication.config.coordinatrice.tstamp.coarse.fmt)
+    return fmt.format(new java.util.Date(undeployedMillis))
   }
 
   String toString() {
-    "[Process: ${uuid} ${type}/${state}]"
+    "[${uuid}]"
   }
+
+  //-------------------- Comparable --------------------
+
+  int hashCode() {
+    uuid.hashCode()
+  }
+
+  boolean equals(Object obj) {
+    (obj instanceof BnProcDef) && ((BnProcDef)obj).uuid == uuid
+  }
+
+  // This comparison is different from comparing paths.
+  // Highest version and highest draft number comes first.
+  int compareTo(Object obj) {
+    def other = (BnProcDef)obj
+    return uuid.compareTo(obj.uuid)
+  }
+
 }

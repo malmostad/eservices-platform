@@ -115,3 +115,6 @@ log4j = {
 
 	   debug 'grails.app.controllers', 'org.motrice.coordinatrice'
 }
+
+// Common timestamp display format
+coordinatrice.tstamp.coarse.fmt = 'yyyy-MM-dd HH:mm'
