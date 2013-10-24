@@ -30,8 +30,19 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
+
+         <plugins>
+         <plugin>
+           <groupId>org.codehaus.mojo</groupId>
+           <artifactId>exec-maven-plugin</artifactId>
+           <configuration>
+             <mainClass>org.inheritsource.service.processengine.ActivitiEngineService</mainClass>
+           </configuration>
+         </plugin>
+       </plugins>
 	</build>
 
+   
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>

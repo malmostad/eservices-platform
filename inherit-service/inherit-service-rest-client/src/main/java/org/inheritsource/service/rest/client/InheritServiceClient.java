@@ -806,9 +806,20 @@ public class InheritServiceClient {
 	}
 	
 	public static void main(String args[]) {
-		System.out.println("Testa InheritServiceClient");
-		
+		System.out.println("Testa InheritServ iceClient");
 		InheritServiceClient c = new InheritServiceClient();
+		
+		
+		ArrayList<InboxTaskItem> inboxTaskItems = c.getInboxByUserId("kermit");
+		
+		System.out.println("getInboxByUserId");
+		if(inboxTaskItems != null) {
+			for (InboxTaskItem item : inboxTaskItems) {
+				System.out.println("inboxTaskItems item: " + item);
+			}
+		}
+		
+		/*
 		System.out.println("DocBox form data: " + c.getDocBoxFormData("bmtestid1"));
 		
 		c.emailToInitiator(
@@ -816,7 +827,7 @@ public class InheritServiceClient {
 				"Miljoforvaltningen_hemkompostering_matavfall--1.0--6--Delgivning--it1--mainActivityInstance--noLoop",
 				"Re: mailSubjectLine",
 				"<BodyText>");
-		/*
+		
 
 		MyProfile profBean = c.getMyProfile("john");
 		System.out.println(profBean.getUuid());

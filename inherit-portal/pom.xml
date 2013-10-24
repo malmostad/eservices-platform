@@ -72,6 +72,11 @@
   </properties>
 
   <repositories>
+   	<repository>
+			<id>JBoss</id>
+			<name>JBoss Repository</name>
+			<url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+	</repository>
     <repository>
       <id>hippo</id>
       <name>Hippo maven 2 repository.</name>

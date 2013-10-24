@@ -15,7 +15,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>inherit-bonita-client-utils</module>
     <module>inherit-service-common</module>
     <module>inherit-taskform-engine</module>
     <module>inherit-service-orbeon</module>

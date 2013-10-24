@@ -33,7 +33,6 @@ import java.util.TreeSet;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
-import org.inheritsource.bonita.client.BonitaEngineServiceImpl;
 import org.inheritsource.service.common.domain.ActivityDefinitionInfo;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
@@ -53,6 +52,7 @@ import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.orbeon.OrbeonService;
+import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inheritsource.taskform.engine.persistence.entity.ProcessActivityFormInstance;
@@ -68,14 +68,15 @@ public class TaskFormService {
 
 
 	TaskFormDb taskFormDb;
-	BonitaEngineServiceImpl bonitaClient;
+	ActivitiEngineService activitiEngineService;
 	ActorSelectorDirUtils aSelectorDirUtils;
     OrbeonService orbeonService;
 
 	public TaskFormService() {
 		taskFormDb = new TaskFormDb();
 		orbeonService = new OrbeonService();
-		bonitaClient = new BonitaEngineServiceImpl();
+		activitiEngineService = new ActivitiEngineService();
+		
 		// TODO hostname,port and base DN should be resolved from configuration
 		aSelectorDirUtils = new ActorSelectorDirUtils("localhost", "1389",
 				"ou=IDMGroups,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"); // Base
@@ -83,11 +84,11 @@ public class TaskFormService {
 	}
 
 	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
-		return bonitaClient.getProcessDefinitions();
+		return activitiEngineService.getProcessDefinitions();
 	}
 	
 	public ProcessDefinitionDetails getProcessDefinitionDetails(String processDefinitionUUIDStr) {
-		ProcessDefinitionDetails details = bonitaClient.getProcessDefinitionDetailsByUuid(processDefinitionUUIDStr);
+		ProcessDefinitionDetails details = activitiEngineService.getProcessDefinitionDetailsByUuid(processDefinitionUUIDStr);
 		for (ActivityDefinitionInfo adi :details.getActivities()) {
 			ActivityFormDefinition def = taskFormDb.getActivityFormDefinition(adi.getUuid(), null);
 			if (def != null) {
@@ -134,7 +135,7 @@ public class TaskFormService {
 			previousActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
 		}
 		else {
-			String previousActivityUuid = bonitaClient.getActivityInstanceUuid(processInstanceUuid, activityName);
+			String previousActivityUuid = activitiEngineService.getActivityInstanceUuid(processInstanceUuid, activityName);
 			if (previousActivityUuid != null) {
 				previousActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(previousActivityUuid);
 			}
@@ -153,7 +154,7 @@ public class TaskFormService {
 		result.append(processInstanceUuid);
 		result.append("\">");
 		
-		// anropa bonitaClient och gör där en ny metod som returnerar alla processvariabler
+		// anropa activitiEngineService och gör där en ny metod som returnerar alla processvariabler
 		// bygg upp xml av dem
 		
 		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
@@ -171,7 +172,7 @@ public class TaskFormService {
 						} else {
 							// activity form
 
-							ActivityInstanceItem activityItem = bonitaClient
+							ActivityInstanceItem activityItem = activitiEngineService
 									.getActivityInstanceItem(pafi
 											.getActivityInstanceUuid());
 
@@ -209,7 +210,7 @@ public class TaskFormService {
 	 */
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId,
 			int remainingDays) {
-		DashOpenActivities result = bonitaClient.getDashOpenActivitiesByUserId(
+		DashOpenActivities result = activitiEngineService.getDashOpenActivitiesByUserId(
 				userId, remainingDays);
 		return result;
 	}
@@ -250,7 +251,7 @@ public class TaskFormService {
 						.getProcessActivityFormInstanceId());
 				if (form.getStartFormDefinition() != null) {
 					startFormItem.setProcessLabel("Inte inskickad"); // TODO
-					// startFormItem.setProcessLabel(bonitaClient.getProcessLabel(form.getStartFormDefinition().getProcessDefinitionUuid()));
+					// startFormItem.setProcessLabel(activitiEngineService.getProcessLabel(form.getStartFormDefinition().getProcessDefinitionUuid()));
 					startFormItem.setStartedByFormPath(form
 							.getStartFormDefinition().getFormPath());
 				} else {
@@ -262,7 +263,7 @@ public class TaskFormService {
 		}
 
 		// find inbox tasks from BOS engine
-		List<InboxTaskItem> inbox = bonitaClient.getUserInbox(userId);
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox(userId);
 		for (InboxTaskItem item : inbox) {
 			String taskUuid = item.getTaskUuid();
 			log.severe("=======> TASK bonita: " + item);
@@ -352,7 +353,7 @@ public class TaskFormService {
 
 	public ProcessInstanceDetails getProcessInstanceDetails(
 			String processInstanceUuid) {
-		ProcessInstanceDetails details = bonitaClient
+		ProcessInstanceDetails details = activitiEngineService
 				.getProcessInstanceDetails(processInstanceUuid);
 		appendTaskFormServiceData(details);
 		return details;
@@ -360,7 +361,7 @@ public class TaskFormService {
 
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(
 			String activityInstanceUuid) {
-		ProcessInstanceDetails details = bonitaClient
+		ProcessInstanceDetails details = activitiEngineService
 				.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid);
 		appendTaskFormServiceData(details);
 		return details;
@@ -415,21 +416,21 @@ public class TaskFormService {
 
 	public int addComment(String activityInstanceUuid, String comment,
 			String userId) {
-		int result = bonitaClient.addComment(activityInstanceUuid, comment,
+		int result = activitiEngineService.addComment(activityInstanceUuid, comment,
 				userId);
 		return result;
 	}
 
 	public List<CommentFeedItem> getCommentFeed(String activityInstanceUuid,
 			String userId) {
-		List<CommentFeedItem> result = bonitaClient
+		List<CommentFeedItem> result = activitiEngineService
 				.getProcessInstanceCommentFeedByActivity(activityInstanceUuid);
 		return result;
 	}
 
 	public ActivityWorkflowInfo getActivityWorkflowInfo(
 			String activityInstanceUuid) {
-		ActivityWorkflowInfo result = bonitaClient
+		ActivityWorkflowInfo result = activitiEngineService
 				.getActivityWorkflowInfo(activityInstanceUuid);
 		appendTaskFormServiceData(result);
 		return result;
@@ -437,7 +438,7 @@ public class TaskFormService {
 
 	public ActivityWorkflowInfo assignTask(String activityInstanceUuid,
 			String userId) {
-		ActivityWorkflowInfo result = bonitaClient.assignTask(
+		ActivityWorkflowInfo result = activitiEngineService.assignTask(
 				activityInstanceUuid, userId);
 		appendTaskFormServiceData(result);
 		return result;
@@ -451,7 +452,7 @@ public class TaskFormService {
 	}
 
 	public ActivityWorkflowInfo unassignTask(String activityInstanceUuid) {
-		ActivityWorkflowInfo result = bonitaClient
+		ActivityWorkflowInfo result = activitiEngineService
 				.unassignTask(activityInstanceUuid);
 		appendTaskFormServiceData(result);
 		return result;
@@ -459,7 +460,7 @@ public class TaskFormService {
 
 	public ActivityWorkflowInfo addCandidate(String activityInstanceUuid,
 			String userId) {
-		ActivityWorkflowInfo result = bonitaClient.addCandidate(
+		ActivityWorkflowInfo result = activitiEngineService.addCandidate(
 				activityInstanceUuid, userId);
 		appendTaskFormServiceData(result);
 		return result;
@@ -467,7 +468,7 @@ public class TaskFormService {
 
 	public ActivityWorkflowInfo removeCandidate(String activityInstanceUuid,
 			String userId) {
-		ActivityWorkflowInfo result = bonitaClient.removeCandidate(
+		ActivityWorkflowInfo result = activitiEngineService.removeCandidate(
 				activityInstanceUuid, userId);
 		appendTaskFormServiceData(result);
 		return result;
@@ -475,7 +476,7 @@ public class TaskFormService {
 
 	public ActivityWorkflowInfo setActivityPriority(
 			String activityInstanceUuid, int priority) {
-		ActivityWorkflowInfo result = bonitaClient.setPriority(
+		ActivityWorkflowInfo result = activitiEngineService.setPriority(
 				activityInstanceUuid, priority);
 		appendTaskFormServiceData(result);
 		return result;
@@ -516,7 +517,7 @@ public class TaskFormService {
 					.getProcessDefinitionUuid();
 
 			// start the process
-			String processInstanceUuid = bonitaClient.startProcess(
+			String processInstanceUuid = activitiEngineService.startProcess(
 					processDefinitionUUIDStr, userId);
 
 			// store the start activity
@@ -595,7 +596,7 @@ public class TaskFormService {
 		if (formInstance == null) {
 			result = this.initializeActivityForm(activityInstanceUuid, userId);
 		} else {
-			result = bonitaClient.getActivityInstanceItem(activityInstanceUuid);
+			result = activitiEngineService.getActivityInstanceItem(activityInstanceUuid);
 			apppendTaskFormServiceData(result, formInstance);
 		}
 		return result;
@@ -611,7 +612,7 @@ public class TaskFormService {
 				result = getStartFormActivityInstancePendingItem(formInstance
 						.getFormDocId());
 			} else {
-				result = bonitaClient.getActivityInstanceItem(formInstance
+				result = activitiEngineService.getActivityInstanceItem(formInstance
 						.getActivityInstanceUuid());
 			}
 			apppendTaskFormServiceData(result, formInstance);
@@ -621,7 +622,7 @@ public class TaskFormService {
 
 	public ActivityInstanceItem getActivityInstanceItemByUuId(
 			String activityInstanceUuid) {
-		ActivityInstanceItem result = bonitaClient.getActivityInstanceItem(activityInstanceUuid);
+		ActivityInstanceItem result = activitiEngineService.getActivityInstanceItem(activityInstanceUuid);
 		return result;
 	}
 	
@@ -691,7 +692,7 @@ public class TaskFormService {
 
 	private ActivityInstanceItem initializeActivityForm(
 			String activityInstanceUuid, String userId) {
-		ActivityInstanceItem activity = bonitaClient
+		ActivityInstanceItem activity = activitiEngineService
 				.getActivityInstanceItem(activityInstanceUuid);
 
 		log.severe("===> activity=" + activity);
@@ -840,13 +841,13 @@ public class TaskFormService {
 					String pDefUuid = activity.getStartFormDefinition()
 							.getProcessDefinitionUuid();
 										
-					String processInstanceUuid = bonitaClient.startProcess(pDefUuid, userId);
+					String processInstanceUuid = activitiEngineService.startProcess(pDefUuid, userId);
 					activity.setProcessInstanceUuid(processInstanceUuid);
 					
 					// success if start process succeeded
 					success = (processInstanceUuid != null && processInstanceUuid.trim().length() > 0);
 
-				} else if (bonitaClient.executeTask(activity.getActivityInstanceUuid(), userId)) {
+				} else if (activitiEngineService.executeTask(activity.getActivityInstanceUuid(), userId)) {
 					// execute activity task succeded
 					success = true;
 				}
@@ -903,7 +904,7 @@ public class TaskFormService {
      * @return
      */
     public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
-            PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesStartedBy(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+            PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesStartedBy(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, userId);
             appendTaskFormData(result.getHits());
             appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
             return result;
@@ -922,7 +923,7 @@ public class TaskFormService {
     * @return
     */
    public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
-           PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesWithInvolvedUser(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+           PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesWithInvolvedUser(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, userId);
            appendTaskFormData(result.getHits());
            appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
            return result;
@@ -938,7 +939,7 @@ public class TaskFormService {
     */
        public PagedProcessInstanceSearchResult searchProcessInstancesListByTag(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
                 List<String> uuids = taskFormDb.getProcessInstancesByTag(tagValue);
-               PagedProcessInstanceSearchResult result = bonitaClient.getProcessInstancesByUuids(uuids, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+               PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesByUuids(uuids, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
                appendTaskFormData(result.getHits());
                appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
                return result;
@@ -1076,7 +1077,7 @@ public class TaskFormService {
 			userInfo = taskFormDb.createUser(user);
 
 			// create user in BOS engine
-			if (!bonitaClient.createUser(uuid)) {
+			if (!activitiEngineService.createUser(uuid)) {
 				log.severe("Failed to create user in BOS engine");
 			}
 		}
@@ -1133,7 +1134,7 @@ public class TaskFormService {
 			userInfo = taskFormDb.createUser(user);
 
 			// create user in BOS engine
-			if (!bonitaClient.createUser(uuid)) {
+			if (!activitiEngineService.createUser(uuid)) {
 				log.severe("Failed to create user in BOS engine");
 			}
 		}

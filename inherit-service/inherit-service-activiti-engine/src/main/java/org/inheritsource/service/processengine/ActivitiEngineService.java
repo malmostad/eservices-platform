@@ -3,8 +3,10 @@ package org.inheritsource.service.processengine;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import org.activiti.bpmn.model.BpmnModel;
@@ -16,7 +18,15 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.task.Task;
+import org.inheritsource.service.common.domain.ActivityInstanceItem;
+import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
+import org.inheritsource.service.common.domain.CommentFeedItem;
+import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.InboxTaskItem;
+import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
+import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
+import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
+import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 
 public class ActivitiEngineService {
 
@@ -110,8 +120,9 @@ public class ActivitiEngineService {
 	}
 	
 	public void listDeployedProcesses() {
-		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-		List<ProcessDefinition> processes = processEngine.getRepositoryService().createProcessDefinitionQuery().list();
+		//ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
+		//List<ProcessDefinition> processes = processEngine.getRepositoryService().createProcessDefinitionQuery().list();
+		List<ProcessDefinition> processes = engine.getRepositoryService().createProcessDefinitionQuery().list();
 		for (ProcessDefinition process : processes) {
 			log.severe("Process: " + process.getId() + ": " + process + "START");
 			log.severe("getDeploymentId: " + process.getDeploymentId());
@@ -129,9 +140,7 @@ public class ActivitiEngineService {
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		
-		ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-		
-		List<Task> tasks = processEngine.getTaskService().createTaskQuery().taskAssignee(userId).orderByTaskCreateTime().asc().list();
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).orderByTaskCreateTime().asc().list();
 		
 		result = taskList2InboxTaskItemList(tasks);
 		
@@ -170,9 +179,10 @@ public class ActivitiEngineService {
 	
 	public static void main(String[] args) {
 		ActivitiEngineService engine = new ActivitiEngineService();
-		engine.logTableSizes();
-		//engine.deployBpmnProcess("/home/bjmo/workspaces/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
-		engine.listDeployedProcesses();
+		
+		//engine.logTableSizes();
+		//engine.deployBpmnProcess("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
+		//engine.listDeployedProcesses();
 		
 		List<InboxTaskItem> tasks = engine.getUserInbox("kermit");
 		log.severe("Inbox item count: " + tasks.size());
@@ -182,4 +192,130 @@ public class ActivitiEngineService {
 		
 		System.exit(0);
 	}
+	
+	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
+		// TODO Auto-generated method stub
+		return null;	
+	}
+
+	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
+			String processDefinitionUUIDStr) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getActivityInstanceUuid(String processInstanceUuid,
+			String activityName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ActivityInstanceItem getActivityInstanceItem(
+			String activityInstanceUuid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public DashOpenActivities getDashOpenActivitiesByUserId(String userId,
+			int remainingDays) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ProcessInstanceDetails getProcessInstanceDetails(
+			String processInstanceUuid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(
+			String activityInstanceUuid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int addComment(String activityInstanceUuid, String comment,
+			String userId) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public List<CommentFeedItem> getProcessInstanceCommentFeedByActivity(
+			String activityInstanceUuid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ActivityWorkflowInfo getActivityWorkflowInfo(
+			String activityInstanceUuid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ActivityWorkflowInfo assignTask(String activityInstanceUuid,
+			String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ActivityWorkflowInfo addCandidate(String activityInstanceUuid,
+			String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ActivityWorkflowInfo removeCandidate(String activityInstanceUuid,
+			String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ActivityWorkflowInfo setPriority(String activityInstanceUuid,
+			int priority) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String startProcess(String processDefinitionUUIDStr, String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean executeTask(String activityInstanceUuid, String userId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
+			String searchForBonitaUser, int fromIndex, int pageSize,
+			String sortBy, String sortOrder, String filter, String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(
+			String searchForBonitaUser, int fromIndex, int pageSize,
+			String sortBy, String sortOrder, String filter, String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
+			List<String> uuids, int fromIndex, int pageSize, String sortBy,
+			String sortOrder, String filter, String userId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean createUser(String uuid) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public ActivityWorkflowInfo unassignTask(String activityInstanceUuid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	
 }

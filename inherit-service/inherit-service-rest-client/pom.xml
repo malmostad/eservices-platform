@@ -38,4 +38,28 @@
 		    <version>1.3.3</version>
 		</dependency>
 	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+		        <groupId>org.codehaus.mojo</groupId>
+		        <artifactId>exec-maven-plugin</artifactId>
+		        <version>1.2.1</version>
+		        <executions>
+		          <execution>
+		            <goals>
+		              <goal>java</goal>
+		            </goals>
+		          </execution>
+		        </executions>
+		        <configuration>
+		          <executableDependency>
+		            <artifactId>inherit-service</artifactId>
+					<groupId>org.inheritsource</groupId>
+		          </executableDependency>
+		          <mainClass>org.inheritsource.service.rest.client.InheritServiceClient</mainClass>
+		        </configuration>
+	        </plugin>
+		</plugins>
+	</build>
 </project>
