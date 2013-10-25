@@ -10,6 +10,7 @@ class PxdFormdefController {
 
     def list(Integer max) {
         params.max = Math.min(max ?: 10, 100)
+	if (!params.sort) params.sort = 'path'
         [pxdFormdefInstList: PxdFormdef.list(params), pxdFormdefInstTotal: PxdFormdef.count()]
     }
 

@@ -1,7 +1,0 @@
-package org.motrice.coordinatrice.pxd
-
-class PxdFormdefVer {
-
-    static constraints = {
-    }
-}

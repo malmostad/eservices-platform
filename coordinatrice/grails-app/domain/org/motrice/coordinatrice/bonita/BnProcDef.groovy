@@ -3,6 +3,7 @@ package org.motrice.coordinatrice.bonita
 import java.text.SimpleDateFormat
 
 class BnProcDef implements Comparable {
+  def grailsApplication
 
   String uuid
 

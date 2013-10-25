@@ -10,6 +10,8 @@ class PxdFormdefVer implements Comparable {
   String title
   String description
   String language
+  Date dateCreated
+  Date lastUpdated
 
   static belongsTo = [formdef: PxdFormdef]
   static mapping = {
@@ -26,6 +28,12 @@ class PxdFormdefVer implements Comparable {
     description nullable: true, maxSize: 800
     language nullable: true, maxSize: 16
     formdef nullable: false
+    dateCreated nullable: true
+    lastUpdated nullable: true
+  }
+
+  String toString() {
+    path
   }
 
   //-------------------- Comparable --------------------

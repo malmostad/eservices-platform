@@ -21,37 +21,15 @@
       <table>
 	<thead>
 	  <tr>
-	    
 	    <g:sortableColumn property="path" title="${message(code: 'pxdFormdefVer.path.label', default: 'Path')}" />
-	    
-	    <g:sortableColumn property="appName" title="${message(code: 'pxdFormdefVer.appName.label', default: 'App Name')}" />
-	    
-	    <g:sortableColumn property="formName" title="${message(code: 'pxdFormdefVer.formName.label', default: 'Form Name')}" />
-	    
-	    <g:sortableColumn property="fvno" title="${message(code: 'pxdFormdefVer.fvno.label', default: 'Fvno')}" />
-	    
-	    <g:sortableColumn property="draft" title="${message(code: 'pxdFormdefVer.draft.label', default: 'Draft')}" />
-	    
 	    <g:sortableColumn property="title" title="${message(code: 'pxdFormdefVer.title.label', default: 'Title')}" />
-	    
 	  </tr>
 	</thead>
 	<tbody>
 	  <g:each in="${pxdFormdefVerInstList}" status="i" var="pxdFormdefVerInst">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-	      
 	      <td><g:link action="show" id="${pxdFormdefVerInst.id}">${fieldValue(bean: pxdFormdefVerInst, field: "path")}</g:link></td>
-	      
-	      <td>${fieldValue(bean: pxdFormdefVerInst, field: "appName")}</td>
-	      
-	      <td>${fieldValue(bean: pxdFormdefVerInst, field: "formName")}</td>
-	      
-	      <td>${fieldValue(bean: pxdFormdefVerInst, field: "fvno")}</td>
-	      
-	      <td>${fieldValue(bean: pxdFormdefVerInst, field: "draft")}</td>
-	      
 	      <td>${fieldValue(bean: pxdFormdefVerInst, field: "title")}</td>
-	      
 	    </tr>
 	  </g:each>
 	</tbody>

@@ -21,33 +21,17 @@
       <table>
 	<thead>
 	  <tr>
-	    
 	    <g:sortableColumn property="uuid" title="${message(code: 'bnActDef.uuid.label', default: 'Uuid')}" />
-	    
-	    <g:sortableColumn property="name" title="${message(code: 'bnActDef.name.label', default: 'Name')}" />
-	    
 	    <g:sortableColumn property="label" title="${message(code: 'bnActDef.label.label', default: 'Label')}" />
-	    
 	    <g:sortableColumn property="type" title="${message(code: 'bnActDef.type.label', default: 'Type')}" />
-	    
-	    <th><g:message code="bnActDef.process.label" default="Process" /></th>
-	    
 	  </tr>
 	</thead>
 	<tbody>
 	  <g:each in="${bnActDefInstList}" status="i" var="bnActDefInst">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-	      
 	      <td><g:link action="show" id="${bnActDefInst.id}">${fieldValue(bean: bnActDefInst, field: "uuid")}</g:link></td>
-	      
-	      <td>${fieldValue(bean: bnActDefInst, field: "name")}</td>
-	      
 	      <td>${fieldValue(bean: bnActDefInst, field: "label")}</td>
-	      
 	      <td>${fieldValue(bean: bnActDefInst, field: "type")}</td>
-	      
-	      <td>${fieldValue(bean: bnActDefInst, field: "process")}</td>
-	      
 	    </tr>
 	  </g:each>
 	</tbody>

@@ -20,52 +20,36 @@
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
       <ol class="property-list bnActDef">
-	
 	<g:if test="${bnActDefInst?.uuid}">
 	  <li class="fieldcontain">
 	    <span id="uuid-label" class="property-label"><g:message code="bnActDef.uuid.label" default="Uuid" /></span>
-	    
 	    <span class="property-value" aria-labelledby="uuid-label"><g:fieldValue bean="${bnActDefInst}" field="uuid"/></span>
-	    
 	  </li>
 	</g:if>
-	
-	<g:if test="${bnActDefInst?.name}">
-	  <li class="fieldcontain">
-	    <span id="name-label" class="property-label"><g:message code="bnActDef.name.label" default="Name" /></span>
-	    
-	    <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${bnActDefInst}" field="name"/></span>
-	    
-	  </li>
-	</g:if>
-	
 	<g:if test="${bnActDefInst?.label}">
 	  <li class="fieldcontain">
 	    <span id="label-label" class="property-label"><g:message code="bnActDef.label.label" default="Label" /></span>
-	    
 	    <span class="property-value" aria-labelledby="label-label"><g:fieldValue bean="${bnActDefInst}" field="label"/></span>
-	    
 	  </li>
 	</g:if>
-	
+	<g:if test="${bnActDefInst?.name}">
+	  <li class="fieldcontain">
+	    <span id="name-label" class="property-label"><g:message code="bnActDef.name.label" default="Name" /></span>
+	    <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${bnActDefInst}" field="name"/></span>
+	  </li>
+	</g:if>
 	<g:if test="${bnActDefInst?.type}">
 	  <li class="fieldcontain">
 	    <span id="type-label" class="property-label"><g:message code="bnActDef.type.label" default="Type" /></span>
-	    
 	    <span class="property-value" aria-labelledby="type-label"><g:fieldValue bean="${bnActDefInst}" field="type"/></span>
-	    
 	  </li>
 	</g:if>
-	
 	<g:if test="${bnActDefInst?.process}">
 	  <li class="fieldcontain">
 	    <span id="process-label" class="property-label"><g:message code="bnActDef.process.label" default="Process" /></span>
-	    
 	    <span class="property-value" aria-labelledby="process-label"><g:link controller="bnProcDef" action="show" id="${bnActDefInst?.process?.id}">${bnActDefInst?.process?.encodeAsHTML()}</g:link></span>
-	    
 	  </li>
 	</g:if>
-	
       </ol>
       <g:form>
 	<fieldset class="buttons">

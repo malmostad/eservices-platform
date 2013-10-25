@@ -9,6 +9,8 @@ class PxdFormdef implements Comparable {
   String uuid
   String appName
   String formName
+  Date dateCreated
+  Date lastUpdated
   
   SortedSet forms
   static hasMany = [forms: PxdFormdefVer]
@@ -22,6 +24,12 @@ class PxdFormdef implements Comparable {
     appName size: 1..120
     formName size: 1..120
     forms nullable: true
+    dateCreated nullable: true
+    lastUpdated nullable: true
+  }
+
+  String toString() {
+    path
   }
 
   //-------------------- Comparable --------------------

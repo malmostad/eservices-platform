@@ -21,29 +21,19 @@
       <table>
 	<thead>
 	  <tr>
-	    
 	    <g:sortableColumn property="path" title="${message(code: 'pxdFormdef.path.label', default: 'Path')}" />
-	    
-	    <g:sortableColumn property="uuid" title="${message(code: 'pxdFormdef.uuid.label', default: 'Uuid')}" />
-	    
 	    <g:sortableColumn property="appName" title="${message(code: 'pxdFormdef.appName.label', default: 'App Name')}" />
-	    
 	    <g:sortableColumn property="formName" title="${message(code: 'pxdFormdef.formName.label', default: 'Form Name')}" />
-	    
+	    <g:sortableColumn property="uuid" title="${message(code: 'pxdFormdef.uuid.label', default: 'Uuid')}" />
 	  </tr>
 	</thead>
 	<tbody>
 	  <g:each in="${pxdFormdefInstList}" status="i" var="pxdFormdefInst">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-	      
 	      <td><g:link action="show" id="${pxdFormdefInst.id}">${fieldValue(bean: pxdFormdefInst, field: "path")}</g:link></td>
-	      
-	      <td>${fieldValue(bean: pxdFormdefInst, field: "uuid")}</td>
-	      
 	      <td>${fieldValue(bean: pxdFormdefInst, field: "appName")}</td>
-	      
 	      <td>${fieldValue(bean: pxdFormdefInst, field: "formName")}</td>
-	      
+	      <td>${fieldValue(bean: pxdFormdefInst, field: "uuid")}</td>
 	    </tr>
 	  </g:each>
 	</tbody>

@@ -142,7 +142,7 @@ img {
 
 .nav {
 	background-color: #efefef;
-	padding: 0.5em 0.75em;
+	padding: 0 0.75em;
 	   -moz-box-shadow: 0 0 3px 1px #aaaaaa;
 	-webkit-box-shadow: 0 0 3px 1px #aaaaaa;
 	        box-shadow: 0 0 3px 1px #aaaaaa;
@@ -226,13 +226,14 @@ fieldset,
 }
 
 .fieldcontain {
-	margin-top: 1em;
+	margin-top: 0.8em;
 }
 
 .fieldcontain label,
 .fieldcontain .property-label {
 	color: #666666;
 	text-align: right;
+	font-size: 95%;
 	width: 25%;
 }
 
@@ -424,8 +425,8 @@ tr>td:last-child, tr>th:last-child {
 }
 
 td, th {
-	line-height: 1.5em;
-	padding: 0.5em 0.6em;
+	line-height: 1.3em;
+	padding: 0.4em;
 	text-align: left;
 	vertical-align: top;
 }
