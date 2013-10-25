@@ -1,6 +1,7 @@
 package org.motrice.coordinatrice.bonita
 
 import java.text.SimpleDateFormat
+import org.motrice.coordinatrice.MtfStartFormDefinition
 
 class BnProcDef implements Comparable {
   def grailsApplication
@@ -36,7 +37,7 @@ class BnProcDef implements Comparable {
     deployedMillis column: 'deployed_date_'
     undeployedMillis column: 'undeployed_date_'
   }
-  static transients = ['deployedTime', 'undeployedTime']
+  static transients = ['deployedTime', 'undeployedTime', 'startFormdef']
   static constraints = {
     uuid nullable: true, maxSize: 255, unique: true
     state nullable: true, maxSize: 255
@@ -58,8 +59,12 @@ class BnProcDef implements Comparable {
     return fmt.format(new java.util.Date(undeployedMillis))
   }
 
+  MtfStartFormDefinition getStartFormdef() {
+    MtfStartFormDefinition.findByProcessDefinitionUuid(uuid)
+  }
+
   String toString() {
-    "[${uuid}]"
+    label
   }
 
   //-------------------- Comparable --------------------

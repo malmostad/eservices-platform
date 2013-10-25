@@ -4,6 +4,7 @@
   <head>
     <meta name="layout" content="main"/>
       <g:set var="entityName" value="${message(code: 'bnProcDef.label', default: 'BnProcDef')}" />
+      <g:set var="startFormdef" value="${bnProcDefInst?.startFormdef}"/>
       <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
@@ -54,6 +55,12 @@
 	  <li class="fieldcontain">
 	    <span id="state-label" class="property-label"><g:message code="bnProcDef.state.label" default="State" /></span>
 	    <span class="property-value" aria-labelledby="state-label"><g:fieldValue bean="${bnProcDefInst}" field="state"/></span>
+	  </li>
+	</g:if>
+	<g:if test="${startFormdef}">
+	  <li class="fieldcontain">
+	    <span id="startFormdef-label" class="property-label"><g:message code="bnProcDef.startForm.label" default="Start form" /></span>
+	    <span class="property-value" aria-labelledby="state-label"><g:fieldValue bean="${startFormdef}" field="formpath"/></span>
 	  </li>
 	</g:if>
 	<g:if test="${bnProcDefInst?.activities}">

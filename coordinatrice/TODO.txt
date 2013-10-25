@@ -1,0 +1,6 @@
+-- Ta bort controllers för Mtf
+
+-- Ta bort domän MtfProcessActivityFormInstance
+
+processdefinitionuuid i mtf_start_form_definition saknar version, ingen exakt matchning
+ska authtypereq alltid vara USERSESSION?

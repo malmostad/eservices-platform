@@ -1,5 +1,7 @@
 package org.motrice.coordinatrice.bonita
 
+import org.motrice.coordinatrice.MtfActivityFormDefinition
+
 class BnActDef implements Comparable {
 
   String uuid
@@ -24,6 +26,7 @@ class BnActDef implements Comparable {
     processUuid column: 'process_uuid_'
     process column: 'process_dbid_'
   }
+  static transients = ['activityFormDef']
   static constraints = {
     uuid nullable: true, maxSize: 255, unique: true
     name nullable: true, maxSize: 255
@@ -32,8 +35,12 @@ class BnActDef implements Comparable {
     processUuid nullable: true, maxSize: 255
   }
 
+  MtfActivityFormDefinition getActivityFormDef() {
+    MtfActivityFormDefinition.findByActivityDefinitionUuid()
+  }
+
   String toString() {
-    "[${uuid}]"
+    label
   }
 
   //-------------------- Comparable --------------------
