@@ -257,10 +257,10 @@
                     </properties>
                   </deployable>
                    <deployable>
-                    <location>${project.basedir}/../inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war</location>
+                    <location>${project.basedir}/../inherit-service/inherit-service-rest-server/target/restrice.war</location>
                     <type>war</type>
                     <properties>
-                      <context>/inherit-service-rest-server-1.0-SNAPSHOT</context>
+                      <context>/restrice</context>
                     </properties>
                   </deployable>
                   <deployable>
