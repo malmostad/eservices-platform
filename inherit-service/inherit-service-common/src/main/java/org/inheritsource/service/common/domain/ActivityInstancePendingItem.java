@@ -33,20 +33,11 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 
 	private static final long serialVersionUID = 6551923994738613262L;
 
-	Date expectedEndDate;
 	Set<UserInfo> candidates;
 	UserInfo assignedUser;
 	
 	public ActivityInstancePendingItem() {
 		
-	}
-
-	public Date getExpectedEndDate() {
-		return expectedEndDate;
-	}
-
-	public void setExpectedEndDate(Date expectedEndDate) {
-		this.expectedEndDate = expectedEndDate;
 	}
 
 	public Set<UserInfo> getCandidates() {
@@ -73,8 +64,6 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 				+ ((assignedUser == null) ? 0 : assignedUser.hashCode());
 		result = prime * result
 				+ ((candidates == null) ? 0 : candidates.hashCode());
-		result = prime * result
-				+ ((expectedEndDate == null) ? 0 : expectedEndDate.hashCode());
 		return result;
 	}
 
@@ -97,18 +86,12 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 				return false;
 		} else if (!candidates.equals(other.candidates))
 			return false;
-		if (expectedEndDate == null) {
-			if (other.expectedEndDate != null)
-				return false;
-		} else if (!expectedEndDate.equals(other.expectedEndDate))
-			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
-		return "ActivityInstancePendingItem [expectedEndDate="
-				+ expectedEndDate + ", candidates=" + candidates
+		return "ActivityInstancePendingItem [candidates=" + candidates
 				+ ", assignedUser=" + assignedUser 
 				+ " " + super.toString() + "]";
 	}
