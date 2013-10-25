@@ -256,6 +256,13 @@
                       <context>/orbeon</context>
                     </properties>
                   </deployable>
+                   <deployable>
+                    <location>${project.basedir}/../inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war</location>
+                    <type>war</type>
+                    <properties>
+                      <context>/inherit-service-rest-server-1.0-SNAPSHOT</context>
+                    </properties>
+                  </deployable>
                   <deployable>
                     <type>war</type>
                     <properties>
