@@ -25,18 +25,23 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>3.6.10.Final</version>
+			<version>4.2.6.Final</version>
 		</dependency>
+		            
 		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>4.2.6.Final</version>
+		</dependency>
+		<!-- dependency>
 			<groupId>javassist</groupId>
 			<artifactId>javassist</artifactId>
 			<version>3.12.1.GA</version>
-			<scope>provided</scope>
-		</dependency>
+		</dependency-->
 		<dependency>
-		    <groupId>postgresql</groupId>
+			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.2-1002.jdbc4</version>
+			<version>9.2-1002.jdbc4</version> 
 		</dependency>
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -75,13 +80,13 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>3.6.10.Final</version>
+				<version>4.2.6.Final</version>
 			</dependency>
+			            
 			<dependency>
-				<groupId>javassist</groupId>
-				<artifactId>javassist</artifactId>
-				<version>3.12.1.GA</version>
-				<scope>provided</scope>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>4.2.6.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>postgresql</groupId>
@@ -96,12 +101,13 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>3.6.10.Final</version>
+				<version>4.2.6.Final</version>
 			</dependency>
+			            
 			<dependency>
-				<groupId>javassist</groupId>
-				<artifactId>javassist</artifactId>
-				<version>3.12.1.GA</version>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>4.2.6.Final</version>
 			</dependency>
 			<dependency>
 				<groupId>postgresql</groupId>
