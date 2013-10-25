@@ -12,6 +12,6 @@ import org.junit.*
 class BnActDefTests {
 
     void testSomething() {
-       fail "Implement me"
+
     }
 }

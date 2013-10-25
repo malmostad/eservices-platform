@@ -12,6 +12,6 @@ import org.junit.*
 class PxdFormdefTests {
 
     void testSomething() {
-       fail "Implement me"
+
     }
 }

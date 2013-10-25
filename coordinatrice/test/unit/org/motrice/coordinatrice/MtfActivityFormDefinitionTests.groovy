@@ -12,6 +12,6 @@ import org.junit.*
 class MtfActivityFormDefinitionTests {
 
     void testSomething() {
-       fail "Implement me"
+
     }
 }

@@ -1,7 +1,5 @@
 package org.motrice.coordinatrice.pxd
 
-
-
 import grails.test.mixin.*
 import org.junit.*
 
@@ -12,6 +10,6 @@ import org.junit.*
 class PxdFormdefVerTests {
 
     void testSomething() {
-       fail "Implement me"
+
     }
 }
