@@ -49,6 +49,7 @@ import org.inheritsource.service.common.domain.ProcessInstanceListItem;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.UserInfo;
+import org.inheritsource.service.common.util.ConfigUtil;
 import org.inheritsource.service.common.util.ParameterEncoder;
 import org.inheritsource.service.rest.client.domain.DocBoxFormData;
 import org.restlet.Client;
@@ -79,7 +80,11 @@ public class InheritServiceClient {
 	XStream jsonxstream;
 	
 	public InheritServiceClient() {
-		serverBaseUrl = "http://localhost:58080/inherit-service-rest-server-1.0-SNAPSHOT/";
+		serverBaseUrl = ConfigUtil.getConfigProperties().getProperty("rest_uri", "http://localhost:58080/inherit-service-rest-server-1.0-SNAPSHOT/");
+		serverBaseUrl = serverBaseUrl.trim();
+		if (!serverBaseUrl.endsWith("/")) {
+			serverBaseUrl += "/";
+		}
 		xstream = initXStream();
 		jsonxstream = initJsonXStream();
 	}

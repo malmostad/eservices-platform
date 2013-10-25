@@ -18,9 +18,9 @@
       <destName>exist.war</destName>
     </file>
     <file>
-      <source>../inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war</source>
+      <source>../inherit-service/inherit-service-rest-server/target/restrice.war</source>
       <outputDirectory>/webapps</outputDirectory>
-      <destName>inherit-service-rest-server-1.0-SNAPSHOT.war</destName>
+      <destName>restrice.war</destName>
     </file>
     <file>
       <source>cms/target/cms.war</source>

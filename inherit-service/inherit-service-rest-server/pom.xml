@@ -57,4 +57,7 @@
 		</dependency>
 		
 	</dependencies>
+	<build>
+	<finalName>restrice</finalName>
+	</build>
 </project>
