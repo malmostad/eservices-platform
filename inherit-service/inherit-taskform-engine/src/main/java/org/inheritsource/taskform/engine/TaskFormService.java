@@ -223,6 +223,12 @@ public class TaskFormService {
 	 * @param userId
 	 * @return
 	 */
+	
+	
+	/*
+	 * TODO: The field item.setProcessLabel("TODO"); in ActivitiEngineService 
+	 * shall be handled here! FIXME
+	 */
 	public List<InboxTaskItem> getInboxTaskItems(String userId) {
 		// activityDefinitionUUID vill bonita form engine ha det? lägg i så fall
 		// till uppslag på lämplig plats....
