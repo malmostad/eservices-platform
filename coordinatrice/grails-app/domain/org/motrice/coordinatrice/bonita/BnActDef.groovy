@@ -36,7 +36,7 @@ class BnActDef implements Comparable {
   }
 
   MtfActivityFormDefinition getActivityFormDef() {
-    MtfActivityFormDefinition.findByActivityDefinitionUuid()
+    MtfActivityFormDefinition.findByActivityDefinitionUuid(uuid)
   }
 
   String toString() {
