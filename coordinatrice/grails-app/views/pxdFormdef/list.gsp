@@ -33,7 +33,7 @@
 	      <td><g:link action="show" id="${pxdFormdefInst.id}">${fieldValue(bean: pxdFormdefInst, field: "path")}</g:link></td>
 	      <td>${fieldValue(bean: pxdFormdefInst, field: "appName")}</td>
 	      <td>${fieldValue(bean: pxdFormdefInst, field: "formName")}</td>
-	      <td>${fieldValue(bean: pxdFormdefInst, field: "uuid")}</td>
+	      <td><g:abbr text="${pxdFormdefInst?.uuid}"/></td>
 	    </tr>
 	  </g:each>
 	</tbody>
