@@ -50,60 +50,48 @@ public class ConfirmDispatcher extends MyCasesBaseComponent {
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
 		
-		String docIdParam = getPublicRequestParameter(request, "document");
-        // default confirm path
-        String path = "/mycases/form/confirm";
-
-        String referrer = request.getHeader("referer");
-        
-        log.error("referrer: " + referrer);
-        
-        // some sample confirm urls with referrer urls
-        
-        // confirm /site/public/mycases/startforms/start/demo-ansokan/confirm?docId=772dd5ca-4b7c-4c34-bb96-af88e8bfd3b6
-        // referrer http://eservices.malmo.se/site/public/mycases/form?processActivityFormInstanceId=13
-        
-        // confirm /site/public/mycases/startforms/start/demo-ansokan/confirm?docId=729d9b5e-5cbd-4050-bd29-cedd447701f0
-        // referrer "http://eservices.malmo.se/site/mycases/startforms/start/demo-ansokan"
-        
-        // try to find out channel from referrer url
-        StringBuffer confirmUrl = new StringBuffer();
-        boolean partOfChannelUrl = false;
-        if (referrer != null) {
-                String[] splits = referrer.split("/");
-                for (String split : splits) {
-                        if (partOfChannelUrl) {
-                                confirmUrl.append("/");
-                                confirmUrl.append(split);
-                        }
-                        if ("site".equals(split)) {
-                                partOfChannelUrl = true;
-                        }
-                        if ("mycases".equals(split)) {
-                                partOfChannelUrl = false;
-                        }
-                }
-                path = confirmUrl.toString() + "/form/confirm";
-        }
-        
-        log.error("path: " + path + " isSecure=" + request.isSecure() + " protocol=" + request.getProtocol());
-        
-        String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443)? "" : ":" + request.getLocalPort();
-        String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
-        String redirectUrl = protocolStr + "://" + request.getServerName() + portStr + "/site" + path + "?document=" + docIdParam;
-
-        log.error("portStr: " + portStr + " protocolStr=" + protocolStr + " redirectUrl=" + redirectUrl + " request.getLocalPort()" + request.getLocalPort());
-
-        try {
-                response.sendRedirect(redirectUrl);
-        } catch (IOException e) {
-                log.error("Could not send redirect response: " + e);
-        }
-        
-        //Map<String, String[]> params = new HashMap<String, String[]>();
-        //params.put("document", docIdParams);
-        
-        //HstResponseUtils.sendRedirect(request, response, path, params);
+		String[] docIdParams =  getPublicRequestParameters(request, "document");
+		// default confirm path
+		String path = "/mycases/form/confirm";
+	
+		String referrer = request.getHeader("referer");
+		
+		log.error("referrer: " + referrer);
+		
+		// some sample confirm urls with referrer urls
+		
+		//  confirm  /site/public/mycases/startforms/start/demo-ansokan/confirm?docId=772dd5ca-4b7c-4c34-bb96-af88e8bfd3b6
+		//  referrer http://eservices.malmo.se/site/public/mycases/form?processActivityFormInstanceId=13
+		
+		// confirm   /site/public/mycases/startforms/start/demo-ansokan/confirm?docId=729d9b5e-5cbd-4050-bd29-cedd447701f0
+		// referrer  "http://eservices.malmo.se/site/mycases/startforms/start/demo-ansokan"
+		
+		// try to find out channel from referrer url
+		StringBuffer confirmUrl = new StringBuffer();
+		boolean partOfChannelUrl = false;
+		if (referrer != null) {
+			String[] splits = referrer.split("/");
+			for (String split : splits) {
+				if (partOfChannelUrl) {
+					confirmUrl.append("/");
+					confirmUrl.append(split);
+				}
+				if ("site".equals(split)) {
+					partOfChannelUrl = true;
+				}
+				if ("mycases".equals(split)) {
+					partOfChannelUrl = false;
+				}
+			}
+			path = confirmUrl.toString() + "/form/confirm";
+		}
+		
+		log.error("path: " + path + " isSecure=" + request.isSecure() + " protocol=" + request.getProtocol());
+				
+		Map<String, String[]> params = new HashMap<String, String[]>();
+		params.put("document", docIdParams);
+		
+		HstResponseUtils.sendRedirect(request, response, path, params);
 		
 	}
 }

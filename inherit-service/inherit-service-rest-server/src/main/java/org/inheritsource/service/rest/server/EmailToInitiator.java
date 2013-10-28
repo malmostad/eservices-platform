@@ -24,31 +24,24 @@
 package org.inheritsource.service.rest.server;
 
 import java.util.*;
+import java.util.logging.Logger;
+
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.activation.*;
-
-import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.common.util.ParameterEncoder;
 import org.inheritsource.taskform.engine.TaskFormService;
-import org.restlet.resource.ServerResource;
-import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
 
-public class EmailToInitiator extends ServerResource {
-	//TODO Place all configurable strings in resource config file
-	private static final String SENDERADDRESS="No Reply Malmö <noreply@malmo.se>";
-//	private static final String SENDERADDRESS="info@inherit.se";
-	private static final String SMTPSERVER="relay.malmo.se";
-//	private static final String SMTPSERVER="smtp.bredband.net";
-	private static final String ERRORRECIPIENT="malmo@inherit.se";
-	private static final String ERRORMESG1 = "Mail till processInitiator, fel: processInstanceDetails == null";
-	private static final String ERRORMESG2 = "Mail till processInitiator, fel: processInstanceUuid tom eller null";
+public class EmailToInitiator extends Emailer {
 	TaskFormService engine = new TaskFormService();
 	MyProfile myProfile = null;
+
+	public EmailToInitiator() { 
+		super();
+	}
 	
 	@Post
 	public  void emailToInitiator() {
@@ -61,6 +54,7 @@ public class EmailToInitiator extends ServerResource {
 		String mailSubject = ParameterEncoder.decode((String)getRequestAttributes().get("mailSubject"));
 		String mailBody = ParameterEncoder.decode((String)getRequestAttributes().get("mailBody"));
 
+		log.info("processInstanceUuid: " + processInstanceUuid);
 		//System.out.println("processInstanceUuid: " + processInstanceUuid);
 		//System.out.println("activityInstanceUuid: " + activityInstanceUuid);
 		//System.out.println("mailSubject: " + mailSubject);
@@ -98,24 +92,25 @@ public class EmailToInitiator extends ServerResource {
 				to = myProfile.getEmail();
 			} else {
 				to=ERRORRECIPIENT;
-				mailBody = ERRORMESG1; 
+				mailBody = ERRORMESSAGE2; 
 			}
 		} else {
 			to=ERRORRECIPIENT;
-			mailBody = ERRORMESG2; 
+			mailBody = ERRORMESSAGE3; 
 		}
 		try{
 			// Create a default MimeMessage object.
 			MimeMessage message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(from));
+			message.setFrom(new InternetAddress(from.replaceAll("\\+"," ")));
 			message.addRecipient(Message.RecipientType.TO,
 					new InternetAddress(to));
+
 			message.setSubject(mailSubject.replaceAll("\\+"," "));
 			message.setText(mailBody.replaceAll("\\+"," "));
 			
 			// Send message
+			log.info("EmailToInitiator: Sending message to " + to  + " via smtpserver: " + SMTPSERVER);
 			Transport.send(message);
-			System.out.println("Message Sent...");
 		}catch (MessagingException e) {
 			e.printStackTrace();
 		}

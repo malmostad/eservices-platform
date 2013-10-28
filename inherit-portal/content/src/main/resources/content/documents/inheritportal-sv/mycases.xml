@@ -1361,7 +1361,7 @@
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>5746eaef-7e1b-4ad2-8f63-39198f24d8e6</sv:value>
+            <sv:value>d1f03861-a724-484e-8364-d83a8406af71</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -1386,13 +1386,13 @@
             <sv:value>2013-05-20T11:22:24.444+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2013-05-20T14:17:12.241+02:00</sv:value>
+            <sv:value>2013-10-28T09:00:02.118+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-05-20T14:20:14.386+02:00</sv:value>
+            <sv:value>2013-10-28T09:00:16.826+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>fe5a833e-7f87-42e4-9f5a-e9411d27fdee</sv:value>
