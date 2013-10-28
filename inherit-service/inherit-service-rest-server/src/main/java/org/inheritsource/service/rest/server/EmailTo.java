@@ -24,23 +24,19 @@
 package org.inheritsource.service.rest.server;
 
 import java.util.*;
+
 import javax.mail.*;
 import javax.mail.internet.*;
 import org.inheritsource.service.common.util.ParameterEncoder;
-//import org.inheritsource.taskform.engine.TaskFormService;
-import org.restlet.resource.ServerResource;
-import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
-public class EmailTo extends ServerResource {
-	//TODO Place all configurable strings in resource config file
-//	private static final String SENDERADDRESS="No Reply Malmö <noreply@malmo.se>";
-//	private static final String SMTPSERVER="relay.malmo.se";
-	private static final String SMTPSERVER="smtp.bredband.net";
-	private static final String ERRORRECIPIENT="malmo@inherit.se";
-	private static final String ERRORMESG = "Mail till användare, fel: processInstanceUuid tom eller null";
+public class EmailTo extends Emailer {
+	
+	public EmailTo() {
+		super();
+	}
 
-	@Post
+    @Post
 	public  void emailTo() {
 		// the recipient address is the emailAddress of the process initiator
 		//uri-template: /emailTo/{mailTo}/{mailSubject}/{mailBody}
@@ -49,6 +45,8 @@ public class EmailTo extends ServerResource {
 		String mailSubject = ParameterEncoder.decode((String)getRequestAttributes().get("mailSubject"));
 		String mailBody = ParameterEncoder.decode((String)getRequestAttributes().get("mailBody"));
 
+		//System.out.println("mailTo: " + mailTo);
+		//System.out.println("mailFrom: " + mailFrom);
 		//System.out.println("mailSubject: " + mailSubject);
 		//System.out.println("mailBody: " + mailBody);
 
@@ -63,24 +61,28 @@ public class EmailTo extends ServerResource {
 		if (mailTo  != null && ( mailTo.trim().length() > 0 )){
 		} else {
 			mailTo=ERRORRECIPIENT;
-			mailBody = ERRORMESG; 
+			mailBody = ERRORMESSAGE1; 
 		}
 		try{
 			// Create a default MimeMessage object.
 			MimeMessage message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(mailFrom));
+			message.setFrom(new InternetAddress(mailFrom.replaceAll("\\+"," ")));
 			message.addRecipient(Message.RecipientType.TO,
 					new InternetAddress(mailTo));
+
 			message.setSubject(mailSubject.replaceAll("\\+"," "));
 			message.setText(mailBody.replaceAll("\\+"," "));
 			
 			// Send message
+			log.info("EmailTo: Sending message to " + mailTo + " via smtpserver: " + SMTPSERVER);
 			Transport.send(message);
-			System.out.println("Message Sent...");
 		}catch (MessagingException e) {
 			e.printStackTrace();
 		}
 		//		return result;
 		return;
 	}
+
+
+
 }
