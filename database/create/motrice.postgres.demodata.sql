@@ -59,7 +59,7 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'miljoforvaltningen/anmalan-hemkompostering--v002',
-            'Arendeprocess',
+            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning',
             ''
 );
 
