@@ -601,7 +601,6 @@
             <sv:value>ce259d68-3950-4519-aecf-5470866e4b3f</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
-            <sv:value>live</sv:value>
             <sv:value>preview</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:related___pathreference" sv:type="String">
@@ -611,10 +610,10 @@
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostd:state" sv:type="String">
-            <sv:value>published</sv:value>
+            <sv:value>unpublished</sv:value>
           </sv:property>
           <sv:property sv:name="hippostd:stateSummary" sv:type="String">
-            <sv:value>live</sv:value>
+            <sv:value>new</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
             <sv:value>admin</sv:value>
@@ -2553,7 +2552,7 @@ du har registrerat ärendet klickar du på "Klart! Skicka vidare" för att skick
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-10-29T13:53:56.325+01:00</sv:value>
+            <sv:value>2013-10-29T15:05:32.171+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>a3121987-db21-4a3e-980b-03bf76561c64</sv:value>
@@ -4417,6 +4416,17 @@ fortskrida.&lt;/p&gt;
     <sv:property sv:name="jcr:uuid" sv:type="String">
       <sv:value>d1950d33-e435-47f2-b8a7-5f7d95f5fccd</sv:value>
     </sv:property>
+    <sv:node sv:name="hippo:translation">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippo:translation</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:language" sv:type="String">
+        <sv:value/>
+      </sv:property>
+      <sv:property sv:name="hippo:message" sv:type="String">
+        <sv:value>Signera</sv:value>
+      </sv:property>
+    </sv:node>
     <sv:node sv:name="signform">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>inheritportal:textdocument</sv:value>
@@ -4426,7 +4436,7 @@ fortskrida.&lt;/p&gt;
         <sv:value>hippotranslation:translated</sv:value>
       </sv:property>
       <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>23519019-f91c-4c61-b79e-c3e315add540</sv:value>
+        <sv:value>19aed03f-ef5b-45a8-9973-e2000c3e0cb0</sv:value>
       </sv:property>
       <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
         <sv:value>live</sv:value>
@@ -4434,6 +4444,9 @@ fortskrida.&lt;/p&gt;
       </sv:property>
       <sv:property sv:name="hippo:related___pathreference" sv:type="String">
         <sv:value>mycases/signform</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostd:holder" sv:type="String">
+        <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostd:state" sv:type="String">
         <sv:value>published</sv:value>
@@ -4448,13 +4461,13 @@ fortskrida.&lt;/p&gt;
         <sv:value>2013-09-19T14:05:19.846+02:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-        <sv:value>2013-09-19T14:05:54.308+02:00</sv:value>
+        <sv:value>2013-10-29T15:21:11.281+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
         <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-        <sv:value>2013-09-19T14:05:57.882+02:00</sv:value>
+        <sv:value>2013-10-29T15:21:18.833+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippotranslation:id" sv:type="String">
         <sv:value>2d433ef6-d5b0-4258-9d0c-1b2560a09f83</sv:value>
@@ -4463,7 +4476,7 @@ fortskrida.&lt;/p&gt;
         <sv:value>sv</sv:value>
       </sv:property>
       <sv:property sv:name="inheritportal:summary" sv:type="String">
-        <sv:value>Signera summary</sv:value>
+        <sv:value/>
       </sv:property>
       <sv:property sv:name="inheritportal:title" sv:type="String">
         <sv:value>Signera dokument</sv:value>
@@ -4481,23 +4494,14 @@ fortskrida.&lt;/p&gt;
           <sv:value>&lt;html&gt;
 &lt;body&gt;
 
-&lt;p&gt;En signer bla bla tjoho&lt;/p&gt;
+&lt;p&gt;Kontrollera att dokumenten nedan är korrekta. En elektronisk signatur är
+juridiskt bindande. Tryck på knappen "Gå till signering" för att skriva under
+med BankId.&lt;/p&gt;
 
 &lt;/body&gt;
 &lt;/html&gt;</sv:value>
         </sv:property>
       </sv:node>
-    </sv:node>
-    <sv:node sv:name="hippo:translation">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hippo:translation</sv:value>
-      </sv:property>
-      <sv:property sv:name="hippo:language" sv:type="String">
-        <sv:value/>
-      </sv:property>
-      <sv:property sv:name="hippo:message" sv:type="String">
-        <sv:value>Signera</sv:value>
-      </sv:property>
     </sv:node>
   </sv:node>
   <sv:node sv:name="signformconfirm">
@@ -4511,6 +4515,17 @@ fortskrida.&lt;/p&gt;
     <sv:property sv:name="jcr:uuid" sv:type="String">
       <sv:value>16f15b0a-0011-4bfd-89f2-c78cc224b9de</sv:value>
     </sv:property>
+    <sv:node sv:name="hippo:translation">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippo:translation</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:language" sv:type="String">
+        <sv:value/>
+      </sv:property>
+      <sv:property sv:name="hippo:message" sv:type="String">
+        <sv:value>Bekräfta signering</sv:value>
+      </sv:property>
+    </sv:node>
     <sv:node sv:name="signformconfirm">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>inheritportal:textdocument</sv:value>
@@ -4520,7 +4535,7 @@ fortskrida.&lt;/p&gt;
         <sv:value>hippotranslation:translated</sv:value>
       </sv:property>
       <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>9fc7e604-7d85-482f-a5ce-c64d0535ec5d</sv:value>
+        <sv:value>38f7d5bb-a3fc-4dd0-94aa-924e6819f0b6</sv:value>
       </sv:property>
       <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
         <sv:value>live</sv:value>
@@ -4528,6 +4543,9 @@ fortskrida.&lt;/p&gt;
       </sv:property>
       <sv:property sv:name="hippo:related___pathreference" sv:type="String">
         <sv:value>mycases/signformconfirm</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostd:holder" sv:type="String">
+        <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostd:state" sv:type="String">
         <sv:value>published</sv:value>
@@ -4542,13 +4560,13 @@ fortskrida.&lt;/p&gt;
         <sv:value>2013-09-19T14:38:26.760+02:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-        <sv:value>2013-09-19T14:38:50.973+02:00</sv:value>
+        <sv:value>2013-10-29T15:22:04.371+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
         <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-        <sv:value>2013-09-20T12:06:08.165+02:00</sv:value>
+        <sv:value>2013-10-29T15:22:11.604+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippotranslation:id" sv:type="String">
         <sv:value>d4dbde86-ca11-443b-9f25-20a347b5ded7</sv:value>
@@ -4581,17 +4599,6 @@ fortskrida.&lt;/p&gt;
 &lt;/html&gt;</sv:value>
         </sv:property>
       </sv:node>
-    </sv:node>
-    <sv:node sv:name="hippo:translation">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hippo:translation</sv:value>
-      </sv:property>
-      <sv:property sv:name="hippo:language" sv:type="String">
-        <sv:value/>
-      </sv:property>
-      <sv:property sv:name="hippo:message" sv:type="String">
-        <sv:value>Bekräfta signering</sv:value>
-      </sv:property>
     </sv:node>
   </sv:node>
 </sv:node>
