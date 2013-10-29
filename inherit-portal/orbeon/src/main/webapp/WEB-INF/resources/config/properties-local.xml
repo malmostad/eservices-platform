@@ -35,7 +35,7 @@
   <property as="xs:string" name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
 
   <property as="xs:anyURI" name="oxf.fr.detail.send.success.uri.*.*"
-          value="http://eservices.malmo.se/site/mycases/form/confirmdispatcher"/>
+          value="https://eservices.malmo.se/site/mycases/form/confirmdispatcher"/>
   <property as="xs:string" name="oxf.fr.detail.send.success.method.*.*" value="get"/>
 
 
