@@ -258,8 +258,8 @@ INSERT INTO mtf_activity_form_definition(
             )
        VALUES (
             nextval('hibernate_sequence'), 
-            'Miljoforvaltningen_hemkompostering_matavfall--1.0--Registrering', 
-            'miljoforvaltningen/registrering--v002', 
+            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--Registrering', 
+            'none', 
             NULL
 );
 INSERT INTO mtf_activity_form_definition(
@@ -270,8 +270,8 @@ INSERT INTO mtf_activity_form_definition(
             )
        VALUES (
             nextval('hibernate_sequence'), 
-            'Miljoforvaltningen_hemkompostering_matavfall--1.0--Handlaggning', 
-            'miljoforvaltningen/handlaggning--v002', 
+            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--Handlaggning', 
+            'none', 
             NULL
 );
 INSERT INTO mtf_activity_form_definition(
@@ -282,7 +282,7 @@ INSERT INTO mtf_activity_form_definition(
             )
        VALUES (
             nextval('hibernate_sequence'), 
-            'Miljoforvaltningen_hemkompostering_matavfall--1.0--Beslut', 
+            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--Beslut', 
             'miljoforvaltningen/beslut--v003', 
             NULL
 );
@@ -294,8 +294,8 @@ INSERT INTO mtf_activity_form_definition(
             )
        VALUES (
             nextval('hibernate_sequence'), 
-            'Miljoforvaltningen_hemkompostering_matavfall--1.0--Expediering', 
-            'miljoforvaltningen/expediering--v002', 
+            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--Expediering', 
+            'none', 
             NULL
 );
 INSERT INTO mtf_activity_form_definition(
@@ -306,8 +306,8 @@ INSERT INTO mtf_activity_form_definition(
             )
        VALUES (
             nextval('hibernate_sequence'), 
-            'Miljoforvaltningen_hemkompostering_matavfall--1.0--Delgivning', 
-            'miljoforvaltningen/delgivning--v002', 
+            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--Delgivning', 
+            'none', 
             NULL
 );
 INSERT INTO mtf_activity_form_definition(
