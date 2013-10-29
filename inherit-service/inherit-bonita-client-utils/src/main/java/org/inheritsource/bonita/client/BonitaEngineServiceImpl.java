@@ -776,19 +776,19 @@ public class BonitaEngineServiceImpl {
 	
 	private ProcessInstanceDetails getProcessInstanceDetailsByUuid(ProcessInstanceUUID piUuid) throws Exception {
 		ProcessInstanceDetails result = null;
-		log.severe("getProcessInstanceDetailsByUuid: " + (piUuid != null ? piUuid : "NONE"));
+		//log.severe("getProcessInstanceDetailsByUuid: " + (piUuid != null ? piUuid : "NONE"));
 		ProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(piUuid);
 		if (pi != null) {
 			result = new ProcessInstanceDetails();
-			log.severe("loading brief properties: ");
+			//log.severe("loading brief properties: ");
 			loadProcessInstanceBriefProperties(pi, result);
-			log.severe("brief properties: " + result);
+			//log.severe("brief properties: " + result);
 			Set<ActivityInstance> ais = pi.getActivities();
-			log.severe("ais count: " + (ais != null ? ais.size() : "NONE"));
+			//log.severe("ais count: " + (ais != null ? ais.size() : "NONE"));
 			for (ActivityInstance ai : ais) {
-				log.severe("call createActivityInstanceItem"); 
+				//log.severe("call createActivityInstanceItem"); 
 				ActivityInstanceItem item = createActivityInstanceItem(ai);
-				log.severe("item createActivityInstanceItem=" + item); 
+				//log.severe("item createActivityInstanceItem=" + item); 
 				if (item != null) {
 					result.addActivityInstanceItem(item);
 				}
@@ -1005,9 +1005,9 @@ public class BonitaEngineServiceImpl {
 	
 	private ActivityInstanceItem createActivityInstanceItem(ActivityInstance ai) {
 		ActivityInstanceItem result = null;
-		log.severe("createActivityInstanceItem START: " + ai);
+		//log.severe("createActivityInstanceItem START: " + ai);
 		if (ai != null) {
-			log.severe("BPMN activity uuid: " + ai.getActivityInstanceId() + " label=" + ai.getActivityLabel());
+			//log.severe("BPMN activity uuid: " + ai.getActivityInstanceId() + " label=" + ai.getActivityLabel());
 			if (ai.getState().equals(ActivityState.FINISHED)) {
 				// Finished activity 
 				if (ai.getType() == ActivityDefinition.Type.Human) {
