@@ -776,14 +776,19 @@ public class BonitaEngineServiceImpl {
 	
 	private ProcessInstanceDetails getProcessInstanceDetailsByUuid(ProcessInstanceUUID piUuid) throws Exception {
 		ProcessInstanceDetails result = null;
-		
+		log.severe("getProcessInstanceDetailsByUuid: " + (piUuid != null ? piUuid : "NONE"));
 		ProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(piUuid);
 		if (pi != null) {
 			result = new ProcessInstanceDetails();
+			log.severe("loading brief properties: ");
 			loadProcessInstanceBriefProperties(pi, result);
+			log.severe("brief properties: " + result);
 			Set<ActivityInstance> ais = pi.getActivities();
+			log.severe("ais count: " + (ais != null ? ais.size() : "NONE"));
 			for (ActivityInstance ai : ais) {
+				log.severe("call createActivityInstanceItem"); 
 				ActivityInstanceItem item = createActivityInstanceItem(ai);
+				log.severe("item createActivityInstanceItem=" + item); 
 				if (item != null) {
 					result.addActivityInstanceItem(item);
 				}
@@ -989,14 +994,18 @@ public class BonitaEngineServiceImpl {
 	}
 	
 	private void loadActivityInstancePendingItem(ActivityInstance src, ActivityInstancePendingItem dst) {
-		dst.setCandidates(createTemporaryUserInfoSet(src.getLastAssignUpdate().getCandidates()));
-		dst.setAssignedUser(createTemporaryUserInfo(src.getLastAssignUpdate().getAssignedUserId()));
-		dst.setExpectedEndDate(src.getExpectedEndDate());
+		if (src != null) {
+			if (src.getLastAssignUpdate() != null) {
+				dst.setCandidates(createTemporaryUserInfoSet(src.getLastAssignUpdate().getCandidates()));
+				dst.setAssignedUser(createTemporaryUserInfo(src.getLastAssignUpdate().getAssignedUserId()));
+			}
+			dst.setExpectedEndDate(src.getExpectedEndDate());
+		}
 	}
 	
 	private ActivityInstanceItem createActivityInstanceItem(ActivityInstance ai) {
 		ActivityInstanceItem result = null;
-		
+		log.severe("createActivityInstanceItem START: " + ai);
 		if (ai != null) {
 			log.severe("BPMN activity uuid: " + ai.getActivityInstanceId() + " label=" + ai.getActivityLabel());
 			if (ai.getState().equals(ActivityState.FINISHED)) {
