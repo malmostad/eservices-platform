@@ -2522,7 +2522,7 @@ du har registrerat ärendet klickar du på "Klart! Skicka vidare" för att skick
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>32e4506b-37f7-4215-b92b-c89bc7fd32ba</sv:value>
+            <sv:value>7e621b2b-04b0-4130-af53-a03e0c092a5d</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -2547,13 +2547,13 @@ du har registrerat ärendet klickar du på "Klart! Skicka vidare" för att skick
             <sv:value>2013-10-29T09:50:17.868+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2013-10-29T10:39:58.878+01:00</sv:value>
+            <sv:value>2013-10-29T13:52:58.122+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-10-29T10:47:11.684+01:00</sv:value>
+            <sv:value>2013-10-29T13:53:56.325+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>a3121987-db21-4a3e-980b-03bf76561c64</sv:value>
@@ -2581,7 +2581,7 @@ du har registrerat ärendet klickar du på "Klart! Skicka vidare" för att skick
 &lt;body&gt;
 &lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"&gt;När
 ärendet är handlagt klickar du på "Klart! Skicka vidare" nedan för att skicka
-vidare ärendent till BESLUT. De personer som har mandat att besluta i ärendet
+vidare ärendet till BESLUT. De personer som har mandat att besluta i ärendet
 kommer då att få det i sin inkorg.&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br/&gt;
 
 &lt;/body&gt;
