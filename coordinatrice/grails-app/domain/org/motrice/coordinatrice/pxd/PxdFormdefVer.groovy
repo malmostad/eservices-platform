@@ -1,6 +1,8 @@
 package org.motrice.coordinatrice.pxd
 
 class PxdFormdefVer implements Comparable {
+  // The magic draft number that means "published"
+  static Integer PUBLISHED = 9999
 
   String path
   String appName
@@ -30,6 +32,10 @@ class PxdFormdefVer implements Comparable {
     formdef nullable: false
     dateCreated nullable: true
     lastUpdated nullable: true
+  }
+
+  static allPublishedForms() {
+    PxdFormdefVer.findAllByDraft(PUBLISHED, [sort: 'path'])
   }
 
   String toString() {

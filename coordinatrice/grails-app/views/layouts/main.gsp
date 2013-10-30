@@ -15,12 +15,16 @@
 		<link rel="stylesheet" href="${resource(dir: 'css', file: 'main.css')}" type="text/css">
 		<link rel="stylesheet" href="${resource(dir: 'css', file: 'mobile.css')}" type="text/css">
 		<g:layoutHead/>
+
 		<r:layoutResources />
 	</head>
 	<body>
 		<div id="grailsLogo" role="banner"><a href="http://motrice.org"><img src="${resource(dir: 'images', file: 'coordinatrice43.png')}" alt="Motrice"/></a><span class="meta">coordinatrice <g:meta name="app.version"/></span></div>
 		<g:layoutBody/>
-		<div class="footer" role="contentinfo"></div>
+		<div id="motriceLogo" class="footer" role="contentinfo">
+		  <a href="http://motrice.org"><img src="${resource(dir: 'images', file: 'motrice_logo99x27.png')}" alt="Motrice"/></a>
+		  <span class="meta">${message(code: 'motrice.slogan', default: '')}</span>
+		</div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
 		<g:javascript library="application"/>
 		<r:layoutResources />

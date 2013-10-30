@@ -100,6 +100,18 @@ img {
 	vertical-align: top;
 }
 
+#motriceLogo a {
+	display: inline-block;
+	margin-left: 0.2em;
+}
+
+#motriceLogo span.meta {
+        font-size: 150%;
+	color: #CCE1E8;
+	margin-left: 1.5em;
+	vertical-align: bottom;
+}
+
 .content {
 }
 
@@ -118,8 +130,8 @@ img {
 	color: #000;
 	clear: both;
 	font-size: 0.8em;
-	margin-top: 1.5em;
-	padding: 1em;
+	margin-top: 0.5em;
+	padding: 4px 1em;
 	min-height: 1em;
 }
 
@@ -226,7 +238,7 @@ fieldset,
 }
 
 .fieldcontain {
-	margin-top: 0.8em;
+	margin-top: 0.5em;
 }
 
 .fieldcontain label,
@@ -234,7 +246,7 @@ fieldset,
 	color: #666666;
 	text-align: right;
 	font-size: 95%;
-	width: 25%;
+	width: 20%;
 }
 
 .fieldcontain .property-label {
@@ -243,7 +255,13 @@ fieldset,
 
 .fieldcontain .property-value {
 	display: block;
-	margin-left: 27%;
+	margin-left: 21.5%;
+}
+
+hr.property-value-sep {
+    height: 12px;
+    border: 0;
+    box-shadow: inset 0 12px 12px -12px rgba(0,0,0,0.5);
 }
 
 label {

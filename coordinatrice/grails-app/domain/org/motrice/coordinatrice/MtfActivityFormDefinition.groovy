@@ -17,5 +17,10 @@ class MtfActivityFormDefinition {
   static constraints = {
     activityDefinitionUuid nullable: true, maxSize: 255
     formPath nullable: true, maxSize: 255
+    startForm nullable: true
+  }
+
+  String toString() {
+    "[ActFormDef: ${id}/${activityDefinitionUuid} formpath=${formPath}]"
   }
 }

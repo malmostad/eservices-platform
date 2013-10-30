@@ -54,6 +54,7 @@
       <g:form>
 	<fieldset class="buttons">
 	  <g:hiddenField name="id" value="${bnActDefInst?.id}" />
+	  <g:link class="edit" action="edit" id="${bnActDefInst?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 	</fieldset>
       </g:form>
     </div>
