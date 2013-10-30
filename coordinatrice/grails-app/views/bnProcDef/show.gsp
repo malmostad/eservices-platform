@@ -63,14 +63,6 @@
 	    <span class="property-value" aria-labelledby="state-label"><g:fieldValue bean="${startFormdef}" field="formpath"/></span>
 	  </li>
 	</g:if>
-	<g:if test="${bnProcDefInst?.activities}">
-	  <li class="fieldcontain">
-	    <span id="activities-label" class="property-label"><g:message code="bnProcDef.activities.label" default="Activities" /></span>
-	    <g:each in="${bnProcDefInst.activities}" var="a">
-	      <span class="property-value" aria-labelledby="activities-label"><g:link controller="bnActDef" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></span>
-	    </g:each>
-	  </li>
-	</g:if>
 	<g:if test="${bnProcDefInst?.deployedMillis}">
 	  <li class="fieldcontain">
 	    <span id="deployedMillis-label" class="property-label"><g:message code="bnProcDef.deployedTime.label" default="Deployed" /></span>
@@ -81,6 +73,21 @@
 	  <li class="fieldcontain">
 	    <span id="undeployedMillis-label" class="property-label"><g:message code="bnProcDef.undeployedTime.label" default="Undeployed" /></span>
 	    <span class="property-value" aria-labelledby="undeployedMillis-label"><g:fieldValue bean="${bnProcDefInst}" field="undeployedTime"/></span>
+	  </li>
+	</g:if>
+	<g:if test="${bnProcDefInst?.activities}">
+	  <li class="fieldcontain">
+	    <table>
+	    <span id="activities-label" class="property-label"><g:message code="bnProcDef.act.cnx.label" default="Activities" /></span>
+	    <g:each in="${bnProcDefInst.activities}" var="a">
+	      <g:set var="formdef" value="${a?.activityFormdef}"/>
+	      <g:set var="cnx" value="${new org.motrice.coordinatrice.ActivityConnection(a, formdef?.formPath)}"/>
+	      <span class="property-value" aria-labelledby="activities-label"><tr>
+		  <td><g:link controller="bnActDef" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></td>
+		  <g:render template="/activityConnection" model="[connection:cnx]"/>
+	      </tr></span>
+	    </g:each>
+	    </table>
 	  </li>
 	</g:if>
       </ol>

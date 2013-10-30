@@ -26,7 +26,7 @@ class BnActDef implements Comparable {
     processUuid column: 'process_uuid_'
     process column: 'process_dbid_'
   }
-  static transients = ['activityFormDef']
+  static transients = ['activityFormdef']
   static constraints = {
     uuid nullable: true, maxSize: 255, unique: true
     name nullable: true, maxSize: 255
@@ -35,7 +35,7 @@ class BnActDef implements Comparable {
     processUuid nullable: true, maxSize: 255
   }
 
-  MtfActivityFormDefinition getActivityFormDef() {
+  MtfActivityFormDefinition getActivityFormdef() {
     MtfActivityFormDefinition.findByActivityDefinitionUuid(uuid)
   }
 

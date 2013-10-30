@@ -77,8 +77,6 @@ class BnProcDef implements Comparable {
     (obj instanceof BnProcDef) && ((BnProcDef)obj).uuid == uuid
   }
 
-  // This comparison is different from comparing paths.
-  // Highest version and highest draft number comes first.
   int compareTo(Object obj) {
     def other = (BnProcDef)obj
     return uuid.compareTo(obj.uuid)
