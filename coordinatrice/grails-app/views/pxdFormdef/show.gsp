@@ -48,7 +48,16 @@
 	  <li class="fieldcontain">
 	    <span id="forms-label" class="property-label"><g:message code="pxdFormdef.forms.label" default="Forms" /></span>
 	    <g:each in="${pxdFormdefInst.forms}" var="f">
-	      <span class="property-value" aria-labelledby="forms-label"><g:link controller="pxdFormdefVer" action="show" id="${f.id}">${f?.encodeAsHTML()}</g:link></span>
+	      <g:set var="proc" value="${f?.startFormProcess}"/>
+	      <span class="property-value" aria-labelledby="forms-label">
+		<g:link controller="pxdFormdefVer" action="show" id="${f.id}">${f?.encodeAsHTML()}</g:link>
+		<g:if test="${proc}">
+		  <g:set var="imgtitle"><g:message code="pxdFormdefVer.startform.link"/></g:set>
+		  <g:link controller="bnProcDef" action="show" id="${proc.id}">
+		    <g:img uri="/images/silk/asterisk_yellow.png" title="${imgtitle}"/>
+		  </g:link>
+		</g:if>
+	      </span>
 	    </g:each>
 	  </li>
 	</g:if>

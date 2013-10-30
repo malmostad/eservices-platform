@@ -1,5 +1,6 @@
 package org.motrice.coordinatrice
 
+import org.motrice.coordinatrice.bonita.BnProcDef
 import org.motrice.coordinatrice.pxd.PxdFormdefVer
 
 class ActivityService {
@@ -22,4 +23,25 @@ class ActivityService {
 
     return [formList: formList, selectedFormId: selectedFormdefVer?.id]
   }
+
+  List startFormSelection(BnProcDef process) {
+    def selection = []
+    def formsInUse = new TreeSet()
+    MtfStartFormDefinition.list().each {
+      formsInUse.add(it.formPath)
+    }
+    PxdFormdefVer.allPublishedForms().each {
+      if (!formsInUse.contains(it.path)) selection.add(it)
+    }
+
+    return selection
+  }
+
+  /**
+   * Check if a form definition is used as a start form
+   */
+  Boolean checkStartFormInUse(PxdFormdefVer pfv) {
+    MtfStartFormDefinition.findByFormPath(pfv.path)
+  }
+
 }

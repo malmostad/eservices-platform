@@ -6,18 +6,15 @@ class MtfActivityFormDefinition {
 
   String formPath
 
-  static belongsTo = [startForm: MtfStartFormDefinition]
   static mapping = {
     id column: 'activityformdefinitionid'
     version false
     activityDefinitionUuid column: 'activitydefinitionuuid'
     formPath column: 'formpath'
-    startForm column: 'startformdefinitionid'
   }
   static constraints = {
     activityDefinitionUuid nullable: true, maxSize: 255
     formPath nullable: true, maxSize: 255
-    startForm nullable: true
   }
 
   String toString() {

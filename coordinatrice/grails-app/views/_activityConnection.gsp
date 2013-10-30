@@ -13,6 +13,6 @@
 </g:else>
 <td>
   <g:link class="edit" controller="bnActDef" action="edit" id="${connection?.activity?.id}">
-    <g:img uri="/images/silk/application_form_edit.png" title="${message(code: 'default.button.edit.label', default: 'Edit')}"/>
+    <g:img uri="/images/silk/pencil_go.png" title="${message(code: 'default.button.edit.label', default: 'Edit')}"/>
   </g:link>
 </td>

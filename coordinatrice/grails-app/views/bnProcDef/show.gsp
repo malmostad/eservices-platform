@@ -4,7 +4,6 @@
   <head>
     <meta name="layout" content="main"/>
       <g:set var="entityName" value="${message(code: 'bnProcDef.label', default: 'BnProcDef')}" />
-      <g:set var="startFormdef" value="${bnProcDefInst?.startFormdef}"/>
       <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
@@ -57,12 +56,6 @@
 	    <span class="property-value" aria-labelledby="state-label"><g:fieldValue bean="${bnProcDefInst}" field="state"/></span>
 	  </li>
 	</g:if>
-	<g:if test="${startFormdef}">
-	  <li class="fieldcontain">
-	    <span id="startFormdef-label" class="property-label"><g:message code="bnProcDef.startForm.label" default="Start form" /></span>
-	    <span class="property-value" aria-labelledby="state-label"><g:fieldValue bean="${startFormdef}" field="formpath"/></span>
-	  </li>
-	</g:if>
 	<g:if test="${bnProcDefInst?.deployedMillis}">
 	  <li class="fieldcontain">
 	    <span id="deployedMillis-label" class="property-label"><g:message code="bnProcDef.deployedTime.label" default="Deployed" /></span>
@@ -75,6 +68,36 @@
 	    <span class="property-value" aria-labelledby="undeployedMillis-label"><g:fieldValue bean="${bnProcDefInst}" field="undeployedTime"/></span>
 	  </li>
 	</g:if>
+
+	<li class="fieldcontain">
+	  <span class="property-label"><g:message code="startform.selection.label"/></span>
+	  <g:if test="${bnProcDefInst?.startForms}">
+	    <g:each in="${bnProcDefInst.startForms}" var="msfd">
+	      <span class="property-value">
+		<g:set var="pfv" value="${msfd.formdef}"/>
+		<g:if test="${pfv}">
+		  <g:link controller="pxdFormdefVer" action="show" id="${pfv?.id}">${msfd?.encodeAsHTML()}</g:link>
+		</g:if>
+		<g:else>
+		  <g:set var="linktitle"><g:message code="startform.selection.invalid.link"/></g:set>
+		  <g:img uri="/images/silk/exclamation.png" title="${linktitle}"/> ${msfd?.encodeAsHTML()}
+		</g:else>
+		<g:link class="edit" action="edit" id="${bnProcDefInst?.id}">
+		  <g:img uri="/images/silk/pencil_go.png" title="${message(code: 'default.button.edit.label', default: 'Edit')}"/>
+		</g:link>
+	      </span>
+	    </g:each>
+	  </g:if>
+	  <g:else>
+	    <g:set var="statetitle"><g:message code="startform.selection.unselected"/></g:set>
+	    <span class="property-value"><g:img uri="/images/silk/exclamation.png" title="${statetitle}"/>
+	      <g:link class="edit" action="edit" id="${bnProcDefInst?.id}">
+		<g:img uri="/images/silk/pencil_go.png" title="${message(code: 'default.button.edit.label', default: 'Edit')}"/>
+	      </g:link>
+	    </span>
+	  </g:else>
+	</li>
+
 	<g:if test="${bnProcDefInst?.activities}">
 	  <li class="fieldcontain">
 	    <table>

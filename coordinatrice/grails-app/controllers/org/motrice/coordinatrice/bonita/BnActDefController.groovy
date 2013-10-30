@@ -87,9 +87,7 @@ class BnActDefController {
 
     if (log.debugEnabled) log.debug "update.activityFormdef: ${activityFormdef}"
 
-    // DEBUG
-    if (!activityFormdef.save(flush: true, failOnError: true)) {
-      redirect(controller: 'bnProcDef', action: "show", id: bnActDefInst.process.id)
+    if (!activityFormdef.save(flush: true)) {
       render(view: "edit", id: bnActDefInst.id)
       return
     }
@@ -103,8 +101,8 @@ class BnActDefController {
 class ActivityConnectionCommand { 
   Integer id
   Integer connectionState
-  PxdFormdefVer form
   BnActDef activity
+  PxdFormdefVer form
 
   String toString() {
     "[ACC: id=${id} cst=${connectionState} form=${form} act=${activity?.uuid}]"

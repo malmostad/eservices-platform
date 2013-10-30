@@ -5,7 +5,6 @@
   <label>
     <g:message code="bnProcDef.label" default="Process" />
   </label>
-  <!-- <g:field type="text" readonly="readonly" name="uuid" size="60" maxlength="255" value="${bnProcDefInst?.label}"/> -->
   <g:link controller="bnProcDef" action="show" id="${bnProcDefInst?.id}">${bnProcDefInst?.uuid.encodeAsHTML()}</g:link>
 </div>
 <div class="fieldcontain">
@@ -22,7 +21,7 @@
     <g:radio name="connectionState" value="${ActivityConnection.FORM_STATE}" checked="${activityConnection?.formState}"/>
     <g:message code="activity.connection.state.form"/>
     <g:select id="formsel" name="form.id" from="${formList}" optionKey="id" value="${selectedFormId}"
-       noSelection="['-1': message(code: 'activity.connection.select.form.label')]"/>
+	      noSelection="['-1': message(code: 'activity.connection.select.form.label')]"/>
   </div>
   <div class="property-value">
     <hr class="property-value-sep"/>

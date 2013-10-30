@@ -23,6 +23,7 @@ class BnProcDef implements Comparable {
   Long undeployedMillis
 
   SortedSet activities
+  SortedSet startForms
   static hasMany = [activities: BnActDef]
   static mapping = {
     datasource 'bonita'
@@ -37,7 +38,7 @@ class BnProcDef implements Comparable {
     deployedMillis column: 'deployed_date_'
     undeployedMillis column: 'undeployed_date_'
   }
-  static transients = ['deployedTime', 'undeployedTime', 'startFormdef']
+  static transients = ['deployedTime', 'undeployedTime', 'startForms']
   static constraints = {
     uuid nullable: true, maxSize: 255, unique: true
     state nullable: true, maxSize: 255
@@ -59,8 +60,13 @@ class BnProcDef implements Comparable {
     return fmt.format(new java.util.Date(undeployedMillis))
   }
 
-  MtfStartFormDefinition getStartFormdef() {
-    MtfStartFormDefinition.findByProcessDefinitionUuid(uuid)
+  /**
+   * Get all start forms.
+   * Return SortedSet of MtfStartFormDefinition.
+   */
+  SortedSet getStartForms() {
+    def formList = MtfStartFormDefinition.findAllByProcessDefinitionUuid(uuid)
+    return new TreeSet(formList)
   }
 
   String toString() {
