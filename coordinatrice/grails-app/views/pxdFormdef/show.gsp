@@ -12,6 +12,7 @@
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 	<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
+	<li><a class="create" href="${orbeonUri}/new" target="_"><g:message code="default.new.label" args="[entityName]"/></a></li>
       </ul>
     </div>
     <div id="show-pxdFormdef" class="content scaffold-show" role="main">

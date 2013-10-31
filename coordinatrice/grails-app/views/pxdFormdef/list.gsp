@@ -11,6 +11,7 @@
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+	<li><a class="create" href="${orbeonUri}/new" target="_"><g:message code="default.new.label" args="[entityName]"/></a></li>
       </ul>
     </div>
     <div id="list-pxdFormdef" class="content scaffold-list" role="main">
@@ -24,6 +25,7 @@
 	    <g:sortableColumn property="path" title="${message(code: 'pxdFormdef.path.label', default: 'Path')}" />
 	    <g:sortableColumn property="appName" title="${message(code: 'pxdFormdef.appName.label', default: 'App Name')}" />
 	    <g:sortableColumn property="formName" title="${message(code: 'pxdFormdef.formName.label', default: 'Form Name')}" />
+	    <th></th>
 	    <g:sortableColumn property="uuid" title="${message(code: 'pxdFormdef.uuid.label', default: 'Uuid')}" />
 	  </tr>
 	</thead>
@@ -33,6 +35,9 @@
 	      <td><g:link action="show" id="${pxdFormdefInst.id}">${fieldValue(bean: pxdFormdefInst, field: "path")}</g:link></td>
 	      <td>${fieldValue(bean: pxdFormdefInst, field: "appName")}</td>
 	      <td>${fieldValue(bean: pxdFormdefInst, field: "formName")}</td>
+	      <td><a class="create" href="${orbeonUri}/edit/${pxdFormdefInst?.uuid}" target="_">
+		  <g:img uri="/images/silk/application_form_edit.png" title="${message(code: 'pxdFormdef.link.edit.label', default: 'Edit')}"/>
+	      </a></td>
 	      <td><g:abbr text="${pxdFormdefInst?.uuid}"/></td>
 	    </tr>
 	  </g:each>
