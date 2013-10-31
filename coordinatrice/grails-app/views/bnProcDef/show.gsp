@@ -11,7 +11,6 @@
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
       </ul>
     </div>
     <div id="show-bnProcDef" class="content scaffold-show" role="main">
@@ -107,7 +106,7 @@
 	      <g:set var="cnx" value="${new org.motrice.coordinatrice.ActivityConnection(a, formdef?.formPath)}"/>
 	      <span class="property-value" aria-labelledby="activities-label"><tr>
 		  <td><g:link controller="bnActDef" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></td>
-		  <g:render template="/activityConnection" model="[connection:cnx]"/>
+		  <g:render template="/activityConnection" model="[connection:cnx, bnActDefInst:a]"/>
 	      </tr></span>
 	    </g:each>
 	    </table>

@@ -38,7 +38,7 @@ class BnProcDef implements Comparable {
     deployedMillis column: 'deployed_date_'
     undeployedMillis column: 'undeployed_date_'
   }
-  static transients = ['deployedTime', 'undeployedTime', 'startForms']
+  static transients = ['deployedTime', 'undeployedTime', 'humanActivities', 'startForms']
   static constraints = {
     uuid nullable: true, maxSize: 255, unique: true
     state nullable: true, maxSize: 255
@@ -58,6 +58,19 @@ class BnProcDef implements Comparable {
   Date getUndeployedTime() {
     def fmt = new SimpleDateFormat(grailsApplication.config.coordinatrice.tstamp.coarse.fmt)
     return fmt.format(new java.util.Date(undeployedMillis))
+  }
+
+  /**
+   * Get all activities of type Human
+   * Return SortedSet of BnActDef
+   */
+  SortedSet getHumanActivities() {
+    def actSet = new TreeSet()
+    activities.each {activity ->
+      if (activity.type == 'Human') actSet.add(activity)
+    }
+
+    return actSet
   }
 
   /**

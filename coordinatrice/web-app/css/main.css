@@ -48,7 +48,7 @@ body {
 }
 
 #grailsLogo {
-	background-color: #7199A6;
+	background-color: #66A0D1;
 }
 
 /* replace with .no-boxshadow body if you have modernizr available */
@@ -107,7 +107,7 @@ img {
 
 #motriceLogo span.meta {
         font-size: 150%;
-	color: #CCE1E8;
+	color: #FEC372;
 	margin-left: 1.5em;
 	vertical-align: bottom;
 }
@@ -126,7 +126,7 @@ img {
 }
 
 .footer {
-	background: #7199A6;
+	background: white;
 	color: #000;
 	clear: both;
 	font-size: 0.8em;

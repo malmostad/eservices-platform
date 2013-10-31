@@ -43,8 +43,9 @@ class BnActDefController {
     }
 
     // Create a list containing the activities of this process, except this activity
+    // Only human activities are interesting in this context
     def activityList = []
-    bnActDefInst.process.activities.each {activity ->
+    bnActDefInst.process.humanActivities.each {activity ->
       if (activity != bnActDefInst) activityList << activity
     }
 
