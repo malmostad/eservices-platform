@@ -259,8 +259,8 @@ then
     pushd ${CONTAINER_ROOT}/${ESERVICE}
     tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
     cd webapps
-    rm -fr cms site orbeon exist docbox
-    rm cms.war # deploy cms only at kservice and share the same JCR
+    rm -fr cms site orbeon exist docbox coordinatrice
+    rm cms.war coordinatrice.war # deploy cms and coordinatrice only at kservice and share the same JCR
     popd
 else
     echo "Directory ${CONTAINER_ROOT}/${ESERVICE} does not exist. Halting."
@@ -276,7 +276,7 @@ then
 	pushd ${CONTAINER_ROOT}/${KSERVICE}
 	tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
 	cd webapps
-	rm -fr cms site orbeon exist docbox
+	rm -fr cms site orbeon exist docbox coordinatrice
 	popd
     else
 	echo "Directory ${CONTAINER_ROOT}/${KSERVICE} does not exist. Halting."
