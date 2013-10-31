@@ -16,7 +16,7 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'start/demo-ansokan--v002',
-            'ArendeprocessSignStartForm',
+            'ArendeprocessSignStartForm--1.0',
             ''
 );
 INSERT INTO mtf_start_form_definition(
@@ -30,24 +30,9 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor--v002',
-            'Arendeprocess',
+            'Arendeprocess--1.0',
             ''
 );
-INSERT INTO mtf_start_form_definition(
-            startformdefinitionid, 
-	    authtypereq, 
-	    formpath, 
-	    processdefinitionuuid,             
-	    userdataxpath
-	    )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'USERSESSION',
-            'orbeon/controls--v002',
-            'Arendeprocess',
-            ''
-);
-           
 INSERT INTO mtf_start_form_definition(
             startformdefinitionid, 
 	    authtypereq, 
@@ -59,7 +44,7 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'miljoforvaltningen/anmalan-hemkompostering--v002',
-            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning',
+            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0',
             ''
 );
 
