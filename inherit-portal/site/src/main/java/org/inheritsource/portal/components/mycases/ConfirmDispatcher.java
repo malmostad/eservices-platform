@@ -89,7 +89,7 @@ public class ConfirmDispatcher extends MyCasesBaseComponent {
 		log.error("path: " + path + " isSecure=" + request.isSecure() + " protocol=" + request.getProtocol());
 		
 		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443)? "" : ":" + request.getLocalPort();
-		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
+		String protocolStr = request.getLocalPort() == 443 ? "https" : "http";
 		String redirectUrl = protocolStr + "://" + request.getServerName() + portStr +  "/site" + path + "?document=" + docIdParam;
 
 		log.error("portStr: " + portStr + " protocolStr=" + protocolStr + " redirectUrl=" + redirectUrl + " request.getLocalPort()" + request.getLocalPort());
