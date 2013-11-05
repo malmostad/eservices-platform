@@ -144,6 +144,22 @@ class PxdFormdefVer implements Comparable {
     return fmt.format(lastUpdated)
   }
 
+  /**
+   * Creation timestamp regular format
+   */
+  String createdr() {
+    def fmt = new SimpleDateFormat(grailsApplication.config.postxdb.regular.fmt)
+    return fmt.format(dateCreated)
+  }
+
+  /**
+   * Updated timestamp regular format
+   */
+  String updatedr() {
+    def fmt = new SimpleDateFormat(grailsApplication.config.postxdb.regular.fmt)
+    return fmt.format(lastUpdated)
+  }
+
   String display() {
     "${path}: ${title}"
   }

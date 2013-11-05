@@ -1,5 +1,8 @@
 package org.motrice.postxdb
 
+import java.text.SimpleDateFormat
+import java.security.MessageDigest
+
 /**
  * A form resource, form definition or form data, text or binary.
  * Even if the path is unique, a Grails conventional id is used for primary key.
@@ -7,6 +10,9 @@ package org.motrice.postxdb
  * when deviating from Grails common conventions.
  */
 class PxdItem {
+  // Injection magic
+  def grailsApplication
+
   // Unique path of this item
   // Form definition draft:     app/form--v002_03/form.xml
   // Published form definition: app/form--v002/form.xhtml
@@ -54,6 +60,7 @@ class PxdItem {
     uuid index: 'Uuid_Idx'
     formDef index: 'Formdef_Idx'
   }
+  static transients = ['sha1']
   static constraints = {
     path nullable: false, unique: true
     uuid nullable: true, maxSize: 200
@@ -98,7 +105,43 @@ class PxdItem {
     format == 'xml'
   }
 
+  /**
+   * Compute the SHA1 hash of the content.
+   * Returns the string "EMPTY" if there is no content.
+   */
+  String getSha1() {
+    def result
+    if (size == 0) {
+      result = 'EMPTY'
+    } else {
+      result = xmlFormat()? sha1Hash(text.bytes) : sha1Hash(stream)
+    }
+
+    return result
+  }
+
+  private static String sha1Hash(byte[] bytes) {
+    MessageDigest.getInstance('SHA1').digest(bytes)
+    .collect {String.format('%02x', it)}.join('')
+  }
+
+  /**
+   * Creation timestamp regular format
+   */
+  String createdr() {
+    def fmt = new SimpleDateFormat(grailsApplication.config.postxdb.regular.fmt)
+    return fmt.format(dateCreated)
+  }
+
+  /**
+   * Updated timestamp regular format
+   */
+  String updatedr() {
+    def fmt = new SimpleDateFormat(grailsApplication.config.postxdb.regular.fmt)
+    return fmt.format(lastUpdated)
+  }
+
   String toString() {
-    "[Item ${path}: ${formDef}, ${format}/${size}]"
+    "[Item ${id}/${path}: ${formDef}, ${format}/${size}]"
   }
 }
