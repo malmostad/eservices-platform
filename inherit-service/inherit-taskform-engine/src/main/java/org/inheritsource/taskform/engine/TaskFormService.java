@@ -420,7 +420,9 @@ public class TaskFormService {
 						logItem.setFormUrl(viewUrl);
 						logItem.setViewUrl(viewUrl);
 						logItem.setFormDocId(activity.getFormDocId());
-						
+						if (activity.getProcessActivityFormInstanceId() != null) {
+						    logItem.setProcessActivityFormInstanceId(activity.getProcessActivityFormInstanceId().longValue());
+						}
 						logItem.setPerformedByUser(taskFormDb
 								.getUserByUuid(activity.getUserId()));
 					}
@@ -513,20 +515,30 @@ public class TaskFormService {
 
 			ProcessActivityFormInstance startActivity = taskFormDb
 					.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
-			if (startActivity != null) {
-				result = new StartLogItem();
-				result.setViewUrl(startActivity.calcViewUrl());
-				result.setFormUrl(startActivity.calcViewUrl());
-				result.setEndDate(startActivity.getSubmitted());
-				result.setActivityLabel(startActivity.getFormPath());
-				result.setPerformedByUser(taskFormDb
-						.getUserByUuid(startActivity.getUserId()));
-				result.setFormDocId(startActivity.getFormDocId());
-			}
+			result = processActivityFormInstanc2StartLogItem(startActivity);
 		}
 
 		return result;
 	}
+
+    private StartLogItem processActivityFormInstanc2StartLogItem(ProcessActivityFormInstance startActivity) {
+	StartLogItem result = null;
+	if (startActivity != null && startActivity.getSubmitted() != null) {
+	    result = new StartLogItem();
+	    result.setViewUrl(startActivity.calcViewUrl());
+	    result.setFormUrl(startActivity.calcViewUrl());
+	    result.setEndDate(startActivity.getSubmitted());
+	    result.setActivityLabel(startActivity.getFormPath());
+	    result.setPerformedByUser(taskFormDb
+				      .getUserByUuid(startActivity.getUserId()));
+	    result.setFormDocId(startActivity.getFormDocId());
+	    
+	    if (startActivity.getProcessActivityFormInstanceId() != null) {
+		result.setProcessActivityFormInstanceId(startActivity.getProcessActivityFormInstanceId().longValue());
+	    }
+	}
+	return result;
+    }
 
 	public String submitStartForm(String formPath, String docId, String userId)
 			throws Exception {
@@ -655,8 +667,12 @@ public class TaskFormService {
 				.getProcessActivityFormInstanceById(processActivityFormInstanceId);
 		if (formInstance != null) {
 			if (formInstance.isStartForm()) {
-				result = getStartFormActivityInstancePendingItem(formInstance
-						.getFormDocId());
+			    if (formInstance.getSubmitted()!=null) {
+				result = processActivityFormInstanc2StartLogItem(formInstance);
+			    }
+			    else {
+				result = getStartFormActivityInstancePendingItem(formInstance.getFormDocId());
+			    }
 			} else {
 				result = bonitaClient.getActivityInstanceItem(formInstance
 						.getActivityInstanceUuid());
