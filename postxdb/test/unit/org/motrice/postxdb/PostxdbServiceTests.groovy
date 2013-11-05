@@ -12,6 +12,6 @@ import org.junit.*
 class PostxdbServiceTests {
 
     void testSomething() {
-        fail "Implement me"
+
     }
 }
