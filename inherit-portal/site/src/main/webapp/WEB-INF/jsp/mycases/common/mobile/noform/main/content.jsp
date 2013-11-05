@@ -24,9 +24,14 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
 
+
+	<div class="row-fluid">
+		<div class="span12">
+
+
 <c:choose>
   <c:when test="${empty document}">
-
+    <tag:pagenotfound/>
   </c:when>
   <c:otherwise>
     <c:if test="${not empty document.title}">
@@ -35,33 +40,29 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
-  </c:otherwise>  
-</c:choose>
-
-	
-	<c:if test="${not empty activity}">
-    	<script type="text/javascript" charset="utf-8">
-		        jQuery.noConflict();
-		        var $j = jQuery;
-		        $j(document).ready(function () {
-		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
-		                if (typeof ORBEON != "undefined") { 
-		                    if (!document.all) {
-		                        ORBEON.xforms.Init.document(); 
-		                    } 
-		                } 
-		        	    }); 
-					});
-		</script>
-    </c:if>
     
-    <if test="${not empty guide}">
+    <c:if test="${not empty guide}">
 		<h1>${guide.title}</h1>
 		<p>${guide.summary}</p>
 		<hst:html hippohtml="${guide.html}"/>
-	</if>
-				
-   <div id="xform"><fmt:message key="mycases.loadingform.lbl"/></div>
+	</c:if>
+				    
+  </c:otherwise>  
+</c:choose>
 
-    
-  
+		    <c:if test="${not empty activity}">
+		       <c:choose>
+		         <c:when test="${fn:startsWith(activity.formUrl, 'none/')}">
+	    		<form method="post" action="noform/confirm">
+						<input type="hidden" name="document" value="${activity.formDocId}" />
+						<input type="submit" value="Klart! Skicka vidare"/>
+				</form>
+				</c:when>
+			  	<c:otherwise>
+			  	   <fmt:message key="mycases.noform.cannothandle"/>
+			  	</c:otherwise>
+			  </c:choose>
+			</c:if>
+		</div>
+	</div>    
+

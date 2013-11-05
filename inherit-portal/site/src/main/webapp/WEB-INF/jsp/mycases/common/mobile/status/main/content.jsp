@@ -24,9 +24,10 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
 
-<c:if test="${not empty processInstances}">
+<c:choose>
+  <c:when test="${not empty searchResult and not empty searchResult.hits}">
         <ul data-role="listview">
-                <c:forEach var="item" items="${processInstances}">
+                <c:forEach var="item" items="${searchResult.hits}">
                         <li>
                         	<a href="../../processinstancedetail?processInstanceUuid=${item.processInstanceUuid}">
                                 <h3>${item.processLabel}</h3>
@@ -34,12 +35,38 @@
                                         <fmt:message key="mycases.startDate.column.lbl"/>:&nbsp;<fmt:formatDate value="${item.startDate}" type="Date" dateStyle="short" timeStyle="short"/>
                                 </p>
                                 <p>
-                                        <fmt:message key="mycases.status.column.lbl"/>:&nbsp;${item.status}&nbsp;<fmt:formatDate value="${item.endDate}" type="Date" dateStyle="short" timeStyle="short"/>
+<c:choose>             
+  <c:when test="${item.status == 1}">                                  
+                                                       <b><fmt:message key="mycases.processStatusPending"/></b><br/>
+                                                       <c:forEach var="activity" items="${item.activities}">
+                                                          ${activity.activityLabel}<br/>
+                                                       </c:forEach>
+                                                       
+  </c:when>
+  <c:when test="${item.status == 2}">                                  
+                                                       <fmt:message key="mycases.processStatusFinished"/>
+  </c:when>
+  <c:when test="${item.status == 3}">                                  
+                                                       <fmt:message key="mycases.processStatusCancelled"/>
+  </c:when>
+  <c:when test="${item.status == 4}">                                  
+                                                       <fmt:message key="mycases.processStatusAborted"/>
+  </c:when>
+  <c:otherwise>
+                              
+  </c:otherwise>
+</c:choose>
+&nbsp;<fmt:formatDate value="${item.endDate}" type="Date" dateStyle="short" timeStyle="short"/>
                                 </p>
                              </a>
                         </li>
                 </c:forEach>
         </ul>
-</c:if>
+  </c:when>
+  <c:otherwise>
+    <fmt:message key="mycases.noProcessInstance.lbl" />
+  </c:otherwise>
+</c:choose>
+
 
 

@@ -26,7 +26,7 @@
 
 <c:choose>
   <c:when test="${empty document}">
-
+    <tag:pagenotfound/>
   </c:when>
   <c:otherwise>
     <c:if test="${not empty document.title}">
@@ -37,7 +37,6 @@
     </c:if>
   </c:otherwise>  
 </c:choose>
-
 	
 	<c:if test="${not empty activity}">
     	<script type="text/javascript" charset="utf-8">
@@ -64,4 +63,43 @@
    <div id="xform"><fmt:message key="mycases.loadingform.lbl"/></div>
 
     
-  
+
+<c:choose>
+  <c:when test="${not empty processInstanceDetails}">
+    <ul data-role="listview" data-inset="true" data-divider-theme="a">
+    <c:if test="${not empty processInstanceDetails.pending}">
+      <li data-role="list-divider"><fmt:message key="mycases.pendingActivities.lbl"/></li>
+      <c:forEach var="pendingTask" items="${processInstanceDetails.pending}">
+         <li>
+           <h2>${pendingTask.activityLabel}</h2>
+           <p class="ui-li-aside"><strong><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" dateStyle="short" timeStyle="short"/></strong></p>
+         </li>
+      </c:forEach>
+    </c:if>
+
+
+   <c:if test="${not empty timelineByDay}">
+      <c:forEach var="dayEntry" items="${timelineByDay}">
+      <li data-role="list-divider"><fmt:message key="mycases.performedActivities.lbl"/>&nbsp;<fmt:formatDate value="${dayEntry.key}" type="Date" dateStyle="long"/></li>
+
+        <c:forEach var="logItem" items="${dayEntry.value}">
+
+          <c:if test="${logItem.type != 5}"> <!-- 5=comment -->
+            <li data-icon="info">
+	      <a href="viewform?processActivityFormInstanceId=${logItem.processActivityFormInstanceId}">
+                <h2>${logItem.briefDescription}</h2><p>${logItem.description}</p><p class="ui-li-aside"><strong><fmt:formatDate value="${logItem.timestamp}" type="Both" dateStyle="short" timeStyle="short"/></strong></p>
+		<p>${logItem.user}</p>
+              </a>
+            </li>
+	 </c:if>
+        </c:forEach>
+      </c:forEach>
+   </c:if>
+
+
+        </ul>
+  </c:when>
+  <c:otherwise>
+    <fmt:message key="mycases.noProcessInstanceDetails.lbl"/>
+  </c:otherwise>
+</c:choose>

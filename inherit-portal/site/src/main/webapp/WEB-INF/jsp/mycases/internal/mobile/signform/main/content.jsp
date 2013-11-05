@@ -21,7 +21,33 @@
     phone: +46 8 641 64 14 
  --%> 
  
-<%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
+<%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
+<%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
+
+<c:choose>
+  <c:when test="${empty document}">
+    <tag:pagenotfound/>
+  </c:when>
+  <c:otherwise>
+    <c:if test="${not empty document.title}">
+      <hst:element var="headTitle" name="title">
+        <c:out value="${document.title}"/>
+      </hst:element>
+      <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
+    </c:if>
+  </c:otherwise>  
+</c:choose>
+	
+    <if test="${not empty guide}">
+		<h1>${guide.title}</h1>
+		<p>${guide.summary}</p>
+		<hst:html hippohtml="${guide.html}"/>
+	</if>
+	
+<p>
+<b>Obs!</b> Mobilt bankid &auml;r inte aktiverat i Malm&ouml; stad. Signering m&aring;ste d&auml;rf&ouml;r  utf&auml;ras vid dator med BankID. 
+</p>			
+    
 
 <c:choose>
   <c:when test="${not empty processInstanceDetails}">
@@ -45,26 +71,10 @@
 
           <c:if test="${logItem.type != 5}"> <!-- 5=comment -->
             <li data-icon="info">
-            <c:choose>
-              <c:when test="${logItem.user.uuid == userInfo.uuid and not empty logItem.viewUrl}">
-	           <a href="viewform?processActivityFormInstanceId=${logItem.processActivityFormInstanceId}">
-              </c:when>
-              <c:otherwise>
-              </c:otherwise>           
-           </c:choose>
-
-           <h2>${logItem.briefDescription}</h2><p>${logItem.description}</p><p class="ui-li-aside"><strong><fmt:formatDate value="${logItem.timestamp}" type="Both" dateStyle="short" timeStyle="short"/></strong></p>
-           
-	   <c:choose>
-             <c:when test="${logItem.user.uuid == userInfo.uuid}">
+	      <a href="viewform?processActivityFormInstanceId=${logItem.processActivityFormInstanceId}">
+                <h2>${logItem.briefDescription}</h2><p>${logItem.description}</p><p class="ui-li-aside"><strong><fmt:formatDate value="${logItem.timestamp}" type="Both" dateStyle="short" timeStyle="short"/></strong></p>
               </a>
-             </c:when>
-             <c:otherwise>
-             </c:otherwise>
-           </c:choose>		
- 
-           </li>
-
+            </li>
 	 </c:if>
         </c:forEach>
       </c:forEach>
@@ -77,5 +87,3 @@
     <fmt:message key="mycases.noProcessInstanceDetails.lbl"/>
   </c:otherwise>
 </c:choose>
-
-<a data-role="button" data-rel="back" data-direction="reverse" data-icon="arrow-l"><fmt:message key="mycases.back.label"/></a>

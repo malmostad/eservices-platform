@@ -45,26 +45,11 @@
 
           <c:if test="${logItem.type != 5}"> <!-- 5=comment -->
             <li data-icon="info">
-            <c:choose>
-              <c:when test="${logItem.user.uuid == userInfo.uuid and not empty logItem.viewUrl}">
-	           <a href="viewform?processActivityFormInstanceId=${logItem.processActivityFormInstanceId}">
-              </c:when>
-              <c:otherwise>
-              </c:otherwise>           
-           </c:choose>
-
-           <h2>${logItem.briefDescription}</h2><p>${logItem.description}</p><p class="ui-li-aside"><strong><fmt:formatDate value="${logItem.timestamp}" type="Both" dateStyle="short" timeStyle="short"/></strong></p>
-           
-	   <c:choose>
-             <c:when test="${logItem.user.uuid == userInfo.uuid}">
+	      <a href="viewform?processActivityFormInstanceId=${logItem.processActivityFormInstanceId}">
+                <h2>${logItem.briefDescription}</h2><p>${logItem.description}</p><p class="ui-li-aside"><strong><fmt:formatDate value="${logItem.timestamp}" type="Both" dateStyle="short" timeStyle="short"/></strong></p>
+                <p>${logItem.user}</p>
               </a>
-             </c:when>
-             <c:otherwise>
-             </c:otherwise>
-           </c:choose>		
- 
-           </li>
-
+            </li>
 	 </c:if>
         </c:forEach>
       </c:forEach>

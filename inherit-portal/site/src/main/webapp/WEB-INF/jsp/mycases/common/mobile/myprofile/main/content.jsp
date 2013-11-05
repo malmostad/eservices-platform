@@ -26,7 +26,7 @@
 
 <c:choose>
   <c:when test="${empty document}">
-
+    <tag:pagenotfound/>
   </c:when>
   <c:otherwise>
     <c:if test="${not empty document.title}">
@@ -35,16 +35,12 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
-  </c:otherwise>  
-</c:choose>
 
-	
-	<c:if test="${not empty activity}">
-    	<script type="text/javascript" charset="utf-8">
+	<script type="text/javascript" charset="utf-8">
 		        jQuery.noConflict();
 		        var $j = jQuery;
 		        $j(document).ready(function () {
-		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
+		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${document.formPath}/edit/${user.uuid}?orbeon-embeddable=true", function(data) {
 		                if (typeof ORBEON != "undefined") { 
 		                    if (!document.all) {
 		                        ORBEON.xforms.Init.document(); 
@@ -53,15 +49,22 @@
 		        	    }); 
 					});
 		</script>
-    </c:if>
-    
-    <if test="${not empty guide}">
+		
+<%--
+    <c:if test="${not empty guide}">
 		<h1>${guide.title}</h1>
 		<p>${guide.summary}</p>
 		<hst:html hippohtml="${guide.html}"/>
-	</if>
-				
-   <div id="xform"><fmt:message key="mycases.loadingform.lbl"/></div>
-
+	</c:if>
+--%>
+					
+	<div class="row-fluid">
+		<div class="span12">
+    		<div id="xform" class="public-xform">
+	    		<p>Loading form: ${document.title}, please wait...</p>
+    		</div>
+		</div>
+	</div>    
     
-  
+  </c:otherwise>  
+</c:choose>

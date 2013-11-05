@@ -23,15 +23,11 @@
  
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 
-<div data-role="page">
 
-        <div data-role="header" data-position="fixed">
-                <h1>Motrice mobil</h1>
-                <hst:include ref="leftmenu" />
-        </div>
-        <!-- /header -->
+<h2>Instrumentpanel</h2>
+<ul data-role="listview" data-inset="true">
+    <li><fmt:message key="mycases.dash.ontrack.lbl"/><span class="ui-li-count">${dash.onTrack}</span></li>
+    <li><fmt:message key="mycases.dash.atrisk.lbl"/><span class="ui-li-count">${dash.atRisk}</span></li>
+    <li><fmt:message key="mycases.dash.overdue.lbl"/><span class="ui-li-count">${dash.overdue}</span></li>
+</ul>
 
-        <div data-role="content">
-                <hst:include ref="content" />
-        </div>
-</div>

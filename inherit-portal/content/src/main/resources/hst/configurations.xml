@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:configurations">
+<?xml version="1.0" encoding="UTF-8"?><sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:configurations">
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:configurations</sv:value>
   </sv:property>
@@ -731,6 +730,19 @@
   <sv:node sv:name="mycases-common-external">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hst:configuration</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="malmo-internal-mobile">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:configuration</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:inheritsfrom" sv:type="String" sv:multiple="true">
+      <sv:value>../malmo-internal-common</sv:value>
+      <sv:value>../mycases-internal-mobile</sv:value>
+      <sv:value>../mycases-common-mobile</sv:value>
+      <sv:value>../mycases-common-internal</sv:value>
+      <sv:value>../mycases-common</sv:value>
+      <sv:value>../inheritportal-common</sv:value>
     </sv:property>
   </sv:node>
 </sv:node>

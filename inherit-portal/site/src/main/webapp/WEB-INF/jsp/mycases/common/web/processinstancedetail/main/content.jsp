@@ -15,7 +15,7 @@
  
     You should have received a copy of the GNU Affero General Public License 
     along with this program.  If not, see <http://www.gnu.org/licenses/>. 
- 
+  
     e-mail: info _at_ inherit.se 
     mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
     phone: +46 8 641 64 14 
@@ -74,7 +74,7 @@
 								</c:when>
 								<c:when test="${not empty logItem.viewUrl}">
 									<c:choose>
-										<c:when test="${logItem.user.uuid == userInfo.uuid}">
+ 										<c:when test="${logItem.user.uuid == userInfo.uuid}">
 										   <c:choose>
 	   										  <c:when test="${fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
 											    <p> <fmt:message key="mycases.signeddocument"/>&nbsp;
