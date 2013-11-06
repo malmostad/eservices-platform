@@ -270,20 +270,6 @@ public class InboxTaskItem implements Serializable, Comparable{
 			return false;
 		return true;
 	}
-
-	@Override
-	public String toString() {
-		return "InboxTaskItem [processLabel=" + processLabel
-				+ ", activityLabel=" + activityLabel + ", activityCreated="
-				+ activityCreated + ", expectedEndDate=" + expectedEndDate
-				+ ", processActivityFormInstanceId="
-				+ processActivityFormInstanceId + ", processInstanceUuid="
-				+ processInstanceUuid + ", taskUuid=" + taskUuid
-				+ ", processDefinitionUuid=" + processDefinitionUuid
-				+ ", activityDefinitionUuid=" + activityDefinitionUuid
-				+ ", externalUrl=" + externalUrl + ", startedByFormPath="
-				+ startedByFormPath + "]";
-	}
 	
 	@Override
 	public int compareTo(Object o) {
@@ -308,6 +294,22 @@ public class InboxTaskItem implements Serializable, Comparable{
 			}
 		} 
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "InboxTaskItem {\n    processLabel : " + processLabel
+				+ "\n    activityLabel : " + activityLabel
+				+ "\n    activityCreated : " + activityCreated
+				+ "\n    expectedEndDate : " + expectedEndDate
+				+ "\n    processActivityFormInstanceId : "
+				+ processActivityFormInstanceId
+				+ "\n    processInstanceUuid : " + processInstanceUuid
+				+ "\n    taskUuid : " + taskUuid
+				+ "\n    processDefinitionUuid : " + processDefinitionUuid
+				+ "\n    activityDefinitionUuid : " + activityDefinitionUuid
+				+ "\n    externalUrl : " + externalUrl
+				+ "\n    startedByFormPath : " + startedByFormPath + "\n}";
 	}
 
 

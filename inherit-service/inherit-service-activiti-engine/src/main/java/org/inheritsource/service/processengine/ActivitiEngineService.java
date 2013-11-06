@@ -2,24 +2,32 @@ package org.inheritsource.service.processengine;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.security.auth.login.LoginContext;
+
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.inheritsource.bonita.client.util.BonitaUtil;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
@@ -32,6 +40,8 @@ import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
 import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.UserInfo;
+import org.ow2.bonita.facade.uuid.ActivityInstanceUUID;
+import org.ow2.bonita.util.AccessorUtil;
 
 public class ActivitiEngineService {
 
@@ -39,11 +49,9 @@ public class ActivitiEngineService {
 	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
 	
 	public ActivitiEngineService() {
-		initEngine();
-		
-		
+		initEngine();		
 	}
-	
+
 	public void logTableSizes() {
 		Map<String, Long> counts = engine.getManagementService().getTableCount();
 		
@@ -100,33 +108,34 @@ public class ActivitiEngineService {
 		return engineConfig;
 	}
 	
-	public void deployBpmnProcess(String bpmnFile) {
+	public Deployment deployBpmn(String bpmnFile) {
 		RepositoryService repositoryService = engine.getRepositoryService();
+		Deployment deployment = null;
 		
-		log.severe("Number of process definitions: " + repositoryService.createProcessDefinitionQuery().count());            
-		log.severe("Deploy file: " + bpmnFile);            
-
 		try {
-			Deployment deployment = repositoryService.createDeployment().addInputStream("Arendeprocess", new FileInputStream(bpmnFile)).deploy();
-			log.severe("Deployed id=" + deployment.getId() + " name=" + deployment.getName() + " category=" + deployment.getCategory() + " time=" + deployment.getDeploymentTime());
+			String resourceName = Paths.get(bpmnFile).getFileName().toString();
+			deployment = repositoryService.createDeployment().
+				addInputStream(resourceName, new FileInputStream(bpmnFile)).deploy();
 			
-			deployment = repositoryService.createDeployment()
-			  .addClasspathResource("VacationRequest.bpmn20.xml")
-			  .deploy();
-			log.severe("Deploye VacationRequest id=" + deployment.getId() + " name=" + deployment.getName() + " category=" + deployment.getCategory() + " time=" + deployment.getDeploymentTime());
-			
-
-			
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			log.severe("File '" + bpmnFile + "' not found: " + e.getMessage());
 		}
-		
-		log.severe("Number of process definitions: " + repositoryService.createProcessDefinitionQuery().count());            
+		return deployment;
 	}
 	
+	public ProcessInstance startProcessInstanceByKey(String key, Map<String, Object> variables) {
+		RuntimeService runtimeService = engine.getRuntimeService();
+		ProcessInstance processInstance = null;
+		
+		try {
+			processInstance = runtimeService.startProcessInstanceByKey(key, variables);
+		} catch (Exception e) {
+			log.severe("Unable to start process instance with key: " + key);
+		}
+		return processInstance;
+	}
+		
 	public void listDeployedProcesses() {
-		//ProcessEngine processEngine = ProcessEngines.getDefaultProcessEngine();
-		//List<ProcessDefinition> processes = processEngine.getRepositoryService().createProcessDefinitionQuery().list();
 		List<ProcessDefinition> processes = engine.getRepositoryService().createProcessDefinitionQuery().list();
 		for (ProcessDefinition process : processes) {
 			log.severe("Process: " + process.getId() + ": " + process + "START");
@@ -142,29 +151,26 @@ public class ActivitiEngineService {
 		}
 	}
 	
-	
-	
-
-	public static void main(String[] args) {
-		ActivitiEngineService engine = new ActivitiEngineService();
-		
-		//engine.logTableSizes();
-		//engine.deployBpmnProcess("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
-		//engine.listDeployedProcesses();
-		
-		List<InboxTaskItem> tasks = engine.getUserInbox("kermit");
-		log.severe("Inbox item count: " + tasks.size());
-		for (InboxTaskItem task : tasks) {
-			log.severe("Inbox item: " + task);
+	public List<String> getDeployedDeploymentIds() {
+		List<Deployment> deployments = engine.getRepositoryService().createDeploymentQuery().list();
+		ArrayList<String> deploymentIds = new ArrayList<String>();
+		for (Deployment deployment : deployments) {
+			deploymentIds.add(deployment.getId());
 		}
-		
-		System.exit(0);
+		return deploymentIds;
 	}
+	
+	public void deleteDeploymentByDeploymentId(String deploymentId, boolean cascade) {
+		engine.getRepositoryService().deleteDeployment(deploymentId, cascade);
+	}
+	
+	
 	
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).orderByTaskCreateTime().asc().list();
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).orderByTaskCreateTime().asc().list();
+		//List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).orderByTaskCreateTime().asc().list();
 		
 		result = taskList2InboxTaskItemList(tasks);
 		
@@ -194,9 +200,9 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
-			item.setProcessLabel("Process Label");  // FIXME
+			item.setProcessLabel("Process Label");  // FIXME: Maybe get some name from process definition?
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
-			item.setTaskUuid(task.getId());
+			item.setTaskUuid(task.getId()); // Note task.getId() gives a simple int ant is not a real uuid
 		}
 		return item;
 	}
@@ -241,14 +247,14 @@ public class ActivitiEngineService {
 	private ActivityInstanceItem task2ActivityInstancePendingItem(Task task) {
 		ActivityInstancePendingItem item = null;
 		if (task != null) {
-			item = new ActivityInstancePendingItem(); // FIXME Could be LogItem?
+			item = new ActivityInstancePendingItem();
 			
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
-			item.setActivityInstanceUuid(task.getId());// FIXME getExecutionId()??
+			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
-			item.setActivityLabel(task.getName()); // FIXME Wrong mapping?
+			item.setActivityLabel(""); // FIXME What to map?
 			item.setStartDate(task.getCreateTime());
 			item.setCurrentState("FIXME"); // task.getDelegationState()?
 			item.setLastStateUpdate(null);  // FIXME  Mapping??
@@ -266,6 +272,7 @@ public class ActivitiEngineService {
 			
 			UserInfo assignedUser = new UserInfo();
 			assignedUser.setUuid(task.getAssignee()); // FIXME
+			assignedUser.setLabelShort(task.getAssignee()); // FIXME
 			item.setAssignedUser(assignedUser);
 
 		}
@@ -275,15 +282,15 @@ public class ActivitiEngineService {
 	private ActivityInstanceItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
 		ActivityInstanceLogItem item = null;
 		if (task != null) {
-			item = new ActivityInstanceLogItem(); // FIXME Could be LogItem?
+			item = new ActivityInstanceLogItem();
 			
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
-			item.setActivityInstanceUuid(task.getId());// FIXME getExecutionId()??
+			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
-			item.setActivityLabel(task.getName()); // FIXME Wrong mapping?
-			item.setStartDate(task.getClaimTime()); // FIXME??
+			item.setActivityLabel(""); // FIXME What to map?	
+			item.setStartDate(task.getStartTime());
 			item.setCurrentState("FIXME"); // task.getDelegationState()?
 			item.setLastStateUpdate(null);  // FIXME  Mapping??
 			item.setLastStateUpdateByUserId("FIXME"); // FIXME: Mapping Owner / assigned ??
@@ -305,7 +312,7 @@ public class ActivitiEngineService {
 		}
 		return item;
 	}
-
+	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId,
 			int remainingDays) {
 		// TODO Auto-generated method stub
@@ -366,15 +373,50 @@ public class ActivitiEngineService {
 		return null;
 	}
 
-	public String startProcess(String processDefinitionUUIDStr, String userId) {
-		// TODO Auto-generated method stub
-		return null;
+	public String startProcess(String processDefinitionId, String userId) {
+		String processInstanceId = null;
+		
+		try {
+			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
+			processInstanceId = processInstance.getProcessInstanceId();
+			// set owner and assignee for the created task
+			
+			Task task = engine.getTaskService().createTaskQuery().
+				processInstanceId(processInstanceId).singleResult();
+			task.setAssignee(userId);
+			task.setOwner(userId);
+			engine.getTaskService().saveTask(task);
+		} catch (Exception e) {
+			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId);
+		}
+		
+		return processInstanceId;
 	}
 
 	public boolean executeTask(String activityInstanceUuid, String userId) {
-		// TODO Auto-generated method stub
+		
+		// Fortsätt här...
+		
+		
 		return false;
 	}
+	
+	/* BONITA GÖR SÅ HÄR....
+	 * 	boolean successful = false;
+		ActivityInstanceUUID activityInstanceUUID = new ActivityInstanceUUID(activityInstanceUuid);
+
+		try {
+			LoginContext loginContext = BonitaUtil.loginWithUser(userId); 
+			AccessorUtil.getRuntimeAPI().executeTask(activityInstanceUUID, false);
+			successful = true;
+			BonitaUtil.logoutWithUser(loginContext);
+		} catch (Exception e) {
+			log.severe("Could not execute task: " + e);
+		}
+
+		return successful;
+	 */
+	
 
 	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
 			String searchForBonitaUser, int fromIndex, int pageSize,
@@ -407,5 +449,78 @@ public class ActivitiEngineService {
 		return null;
 	}
 	
+	public static void main(String[] args) {
+		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
+		
+		log.severe("Number of process instances Before: " + 
+				activitiEngineService.engine.getRuntimeService().createProcessInstanceQuery().count());     
+		
+		String userId = "kermit";
+		String processDefinitionUUIDStr = "Arendeprocess:1:3904";
+		
+		activitiEngineService.startProcess(processDefinitionUUIDStr, userId);
+		
+		// Verify that we started a new process instance
+		log.severe("Number of process instances After: " + 
+				activitiEngineService.engine.getRuntimeService().createProcessInstanceQuery().count());   
+
+		
+		
+		/*
+		// getDeployedDeploymentIds
+		List<String> deploymentIds = activitiEngineService.getDeployedDeploymentIds();
+		// deleteDeploymentByDeploymentId
+		for(String deploymentId : deploymentIds) {
+			activitiEngineService.deleteDeploymentByDeploymentId(deploymentId, true);
+		}
+			
+		Deployment deployment = activitiEngineService.deployBpmn
+				("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
+		
+		log.severe("Deployment with id: " + deployment.getId());
+		
+		// getDeployedDeploymentIds
+		//deploymentIds = activitiEngineService.getDeployedDeploymentIds();
+		//log.severe("after deploy: " + deploymentIds.size());
+		//for(String deploymentId : deploymentIds) {
+		//	log.severe("deloymentId: " + deploymentId);
+		//}
+				
+		
+		log.severe("Number of process definitions: " + 
+				activitiEngineService.engine.getRepositoryService().createProcessDefinitionQuery().count());
+			
+		Map<String, Object> variables = new HashMap<String, Object>();
+		ProcessInstance processInstance = activitiEngineService.startProcessInstanceByKey("Arendeprocess", variables);
+		
+		// Verify that we started a new process instance
+		log.severe("Number of process instances: " + 
+			activitiEngineService.engine.getRuntimeService().createProcessInstanceQuery().count());           
+		
+		// set assignee for the created task with the processinstanceid above.
+		
+		Task task = activitiEngineService.engine.getTaskService().createTaskQuery().
+			processInstanceId(processInstance.getProcessInstanceId()).singleResult();
+		task.setAssignee("kermit");
+		task.setOwner("kermit");
+		activitiEngineService.engine.getTaskService().saveTask(task);
+		*/
+	
+		/*
+		ActivityInstanceItem activityInstanceItem = activitiEngineService.getActivityInstanceItem("3908");
+		log.severe("activityInstanceItem: " + activityInstanceItem);
+		
+		//activitiEngineService.listDeployedProcesses();
+		  
+		  
+		List<InboxTaskItem> tasks = activitiEngineService.getUserInbox("kermit");
+		log.severe("Inbox item count: " + tasks.size());
+		for (InboxTaskItem t : tasks) {
+			log.severe("Inbox item: " + t);
+		}
+		*/
+		
+		System.exit(0);
+	}
 	
 }

@@ -100,19 +100,34 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 			return false;
 		return true;
 	}
-	@Override
-	public String toString() {
-		return "ActivityInstanceLogItem [endDate=" + endDate
-				+ ", performedByUser=" + performedByUser 
-				+ ", viewUrl=" + viewUrl
-				+ " " + super.toString() +   "]";
-	}
 	
 	/* implement TimeLineItem */
 	
 	@Override
 	public Date getTimestamp() {
 		return endDate;
+	}
+	
+	@Override
+	public String toString() {
+		return "ActivityInstanceLogItem {\n    endDate : " + endDate
+				+ "\n    performedByUser : " + performedByUser
+				+ "\n    viewUrl : " + viewUrl
+				+ "\n    processDefinitionUuid : " + processDefinitionUuid
+				+ "\n    processInstanceUuid : " + processInstanceUuid
+				+ "\n    activityDefinitionUuid : " + activityDefinitionUuid
+				+ "\n    activityInstanceUuid : " + activityInstanceUuid
+				+ "\n    activityName : " + activityName
+				+ "\n    activityLabel : " + activityLabel
+				+ "\n    startDate : " + startDate + "\n    currentState : "
+				+ currentState + "\n    lastStateUpdate : " + lastStateUpdate
+				+ "\n    lastStateUpdateByUserId : " + lastStateUpdateByUserId
+				+ "\n    startedBy : " + startedBy + "\n    expectedEndDate : "
+				+ expectedEndDate + "\n    formUrl : " + formUrl
+				+ "\n    formDocId : " + formDocId + "\n    activityType : "
+				+ activityType + "\n    priority : " + priority
+				+ "\n    processActivityFormInstanceId : "
+				+ processActivityFormInstanceId + "\n}";
 	}
 	@Override
 	public int getType() {

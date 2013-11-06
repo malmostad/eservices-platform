@@ -91,10 +91,22 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 
 	@Override
 	public String toString() {
-		return "ActivityInstancePendingItem [candidates=" + candidates
-				+ ", assignedUser=" + assignedUser 
-				+ " " + super.toString() + "]";
+		return "ActivityInstancePendingItem {\n    candidates : " + candidates
+				+ "\n    assignedUser : " + assignedUser
+				+ "\n    processDefinitionUuid : " + processDefinitionUuid
+				+ "\n    processInstanceUuid : " + processInstanceUuid
+				+ "\n    activityDefinitionUuid : " + activityDefinitionUuid
+				+ "\n    activityInstanceUuid : " + activityInstanceUuid
+				+ "\n    activityName : " + activityName
+				+ "\n    activityLabel : " + activityLabel
+				+ "\n    startDate : " + startDate + "\n    currentState : "
+				+ currentState + "\n    lastStateUpdate : " + lastStateUpdate
+				+ "\n    lastStateUpdateByUserId : " + lastStateUpdateByUserId
+				+ "\n    startedBy : " + startedBy + "\n    expectedEndDate : "
+				+ expectedEndDate + "\n    formUrl : " + formUrl
+				+ "\n    formDocId : " + formDocId + "\n    activityType : "
+				+ activityType + "\n    priority : " + priority
+				+ "\n    processActivityFormInstanceId : "
+				+ processActivityFormInstanceId + "\n}";
 	}
-	
-	
 }

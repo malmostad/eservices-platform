@@ -80,7 +80,7 @@ public class InheritServiceClient {
 	XStream jsonxstream;
 	
 	public InheritServiceClient() {
-		serverBaseUrl = ConfigUtil.getConfigProperties().getProperty("rest_uri", "http://localhost:58080/inherit-service-rest-server-1.0-SNAPSHOT/");
+		serverBaseUrl = ConfigUtil.getConfigProperties().getProperty("rest_uri", "http://localhost:58080/restrice/");
 		serverBaseUrl = serverBaseUrl.trim();
 		if (!serverBaseUrl.endsWith("/")) {
 			serverBaseUrl += "/";
@@ -814,7 +814,11 @@ public class InheritServiceClient {
 		System.out.println("Testa InheritServ iceClient");
 		InheritServiceClient c = new InheritServiceClient();
 		
+		ActivityInstanceItem aIItem = c.getActivityInstanceItem("3908", "kermit");
+		System.out.println(aIItem);
 		
+		
+		/*
 		ArrayList<InboxTaskItem> inboxTaskItems = c.getInboxByUserId("kermit");
 		
 		System.out.println("getInboxByUserId");
@@ -823,7 +827,7 @@ public class InheritServiceClient {
 				System.out.println("inboxTaskItems item: " + item);
 			}
 		}
-		
+		*/
 		/*
 		System.out.println("DocBox form data: " + c.getDocBoxFormData("bmtestid1"));
 		
