@@ -48,6 +48,9 @@ class PxdItem {
   // Size: number of characters in text, number of bytes in stream
   Integer size
 
+  // Id of PxdFormdef to which this item belongs, if known. Null otherwise.
+  private Long formref
+
   // Content is either text or binary
   // Text content
   String text
@@ -60,7 +63,7 @@ class PxdItem {
     uuid index: 'Uuid_Idx'
     formDef index: 'Formdef_Idx'
   }
-  static transients = ['sha1']
+  static transients = ['formref', 'sha1']
   static constraints = {
     path nullable: false, unique: true
     uuid nullable: true, maxSize: 200
@@ -144,4 +147,22 @@ class PxdItem {
   String toString() {
     "[Item ${id}/${path}: ${formDef}, ${format}/${size}]"
   }
+
+  /**
+   * Bootstrap init causes this method to be used for rendering as XML
+   */
+  def toXML(xml) {
+    xml.build {
+      ref(id)
+      if (formref) formref(formref)
+      created(dateCreated)
+      path(path)
+      uuid(uuid)
+      formdef(formDef)
+      format(format)
+      size(size)
+      sha1(sha1)
+    }
+  }
+
 }

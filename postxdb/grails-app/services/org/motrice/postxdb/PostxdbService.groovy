@@ -84,6 +84,8 @@ class PostxdbService {
 	    result.status = 404
 	    result.message = 'Formdef not found with the given id'
 	  } else {
+	    // Sort the list on descending version (latest first)
+	    result.list = result.list.sort()
 	    result.status = 200
 	  }
 	}
@@ -133,10 +135,18 @@ class PostxdbService {
 	  result.message = 'Formdef not found with the given id'
 	}
       } else if (uuid) {
-	effectiveUuid = uuid
+	formdef = PxdFormdef.findByUuid(uuid)
+
+	if (formdef) {
+	  effectiveUuid = uuid
+	} else {
+	  result.status = 404
+	  result.message = 'Formdef not found with the given id'
+	}
       }
 
       if (effectiveUuid) {
+	result.formref = formdef.id
 	result.list = PxdItem.findAllWhere(uuid: effectiveUuid, instance: false)
 	if (result.list.isEmpty()) {
 	  result.status = 404
@@ -151,7 +161,7 @@ class PostxdbService {
       def size = result.list?.size()
       def status = result.status
       def msg = result.message
-      log.debug "defItemGet >> list: ${size}, status: ${status}, '${msg}'"
+      log.debug "defItemGet >> list(${result?.formref}): ${size}, status: ${status}, '${msg}'"
     }
 
     return result
