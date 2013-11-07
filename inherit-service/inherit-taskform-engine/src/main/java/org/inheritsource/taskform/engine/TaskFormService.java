@@ -1084,7 +1084,7 @@ public class TaskFormService {
 
 			// create user in BOS engine
 			if (!activitiEngineService.createUser(uuid)) {
-				log.severe("Failed to create user in BOS engine");
+				log.severe("Failed to create user in engine");
 			}
 		}
 
@@ -1141,7 +1141,7 @@ public class TaskFormService {
 
 			// create user in BOS engine
 			if (!activitiEngineService.createUser(uuid)) {
-				log.severe("Failed to create user in BOS engine");
+				log.severe("Failed to create user in engine");
 			}
 		}
 
