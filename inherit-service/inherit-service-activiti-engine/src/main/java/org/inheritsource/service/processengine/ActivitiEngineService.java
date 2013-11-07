@@ -490,12 +490,45 @@ public class ActivitiEngineService {
 	}
 
 	public ActivityWorkflowInfo unassignTask(String activityInstanceUuid) {
-		// TODO Auto-generated method stub
-		return null;
+		ActivityWorkflowInfo activityWorkflowInfo = null;
+		
+		try {
+			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			task.setAssignee(null);
+			engine.getTaskService().saveTask(task);
+			
+			activityWorkflowInfo = new ActivityWorkflowInfo();
+			activityWorkflowInfo.setPriority(task.getPriority());
+			activityWorkflowInfo.setAssignedUser(null);
+			
+			// FIXME: This might not be correct!!!
+			List<IdentityLink> identityLinks = 
+				engine.getTaskService().getIdentityLinksForTask(activityInstanceUuid);
+			HashSet<UserInfo> candidates = new HashSet<UserInfo>();
+			
+			if(identityLinks != null) {
+				for(IdentityLink iL : identityLinks) {
+					if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
+						UserInfo candidate = new UserInfo();
+						candidate.setUuid(iL.getUserId());
+						candidates.add(candidate);
+					}
+				}
+			}
+			
+			activityWorkflowInfo.setCandidates(candidates);
+			
+		} catch (Exception e) {
+			log.severe("Unable to assignTask with taskIs: " + activityInstanceUuid);
+		}
+		
+		return activityWorkflowInfo;
 	}
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
+		
+		//ActivityWorkflowInfo aWI = activitiEngineService.unassignTask("4204");
 		
 		//activitiEngineService.engine.getTaskService().addCandidateUser("4204", "KALLE STROPP");
 		
