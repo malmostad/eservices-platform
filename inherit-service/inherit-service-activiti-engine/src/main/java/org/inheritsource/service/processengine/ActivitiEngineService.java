@@ -27,7 +27,6 @@ import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
-import org.inheritsource.bonita.client.util.BonitaUtil;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
@@ -40,8 +39,7 @@ import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
 import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.ow2.bonita.facade.uuid.ActivityInstanceUUID;
-import org.ow2.bonita.util.AccessorUtil;
+
 
 public class ActivitiEngineService {
 
@@ -395,28 +393,27 @@ public class ActivitiEngineService {
 
 	public boolean executeTask(String activityInstanceUuid, String userId) {
 		
-		// Fortsätt här...
+		// FIXME: Does clame the job?
+		// Bonita uses login and logout but this is impl is not using a webservice interface so mighy be 
+		// nothing to deal with?
+		//  
 		
-		
-		return false;
-	}
-	
-	/* BONITA GÖR SÅ HÄR....
-	 * 	boolean successful = false;
-		ActivityInstanceUUID activityInstanceUUID = new ActivityInstanceUUID(activityInstanceUuid);
-
+		boolean successful = false;
+			
 		try {
-			LoginContext loginContext = BonitaUtil.loginWithUser(userId); 
-			AccessorUtil.getRuntimeAPI().executeTask(activityInstanceUUID, false);
+			// Note: ActivitiTaskAlreadyClaimedException - when the task is already claimed by another user.
+			engine.getTaskService().claim(activityInstanceUuid, userId);
+			
+			// Note: ActivitiException is thrown when this task is DelegationState.PENDING delegation.
+			engine.getTaskService().complete(activityInstanceUuid);
 			successful = true;
-			BonitaUtil.logoutWithUser(loginContext);
 		} catch (Exception e) {
-			log.severe("Could not execute task: " + e);
+			log.severe("Could not executeTask with taskId: " + activityInstanceUuid + 
+				" exception: " + e);
 		}
 
 		return successful;
-	 */
-	
+	}
 
 	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
 			String searchForBonitaUser, int fromIndex, int pageSize,
@@ -452,6 +449,10 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 		
+		activitiEngineService.executeTask("4502", "dont care");
+		
+	
+		/*
 		log.severe("Number of process instances Before: " + 
 				activitiEngineService.engine.getRuntimeService().createProcessInstanceQuery().count());     
 		
@@ -463,7 +464,7 @@ public class ActivitiEngineService {
 		// Verify that we started a new process instance
 		log.severe("Number of process instances After: " + 
 				activitiEngineService.engine.getRuntimeService().createProcessInstanceQuery().count());   
-
+*/
 		
 		
 		/*
