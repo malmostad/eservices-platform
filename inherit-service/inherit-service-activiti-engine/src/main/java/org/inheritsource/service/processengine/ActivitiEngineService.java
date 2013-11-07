@@ -22,10 +22,13 @@ import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.IdentityLink;
+import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
@@ -349,8 +352,41 @@ public class ActivitiEngineService {
 
 	public ActivityWorkflowInfo assignTask(String activityInstanceUuid,
 			String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		ActivityWorkflowInfo activityWorkflowInfo = null;
+		
+		try {
+			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			task.setAssignee(userId);
+			engine.getTaskService().saveTask(task);
+			
+			activityWorkflowInfo = new ActivityWorkflowInfo();
+			activityWorkflowInfo.setPriority(task.getPriority());
+			UserInfo assignedUser = new UserInfo();
+			assignedUser.setUuid(userId);
+			activityWorkflowInfo.setAssignedUser(assignedUser);
+			
+			// FIXME: This might not be correct!!!
+			List<IdentityLink> identityLinks = 
+				engine.getTaskService().getIdentityLinksForTask(activityInstanceUuid);
+			HashSet<UserInfo> candidates = new HashSet<UserInfo>();
+			
+			if(identityLinks != null) {
+				for(IdentityLink iL : identityLinks) {
+					if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
+						UserInfo candidate = new UserInfo();
+						candidate.setUuid(iL.getUserId());
+						candidates.add(candidate);
+					}
+				}
+			}
+			
+			activityWorkflowInfo.setCandidates(candidates);
+			
+		} catch (Exception e) {
+			log.severe("Unable to assignTask with taskIs: " + activityInstanceUuid);
+		}
+		
+		return activityWorkflowInfo;
 	}
 
 	public ActivityWorkflowInfo addCandidate(String activityInstanceUuid,
@@ -373,6 +409,9 @@ public class ActivitiEngineService {
 
 	public String startProcess(String processDefinitionId, String userId) {
 		String processInstanceId = null;
+		
+		// FIXME:
+		// Add some kind of user check... ???
 		
 		try {
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
@@ -437,8 +476,17 @@ public class ActivitiEngineService {
 	}
 
 	public boolean createUser(String uuid) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean successful = false;
+		
+		try {
+			User user = engine.getIdentityService().newUser(uuid);
+			engine.getIdentityService().saveUser(user);
+			successful = true;
+		} catch (Exception e) {
+			log.severe("Could not createUser with uuid: " + uuid +  " exception: " + e);
+		}
+		
+		return successful;
 	}
 
 	public ActivityWorkflowInfo unassignTask(String activityInstanceUuid) {
@@ -449,9 +497,17 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 		
-		activitiEngineService.executeTask("4502", "dont care");
+		//activitiEngineService.engine.getTaskService().addCandidateUser("4204", "KALLE STROPP");
 		
-	
+		//ActivityWorkflowInfo aWI = activitiEngineService.assignTask("4204", "GRODAN BOLL");
+		
+		//log.severe(aWI.toString());
+		//log.severe(" assigned User ID: " + aWI.getAssignedUser().getUuid());
+		//log.severe(" candidates: " + ((UserInfo)aWI.getCandidates().toArray()[0]).getUuid()     );
+		
+		//activitiEngineService.createUser("nya usern lasse");
+		//activitiEngineService.executeTask("4502", "dont care");
+		
 		/*
 		log.severe("Number of process instances Before: " + 
 				activitiEngineService.engine.getRuntimeService().createProcessInstanceQuery().count());     
