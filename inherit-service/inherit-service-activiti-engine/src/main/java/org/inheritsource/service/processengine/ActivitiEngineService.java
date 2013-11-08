@@ -222,8 +222,22 @@ public class ActivitiEngineService {
 
 	public String getActivityInstanceUuid(String processInstanceUuid,
 			String activityName) {
-		// TODO Auto-generated method stub
-		return null;
+		String taskId = null;
+		Task task = null;
+		
+		try {
+			task = engine.getTaskService().createTaskQuery().
+				processInstanceId(processInstanceUuid).taskName(activityName).singleResult();
+		} catch (Exception e) {
+			log.severe("More than one task with processInstanceUuid: " + processInstanceUuid + 
+					" and name: " + activityName + "exists! ... returning taskId = null");
+		}
+		
+		if(task != null) {
+			taskId = task.getId();
+		}
+		
+		return taskId;
 	}
 
 	public ActivityInstanceItem getActivityInstanceItem(
@@ -491,6 +505,10 @@ public class ActivitiEngineService {
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
+		
+		
+		//String taskId = activitiEngineService.getActivityInstanceUuid("4201", "Registrering");
+		//log.severe("taskId: " + taskId);
 		
 		//ActivityWorkflowInfo aWI = activitiEngineService.unassignTask("4204");
 		
