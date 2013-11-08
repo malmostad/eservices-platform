@@ -188,6 +188,8 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
+	// FIXME: label is not set
+	
 	private InboxTaskItem task2InboxTaskItem(Task task) {
 		InboxTaskItem item = null;
 		if (task != null) {
@@ -200,9 +202,9 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
-			item.setProcessLabel("Process Label");  // FIXME: Maybe get some name from process definition?
+			item.setProcessLabel("");
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
-			item.setTaskUuid(task.getId()); // Note task.getId() gives a simple int ant is not a real uuid
+			item.setTaskUuid(task.getId());
 		}
 		return item;
 	}
@@ -246,6 +248,13 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
+	// FIXME: label is not set
+	// FIXME: current state is not set
+	// FIXME: lastStateUpdate is not set
+	// FIXME: lastStateUpdateByUserId is not set
+	// FIXME: startedBy might not be correct?
+	// FIXME: activityType might not be correct?
+	
 	private ActivityInstanceItem task2ActivityInstancePendingItem(Task task) {
 		ActivityInstancePendingItem item = null;
 		if (task != null) {
@@ -256,16 +265,16 @@ public class ActivitiEngineService {
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
 			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
-			item.setActivityLabel(""); // FIXME What to map?
+			item.setActivityLabel("");
 			item.setStartDate(task.getCreateTime());
-			item.setCurrentState("FIXME"); // task.getDelegationState()?
-			item.setLastStateUpdate(null);  // FIXME  Mapping??
-			item.setLastStateUpdateByUserId("FIXME"); // FIXME: Mapping Owner / assigned ??
-			item.setStartedBy(task.getOwner()); // FIXME: Mapping correct??
-			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
+			item.setCurrentState("");
+			item.setLastStateUpdate(null);
+			item.setLastStateUpdateByUserId("");
+			item.setStartedBy(task.getOwner());
+			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setFormUrl("");
 			item.setFormDocId("");
-			item.setActivityType(99); // FIXME
+			item.setActivityType(99);
 			item.setPriority(task.getPriority());
 			item.setExpectedEndDate(task.getDueDate());
 			
@@ -279,6 +288,13 @@ public class ActivitiEngineService {
 		return item;
 	}
 	
+	// FIXME: label is not set
+	// FIXME: current state is not set
+	// FIXME: lastStateUpdate is not set
+	// FIXME: lastStateUpdateByUserId is not set
+	// FIXME: startedBy might not be correct?
+	// FIXME: activityType might not be correct?
+	
 	private ActivityInstanceItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
 		ActivityInstanceLogItem item = null;
 		if (task != null) {
@@ -289,16 +305,16 @@ public class ActivitiEngineService {
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
 			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
-			item.setActivityLabel(""); // FIXME What to map?	
+			item.setActivityLabel("");
 			item.setStartDate(task.getStartTime());
-			item.setCurrentState("FIXME"); // task.getDelegationState()?
-			item.setLastStateUpdate(null);  // FIXME  Mapping??
-			item.setLastStateUpdateByUserId("FIXME"); // FIXME: Mapping Owner / assigned ??
-			item.setStartedBy(task.getOwner()); // FIXME: Mapping correct??
-			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
+			item.setCurrentState("");
+			item.setLastStateUpdate(null);
+			item.setLastStateUpdateByUserId("");
+			item.setStartedBy(task.getOwner());
+			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setFormUrl("");
 			item.setFormDocId("");
-			item.setActivityType(99); // FIXME
+			item.setActivityType(99);
 			item.setPriority(task.getPriority());
 			item.setExpectedEndDate(task.getDueDate());
 			
@@ -308,7 +324,7 @@ public class ActivitiEngineService {
 			UserInfo performedByUser = new UserInfo();
 			performedByUser.setUuid(task.getAssignee());
 			item.setPerformedByUser(performedByUser);
-			item.setViewUrl(""); // FIXME
+			item.setViewUrl("");
 		}
 		return item;
 	}
