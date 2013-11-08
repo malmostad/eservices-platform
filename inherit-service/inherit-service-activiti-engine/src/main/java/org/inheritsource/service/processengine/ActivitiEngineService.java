@@ -165,8 +165,6 @@ public class ActivitiEngineService {
 		engine.getRepositoryService().deleteDeployment(deploymentId, cascade);
 	}
 	
-	
-	
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		
@@ -208,18 +206,6 @@ public class ActivitiEngineService {
 		return item;
 	}
 	
-	
-	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
-		// TODO Auto-generated method stub
-		return null;	
-	}
-
-	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
-			String processDefinitionUUIDStr) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public String getActivityInstanceUuid(String processInstanceUuid,
 			String activityName) {
 		String taskId = null;
@@ -435,8 +421,18 @@ public class ActivitiEngineService {
 
 	public ActivityWorkflowInfo setPriority(String activityInstanceUuid,
 			int priority) {
-		// TODO Auto-generated method stub
-		return null;
+		ActivityWorkflowInfo activityWorkflowInfo = null;
+		
+		try {
+			engine.getTaskService().setPriority(activityInstanceUuid, priority);
+			activityWorkflowInfo = getActivityWorkflowInfo(activityInstanceUuid);
+		} catch (Exception e) {
+			log.severe("Unable to setPriority with taskId: " + activityInstanceUuid +
+					" and priority: " + priority);
+			activityWorkflowInfo = null;
+		}
+		
+		return activityWorkflowInfo;
 	}
 
 	public String startProcess(String processDefinitionId, String userId) {
@@ -540,9 +536,46 @@ public class ActivitiEngineService {
 		return activityWorkflowInfo;
 	}
 	
+	// FIXME: Label for ProcessDefinitionInfo is not set!
+	
+	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
+		HashSet<ProcessDefinitionInfo> processDefinitions = new HashSet<ProcessDefinitionInfo>();
+		
+		try {
+			 List<ProcessDefinition> processDefinitionList = engine.getRepositoryService().
+				createProcessDefinitionQuery().orderByProcessDefinitionName().asc().list();
+			
+			 for(ProcessDefinition pDItem : processDefinitionList) {
+				 processDefinitions.add(new ProcessDefinitionInfo(pDItem.getId(), pDItem.getName(), ""));
+			 }
+		} catch (Exception e) {
+			log.severe("Unable to getProcessDefinitions" + e);
+			processDefinitions = null;
+		}
+		
+		return processDefinitions;
+	}
+
+	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
+			String processDefinitionUUIDStr) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
+		/*
+		Set<ProcessDefinitionInfo> pDInfos = activitiEngineService.getProcessDefinitions();
+		for(ProcessDefinitionInfo pDInfo : pDInfos) {
+			log.severe(" pDInfo: " + pDInfo);
+		}
+		*/
+		//ActivityWorkflowInfo aWI = activitiEngineService.setPriority("4204", 50);
+		//log.severe(" assigned User ID: " + aWI.getAssignedUser().getUuid());
+		//log.severe(" candidates: " + ((UserInfo)aWI.getCandidates().toArray()[0]).getUuid()     );
+		//log.severe(" prio: " + aWI.getPriority()   );
+		
 		//String taskId = activitiEngineService.getActivityInstanceUuid("4201", "Registrering");
 		//log.severe("taskId: " + taskId);
 		
