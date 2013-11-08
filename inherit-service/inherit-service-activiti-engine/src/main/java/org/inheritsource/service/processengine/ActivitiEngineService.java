@@ -30,6 +30,7 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
+import org.inheritsource.service.common.domain.ActivityDefinitionInfo;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
@@ -555,16 +556,67 @@ public class ActivitiEngineService {
 		
 		return processDefinitions;
 	}
+	
+	// FIXME: Label for ProcessDefinitionInfo is not set!
+	// FIXME: Label for ActivityDefinitionInfo is not set!
 
 	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
 			String processDefinitionUUIDStr) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		ProcessDefinitionDetails processDefinitionDetails = null;
+		
+		try {
+			 ProcessDefinition processDefinition = 
+				engine.getRepositoryService().getProcessDefinition(processDefinitionUUIDStr);
+			
+			 if(processDefinition != null) {
+				 processDefinitionDetails = new ProcessDefinitionDetails();
+				 
+				 // Handle ProcessDefinitionInfo
+				 
+				 ProcessDefinitionInfo pDInfo = 
+					new ProcessDefinitionInfo(processDefinition.getId(), processDefinition.getName(), "");
+				 
+				 processDefinitionDetails.setProcess(pDInfo);
+				 
+				 // Handle ActivityDefinitionInfo's
+				 
+				 Set<ActivityDefinitionInfo> activityDefinitionInfos = 
+					new HashSet<ActivityDefinitionInfo>();
+				 
+				 List<Task> tasks = engine.getTaskService().createTaskQuery().
+					processDefinitionId(processDefinition.getId()).orderByProcessInstanceId().asc().list();
+				 
+				 for(Task task : tasks) {
+					 ActivityDefinitionInfo aDInfo = new ActivityDefinitionInfo();
+					 aDInfo.setUuid(task.getId());
+					 aDInfo.setName(task.getName());
+					 aDInfo.setLabel("");
+					 aDInfo.setFormPath("");
+					 
+					 activityDefinitionInfos.add(aDInfo);
+				 }
+
+				 processDefinitionDetails.setActivities(activityDefinitionInfos);
+			 }
+		} catch (Exception e) {
+			log.severe("Unable to getProcessDefinitionDetailsByUuid with processDefinitionUUIDStr: " +
+				processDefinitionUUIDStr + " execption: " + e);
+			processDefinitionDetails = null;
+		}
+		
+		return processDefinitionDetails;
 	}
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
+		/*
+		 ProcessDefinitionDetails details = 
+				activitiEngineService.getProcessDefinitionDetailsByUuid("Arendeprocess:1:3904");
+		
+		 log.severe("details" + details);
+		 */
 		/*
 		Set<ProcessDefinitionInfo> pDInfos = activitiEngineService.getProcessDefinitions();
 		for(ProcessDefinitionInfo pDInfo : pDInfos) {
