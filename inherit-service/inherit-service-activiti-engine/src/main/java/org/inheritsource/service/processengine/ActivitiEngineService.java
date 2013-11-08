@@ -261,7 +261,7 @@ public class ActivitiEngineService {
 			item.setLastStateUpdate(null);  // FIXME  Mapping??
 			item.setLastStateUpdateByUserId("FIXME"); // FIXME: Mapping Owner / assigned ??
 			item.setStartedBy(task.getOwner()); // FIXME: Mapping correct??
-			item.setProcessActivityFormInstanceId(new Long(0)); // FIXME
+			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setFormUrl("");
 			item.setFormDocId("");
 			item.setActivityType(99); // FIXME
@@ -269,13 +269,11 @@ public class ActivitiEngineService {
 			item.setExpectedEndDate(task.getDueDate());
 			
 			// ActivityInstancePendingItem
-			item.setCandidates(new HashSet<UserInfo>()); //FIXME
+			item.setCandidates(getCandidatesByTaskId(task.getId()));
 			
 			UserInfo assignedUser = new UserInfo();
-			assignedUser.setUuid(task.getAssignee()); // FIXME
-			assignedUser.setLabelShort(task.getAssignee()); // FIXME
+			assignedUser.setUuid(task.getAssignee());
 			item.setAssignedUser(assignedUser);
-
 		}
 		return item;
 	}
@@ -296,7 +294,7 @@ public class ActivitiEngineService {
 			item.setLastStateUpdate(null);  // FIXME  Mapping??
 			item.setLastStateUpdateByUserId("FIXME"); // FIXME: Mapping Owner / assigned ??
 			item.setStartedBy(task.getOwner()); // FIXME: Mapping correct??
-			item.setProcessActivityFormInstanceId(new Long(0)); // FIXME
+			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setFormUrl("");
 			item.setFormDocId("");
 			item.setActivityType(99); // FIXME
@@ -307,7 +305,7 @@ public class ActivitiEngineService {
 			item.setEndDate(task.getDueDate());
 			
 			UserInfo performedByUser = new UserInfo();
-			performedByUser.setUuid(task.getAssignee()); // FIXME
+			performedByUser.setUuid(task.getAssignee());
 			item.setPerformedByUser(performedByUser);
 			item.setViewUrl(""); // FIXME
 		}
@@ -364,24 +362,7 @@ public class ActivitiEngineService {
 			UserInfo assignedUser = new UserInfo();
 			assignedUser.setUuid(userId);
 			activityWorkflowInfo.setAssignedUser(assignedUser);
-			
-			// FIXME: This might not be correct!!!
-			List<IdentityLink> identityLinks = 
-				engine.getTaskService().getIdentityLinksForTask(activityInstanceUuid);
-			HashSet<UserInfo> candidates = new HashSet<UserInfo>();
-			
-			if(identityLinks != null) {
-				for(IdentityLink iL : identityLinks) {
-					if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
-						UserInfo candidate = new UserInfo();
-						candidate.setUuid(iL.getUserId());
-						candidates.add(candidate);
-					}
-				}
-			}
-			
-			activityWorkflowInfo.setCandidates(candidates);
-			
+			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(activityInstanceUuid));
 		} catch (Exception e) {
 			log.severe("Unable to assignTask with taskIs: " + activityInstanceUuid);
 		}
@@ -500,24 +481,7 @@ public class ActivitiEngineService {
 			activityWorkflowInfo = new ActivityWorkflowInfo();
 			activityWorkflowInfo.setPriority(task.getPriority());
 			activityWorkflowInfo.setAssignedUser(null);
-			
-			// FIXME: This might not be correct!!!
-			List<IdentityLink> identityLinks = 
-				engine.getTaskService().getIdentityLinksForTask(activityInstanceUuid);
-			HashSet<UserInfo> candidates = new HashSet<UserInfo>();
-			
-			if(identityLinks != null) {
-				for(IdentityLink iL : identityLinks) {
-					if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
-						UserInfo candidate = new UserInfo();
-						candidate.setUuid(iL.getUserId());
-						candidates.add(candidate);
-					}
-				}
-			}
-			
-			activityWorkflowInfo.setCandidates(candidates);
-			
+			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(activityInstanceUuid));	
 		} catch (Exception e) {
 			log.severe("Unable to assignTask with taskIs: " + activityInstanceUuid);
 		}
@@ -611,6 +575,24 @@ public class ActivitiEngineService {
 		*/
 		
 		System.exit(0);
+	}
+	
+	private HashSet<UserInfo> getCandidatesByTaskId(String taskId) {
+		HashSet<UserInfo> candidates = new HashSet<UserInfo>();
+		List<IdentityLink> identityLinks = 
+				engine.getTaskService().getIdentityLinksForTask(taskId);
+		
+		if(identityLinks != null) {
+			for(IdentityLink iL : identityLinks) {
+				if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
+					UserInfo candidate = new UserInfo();
+					candidate.setUuid(iL.getUserId());
+					candidates.add(candidate);
+				}
+			}
+		}
+	
+		return candidates;
 	}
 	
 }
