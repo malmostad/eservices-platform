@@ -403,14 +403,34 @@ public class ActivitiEngineService {
 
 	public ActivityWorkflowInfo addCandidate(String activityInstanceUuid,
 			String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		ActivityWorkflowInfo activityWorkflowInfo = null;
+		
+		try {
+			engine.getTaskService().addCandidateUser(activityInstanceUuid, userId);
+			activityWorkflowInfo = getActivityWorkflowInfo(activityInstanceUuid);
+		} catch (Exception e) {
+			log.severe("Unable to addCandidate with taskId: " + activityInstanceUuid +
+					" and userId: " + userId);
+			activityWorkflowInfo = null;
+		}
+		
+		return activityWorkflowInfo;
 	}
-
+	
 	public ActivityWorkflowInfo removeCandidate(String activityInstanceUuid,
 			String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		ActivityWorkflowInfo activityWorkflowInfo = null;
+		
+		try {
+			engine.getTaskService().deleteCandidateUser(activityInstanceUuid, userId);
+			activityWorkflowInfo = getActivityWorkflowInfo(activityInstanceUuid);
+		} catch (Exception e) {
+			log.severe("Unable to removeCandidate with taskId: " + activityInstanceUuid +
+					" and userId: " + userId);
+			activityWorkflowInfo = null;
+		}
+		
+		return activityWorkflowInfo;
 	}
 
 	public ActivityWorkflowInfo setPriority(String activityInstanceUuid,
@@ -615,11 +635,12 @@ public class ActivitiEngineService {
 		HashSet<UserInfo> candidates = new HashSet<UserInfo>();
 		List<IdentityLink> identityLinks = 
 				engine.getTaskService().getIdentityLinksForTask(taskId);
+		UserInfo candidate = null;
 		
 		if(identityLinks != null) {
 			for(IdentityLink iL : identityLinks) {
 				if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
-					UserInfo candidate = new UserInfo();
+					candidate = new UserInfo();
 					candidate.setUuid(iL.getUserId());
 					candidates.add(candidate);
 				}
