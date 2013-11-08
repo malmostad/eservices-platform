@@ -358,8 +358,24 @@ public class ActivitiEngineService {
 
 	public ActivityWorkflowInfo getActivityWorkflowInfo(
 			String activityInstanceUuid) {
-		// TODO Auto-generated method stub
-		return null;
+	
+		ActivityWorkflowInfo activityWorkflowInfo = null;
+		
+		try {
+			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			
+			activityWorkflowInfo = new ActivityWorkflowInfo();
+			activityWorkflowInfo.setPriority(task.getPriority());
+			UserInfo assignedUser = new UserInfo();
+			assignedUser.setUuid(task.getAssignee());
+			activityWorkflowInfo.setAssignedUser(assignedUser);
+			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(activityInstanceUuid));
+		} catch (Exception e) {
+			log.severe("Unable to getActivityWorkflowInfo with taskId: " + activityInstanceUuid);
+			activityWorkflowInfo = null;
+		}
+		
+		return activityWorkflowInfo;
 	}
 
 	public ActivityWorkflowInfo assignTask(String activityInstanceUuid,
@@ -378,7 +394,8 @@ public class ActivitiEngineService {
 			activityWorkflowInfo.setAssignedUser(assignedUser);
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(activityInstanceUuid));
 		} catch (Exception e) {
-			log.severe("Unable to assignTask with taskIs: " + activityInstanceUuid);
+			log.severe("Unable to assignTask with taskId: " + activityInstanceUuid);
+			activityWorkflowInfo = null;
 		}
 		
 		return activityWorkflowInfo;
@@ -505,8 +522,7 @@ public class ActivitiEngineService {
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
-		
-		
+
 		//String taskId = activitiEngineService.getActivityInstanceUuid("4201", "Registrering");
 		//log.severe("taskId: " + taskId);
 		
