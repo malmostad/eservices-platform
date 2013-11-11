@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
@@ -42,6 +43,8 @@ import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
 import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
+import org.inheritsource.service.common.domain.ProcessInstanceListItem;
+import org.inheritsource.service.common.domain.Timeline;
 import org.inheritsource.service.common.domain.UserInfo;
 
 
@@ -255,7 +258,7 @@ public class ActivitiEngineService {
 	// FIXME: startedBy might not be correct?
 	// FIXME: activityType might not be correct?
 	
-	private ActivityInstanceItem task2ActivityInstancePendingItem(Task task) {
+	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task) {
 		ActivityInstancePendingItem item = null;
 		if (task != null) {
 			item = new ActivityInstancePendingItem();
@@ -295,7 +298,7 @@ public class ActivitiEngineService {
 	// FIXME: startedBy might not be correct?
 	// FIXME: activityType might not be correct?
 	
-	private ActivityInstanceItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
+	private ActivityInstanceLogItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
 		ActivityInstanceLogItem item = null;
 		if (task != null) {
 			item = new ActivityInstanceLogItem();
@@ -335,16 +338,70 @@ public class ActivitiEngineService {
 		return null;
 	}
 
+	// FIXME: Several fields are not set correct in the method!
+	
 	public ProcessInstanceDetails getProcessInstanceDetails(
 			String processInstanceUuid) {
-		// TODO Auto-generated method stub
-		return null;
+		ProcessInstanceDetails processInstanceDetails = null;
+		
+		try {
+			ProcessInstance processInstance = engine.getRuntimeService().
+				createProcessInstanceQuery().processInstanceId(processInstanceUuid).singleResult();
+
+			processInstanceDetails = new ProcessInstanceDetails();
+			
+			processInstanceDetails.setProcessInstanceLabel(""); // FIXME
+			processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
+			
+			processInstanceDetails.setStartDate(null);
+			processInstanceDetails.setStartedBy(""); // FIXME: This could be fetched if it is earlier set with addUserIdentityLink
+			processInstanceDetails.setEndDate(null);
+			processInstanceDetails.setProcessInstanceLabel(processInstanceUuid);
+			processInstanceDetails.setStartedByFormPath("");
+				
+			// Handle pendings
+			
+			List<Task> tasks = engine.getTaskService().createTaskQuery().
+				processInstanceId(processInstance.getId()).orderByTaskName().asc().list();
+						
+			if(tasks != null && tasks.size() > 0) {
+				List<ActivityInstancePendingItem> activityInstancePendingItems = new ArrayList<ActivityInstancePendingItem>();
+				
+				for(Task task : tasks) {
+					activityInstancePendingItems.add(task2ActivityInstancePendingItem(task));
+				}
+				
+				processInstanceDetails.setPending(activityInstancePendingItems);
+				processInstanceDetails.setTimeline(new Timeline()); //  FIXME: Nothing is done here now!
+				
+				
+				// Handle activities as a set of InboxTaskItem
+				// FIXME: Feels like overlap with activityInstancePendingItems!
+				
+				processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks)));
+			}	
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstanceDetails with processInstanceUuid: " + processInstanceUuid);
+			processInstanceDetails = null;	
+		}
+		return processInstanceDetails;
 	}
 
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(
 			String activityInstanceUuid) {
-		// TODO Auto-generated method stub
-		return null;
+		ProcessInstanceDetails processInstanceDetails = null;
+		
+		try {
+			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+
+			if(task != null) {
+				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId());
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with activityInstanceUuid: " + activityInstanceUuid);
+			processInstanceDetails = null;	
+		}
+		return processInstanceDetails;
 	}
 
 	public int addComment(String activityInstanceUuid, String comment,
@@ -627,6 +684,8 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
+		log.severe("activitiEngineService.getProcessInstanceDetails(4201)" + 
+				activitiEngineService.getProcessInstanceDetailsByActivityInstance("4204"));
 		/*
 		 ProcessDefinitionDetails details = 
 				activitiEngineService.getProcessDefinitionDetailsByUuid("Arendeprocess:1:3904");
