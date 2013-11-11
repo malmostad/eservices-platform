@@ -205,13 +205,14 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 
 	@Override
 	public String toString() {
-		return "CommentFeedItem [processDefinitionUuid="
-				+ processDefinitionUuid + ", processInstanceUuid="
-				+ processInstanceUuid + ", processLabel=" + processLabel
-				+ ", activityDefinitionUuid=" + activityDefinitionUuid
-				+ ", activityInstanceUuid=" + activityInstanceUuid
-				+ ", activityLabel=" + activityLabel + ", timestamp="
-				+ timestamp + ", message=" + message + ", user=" + user + "]";
+		return "CommentFeedItem {\n    processDefinitionUuid : "
+				+ processDefinitionUuid + "\n    processInstanceUuid : "
+				+ processInstanceUuid + "\n    processLabel : " + processLabel
+				+ "\n    activityDefinitionUuid : " + activityDefinitionUuid
+				+ "\n    activityInstanceUuid : " + activityInstanceUuid
+				+ "\n    activityLabel : " + activityLabel
+				+ "\n    timestamp : " + timestamp + "\n    message : "
+				+ message + "\n    user : " + user + "\n}";
 	}
 
 	@Override
