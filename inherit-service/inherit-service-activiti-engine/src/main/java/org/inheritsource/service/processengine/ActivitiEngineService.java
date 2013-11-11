@@ -750,5 +750,14 @@ public class ActivitiEngineService {
 	
 		return candidates;
 	}
-	
+
+    public String getParentProcessInstanceUuid(String processInstanceUuid) {
+	String parentProcessInstanceUuid = null;
+
+	return parentProcessInstanceUuid;
+    }
+
+    public InboxTaskItem getNextInboxTaskItem(String currentProcessInstance, String userId) {
+	return null;
+    }
 }

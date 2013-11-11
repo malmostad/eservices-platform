@@ -176,7 +176,7 @@ public class TaskFormService {
 	}
 	
 	public void getProcessInstanceActivitiesFormData(String processInstanceUuid, StringBuffer buf) {
-		String parentProcessInstanceUuid = bonitaClient.getParentProcessInstanceUuid(processInstanceUuid);
+		String parentProcessInstanceUuid = activitiEngineService.getParentProcessInstanceUuid(processInstanceUuid);
 		if (parentProcessInstanceUuid != null && !parentProcessInstanceUuid.isEmpty()) {
 			getProcessInstanceActivitiesFormData(parentProcessInstanceUuid,buf);
 		}
@@ -196,14 +196,8 @@ public class TaskFormService {
 							buf.append("</startform>");
 						} else {
 							// activity form
-<<<<<<< HEAD
 
-							ActivityInstanceItem activityItem = activitiEngineService
-=======
-							ActivityInstanceItem activityItem = bonitaClient
->>>>>>> master
-									.getActivityInstanceItem(pafi
-											.getActivityInstanceUuid());
+							ActivityInstanceItem activityItem = activitiEngineService.getActivityInstanceItem(pafi.getActivityInstanceUuid());
 							if (activityItem != null) {
 								buf.append("<activity uuid=\"");
 								buf.append(pafi.getActivityInstanceUuid());
@@ -652,7 +646,7 @@ public class TaskFormService {
 			ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(docId);
 			String currentProcessInstance = currentActivity.getProcessInstanceUuid();
 			
-			InboxTaskItem item = bonitaClient.getNextInboxTaskItem(currentProcessInstance, userId);
+			InboxTaskItem item = activitiEngineService.getNextInboxTaskItem(currentProcessInstance, userId);
 		    if (item != null) {
 		    	ProcessActivityFormInstance form = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(item.getTaskUuid());
 		    	appendTaskFormServiceData(item, form);
