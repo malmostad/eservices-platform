@@ -26,7 +26,7 @@
 
 <c:choose>
   <c:when test="${empty document}">
-    <tag:pagenotfound/>
+
   </c:when>
   <c:otherwise>
     <c:if test="${not empty document.title}">
@@ -35,6 +35,8 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
+  </c:otherwise>  
+</c:choose>
 
 	
 	<c:if test="${not empty activity}">
@@ -59,11 +61,7 @@
 		<hst:html hippohtml="${guide.html}"/>
 	</if>
 				
-	<div class="row-fluid">
-		<div class="span12">
-    		<div id="xform">Loading form...please wait...</div>
-		</div>
-	</div>    
+   <div id="xform"><fmt:message key="mycases.loadingform.lbl"/></div>
+
     
-  </c:otherwise>  
-</c:choose>
+  

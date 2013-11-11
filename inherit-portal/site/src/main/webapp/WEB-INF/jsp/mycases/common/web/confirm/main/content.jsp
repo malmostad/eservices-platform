@@ -64,7 +64,23 @@
 				<hst:html hippohtml="${document.html}" />
 			</c:if>	    
 	
-    		<div id="xform">Loading form...please wait...</div>
+	        <div id="xform">
+				<c:choose>
+				  <c:when test="${empty formUrl}">
+				  	<fmt:message key="mycases.noformtoload.lbl"/>
+				  </c:when>
+				  <c:otherwise>
+				    <fmt:message key="mycases.loadingform.lbl"/>
+				  </c:otherwise>
+				</c:choose>
+			  </div>
+    		
+    		<c:if test="${not empty nextTask}">
+	    		<p>
+	    			<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.editFormUrl}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
+	    		</p>
+    		</c:if>
+    		
 		</div>
 	</div>    
     

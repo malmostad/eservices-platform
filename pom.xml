@@ -47,6 +47,7 @@
 	  <module>inherit-security</module>
 	  <module>postxdb</module>
 	  <module>docbox</module>
+          <module>coordinatrice</module>
         </modules>
 
 	<repositories>

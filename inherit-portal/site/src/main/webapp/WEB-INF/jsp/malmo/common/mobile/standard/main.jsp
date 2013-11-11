@@ -26,7 +26,7 @@
 <div data-role="page">
 
         <div data-role="header" data-position="fixed">
-                <h1>Inherit portal</h1>
+                <h1>Motrice mobil</h1>
                 <hst:include ref="leftmenu" />
         </div>
         <!-- /header -->

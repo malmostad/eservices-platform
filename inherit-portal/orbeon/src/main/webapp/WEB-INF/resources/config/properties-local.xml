@@ -29,13 +29,13 @@
   <property as="xs:string" name="oxf.fr.detail.buttons.start.demo-ansokan" value="workflow-send"/>
   <property as="xs:string" name="oxf.fr.detail.buttons.miljoforvaltningen.anmalan-hemkompostering" value="workflow-send"/>
   
-  <property as="xs:string" name="oxf.fr.detail.buttons.malmo.profil" value="clear save"/>
+  <property as="xs:string" name="oxf.fr.detail.buttons.malmo.*" value="clear save"/>
 
   <property as="xs:string" name="oxf.fr.detail.buttons.view.*.*" value=""/>
   <property as="xs:string" name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
 
   <property as="xs:anyURI" name="oxf.fr.detail.send.success.uri.*.*"
-          value="http://eservices.malmo.se/site/mycases/form/confirmdispatcher"/>
+          value="https://eservices.malmo.se/site/mycases/form/confirmdispatcher"/>
   <property as="xs:string" name="oxf.fr.detail.send.success.method.*.*" value="get"/>
 
 

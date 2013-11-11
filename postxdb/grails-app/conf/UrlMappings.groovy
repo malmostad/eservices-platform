@@ -11,6 +11,21 @@ class UrlMappings {
       action = [GET: 'getop', PUT: 'putop', DELETE: 'delete']
     }
     "/rest/db/orbeon-pe/fr/orbeon/builder/data"(controller: 'RestFormdef', action: 'list')
+    "/postxdb/formdef/$id?"(controller: 'RestPostxdb') {
+      action = [GET: 'formdefget']
+    }
+    "/postxdb/formdefver/$id?"(controller: 'RestPostxdb') {
+      action = [GET: 'versionget']
+    }
+    "/postxdb/defitem"(controller: 'RestPostxdb') {
+      action = [GET: 'defitemget']
+    }
+    "/postxdb/institem"(controller: 'RestPostxdb') {
+      action = [GET: 'institemget']
+    }
+    "/postxdb/item/$id"(controller: 'RestPostxdb') {
+      action = [GET: 'itemgetbyid']
+    }
     "/$controller/$action?/$id?"{
       constraints {
 	// apply constraints here

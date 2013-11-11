@@ -601,7 +601,6 @@
             <sv:value>ce259d68-3950-4519-aecf-5470866e4b3f</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
-            <sv:value>live</sv:value>
             <sv:value>preview</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:related___pathreference" sv:type="String">
@@ -611,10 +610,10 @@
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostd:state" sv:type="String">
-            <sv:value>published</sv:value>
+            <sv:value>unpublished</sv:value>
           </sv:property>
           <sv:property sv:name="hippostd:stateSummary" sv:type="String">
-            <sv:value>live</sv:value>
+            <sv:value>new</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
             <sv:value>admin</sv:value>
@@ -1361,7 +1360,7 @@
             <sv:value>hippotranslation:translated</sv:value>
           </sv:property>
           <sv:property sv:name="jcr:uuid" sv:type="String">
-            <sv:value>5746eaef-7e1b-4ad2-8f63-39198f24d8e6</sv:value>
+            <sv:value>d1f03861-a724-484e-8364-d83a8406af71</sv:value>
           </sv:property>
           <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
             <sv:value>live</sv:value>
@@ -1386,13 +1385,13 @@
             <sv:value>2013-05-20T11:22:24.444+02:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-            <sv:value>2013-05-20T14:17:12.241+02:00</sv:value>
+            <sv:value>2013-10-28T09:00:02.118+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
             <sv:value>admin</sv:value>
           </sv:property>
           <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-            <sv:value>2013-05-20T14:20:14.386+02:00</sv:value>
+            <sv:value>2013-10-28T09:00:16.826+01:00</sv:value>
           </sv:property>
           <sv:property sv:name="hippotranslation:id" sv:type="String">
             <sv:value>fe5a833e-7f87-42e4-9f5a-e9411d27fdee</sv:value>
@@ -2349,6 +2348,550 @@
             </sv:property>
             <sv:property sv:name="hippostd:content" sv:type="String">
               <sv:value>&lt;html&gt;&lt;body/&gt;&lt;/html&gt;</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+    </sv:node>
+    <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippostd:folder</sv:value>
+      </sv:property>
+      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+        <sv:value>hippo:harddocument</sv:value>
+        <sv:value>hippotranslation:translated</sv:value>
+        <sv:value>hippo:translated</sv:value>
+      </sv:property>
+      <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>f8520c62-f241-45e9-a879-ef717077359c</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:related___pathreference" sv:type="String"/>
+      <sv:property sv:name="hippostd:foldertype" sv:type="String" sv:multiple="true">
+        <sv:value>new-translated-folder</sv:value>
+        <sv:value>new-document</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippotranslation:id" sv:type="String">
+        <sv:value>99bb6cb1-fd7c-42a2-8b6b-b350583487ab</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippotranslation:locale" sv:type="String">
+        <sv:value>sv</sv:value>
+      </sv:property>
+      <sv:node sv:name="hippotranslation:translations">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippotranslation:translations</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="hippo:translation">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippo:translation</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippo:language" sv:type="String">
+          <sv:value/>
+        </sv:property>
+        <sv:property sv:name="hippo:message" sv:type="String">
+          <sv:value>Miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--registrering">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippo:handle</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+          <sv:value>hippo:hardhandle</sv:value>
+          <sv:value>hippo:translated</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>f7d59799-5cb3-4201-a93f-d0a596fbc64f</sv:value>
+        </sv:property>
+        <sv:node sv:name="hippo:translation">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hippo:translation</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:language" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="hippo:message" sv:type="String">
+            <sv:value>Registrering</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--registrering">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>inheritportal:textdocument</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+            <sv:value>hippo:harddocument</sv:value>
+            <sv:value>hippotranslation:translated</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>eee2d5b9-6a00-4c72-8d55-ead4ad22438e</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
+            <sv:value>live</sv:value>
+            <sv:value>preview</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:related___pathreference" sv:type="String">
+            <sv:value>mycases/processes/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--registrering</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:holder" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:state" sv:type="String">
+            <sv:value>published</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:stateSummary" sv:type="String">
+            <sv:value>live</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:creationDate" sv:type="Date">
+            <sv:value>2013-10-29T09:50:17.868+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
+            <sv:value>2013-10-29T10:38:23.338+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
+            <sv:value>2013-10-29T10:47:16.338+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:id" sv:type="String">
+            <sv:value>da98a39d-df92-498d-83ea-98b571f907a7</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:locale" sv:type="String">
+            <sv:value>sv</sv:value>
+          </sv:property>
+          <sv:property sv:name="inheritportal:summary" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="inheritportal:title" sv:type="String">
+            <sv:value>Registrering av ärende</sv:value>
+          </sv:property>
+          <sv:node sv:name="hippotranslation:translations">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippotranslation:translations</sv:value>
+            </sv:property>
+          </sv:node>
+          <sv:node sv:name="inheritportal:body">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippostd:html</sv:value>
+            </sv:property>
+            <sv:property sv:name="hippostd:content" sv:type="String">
+              <sv:value>&lt;html&gt;
+&lt;body&gt;
+&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"&gt;När
+du har registrerat ärendet klickar du på "Klart! Skicka vidare" för att skicka
+ärendet vidare för HANDLÄGGNING. De personer som är utsedda att handlägga
+ärendet kommer då att få det i sin inkorg.&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;/body&gt;
+&lt;/html&gt;</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--handlaggning">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippo:handle</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+          <sv:value>hippo:hardhandle</sv:value>
+          <sv:value>hippo:translated</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>84046a35-f82a-4b60-be0a-ef1c62de3938</sv:value>
+        </sv:property>
+        <sv:node sv:name="hippo:translation">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hippo:translation</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:language" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="hippo:message" sv:type="String">
+            <sv:value>Handlaggning</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--handlaggning">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>inheritportal:textdocument</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+            <sv:value>hippo:harddocument</sv:value>
+            <sv:value>hippotranslation:translated</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>7e621b2b-04b0-4130-af53-a03e0c092a5d</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
+            <sv:value>live</sv:value>
+            <sv:value>preview</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:related___pathreference" sv:type="String">
+            <sv:value>mycases/processes/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--handlaggning</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:holder" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:state" sv:type="String">
+            <sv:value>published</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:stateSummary" sv:type="String">
+            <sv:value>live</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:creationDate" sv:type="Date">
+            <sv:value>2013-10-29T09:50:17.868+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
+            <sv:value>2013-10-29T13:52:58.122+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
+            <sv:value>2013-10-29T15:05:32.171+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:id" sv:type="String">
+            <sv:value>a3121987-db21-4a3e-980b-03bf76561c64</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:locale" sv:type="String">
+            <sv:value>sv</sv:value>
+          </sv:property>
+          <sv:property sv:name="inheritportal:summary" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="inheritportal:title" sv:type="String">
+            <sv:value>Handläggning av ärende</sv:value>
+          </sv:property>
+          <sv:node sv:name="hippotranslation:translations">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippotranslation:translations</sv:value>
+            </sv:property>
+          </sv:node>
+          <sv:node sv:name="inheritportal:body">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippostd:html</sv:value>
+            </sv:property>
+            <sv:property sv:name="hippostd:content" sv:type="String">
+              <sv:value>&lt;html&gt;
+&lt;body&gt;
+&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"&gt;När
+ärendet är handlagt klickar du på "Klart! Skicka vidare" nedan för att skicka
+vidare ärendet till BESLUT. De personer som har mandat att besluta i ärendet
+kommer då att få det i sin inkorg.&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br/&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--beslut">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippo:handle</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+          <sv:value>hippo:hardhandle</sv:value>
+          <sv:value>hippo:translated</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>2b705266-badb-4049-9d44-8786f2a083a1</sv:value>
+        </sv:property>
+        <sv:node sv:name="hippo:translation">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hippo:translation</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:language" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="hippo:message" sv:type="String">
+            <sv:value>Beslut</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--beslut">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>inheritportal:textdocument</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+            <sv:value>hippo:harddocument</sv:value>
+            <sv:value>hippotranslation:translated</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>ea553d5f-844b-4ecd-b207-63fc326c40e9</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
+            <sv:value>live</sv:value>
+            <sv:value>preview</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:related___pathreference" sv:type="String">
+            <sv:value>mycases/processes/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--beslut</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:holder" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:state" sv:type="String">
+            <sv:value>published</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:stateSummary" sv:type="String">
+            <sv:value>live</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:creationDate" sv:type="Date">
+            <sv:value>2013-10-29T09:50:17.868+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
+            <sv:value>2013-10-29T10:27:49.758+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
+            <sv:value>2013-10-29T10:47:07.128+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:id" sv:type="String">
+            <sv:value>80f6470c-3a62-4c98-8097-ac1d9b2e3360</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:locale" sv:type="String">
+            <sv:value>sv</sv:value>
+          </sv:property>
+          <sv:property sv:name="inheritportal:summary" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="inheritportal:title" sv:type="String">
+            <sv:value>Beslut i ärende</sv:value>
+          </sv:property>
+          <sv:node sv:name="hippotranslation:translations">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippotranslation:translations</sv:value>
+            </sv:property>
+          </sv:node>
+          <sv:node sv:name="inheritportal:body">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippostd:html</sv:value>
+            </sv:property>
+            <sv:property sv:name="hippostd:content" sv:type="String">
+              <sv:value>&lt;html&gt;
+&lt;body&gt;
+
+&lt;p&gt;När ärendet är beslutat trycker du på
+&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"&gt;"Klart!
+Skicka vidare"&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; för att skicka vidare ärendet för
+EXPEDIERING. De personer som är utsedda att expediera ärendet kommer då att få
+det i sin inkorg.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--expediering">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippo:handle</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+          <sv:value>hippo:hardhandle</sv:value>
+          <sv:value>hippo:translated</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>438d8461-ff51-43d5-a881-ac61ce3a1879</sv:value>
+        </sv:property>
+        <sv:node sv:name="hippo:translation">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hippo:translation</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:language" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="hippo:message" sv:type="String">
+            <sv:value>Expediering</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--expediering">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>inheritportal:textdocument</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+            <sv:value>hippo:harddocument</sv:value>
+            <sv:value>hippotranslation:translated</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>2caaa05d-9343-414a-a39f-f3c2d0e28d1c</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
+            <sv:value>live</sv:value>
+            <sv:value>preview</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:related___pathreference" sv:type="String">
+            <sv:value>mycases/processes/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--expediering</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:holder" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:state" sv:type="String">
+            <sv:value>published</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:stateSummary" sv:type="String">
+            <sv:value>live</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:creationDate" sv:type="Date">
+            <sv:value>2013-10-29T09:50:17.868+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
+            <sv:value>2013-10-29T10:37:36.600+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
+            <sv:value>2013-10-29T10:46:58.025+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:id" sv:type="String">
+            <sv:value>7e80d29e-2110-4e16-8e78-ff1143f03083</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:locale" sv:type="String">
+            <sv:value>sv</sv:value>
+          </sv:property>
+          <sv:property sv:name="inheritportal:summary" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="inheritportal:title" sv:type="String">
+            <sv:value>Expediering av beslut</sv:value>
+          </sv:property>
+          <sv:node sv:name="hippotranslation:translations">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippotranslation:translations</sv:value>
+            </sv:property>
+          </sv:node>
+          <sv:node sv:name="inheritportal:body">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippostd:html</sv:value>
+            </sv:property>
+            <sv:property sv:name="hippostd:content" sv:type="String">
+              <sv:value>&lt;html&gt;
+&lt;body&gt;
+
+&lt;p&gt;
+ &lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"/&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"/&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;
+När beslutet i ärendet är expedierat trycker du på
+&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"&gt;"Klart!
+Skicka vidare"&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt; för att meddela kunden att ärendet är
+expedierat.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</sv:value>
+            </sv:property>
+          </sv:node>
+        </sv:node>
+      </sv:node>
+      <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--delgivning">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippo:handle</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+          <sv:value>hippo:hardhandle</sv:value>
+          <sv:value>hippo:translated</sv:value>
+        </sv:property>
+        <sv:property sv:name="jcr:uuid" sv:type="String">
+          <sv:value>7aed3684-30ec-400f-b4e0-0bffe384b36d</sv:value>
+        </sv:property>
+        <sv:node sv:name="hippo:translation">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hippo:translation</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:language" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="hippo:message" sv:type="String">
+            <sv:value>Delgivning</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--delgivning">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>inheritportal:textdocument</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+            <sv:value>hippo:harddocument</sv:value>
+            <sv:value>hippotranslation:translated</sv:value>
+          </sv:property>
+          <sv:property sv:name="jcr:uuid" sv:type="String">
+            <sv:value>fbce2109-362e-4650-85b0-dde67d96d9b8</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
+            <sv:value>live</sv:value>
+            <sv:value>preview</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippo:related___pathreference" sv:type="String">
+            <sv:value>mycases/processes/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0/miljoforv_hemkompostering_matavfall_forenklad_delgivning--2.0--delgivning</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:holder" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:state" sv:type="String">
+            <sv:value>published</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostd:stateSummary" sv:type="String">
+            <sv:value>live</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:creationDate" sv:type="Date">
+            <sv:value>2013-10-29T09:50:17.868+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
+            <sv:value>2013-10-29T10:43:09.913+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
+            <sv:value>admin</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
+            <sv:value>2013-10-29T10:46:49.881+01:00</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:id" sv:type="String">
+            <sv:value>e3f277f9-eec5-4e57-977e-4719998ba93b</sv:value>
+          </sv:property>
+          <sv:property sv:name="hippotranslation:locale" sv:type="String">
+            <sv:value>sv</sv:value>
+          </sv:property>
+          <sv:property sv:name="inheritportal:summary" sv:type="String">
+            <sv:value/>
+          </sv:property>
+          <sv:property sv:name="inheritportal:title" sv:type="String">
+            <sv:value>Delgivning</sv:value>
+          </sv:property>
+          <sv:node sv:name="hippotranslation:translations">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippotranslation:translations</sv:value>
+            </sv:property>
+          </sv:node>
+          <sv:node sv:name="inheritportal:body">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+              <sv:value>hippostd:html</sv:value>
+            </sv:property>
+            <sv:property sv:name="hippostd:content" sv:type="String">
+              <sv:value>&lt;html&gt;
+&lt;body&gt;
+
+&lt;p&gt;
+&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-5-tmp≡control-1-control"&gt;Beslut
+i ärendet är fattat.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-5-tmp≡control-1-control"&gt;&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"&gt;När
+du trycker på
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"&gt;&lt;span id="fr-form-group"&gt;&lt;span id="xf-507"&gt;&lt;span id="fb≡xf-13"&gt;&lt;span id="fb≡section-1-section≡tmp-4-tmp≡control-1-control"&gt;"Klart!
+Skicka vidare" &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;kommer
+delgivning att ske&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</sv:value>
             </sv:property>
           </sv:node>
         </sv:node>
@@ -3873,6 +4416,17 @@ fortskrida.&lt;/p&gt;
     <sv:property sv:name="jcr:uuid" sv:type="String">
       <sv:value>d1950d33-e435-47f2-b8a7-5f7d95f5fccd</sv:value>
     </sv:property>
+    <sv:node sv:name="hippo:translation">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippo:translation</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:language" sv:type="String">
+        <sv:value/>
+      </sv:property>
+      <sv:property sv:name="hippo:message" sv:type="String">
+        <sv:value>Signera</sv:value>
+      </sv:property>
+    </sv:node>
     <sv:node sv:name="signform">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>inheritportal:textdocument</sv:value>
@@ -3882,7 +4436,7 @@ fortskrida.&lt;/p&gt;
         <sv:value>hippotranslation:translated</sv:value>
       </sv:property>
       <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>23519019-f91c-4c61-b79e-c3e315add540</sv:value>
+        <sv:value>19aed03f-ef5b-45a8-9973-e2000c3e0cb0</sv:value>
       </sv:property>
       <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
         <sv:value>live</sv:value>
@@ -3890,6 +4444,9 @@ fortskrida.&lt;/p&gt;
       </sv:property>
       <sv:property sv:name="hippo:related___pathreference" sv:type="String">
         <sv:value>mycases/signform</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostd:holder" sv:type="String">
+        <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostd:state" sv:type="String">
         <sv:value>published</sv:value>
@@ -3904,13 +4461,13 @@ fortskrida.&lt;/p&gt;
         <sv:value>2013-09-19T14:05:19.846+02:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-        <sv:value>2013-09-19T14:05:54.308+02:00</sv:value>
+        <sv:value>2013-10-29T15:21:11.281+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
         <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-        <sv:value>2013-09-19T14:05:57.882+02:00</sv:value>
+        <sv:value>2013-10-29T15:21:18.833+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippotranslation:id" sv:type="String">
         <sv:value>2d433ef6-d5b0-4258-9d0c-1b2560a09f83</sv:value>
@@ -3919,7 +4476,7 @@ fortskrida.&lt;/p&gt;
         <sv:value>sv</sv:value>
       </sv:property>
       <sv:property sv:name="inheritportal:summary" sv:type="String">
-        <sv:value>Signera summary</sv:value>
+        <sv:value/>
       </sv:property>
       <sv:property sv:name="inheritportal:title" sv:type="String">
         <sv:value>Signera dokument</sv:value>
@@ -3937,23 +4494,14 @@ fortskrida.&lt;/p&gt;
           <sv:value>&lt;html&gt;
 &lt;body&gt;
 
-&lt;p&gt;En signer bla bla tjoho&lt;/p&gt;
+&lt;p&gt;Kontrollera att dokumenten nedan är korrekta. En elektronisk signatur är
+juridiskt bindande. Tryck på knappen "Gå till signering" för att skriva under
+med BankId.&lt;/p&gt;
 
 &lt;/body&gt;
 &lt;/html&gt;</sv:value>
         </sv:property>
       </sv:node>
-    </sv:node>
-    <sv:node sv:name="hippo:translation">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hippo:translation</sv:value>
-      </sv:property>
-      <sv:property sv:name="hippo:language" sv:type="String">
-        <sv:value/>
-      </sv:property>
-      <sv:property sv:name="hippo:message" sv:type="String">
-        <sv:value>Signera</sv:value>
-      </sv:property>
     </sv:node>
   </sv:node>
   <sv:node sv:name="signformconfirm">
@@ -3967,6 +4515,17 @@ fortskrida.&lt;/p&gt;
     <sv:property sv:name="jcr:uuid" sv:type="String">
       <sv:value>16f15b0a-0011-4bfd-89f2-c78cc224b9de</sv:value>
     </sv:property>
+    <sv:node sv:name="hippo:translation">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippo:translation</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:language" sv:type="String">
+        <sv:value/>
+      </sv:property>
+      <sv:property sv:name="hippo:message" sv:type="String">
+        <sv:value>Bekräfta signering</sv:value>
+      </sv:property>
+    </sv:node>
     <sv:node sv:name="signformconfirm">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">
         <sv:value>inheritportal:textdocument</sv:value>
@@ -3976,7 +4535,7 @@ fortskrida.&lt;/p&gt;
         <sv:value>hippotranslation:translated</sv:value>
       </sv:property>
       <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>9fc7e604-7d85-482f-a5ce-c64d0535ec5d</sv:value>
+        <sv:value>38f7d5bb-a3fc-4dd0-94aa-924e6819f0b6</sv:value>
       </sv:property>
       <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
         <sv:value>live</sv:value>
@@ -3984,6 +4543,9 @@ fortskrida.&lt;/p&gt;
       </sv:property>
       <sv:property sv:name="hippo:related___pathreference" sv:type="String">
         <sv:value>mycases/signformconfirm</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostd:holder" sv:type="String">
+        <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostd:state" sv:type="String">
         <sv:value>published</sv:value>
@@ -3998,13 +4560,13 @@ fortskrida.&lt;/p&gt;
         <sv:value>2013-09-19T14:38:26.760+02:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-        <sv:value>2013-09-19T14:38:50.973+02:00</sv:value>
+        <sv:value>2013-10-29T15:22:04.371+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
         <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-        <sv:value>2013-09-20T12:06:08.165+02:00</sv:value>
+        <sv:value>2013-10-29T15:22:11.604+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippotranslation:id" sv:type="String">
         <sv:value>d4dbde86-ca11-443b-9f25-20a347b5ded7</sv:value>
@@ -4037,17 +4599,6 @@ fortskrida.&lt;/p&gt;
 &lt;/html&gt;</sv:value>
         </sv:property>
       </sv:node>
-    </sv:node>
-    <sv:node sv:name="hippo:translation">
-      <sv:property sv:name="jcr:primaryType" sv:type="Name">
-        <sv:value>hippo:translation</sv:value>
-      </sv:property>
-      <sv:property sv:name="hippo:language" sv:type="String">
-        <sv:value/>
-      </sv:property>
-      <sv:property sv:name="hippo:message" sv:type="String">
-        <sv:value>Bekräfta signering</sv:value>
-      </sv:property>
     </sv:node>
   </sv:node>
 </sv:node>

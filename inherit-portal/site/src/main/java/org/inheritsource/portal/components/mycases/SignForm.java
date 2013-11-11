@@ -24,9 +24,12 @@
 package org.inheritsource.portal.components.mycases;
 
 
+import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
+import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inheritsource.portal.beans.TextDocument;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
@@ -62,6 +65,8 @@ public class SignForm extends Form  {
 		ActivityInstanceItem activity = (ActivityInstanceItem)request.getAttribute("activity");
 		
 		String startFormDocId = null;
+		String signActivityLabel = "Dokument";
+		String signProcessLabel = "Dokument";
 		
 		InheritServiceClient isc = new InheritServiceClient();
 
@@ -81,6 +86,13 @@ public class SignForm extends Form  {
 						if (logItem.getActivityName() != null && logItem.getActivityName().equals(signActivityName)) {
 							// signActivityName match => Alternative 2a
 							formDocId = logItem.getFormDocId();
+					    	
+							
+				    		String pdUuid = logItem.getProcessDefinitionUuid();
+				    		String adUuid = logItem.getActivityDefinitionUuid();
+				    		
+				    		signActivityLabel = getJcrActivityLabel(request, pdUuid, adUuid, logItem.getActivityLabel());
+					    	
 						}
 					}
 					
@@ -88,14 +100,18 @@ public class SignForm extends Form  {
 						// keep startFormDocId in memory in case of Alternative 2b
 						StartLogItem startItem = (StartLogItem)item;
 						startFormDocId = startItem.getFormDocId();
+						
+						signProcessLabel = getJcrProcessLabel(request, piDetails.getStartedByFormPath(), piDetails.getProcessLabel());
 					}
 				}
 			}
 		}
 		
+		String signAssetLabel = signActivityLabel;
 		if (formDocId == null || formDocId.trim().length() == 0 ) {
 			// Alternative 2b
 			formDocId = startFormDocId;
+			signAssetLabel = signProcessLabel;
 		}
 
 		DocBoxFormData docBoxFormData = isc.getDocBoxFormData(formDocId);
@@ -117,7 +133,7 @@ public class SignForm extends Form  {
 		responseUrl.append(activity.getFormDocId());  // the BPM activity formDocId, important not the form to be signed... 
 		
 		
-		String signText = "Härmed undertecknar jag dokumentet " + pdfUrl + " med dokumentnummer [" + docNo + "] och kontrollsumman [" + pdfChecksum + "]";
+		String signText = "Härmed undertecknar jag " + signAssetLabel + " med dokumentnummer [" + docNo + "] och kontrollsumman [" + pdfChecksum + "].";
 		
 		request.setAttribute("pdfUrl", pdfUrl);
 		request.setAttribute("docNo", docNo);

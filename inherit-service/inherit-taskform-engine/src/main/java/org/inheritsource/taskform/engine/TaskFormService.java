@@ -114,7 +114,7 @@ public class TaskFormService {
 	
 	public String getPreviousActivitiesData(String currentActivityFormDocId) {
 		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
-		return currentActivity==null ? "" : getProcessInstanceActivitiesData(currentActivity.getProcessInstanceUuid());
+		return currentActivity==null ? "" : getProcessInstanceChainActivitiesData(currentActivity.getProcessInstanceUuid());
 	}
 	
 	public String getPreviousActivityDataByInstanceUuid(String currentActivityInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
@@ -147,7 +147,7 @@ public class TaskFormService {
 		return result;
 	}
 	
-	public String getProcessInstanceActivitiesData(String processInstanceUuid) {
+	public String getProcessInstanceChainActivitiesData(String processInstanceUuid) {
 		StringBuffer result = new StringBuffer();
 		
 		result.append("<pawap><process processInstanceUuid=\"");
@@ -159,6 +159,31 @@ public class TaskFormService {
 		
 		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
 
+		result.append("<pawap><formdata>");
+
+		if (processInstanceUuid != null && !processInstanceUuid.isEmpty()) {
+			getProcessInstanceActivitiesFormData(processInstanceUuid, result);
+		}
+
+		result.append("</formdata>");
+
+		//result.append("<processdata>");
+		  // anropa bonitaClient och gör där en ny metod som returnerar alla processvariabler
+		  // bygg upp xml av dem
+		//result.append("</processdata>");
+		result.append("</pawap>");
+		return result.toString();
+	}
+	
+	public void getProcessInstanceActivitiesFormData(String processInstanceUuid, StringBuffer buf) {
+		String parentProcessInstanceUuid = bonitaClient.getParentProcessInstanceUuid(processInstanceUuid);
+		if (parentProcessInstanceUuid != null && !parentProcessInstanceUuid.isEmpty()) {
+			getProcessInstanceActivitiesFormData(parentProcessInstanceUuid,buf);
+		}
+		buf.append("<process processInstanceUuid=\"");
+		buf.append(processInstanceUuid);
+		buf.append("\">");
+		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
 		if (pafis != null) {
 			for (ProcessActivityFormInstance pafi : pafis) {
 				if (pafi.getSubmitted() != null) {
@@ -166,37 +191,38 @@ public class TaskFormService {
 							pafi.getFormPath(), pafi.getFormDocId());
 					if (formDataFragment != null) {
 						if (pafi.isStartForm()) {
-							result.append("<startform>");
-							result.append(formDataFragment);
-							result.append("</startform>");
+							buf.append("<startform>");
+							buf.append(formDataFragment);
+							buf.append("</startform>");
 						} else {
 							// activity form
+<<<<<<< HEAD
 
 							ActivityInstanceItem activityItem = activitiEngineService
+=======
+							ActivityInstanceItem activityItem = bonitaClient
+>>>>>>> master
 									.getActivityInstanceItem(pafi
 											.getActivityInstanceUuid());
-
 							if (activityItem != null) {
-								result.append("<activity uuid=\"");
-								result.append(pafi.getActivityInstanceUuid());
-								result.append("\" activityName=\"");
-								result.append(activityItem.getActivityName());
-								result.append("\" activityDefinitionUuid=\"");
-								result.append(activityItem
+								buf.append("<activity uuid=\"");
+								buf.append(pafi.getActivityInstanceUuid());
+								buf.append("\" activityName=\"");
+								buf.append(activityItem.getActivityName());
+								buf.append("\" activityDefinitionUuid=\"");
+								buf.append(activityItem
 										.getActivityDefinitionUuid());
-								result.append("\">");
-								result.append(formDataFragment);
-								result.append("</activity>");
+								buf.append("\">");
+								buf.append(formDataFragment);
+								buf.append("</activity>");
 							}
 						}
 					}
 				}
 			}
+			buf.append("</process>");
 		}
-		
-		result.append("</process></pawap>");
-		
-		return result.toString();
+		return;
 	}
  
 
@@ -274,35 +300,10 @@ public class TaskFormService {
 			String taskUuid = item.getTaskUuid();
 			log.severe("=======> TASK bonita: " + item);
 
-			// TODO optimize ???
-			ProcessActivityFormInstance startedByForm = taskFormDb
-					.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item
-							.getProcessInstanceUuid());
-			if (startedByForm != null) {
-				item.setStartedByFormPath(startedByForm.getFormPath());
-			}
-
 			ProcessActivityFormInstance form = forms.get(taskUuid);
-			if (form != null) {
-				// partial filled not submitted form exist for task
-				// assign id to inbox item that can be used later to edit/view
-				// existing form
-				item.setProcessActivityFormInstanceId(form
-						.getProcessActivityFormInstanceId());
-				item.setExternalUrl(calcExternalUrl(form.getFormPath(), form.getProcessActivityFormInstanceId(), taskUuid));
+			if (appendTaskFormServiceData(item, form)) {
 				forms.remove(form);
-			} else {
-				// analyze activity form
-				ActivityFormDefinition activity = taskFormDb.getActivityFormDefinition(item.getActivityDefinitionUuid(), startedByForm == null ? null : startedByForm.getStartFormDefinition().getStartFormDefinitionId());
-				if (activity == null) {
-					// activity form is not defined
-					item.setExternalUrl(calcExternalUrl("none", null, taskUuid));
-				}
-				else {
-					item.setExternalUrl(calcExternalUrl(activity.getFormPath(), null, taskUuid));
-				}
 			}
-			
 			
 			// else {
 			// no one has opened this activity form yet
@@ -335,6 +336,45 @@ public class TaskFormService {
 		log.severe("=======> getInboxTaskItems " + userId + " size="
 				+ (inbox == null ? 0 : inbox.size()));
 		return inbox;
+	}
+	
+	/**
+	 * 
+	 * @param item
+	 * @param form
+	 * @return true if partial filled not submitted form exist for task
+	 */
+	private boolean appendTaskFormServiceData(InboxTaskItem item, ProcessActivityFormInstance form) {
+		boolean result = false;
+		
+		// TODO optimize ???
+		ProcessActivityFormInstance startedByForm = taskFormDb
+				.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item
+						.getProcessInstanceUuid());
+		if (startedByForm != null) {
+			item.setStartedByFormPath(startedByForm.getFormPath());
+		}
+					
+		if (form != null) {
+			// partial filled not submitted form exist for task
+			// assign id to inbox item that can be used later to edit/view
+			// existing form
+			item.setProcessActivityFormInstanceId(form
+					.getProcessActivityFormInstanceId());
+			item.setExternalUrl(calcExternalUrl(form.getFormPath(), form.getProcessActivityFormInstanceId(), item.getTaskUuid()));
+			result = true; 
+		} else {
+			// analyze activity form
+			ActivityFormDefinition activity = taskFormDb.getActivityFormDefinition(item.getActivityDefinitionUuid(), startedByForm == null ? null : startedByForm.getStartFormDefinition().getStartFormDefinitionId());
+			if (activity == null) {
+				// activity form is not defined
+				item.setExternalUrl(calcExternalUrl("none", null, item.getTaskUuid()));
+			}
+			else {
+				item.setExternalUrl(calcExternalUrl(activity.getFormPath(), null, item.getTaskUuid()));
+			}
+		}
+		return result;
 	}
 	
 	private String calcExternalUrl(String formPath, Long processActivityFormInstanceId, String taskUuid) {
@@ -402,7 +442,9 @@ public class TaskFormService {
 						logItem.setFormUrl(viewUrl);
 						logItem.setViewUrl(viewUrl);
 						logItem.setFormDocId(activity.getFormDocId());
-						
+						if (activity.getProcessActivityFormInstanceId() != null) {
+						    logItem.setProcessActivityFormInstanceId(activity.getProcessActivityFormInstanceId().longValue());
+						}
 						logItem.setPerformedByUser(taskFormDb
 								.getUserByUuid(activity.getUserId()));
 					}
@@ -495,20 +537,30 @@ public class TaskFormService {
 
 			ProcessActivityFormInstance startActivity = taskFormDb
 					.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
-			if (startActivity != null) {
-				result = new StartLogItem();
-				result.setViewUrl(startActivity.calcViewUrl());
-				result.setFormUrl(startActivity.calcViewUrl());
-				result.setEndDate(startActivity.getSubmitted());
-				result.setActivityLabel(startActivity.getFormPath());
-				result.setPerformedByUser(taskFormDb
-						.getUserByUuid(startActivity.getUserId()));
-				result.setFormDocId(startActivity.getFormDocId());
-			}
+			result = processActivityFormInstanc2StartLogItem(startActivity);
 		}
 
 		return result;
 	}
+
+    private StartLogItem processActivityFormInstanc2StartLogItem(ProcessActivityFormInstance startActivity) {
+	StartLogItem result = null;
+	if (startActivity != null && startActivity.getSubmitted() != null) {
+	    result = new StartLogItem();
+	    result.setViewUrl(startActivity.calcViewUrl());
+	    result.setFormUrl(startActivity.calcViewUrl());
+	    result.setEndDate(startActivity.getSubmitted());
+	    result.setActivityLabel(startActivity.getFormPath());
+	    result.setPerformedByUser(taskFormDb
+				      .getUserByUuid(startActivity.getUserId()));
+	    result.setFormDocId(startActivity.getFormDocId());
+	    
+	    if (startActivity.getProcessActivityFormInstanceId() != null) {
+		result.setProcessActivityFormInstanceId(startActivity.getProcessActivityFormInstanceId().longValue());
+	    }
+	}
+	return result;
+    }
 
 	public String submitStartForm(String formPath, String docId, String userId)
 			throws Exception {
@@ -593,6 +645,28 @@ public class TaskFormService {
 		item.setFormDocId(activityFormInstance.getFormDocId());
 	}
 
+	public InboxTaskItem getNextActivityInstanceItemByDocId(String docId, String userId) {
+		InboxTaskItem result = null;
+		
+		try {
+			ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(docId);
+			String currentProcessInstance = currentActivity.getProcessInstanceUuid();
+			
+			InboxTaskItem item = bonitaClient.getNextInboxTaskItem(currentProcessInstance, userId);
+		    if (item != null) {
+		    	ProcessActivityFormInstance form = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(item.getTaskUuid());
+		    	appendTaskFormServiceData(item, form);
+		    	result = item;
+		    }
+		    
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		
+		return result;
+	}
+	
 	public ActivityInstanceItem getActivityInstanceItem(
 			String activityInstanceUuid, String userId) {
 		ActivityInstanceItem result = null;
@@ -615,8 +689,12 @@ public class TaskFormService {
 				.getProcessActivityFormInstanceById(processActivityFormInstanceId);
 		if (formInstance != null) {
 			if (formInstance.isStartForm()) {
-				result = getStartFormActivityInstancePendingItem(formInstance
-						.getFormDocId());
+			    if (formInstance.getSubmitted()!=null) {
+				result = processActivityFormInstanc2StartLogItem(formInstance);
+			    }
+			    else {
+				result = getStartFormActivityInstancePendingItem(formInstance.getFormDocId());
+			    }
 			} else {
 				result = activitiEngineService.getActivityInstanceItem(formInstance
 						.getActivityInstanceUuid());

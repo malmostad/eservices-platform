@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:sitemap">
+<?xml version="1.0" encoding="UTF-8"?><sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:sitemap">
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:sitemap</sv:value>
   </sv:property>
@@ -283,6 +282,17 @@
           <sv:value>${parent}/../confirmform-internal</sv:value>
         </sv:property>
       </sv:node>
+    </sv:node>
+    <sv:node sv:name="viewform">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemapitem</sv:value>
+      </sv:property>
+      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+        <sv:value>hst:pages/viewform</sv:value>
+      </sv:property>
+      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+        <sv:value>${parent}/viewform</sv:value>
+      </sv:property>
     </sv:node>
   </sv:node>
 </sv:node>

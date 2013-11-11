@@ -1260,34 +1260,6 @@
       <sv:value>/hst:hst/hst:configurations/mycases-common-mobile</sv:value> 
     </sv:property> 
   </sv:node>  
-  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-internal-web-hst-components"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10056.0</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>hst/configurations/mycases-internal-web/components.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/hst:hst/hst:configurations/mycases-internal-web</sv:value> 
-    </sv:property> 
-  </sv:node>  
-  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-internal-web-hst-components-form"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10057.0</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>hst/configurations/mycases-internal-web/components/form.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/hst:hst/hst:configurations/mycases-internal-web/hst:components</sv:value> 
-    </sv:property> 
-  </sv:node>  
   <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-internal-web-hst-pages"> 
     <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
       <sv:value>hippo:initializeitem</sv:value> 
@@ -1328,20 +1300,6 @@
     </sv:property>  
     <sv:property sv:name="hippo:contentroot" sv:type="String"> 
       <sv:value>/hst:hst/hst:configurations/inheritportal-common/hst:components</sv:value> 
-    </sv:property> 
-  </sv:node>  
-  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-internal-web-hst-components-formright"> 
-    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
-      <sv:value>hippo:initializeitem</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
-      <sv:value>10057.0</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
-      <sv:value>hst/configurations/mycases-internal-web/components/formright.xml</sv:value> 
-    </sv:property>  
-    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
-      <sv:value>/hst:hst/hst:configurations/mycases-internal-web/hst:components</sv:value> 
     </sv:property> 
   </sv:node>  
   <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-internal-web-hst-pages-form"> 
@@ -2016,7 +1974,105 @@
       <sv:value>/hst:hst/hst:configurations/mycases-internal-web/hst:pages</sv:value> 
     </sv:property> 
   </sv:node>  
-  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-internal-web-hst-components-noform">
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-mobile-hst-pages"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10056.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/configurations/mycases-common-mobile/pages.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:configurations/mycases-common-mobile</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-mobile-hst-pages-form"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10057.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/configurations/mycases-common-mobile/pages/form.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:configurations/mycases-common-mobile/hst:pages</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-hst-components-viewform"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10057.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/configurations/mycases-common/components/viewform.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:configurations/mycases-common/hst:components</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-hst-pages-viewform"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10057.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/configurations/mycases-common/pages/viewform.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:configurations/mycases-common/hst:pages</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-mobile-hst-pages-viewform"> 
+    <sv:property sv:name="jcr:primaryType" sv:type="Name"> 
+      <sv:value>hippo:initializeitem</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:sequence" sv:type="Double"> 
+      <sv:value>10057.0</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentresource" sv:type="String"> 
+      <sv:value>hst/configurations/mycases-common-mobile/pages/viewform.xml</sv:value> 
+    </sv:property>  
+    <sv:property sv:name="hippo:contentroot" sv:type="String"> 
+      <sv:value>/hst:hst/hst:configurations/mycases-common-mobile/hst:pages</sv:value> 
+    </sv:property> 
+  </sv:node>  
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-malmo-internal-mobile-hst-templates">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:initializeitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:sequence" sv:type="Double">
+      <sv:value>10056.0</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentresource" sv:type="String">
+      <sv:value>hst/configurations/malmo-internal-mobile/templates.xml</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentroot" sv:type="String">
+      <sv:value>/hst:hst/hst:configurations/malmo-internal-mobile</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="inherit-portal-hst-hst-hst-channels-malmo-internal-mobile">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:initializeitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:sequence" sv:type="Double">
+      <sv:value>10053.0</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentresource" sv:type="String">
+      <sv:value>hst/channels/malmo-internal-mobile.xml</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentroot" sv:type="String">
+      <sv:value>/hst:hst/hst:channels</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-internal-hst-components-form">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
       <sv:value>hippo:initializeitem</sv:value>
     </sv:property>
@@ -2024,10 +2080,66 @@
       <sv:value>10057.0</sv:value>
     </sv:property>
     <sv:property sv:name="hippo:contentresource" sv:type="String">
-      <sv:value>hst/configurations/mycases-internal-web/components/noform.xml</sv:value>
+      <sv:value>hst/configurations/mycases-common-internal/components/form.xml</sv:value>
     </sv:property>
     <sv:property sv:name="hippo:contentroot" sv:type="String">
-      <sv:value>/hst:hst/hst:configurations/mycases-internal-web/hst:components</sv:value>
+      <sv:value>/hst:hst/hst:configurations/mycases-common-internal/hst:components</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-internal-hst-components">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:initializeitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:sequence" sv:type="Double">
+      <sv:value>10056.0</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentresource" sv:type="String">
+      <sv:value>hst/configurations/mycases-common-internal/components.xml</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentroot" sv:type="String">
+      <sv:value>/hst:hst/hst:configurations/mycases-common-internal</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-internal-hst-components-noform">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:initializeitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:sequence" sv:type="Double">
+      <sv:value>10057.0</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentresource" sv:type="String">
+      <sv:value>hst/configurations/mycases-common-internal/components/noform.xml</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentroot" sv:type="String">
+      <sv:value>/hst:hst/hst:configurations/mycases-common-internal/hst:components</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-common-internal-hst-components-formright">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:initializeitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:sequence" sv:type="Double">
+      <sv:value>10057.0</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentresource" sv:type="String">
+      <sv:value>hst/configurations/mycases-common-internal/components/formright.xml</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentroot" sv:type="String">
+      <sv:value>/hst:hst/hst:configurations/mycases-common-internal/hst:components</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="inherit-portal-hst-hst-hst-configurations-mycases-internal-mobile-hst-templates">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:initializeitem</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:sequence" sv:type="Double">
+      <sv:value>10056.0</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentresource" sv:type="String">
+      <sv:value>hst/configurations/mycases-internal-mobile/templates.xml</sv:value>
+    </sv:property>
+    <sv:property sv:name="hippo:contentroot" sv:type="String">
+      <sv:value>/hst:hst/hst:configurations/mycases-internal-mobile</sv:value>
     </sv:property>
   </sv:node>
 </sv:node>

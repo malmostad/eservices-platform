@@ -1,37 +1,21 @@
 #!/bin/bash
 
-# ROOT of build directory
-#BUILD_DIR=${HOME}/workspace/inherit-platform
-BUILD_DIR=${HOME}/inherit-platform-gitclone/eservices-platform
+# CONFIG #######################################################
+# Select one config to deploy below                            #
+################################################################
 
-# ROOT of directory holding the j2ee containers
-CONTAINER_ROOT=${HOME}/inherit-platform
+###### Prod in Malmo ###########################################
+# . config_deploy_eservice.sh
 
-# ROOT of Hippo jcr content repository
-CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
+###### Test in Malmo ###########################################
+# . config_deploy_eservicetest.sh
 
-# Clone of ROOT of Hippo jcr content repository
-# This should not be so, and is a fix because of the 
-# problem that we need two hippo instances pga openam realm requirement
-# ===> Now fixed 2013-06, so we skip this...
-# CONTENT_ROOT_WORKAROUND=${CONTAINER_ROOT}/jcr-inherit-portal-extra-workaround-kservice
+###### Funkar på min burk - developer's workstation config #####
+. config_deploy_minburk.sh
 
-# Name of container roots
-EXIST=orbeon-tomcat-6.0.36
-BOS=BOS-5.9-Tomcat-6.0.35
-ESERVICE=hippo-eservice-tomcat-6.0.36
-KSERVICE=hippo-kservice-tomcat-6.0.36
-
-ESERVICEPATCH=eservicetest.malmo.se
-KSERVICEPATCH=kservicetest.malmo.se
-PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
-
-EXIST_PORT=48080
-BOS_PORT=58080
-ESERVICE_PORT=8080
-KSERVICE_PORT=38080
-
-WITH_KSERVICES=true
+################################################################
+# END OF CONFIG                                                #
+################################################################
 
 ERRORSTATUS=0
 
@@ -49,26 +33,24 @@ then
     exit $ERRORSTATUS
 fi
 
-echo "CONTAINER_ROOT/EXIST:    $CONTAINER_ROOT/$EXIST"
 echo "CONTAINER_ROOT/BOS:      $CONTAINER_ROOT/$BOS"
 echo "CONTAINER_ROOT/ESERVICE: $CONTAINER_ROOT/$ESERVICE"
 echo "CONTAINER_ROOT/KSERVICE: $CONTAINER_ROOT/$KSERVICE"
 
-if [ ! -d ${CONTAINER_ROOT}/${EXIST} ] || [ ! -d ${CONTAINER_ROOT}/${BOS} ] || [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${KSERVICE} ]
+if [ ! -d ${CONTAINER_ROOT}/${BOS} ] || [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${KSERVICE} ]
 then
-    echo "Either of ${CONTAINER_ROOT}/${EXIST} ${CONTAINER_ROOT}/${BOS} ${CONTAINER_ROOT}/${ESERVICE} ${CONTAINER_ROOT}/${KSERVICE} do not exist, aborting execution of $0"
+    echo "Either of ${CONTAINER_ROOT}/${BOS} ${CONTAINER_ROOT}/${ESERVICE} ${CONTAINER_ROOT}/${KSERVICE} do not exist, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
 
-echo "EXIST_PORT: $EXIST_PORT"
 echo "BOS_PORT: $BOS_PORT"
 echo "ESERVICE_PORT: $ESERVICE_PORT"
 echo "KSERVICE_PORT: $KSERVICE_PORT"
 
-if [ -z "${EXIST_PORT}" ] || [ -z "${BOS_PORT}" ] || [ -z "${ESERVICE_PORT}" ] || [ -z "${KSERVICE_PORT}" ]
+if [ -z "${BOS_PORT}" ] || [ -z "${ESERVICE_PORT}" ] || [ -z "${KSERVICE_PORT}" ]
 then
-    echo "Either of parameters EXIST_PORT, BOS_PORT, ESERVICE_PORT or KSERVICE_PORT unset, aborting execution of $0"
+    echo "Either of parameters BOS_PORT, ESERVICE_PORT or KSERVICE_PORT unset, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
@@ -103,9 +85,9 @@ fi
 
 # 3. Build eservice-platform
 pushd ${BUILD_DIR}
-if mvn clean install
+if mvn -DskipTests=true clean install
 then
-    echo "Executing mvn clean install - patched for eservicetest..."
+    echo "Executing mvn -DskipTests=true clean install - patched for eservicetest..."
 else
     echo "Compilation failed. Aborting execution"
     ERRORSTATUS=$?
@@ -134,11 +116,11 @@ then
 
 # 6. Build kservice-platform
     pushd ${BUILD_DIR}/inherit-portal
-    if mvn install                       # NB no clean here because
+    if mvn -DskipTests=true install      # NB no clean here because
                                          # inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
                                          # will otherwise be removed, but is used at a later stage...
     then
-	echo "Executing mvn clean install - patched for kservicetest..."
+	echo "Executing mvn -DskipTests=true install - patched for kservicetest..."
     else
 	echo "Compilation failed. Aborting execution"
 	ERRORSTATUS=$?
@@ -166,37 +148,8 @@ fi
 
 # 9. Stop j2ee containers
     pushd ${CONTAINER_ROOT}
-    cd $EXIST/bin/
-    EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-    if [ "${EXIST_PID}" ] 
-    then 
-	echo "Shutting down eXist, pid: " ${EXIST_PID}
-	./shutdown.sh
-	sleep 1
-	LOOPVAR=0
-	while ps -p ${EXIST_PID} && [ ${LOOPVAR} -lt 6  ]
-	do
-	    LOOPVAR=$(expr ${LOOPVAR} + 1)
-	    sleep 1
-	done
 
-    # If proper shutdown did not bite
-	if ps -p ${EXIST_PID}
-	then 
-	    echo "Force shutting down eXist, pid: " ${EXIST_PID}
-	    kill  ${EXIST_PID}
-	    sleep 1
-	fi
-
-    # If still did not bite
-	if ps -p ${EXIST_PID}
-	then 
-	    echo "Failed to shut down eXist, pid: " ${EXIST_PID}
-	    ERRORSTATUS=1
-	fi
-    fi
-
-cd ../../${BOS}/bin/
+cd ${BOS}/bin/
 
 BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${BOS_PID}" ] 
@@ -306,8 +259,8 @@ then
     pushd ${CONTAINER_ROOT}/${ESERVICE}
     tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
     cd webapps
-    rm -fr cms site orbeon
-    rm cms.war # deploy cms only at kservice and share the same JCR
+    rm -fr cms site orbeon exist docbox coordinatrice
+    rm cms.war coordinatrice.war # deploy cms and coordinatrice only at kservice and share the same JCR
     popd
 else
     echo "Directory ${CONTAINER_ROOT}/${ESERVICE} does not exist. Halting."
@@ -323,7 +276,7 @@ then
 	pushd ${CONTAINER_ROOT}/${KSERVICE}
 	tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
 	cd webapps
-	rm -fr cms site orbeon
+	rm -fr cms site orbeon exist docbox coordinatrice
 	popd
     else
 	echo "Directory ${CONTAINER_ROOT}/${KSERVICE} does not exist. Halting."
@@ -356,25 +309,6 @@ popd
 
 # 14. Restart containers
 pushd ${CONTAINER_ROOT}
-echo "Restart eXist container..."
-cd ${EXIST}/bin/
-./startup.sh 
-LOOPVAR=0
-EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-while [ -z "${EXIST_PID}" -a  ${LOOPVAR} -lt 20  ]
-do
-    LOOPVAR=$(expr ${LOOPVAR} + 1)
-    sleep 1
-    EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-done
-
-if [ -z "${EXIST_PID}" ]
-then
-    echo "Error: could not start Exist service"
-    ERRORSTATUS=1
-fi
-
-cd ../..
 
 echo "Restart BOS container..."
 cd ${BOS}/bin/

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:templates">
+  <sv:property sv:name="jcr:primaryType" sv:type="Name">
+    <sv:value>hst:templates</sv:value>
+  </sv:property>
+  <sv:node sv:name="layout.webpage">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/malmo/external/mobile/layout/webpage.jsp</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="standard.header">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/malmo/common/mobile/standard/header.jsp</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="standard.main">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/malmo/common/mobile/standard/main.jsp</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="standard.main.leftmenu">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/malmo/common/mobile/standard/main/leftmenu.jsp</sv:value>
+    </sv:property>
+  </sv:node>
+  <sv:node sv:name="standard.main.right">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hst:template</sv:value>
+    </sv:property>
+    <sv:property sv:name="hst:renderpath" sv:type="String">
+      <sv:value>jsp/malmo/common/mobile/standard/main/right.jsp</sv:value>
+    </sv:property>
+  </sv:node>
+</sv:node>

@@ -120,6 +120,28 @@ public class BonitaEngineServiceImpl {
 		return activityInstanceUuid;
 	}
 	
+	/**
+	 * 
+	 * @param processInstanceUuid
+	 * @param activityName
+	 * @return parentProcessInstanceUuid
+	 */
+	public String getParentProcessInstanceUuid(String processInstanceUuid) {
+		ProcessInstanceUUID processInstanceUUID = new ProcessInstanceUUID(processInstanceUuid);
+		LightProcessInstance thisPrInstance = null;
+		ProcessInstanceUUID parentProcessInstUUID = null;
+		try {
+            LoginContext loginContext = BonitaUtil.login(); 
+			thisPrInstance = AccessorUtil.getAPIAccessor().getQueryRuntimeAPI().getLightProcessInstance(processInstanceUUID);
+			parentProcessInstUUID = thisPrInstance.getParentInstanceUUID();
+            BonitaUtil.logout(loginContext);
+		} catch (InstanceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return (parentProcessInstUUID==null ? null : parentProcessInstUUID.toString());
+	}
+
 	public boolean createUser(String userName) {
 		boolean result = false;
 		try {
@@ -341,6 +363,49 @@ public class BonitaEngineServiceImpl {
 		return result;
 	}
 	
+	public InboxTaskItem getNextInboxTaskItem(String processInstanceUuid, String userId) { // ArrayList<ProcessInstanceListItem>
+		InboxTaskItem result = null;
+
+		try {
+			LoginContext loginContext = BonitaUtil.login(); 
+			Collection<TaskInstance> taskList = AccessorUtil.getQueryRuntimeAPI().getTaskList(userId, ActivityState.READY);
+			
+			
+			TaskInstance taskInSameProcessInstance = null;
+			TaskInstance taskInSubProcessInstance = null;
+			TaskInstance taskInAnyProcessInstance = null;
+			
+			for (TaskInstance taskItem : taskList) {
+				if (taskItem.getProcessInstanceUUID().getValue().equals(processInstanceUuid)) {
+					taskInSameProcessInstance = taskItem;
+				}
+				LightProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getLightProcessInstance(taskItem.getProcessInstanceUUID());
+				if (pi.getParentInstanceUUID() != null && pi.getParentInstanceUUID().getValue().equals(processInstanceUuid)) {
+					taskInSubProcessInstance = taskItem;
+				}
+				taskInAnyProcessInstance = taskItem;
+			}
+			
+			TaskInstance taskInstance = taskInSubProcessInstance;
+			if (taskInstance == null) {
+				taskInstance = taskInSameProcessInstance;
+			}
+			if (taskInstance == null) {
+				taskInstance = taskInAnyProcessInstance;
+			}
+			if (taskInstance != null) {
+				result = lightActivityInstance2InboxTaskItem(taskInstance);
+			}
+			
+			
+			BonitaUtil.logout(loginContext);
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		return result;
+	}
+
 	
 	private ProcessInstanceCriterion str2ProcessInstanceCriterion(String sortBy, String sortOrder) {
 		ProcessInstanceCriterion result = ProcessInstanceCriterion.DEFAULT;
@@ -711,14 +776,19 @@ public class BonitaEngineServiceImpl {
 	
 	private ProcessInstanceDetails getProcessInstanceDetailsByUuid(ProcessInstanceUUID piUuid) throws Exception {
 		ProcessInstanceDetails result = null;
-		
+		//log.severe("getProcessInstanceDetailsByUuid: " + (piUuid != null ? piUuid : "NONE"));
 		ProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(piUuid);
 		if (pi != null) {
 			result = new ProcessInstanceDetails();
+			//log.severe("loading brief properties: ");
 			loadProcessInstanceBriefProperties(pi, result);
+			//log.severe("brief properties: " + result);
 			Set<ActivityInstance> ais = pi.getActivities();
+			//log.severe("ais count: " + (ais != null ? ais.size() : "NONE"));
 			for (ActivityInstance ai : ais) {
+				//log.severe("call createActivityInstanceItem"); 
 				ActivityInstanceItem item = createActivityInstanceItem(ai);
+				//log.severe("item createActivityInstanceItem=" + item); 
 				if (item != null) {
 					result.addActivityInstanceItem(item);
 				}
@@ -924,16 +994,20 @@ public class BonitaEngineServiceImpl {
 	}
 	
 	private void loadActivityInstancePendingItem(ActivityInstance src, ActivityInstancePendingItem dst) {
-		dst.setCandidates(createTemporaryUserInfoSet(src.getLastAssignUpdate().getCandidates()));
-		dst.setAssignedUser(createTemporaryUserInfo(src.getLastAssignUpdate().getAssignedUserId()));
-		dst.setExpectedEndDate(src.getExpectedEndDate());
+		if (src != null) {
+			if (src.getLastAssignUpdate() != null) {
+				dst.setCandidates(createTemporaryUserInfoSet(src.getLastAssignUpdate().getCandidates()));
+				dst.setAssignedUser(createTemporaryUserInfo(src.getLastAssignUpdate().getAssignedUserId()));
+			}
+			dst.setExpectedEndDate(src.getExpectedEndDate());
+		}
 	}
 	
 	private ActivityInstanceItem createActivityInstanceItem(ActivityInstance ai) {
 		ActivityInstanceItem result = null;
-		
+		//log.severe("createActivityInstanceItem START: " + ai);
 		if (ai != null) {
-			log.severe("BPMN activity uuid: " + ai.getActivityInstanceId() + " label=" + ai.getActivityLabel());
+			//log.severe("BPMN activity uuid: " + ai.getActivityInstanceId() + " label=" + ai.getActivityLabel());
 			if (ai.getState().equals(ActivityState.FINISHED)) {
 				// Finished activity 
 				if (ai.getType() == ActivityDefinition.Type.Human) {

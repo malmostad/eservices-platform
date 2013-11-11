@@ -10,6 +10,8 @@ import org.motrice.postxdb.FormdefPath;
  * NOTE: Tried to use path as primary key, but got problems with uuid uniqueness constraint
  */
 class PxdFormdef implements Comparable {
+  def grailsApplication
+
   /**
    * The path appName/formName without a version.
    * Its components are stored with intentional redundancy.
@@ -69,7 +71,7 @@ class PxdFormdef implements Comparable {
   }
 
   /**
-   * Formatted creation timestamp
+   * Creation timestamp Orbeon format
    */
   String createdf() {
     def fmt = new SimpleDateFormat(grailsApplication.config.postxdb.tstamp.fmt)
@@ -77,10 +79,26 @@ class PxdFormdef implements Comparable {
   }
 
   /**
-   * Formatted last updated timestamp
+   * Updated timestamp Orbeon format
    */
   String updatedf() {
     def fmt = new SimpleDateFormat(grailsApplication.config.postxdb.tstamp.fmt)
+    return fmt.format(lastUpdated)
+  }
+
+  /**
+   * Creation timestamp regular format
+   */
+  String createdr() {
+    def fmt = new SimpleDateFormat(grailsApplication.config.postxdb.regular.fmt)
+    return fmt.format(dateCreated)
+  }
+
+  /**
+   * Updated timestamp regular format
+   */
+  String updatedr() {
+    def fmt = new SimpleDateFormat(grailsApplication.config.postxdb.regular.fmt)
     return fmt.format(lastUpdated)
   }
 
