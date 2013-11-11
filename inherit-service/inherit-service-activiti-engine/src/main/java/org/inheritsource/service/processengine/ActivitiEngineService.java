@@ -176,7 +176,7 @@ public class ActivitiEngineService {
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).orderByTaskCreateTime().asc().list();
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).orderByTaskCreateTime().asc().list(); // FIXME: Which one is best?
 		//List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).orderByTaskCreateTime().asc().list();
 		
 		result = taskList2InboxTaskItemList(tasks);
@@ -338,7 +338,11 @@ public class ActivitiEngineService {
 	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId,
 			int remainingDays) {
-		// TODO Auto-generated method stub
+		//  	taskInvolvedUser(String involvedUser)
+		// TaskQuery dueAfter, dueBefore, duedate can be usefull
+		// Or just do the calculation here instead?
+		// Dont forget to check if the due date is given at all in the Task.
+		
 		return null;
 	}
 
