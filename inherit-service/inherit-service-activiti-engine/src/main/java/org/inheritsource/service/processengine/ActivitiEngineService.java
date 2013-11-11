@@ -49,6 +49,9 @@ import org.inheritsource.service.common.domain.Timeline;
 import org.inheritsource.service.common.domain.UserInfo;
 
 
+// FIXME: Should be added everywhere a userID is sent to activiti?
+// engine.getIdentityService().setAuthenticatedUserId(userId); 
+
 public class ActivitiEngineService {
 
 	private ProcessEngine engine = null; 
@@ -412,7 +415,7 @@ public class ActivitiEngineService {
 		int retVal = -1;
 		
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId);
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
 			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
 			
 			if(task != null) {
@@ -428,7 +431,8 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to addComment with activityInstanceUuid: " + activityInstanceUuid);
+			log.severe("Unable to addComment with activityInstanceUuid: " + activityInstanceUuid + 
+				" and userId: " + userId);
 			retVal = -1;	
 		}
 		
@@ -585,10 +589,8 @@ public class ActivitiEngineService {
 	public String startProcess(String processDefinitionId, String userId) {
 		String processInstanceId = null;
 		
-		// FIXME:
-		// Add some kind of user check... ???
-		
 		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
 			processInstanceId = processInstance.getProcessInstanceId();
 			// set owner and assignee for the created task
@@ -608,13 +610,11 @@ public class ActivitiEngineService {
 	public boolean executeTask(String activityInstanceUuid, String userId) {
 		
 		// FIXME: Does clame the job?
-		// Bonita uses login and logout but this is impl is not using a webservice interface so mighy be 
-		// nothing to deal with?
-		//  
 		
 		boolean successful = false;
 			
 		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
 			// Note: ActivitiTaskAlreadyClaimedException - when the task is already claimed by another user.
 			engine.getTaskService().claim(activityInstanceUuid, userId);
 			
