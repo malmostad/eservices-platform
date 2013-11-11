@@ -28,6 +28,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
@@ -404,16 +405,88 @@ public class ActivitiEngineService {
 		return processInstanceDetails;
 	}
 
+	// FIXME: returning number of characters in message. What should be returned?
+	
 	public int addComment(String activityInstanceUuid, String comment,
 			String userId) {
-		// TODO Auto-generated method stub
-		return 0;
+		int retVal = -1;
+		
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId);
+			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			
+			if(task != null) {
+				Comment addedComment = 
+					engine.getTaskService().addComment(activityInstanceUuid, task.getProcessInstanceId(), comment);
+
+				if(addedComment != null) {
+					String msg = addedComment.getFullMessage();
+					
+					if(msg != null) {
+						retVal = msg.length();
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.severe("Unable to addComment with activityInstanceUuid: " + activityInstanceUuid);
+			retVal = -1;	
+		}
+		
+		return retVal;
 	}
+	
+	// FIXME: Historic comments will not have processDefinitionUuid and activityDefinitionUuid set!
+	// Could be fixed.
+	// FIXME: Two label fields are set to blank for the moment.
 
 	public List<CommentFeedItem> getProcessInstanceCommentFeedByActivity(
 			String activityInstanceUuid) {
-		// TODO Auto-generated method stub
-		return null;
+		List<CommentFeedItem> commentFeedItems = new ArrayList<CommentFeedItem>();
+		CommentFeedItem cFItem = null;
+		UserInfo userInfo = null;
+		Task task = null;
+		String processDefinitionUuid = null;
+		String activityDefinitionUuid = null;
+		
+		try {
+			List<Comment> comments = engine.getTaskService().getTaskComments(activityInstanceUuid);
+
+			if(comments != null && comments.size() > 0) {
+				task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+				
+				if(task != null) {
+					processDefinitionUuid = task.getProcessDefinitionId();
+					activityDefinitionUuid = task.getTaskDefinitionKey();
+				} else {
+					processDefinitionUuid = "";
+					activityDefinitionUuid = "";
+				}
+				
+				for(Comment comment : comments) {
+					
+					cFItem = new CommentFeedItem();
+					
+					cFItem.setProcessDefinitionUuid(processDefinitionUuid);
+					cFItem.setProcessInstanceUuid(comment.getProcessInstanceId());
+					cFItem.setProcessLabel(""); // FIXME
+					cFItem.setActivityDefinitionUuid(activityDefinitionUuid);
+					cFItem.setActivityInstanceUuid(comment.getTaskId());
+					cFItem.setActivityLabel(""); // FIXME
+					cFItem.setTimestamp(comment.getTime());
+					cFItem.setMessage(comment.getFullMessage());
+					
+					userInfo = new UserInfo();
+					userInfo.setUuid(comment.getUserId());
+					cFItem.setUser(userInfo);
+					
+					commentFeedItems.add(cFItem);
+				}
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstanceCommentFeedByActivity with activityInstanceUuid: " + activityInstanceUuid);
+			commentFeedItems = new ArrayList<CommentFeedItem>();
+		}
+		return commentFeedItems;
 	}
 
 	public ActivityWorkflowInfo getActivityWorkflowInfo(
@@ -684,8 +757,15 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
-		log.severe("activitiEngineService.getProcessInstanceDetails(4201)" + 
-				activitiEngineService.getProcessInstanceDetailsByActivityInstance("4204"));
+		
+		/*
+		List<CommentFeedItem> comments =  activitiEngineService.getProcessInstanceCommentFeedByActivity("4204");
+		
+		for (CommentFeedItem c : comments) {
+			log.severe("c:" + c);
+			log.severe("userid:" + c.getUser().getUuid());
+		}
+		*/
 		/*
 		 ProcessDefinitionDetails details = 
 				activitiEngineService.getProcessDefinitionDetailsByUuid("Arendeprocess:1:3904");
