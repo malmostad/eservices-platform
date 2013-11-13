@@ -4,8 +4,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -176,8 +179,8 @@ public class ActivitiEngineService {
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).orderByTaskCreateTime().asc().list(); // FIXME: Which one is best?
-		//List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).orderByTaskCreateTime().asc().list();
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).
+			orderByTaskCreateTime().asc().list();
 		
 		result = taskList2InboxTaskItemList(tasks);
 		
@@ -336,14 +339,52 @@ public class ActivitiEngineService {
 		return item;
 	}
 	
+	// FIXME NOTE: If due date is not given it will always be classified as a 'atRisk'. 
+	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId,
 			int remainingDays) {
-		//  	taskInvolvedUser(String involvedUser)
-		// TaskQuery dueAfter, dueBefore, duedate can be usefull
-		// Or just do the calculation here instead?
-		// Dont forget to check if the due date is given at all in the Task.
 		
-		return null;
+		if(remainingDays < 0) {
+			remainingDays = 0;
+		}
+		
+		DashOpenActivities dashOpenActivities = null;
+		
+		try {			
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(new Date()); // today date.
+			Date TODAY = formatter.parse(formatter.format(calendar.getTime()));
+			calendar.add(Calendar.DATE, remainingDays); // today date with remaining days added
+			Date TODAY_ADDED_WITH_REMAINING_DAYS = formatter.parse(formatter.format(calendar.getTime()));
+				
+			// onTrack
+			// tasks with a dueDate after (TODAY + remainingDays)
+			long onTrackLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueAfter(TODAY_ADDED_WITH_REMAINING_DAYS).count();
+			int onTrack = new Long(onTrackLong).intValue();
+	
+			// overdue
+			// tasks with a duteDate before TODAY.
+			long overdueLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueBefore(TODAY).count();
+			int overdue = new Long(overdueLong).intValue();
+			
+			// atRisk
+			// tasks with a duteDate after TODAY and before TODAY + remaningDays
+			long allTasksLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).count();
+			int allTasks = new Long(allTasksLong).intValue();
+			int atRisk = allTasks - onTrack - overdue;
+			
+			dashOpenActivities = new DashOpenActivities();
+			dashOpenActivities.setOnTrack(onTrack);
+			dashOpenActivities.setAtRisk(atRisk);
+			dashOpenActivities.setOverdue(overdue);
+		
+		} catch (Exception e) {
+			log.severe("Unable to getDashOpenActivitiesByUserId with taskId: " + dashOpenActivities);
+			dashOpenActivities = null;
+		}
+		
+		return dashOpenActivities;
 	}
 
 	// FIXME: Several fields are not set correct in the method!
@@ -761,6 +802,8 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
+		DashOpenActivities dOA = activitiEngineService.getDashOpenActivitiesByUserId("kermit", 5);
+		log.severe("dOA:" + dOA);
 		
 		/*
 		List<CommentFeedItem> comments =  activitiEngineService.getProcessInstanceCommentFeedByActivity("4204");
