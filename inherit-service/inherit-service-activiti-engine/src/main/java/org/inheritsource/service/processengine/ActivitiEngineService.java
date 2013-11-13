@@ -55,6 +55,8 @@ import org.inheritsource.service.common.domain.UserInfo;
 // FIXME: Should be added everywhere a userID is sent to activiti?
 // engine.getIdentityService().setAuthenticatedUserId(userId); 
 
+// FIXME: Execution klassen skall diskuteras med de andra hur den kommer in i det här...
+
 public class ActivitiEngineService {
 
 	private ProcessEngine engine = null; 
@@ -183,6 +185,23 @@ public class ActivitiEngineService {
 			orderByTaskCreateTime().asc().list();
 		
 		result = taskList2InboxTaskItemList(tasks);
+		
+		return result;
+	}
+	
+	public Set<InboxTaskItem> getUserInboxByInvolvedUser(String involvedUserId, String processInstanceId) {
+		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
+		
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(involvedUserId).
+				processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
+		
+		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
+		
+		if(inboxTaskItemList != null) {
+			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
+				result.add(inboxTaskItem);
+			}
+		}
 		
 		return result;
 	}
@@ -675,18 +694,74 @@ public class ActivitiEngineService {
 	}
 
 	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
-			String searchForBonitaUser, int fromIndex, int pageSize,
+			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String filter, String userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	// FIXME: sortBy is always processInstanceId for the moment.
+	// FIXME: sortOrder is always asc for the moment.
+    // FIXME: filter is not used for the moment.
+    // FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
+	// FIXME: setProcessInstanceUuid uses processInstanceId but could use id? This differs for subprocesses and
+	// embedded processes. This has to be clear but it is not for the moment.
+	// FIXME: set status is hardcoded to PENDING.
+	
 	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(
-			String searchForBonitaUser, int fromIndex, int pageSize,
+			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String filter, String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
+			
+		pagedProcessInstanceSearchResult.setFromIndex(fromIndex);
+		pagedProcessInstanceSearchResult.setPageSize(pageSize);
+		pagedProcessInstanceSearchResult.setSortBy(sortBy);
+		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId);
+			
+			List<ProcessInstance> processInstances = engine.getRuntimeService().
+				createProcessInstanceQuery().involvedUser(searchForUserId).orderByProcessInstanceId().asc().
+					listPage(fromIndex, pageSize);
+			
+			if(processInstances != null) {
+				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
+				
+				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
+			
+				for(ProcessInstance processInstance : processInstances) {
+					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
+					
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
+					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
+					processInstanceListItem.setStartDate(null); // FIXME
+					processInstanceListItem.setStartedBy(""); // FIXME: Could be fetched from LinkedIdentity if it was set.
+					processInstanceListItem.setStartedByFormPath("");
+					processInstanceListItem.setEndDate(null); // FIXME
+					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
+					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setActivities
+						(getUserInboxByInvolvedUser(searchForUserId, processInstance.getProcessInstanceId()));
+					
+					processInstanceListItems.add(processInstanceListItem);
+				}
+
+				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstancesWithInvolvedUser with searchForUserId: " + searchForUserId +
+					" by userId: " + userId);
+			pagedProcessInstanceSearchResult = null;	
+		}
+		return pagedProcessInstanceSearchResult;
 	}
+	
+	/*	
+	private Set<InboxTaskItem> activities;        Här kan man säkert återanvända kod från getInboxByUser, eller måste
+	                                              getInboxByUser söka involvedUser för att det skall fungera?
+
+    */
 
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
 			List<String> uuids, int fromIndex, int pageSize, String sortBy,
@@ -802,10 +877,12 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
-		DashOpenActivities dOA = activitiEngineService.getDashOpenActivitiesByUserId("kermit", 5);
-		log.severe("dOA:" + dOA);
-		
 		/*
+		PagedProcessInstanceSearchResult p = activitiEngineService.
+				getProcessInstancesWithInvolvedUser("kermit", 0, 100, null, null, null, "kermit");
+
+		log.severe("p:" + p.getHits());
+		*/
 		List<CommentFeedItem> comments =  activitiEngineService.getProcessInstanceCommentFeedByActivity("4204");
 		
 		for (CommentFeedItem c : comments) {
