@@ -233,14 +233,13 @@ public class ProcessInstanceListItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ProcessInstanceListItem [processLabel=" + processLabel
-				+ ", processInstanceLabel=" + processInstanceLabel
-				+ ", status=" + status + ", activities=" + activities
-				+ ", startDate=" + startDate + ", startedBy=" + startedBy
-				+ ", endDate=" + endDate + ", processInstanceUuid="
-				+ processInstanceUuid + ", startedByFormPath="
-				+ startedByFormPath + "]";
+		return "ProcessInstanceListItem {\n    processLabel : " + processLabel
+				+ "\n    processInstanceLabel : " + processInstanceLabel
+				+ "\n    status : " + status + "\n    activities : "
+				+ activities + "\n    startDate : " + startDate
+				+ "\n    startedBy : " + startedBy + "\n    endDate : "
+				+ endDate + "\n    processInstanceUuid : "
+				+ processInstanceUuid + "\n    startedByFormPath : "
+				+ startedByFormPath + "\n}";
 	}
-
-
 }

@@ -142,11 +142,9 @@ public class PagedProcessInstanceSearchResult implements Serializable {
 
 	@Override
 	public String toString() {
-		return "PagedProcessInstanceSearchResult [hits=" + hits
-				+ ", fromIndex=" + fromIndex + ", pageSize=" + pageSize
-				+ ", sortBy=" + sortBy + ", sortOrder=" + sortOrder
-				+ ", numberOfHits=" + numberOfHits + "]";
+		return "PagedProcessInstanceSearchResult {\n    hits : " + hits
+				+ "\n    fromIndex : " + fromIndex + "\n    pageSize : "
+				+ pageSize + "\n    sortBy : " + sortBy + "\n    sortOrder : "
+				+ sortOrder + "\n    numberOfHits : " + numberOfHits + "\n}";
 	}
-	
-	
 }

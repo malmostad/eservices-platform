@@ -93,9 +93,8 @@ public class DashOpenActivities implements Serializable {
 
 	@Override
 	public String toString() {
-		return "DashOpenActivities [onTrack=" + onTrack + ", atRisk=" + atRisk
-				+ ", overdue=" + overdue + "]";
-	}
-	
-	
+		return "DashOpenActivities {\n    onTrack : " + onTrack
+				+ "\n    atRisk : " + atRisk + "\n    overdue : " + overdue
+				+ "\n}";
+	}	
 }

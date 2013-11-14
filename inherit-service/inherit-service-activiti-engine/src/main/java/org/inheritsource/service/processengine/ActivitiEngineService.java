@@ -4,13 +4,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.security.auth.login.LoginContext;
@@ -27,6 +31,7 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.IdentityLink;
 import org.activiti.engine.task.IdentityLinkType;
 import org.activiti.engine.task.Task;
@@ -42,8 +47,15 @@ import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
 import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
+import org.inheritsource.service.common.domain.ProcessInstanceListItem;
+import org.inheritsource.service.common.domain.Timeline;
 import org.inheritsource.service.common.domain.UserInfo;
 
+
+// FIXME: Should be added everywhere a userID is sent to activiti?
+// engine.getIdentityService().setAuthenticatedUserId(userId); 
+
+// FIXME: Execution klassen skall diskuteras med de andra hur den kommer in i det här...
 
 public class ActivitiEngineService {
 
@@ -169,10 +181,27 @@ public class ActivitiEngineService {
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).orderByTaskCreateTime().asc().list();
-		//List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).orderByTaskCreateTime().asc().list();
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).
+			orderByTaskCreateTime().asc().list();
 		
 		result = taskList2InboxTaskItemList(tasks);
+		
+		return result;
+	}
+	
+	public Set<InboxTaskItem> getUserInboxByInvolvedUser(String involvedUserId, String processInstanceId) {
+		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
+		
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(involvedUserId).
+				processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
+		
+		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
+		
+		if(inboxTaskItemList != null) {
+			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
+				result.add(inboxTaskItem);
+			}
+		}
 		
 		return result;
 	}
@@ -255,7 +284,7 @@ public class ActivitiEngineService {
 	// FIXME: startedBy might not be correct?
 	// FIXME: activityType might not be correct?
 	
-	private ActivityInstanceItem task2ActivityInstancePendingItem(Task task) {
+	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task) {
 		ActivityInstancePendingItem item = null;
 		if (task != null) {
 			item = new ActivityInstancePendingItem();
@@ -295,7 +324,7 @@ public class ActivitiEngineService {
 	// FIXME: startedBy might not be correct?
 	// FIXME: activityType might not be correct?
 	
-	private ActivityInstanceItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
+	private ActivityInstanceLogItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
 		ActivityInstanceLogItem item = null;
 		if (task != null) {
 			item = new ActivityInstanceLogItem();
@@ -329,34 +358,203 @@ public class ActivitiEngineService {
 		return item;
 	}
 	
+	// FIXME NOTE: If due date is not given it will always be classified as a 'atRisk'. 
+	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId,
 			int remainingDays) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if(remainingDays < 0) {
+			remainingDays = 0;
+		}
+		
+		DashOpenActivities dashOpenActivities = null;
+		
+		try {			
+			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(new Date()); // today date.
+			Date TODAY = formatter.parse(formatter.format(calendar.getTime()));
+			calendar.add(Calendar.DATE, remainingDays); // today date with remaining days added
+			Date TODAY_ADDED_WITH_REMAINING_DAYS = formatter.parse(formatter.format(calendar.getTime()));
+				
+			// onTrack
+			// tasks with a dueDate after (TODAY + remainingDays)
+			long onTrackLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueAfter(TODAY_ADDED_WITH_REMAINING_DAYS).count();
+			int onTrack = new Long(onTrackLong).intValue();
+	
+			// overdue
+			// tasks with a duteDate before TODAY.
+			long overdueLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueBefore(TODAY).count();
+			int overdue = new Long(overdueLong).intValue();
+			
+			// atRisk
+			// tasks with a duteDate after TODAY and before TODAY + remaningDays
+			long allTasksLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).count();
+			int allTasks = new Long(allTasksLong).intValue();
+			int atRisk = allTasks - onTrack - overdue;
+			
+			dashOpenActivities = new DashOpenActivities();
+			dashOpenActivities.setOnTrack(onTrack);
+			dashOpenActivities.setAtRisk(atRisk);
+			dashOpenActivities.setOverdue(overdue);
+		
+		} catch (Exception e) {
+			log.severe("Unable to getDashOpenActivitiesByUserId with taskId: " + dashOpenActivities);
+			dashOpenActivities = null;
+		}
+		
+		return dashOpenActivities;
 	}
 
+	// FIXME: Several fields are not set correct in the method!
+	
 	public ProcessInstanceDetails getProcessInstanceDetails(
 			String processInstanceUuid) {
-		// TODO Auto-generated method stub
-		return null;
+		ProcessInstanceDetails processInstanceDetails = null;
+		
+		try {
+			ProcessInstance processInstance = engine.getRuntimeService().
+				createProcessInstanceQuery().processInstanceId(processInstanceUuid).singleResult();
+
+			processInstanceDetails = new ProcessInstanceDetails();
+			
+			processInstanceDetails.setProcessInstanceLabel(""); // FIXME
+			processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
+			
+			processInstanceDetails.setStartDate(null);
+			processInstanceDetails.setStartedBy(""); // FIXME: This could be fetched if it is earlier set with addUserIdentityLink
+			processInstanceDetails.setEndDate(null);
+			processInstanceDetails.setProcessInstanceLabel(processInstanceUuid);
+			processInstanceDetails.setStartedByFormPath("");
+				
+			// Handle pendings
+			
+			List<Task> tasks = engine.getTaskService().createTaskQuery().
+				processInstanceId(processInstance.getId()).orderByTaskName().asc().list();
+						
+			if(tasks != null && tasks.size() > 0) {
+				List<ActivityInstancePendingItem> activityInstancePendingItems = new ArrayList<ActivityInstancePendingItem>();
+				
+				for(Task task : tasks) {
+					activityInstancePendingItems.add(task2ActivityInstancePendingItem(task));
+				}
+				
+				processInstanceDetails.setPending(activityInstancePendingItems);
+				processInstanceDetails.setTimeline(new Timeline()); //  FIXME: Nothing is done here now!
+				
+				
+				// Handle activities as a set of InboxTaskItem
+				// FIXME: Feels like overlap with activityInstancePendingItems!
+				
+				processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks)));
+			}	
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstanceDetails with processInstanceUuid: " + processInstanceUuid);
+			processInstanceDetails = null;	
+		}
+		return processInstanceDetails;
 	}
 
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(
 			String activityInstanceUuid) {
-		// TODO Auto-generated method stub
-		return null;
+		ProcessInstanceDetails processInstanceDetails = null;
+		
+		try {
+			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+
+			if(task != null) {
+				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId());
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with activityInstanceUuid: " + activityInstanceUuid);
+			processInstanceDetails = null;	
+		}
+		return processInstanceDetails;
 	}
 
+	// FIXME: returning number of characters in message. What should be returned?
+	
 	public int addComment(String activityInstanceUuid, String comment,
 			String userId) {
-		// TODO Auto-generated method stub
-		return 0;
+		int retVal = -1;
+		
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
+			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			
+			if(task != null) {
+				Comment addedComment = 
+					engine.getTaskService().addComment(activityInstanceUuid, task.getProcessInstanceId(), comment);
+
+				if(addedComment != null) {
+					String msg = addedComment.getFullMessage();
+					
+					if(msg != null) {
+						retVal = msg.length();
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.severe("Unable to addComment with activityInstanceUuid: " + activityInstanceUuid + 
+				" and userId: " + userId);
+			retVal = -1;	
+		}
+		
+		return retVal;
 	}
+	
+	// FIXME: Historic comments will not have processDefinitionUuid and activityDefinitionUuid set!
+	// Could be fixed.
+	// FIXME: Two label fields are set to blank for the moment.
 
 	public List<CommentFeedItem> getProcessInstanceCommentFeedByActivity(
 			String activityInstanceUuid) {
-		// TODO Auto-generated method stub
-		return null;
+		List<CommentFeedItem> commentFeedItems = new ArrayList<CommentFeedItem>();
+		CommentFeedItem cFItem = null;
+		UserInfo userInfo = null;
+		Task task = null;
+		String processDefinitionUuid = null;
+		String activityDefinitionUuid = null;
+		
+		try {
+			List<Comment> comments = engine.getTaskService().getTaskComments(activityInstanceUuid);
+
+			if(comments != null && comments.size() > 0) {
+				task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+				
+				if(task != null) {
+					processDefinitionUuid = task.getProcessDefinitionId();
+					activityDefinitionUuid = task.getTaskDefinitionKey();
+				} else {
+					processDefinitionUuid = "";
+					activityDefinitionUuid = "";
+				}
+				
+				for(Comment comment : comments) {
+					
+					cFItem = new CommentFeedItem();
+					
+					cFItem.setProcessDefinitionUuid(processDefinitionUuid);
+					cFItem.setProcessInstanceUuid(comment.getProcessInstanceId());
+					cFItem.setProcessLabel(""); // FIXME
+					cFItem.setActivityDefinitionUuid(activityDefinitionUuid);
+					cFItem.setActivityInstanceUuid(comment.getTaskId());
+					cFItem.setActivityLabel(""); // FIXME
+					cFItem.setTimestamp(comment.getTime());
+					cFItem.setMessage(comment.getFullMessage());
+					
+					userInfo = new UserInfo();
+					userInfo.setUuid(comment.getUserId());
+					cFItem.setUser(userInfo);
+					
+					commentFeedItems.add(cFItem);
+				}
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstanceCommentFeedByActivity with activityInstanceUuid: " + activityInstanceUuid);
+			commentFeedItems = new ArrayList<CommentFeedItem>();
+		}
+		return commentFeedItems;
 	}
 
 	public ActivityWorkflowInfo getActivityWorkflowInfo(
@@ -455,10 +653,8 @@ public class ActivitiEngineService {
 	public String startProcess(String processDefinitionId, String userId) {
 		String processInstanceId = null;
 		
-		// FIXME:
-		// Add some kind of user check... ???
-		
 		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
 			processInstanceId = processInstance.getProcessInstanceId();
 			// set owner and assignee for the created task
@@ -478,13 +674,11 @@ public class ActivitiEngineService {
 	public boolean executeTask(String activityInstanceUuid, String userId) {
 		
 		// FIXME: Does clame the job?
-		// Bonita uses login and logout but this is impl is not using a webservice interface so mighy be 
-		// nothing to deal with?
-		//  
 		
 		boolean successful = false;
 			
 		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
 			// Note: ActivitiTaskAlreadyClaimedException - when the task is already claimed by another user.
 			engine.getTaskService().claim(activityInstanceUuid, userId);
 			
@@ -500,18 +694,74 @@ public class ActivitiEngineService {
 	}
 
 	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
-			String searchForBonitaUser, int fromIndex, int pageSize,
+			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String filter, String userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	// FIXME: sortBy is always processInstanceId for the moment.
+	// FIXME: sortOrder is always asc for the moment.
+    // FIXME: filter is not used for the moment.
+    // FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
+	// FIXME: setProcessInstanceUuid uses processInstanceId but could use id? This differs for subprocesses and
+	// embedded processes. This has to be clear but it is not for the moment.
+	// FIXME: set status is hardcoded to PENDING.
+	
 	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(
-			String searchForBonitaUser, int fromIndex, int pageSize,
+			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String filter, String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
+			
+		pagedProcessInstanceSearchResult.setFromIndex(fromIndex);
+		pagedProcessInstanceSearchResult.setPageSize(pageSize);
+		pagedProcessInstanceSearchResult.setSortBy(sortBy);
+		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId);
+			
+			List<ProcessInstance> processInstances = engine.getRuntimeService().
+				createProcessInstanceQuery().involvedUser(searchForUserId).orderByProcessInstanceId().asc().
+					listPage(fromIndex, pageSize);
+			
+			if(processInstances != null) {
+				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
+				
+				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
+			
+				for(ProcessInstance processInstance : processInstances) {
+					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
+					
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
+					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
+					processInstanceListItem.setStartDate(null); // FIXME
+					processInstanceListItem.setStartedBy(""); // FIXME: Could be fetched from LinkedIdentity if it was set.
+					processInstanceListItem.setStartedByFormPath("");
+					processInstanceListItem.setEndDate(null); // FIXME
+					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
+					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setActivities
+						(getUserInboxByInvolvedUser(searchForUserId, processInstance.getProcessInstanceId()));
+					
+					processInstanceListItems.add(processInstanceListItem);
+				}
+
+				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstancesWithInvolvedUser with searchForUserId: " + searchForUserId +
+					" by userId: " + userId);
+			pagedProcessInstanceSearchResult = null;	
+		}
+		return pagedProcessInstanceSearchResult;
 	}
+	
+	/*	
+	private Set<InboxTaskItem> activities;        Här kan man säkert återanvända kod från getInboxByUser, eller måste
+	                                              getInboxByUser söka involvedUser för att det skall fungera?
+
+    */
 
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
 			List<String> uuids, int fromIndex, int pageSize, String sortBy,
@@ -627,6 +877,19 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
+		/*
+		PagedProcessInstanceSearchResult p = activitiEngineService.
+				getProcessInstancesWithInvolvedUser("kermit", 0, 100, null, null, null, "kermit");
+
+		log.severe("p:" + p.getHits());
+		*/
+		List<CommentFeedItem> comments =  activitiEngineService.getProcessInstanceCommentFeedByActivity("4204");
+		
+		for (CommentFeedItem c : comments) {
+			log.severe("c:" + c);
+			log.severe("userid:" + c.getUser().getUuid());
+		}
+		*/
 		/*
 		 ProcessDefinitionDetails details = 
 				activitiEngineService.getProcessDefinitionDetailsByUuid("Arendeprocess:1:3904");
