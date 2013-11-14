@@ -654,16 +654,9 @@ public class ActivitiEngineService {
 		String processInstanceId = null;
 		
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should user be validated?
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
 			processInstanceId = processInstance.getProcessInstanceId();
-			// set owner and assignee for the created task
-			
-			Task task = engine.getTaskService().createTaskQuery().
-				processInstanceId(processInstanceId).singleResult();
-			task.setAssignee(userId);
-			task.setOwner(userId);
-			engine.getTaskService().saveTask(task);
 		} catch (Exception e) {
 			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId);
 		}
@@ -693,11 +686,107 @@ public class ActivitiEngineService {
 		return successful;
 	}
 
+	// FIXME: Shall pageSize for returned objekt be adjusted if answer is shorter than the requested pageSize?
+	
 	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
-			String searchForUserId, int fromIndex, int pageSize,
+			String startedByUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String filter, String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		List<ProcessInstance> processInstances = null;
+		int len = 0;
+		int toIndex = 0;
+		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
+		
+		if(fromIndex < 0) {
+			fromIndex = 0;
+		}
+		
+		if(pageSize < 0) {
+			pageSize = 0;
+		}
+		
+		pagedProcessInstanceSearchResult.setFromIndex(fromIndex);
+		pagedProcessInstanceSearchResult.setPageSize(pageSize);
+		pagedProcessInstanceSearchResult.setSortBy(sortBy);
+		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId);
+			
+			List<ProcessInstance> processInstancesWithUserInvolved = engine.getRuntimeService().
+				createProcessInstanceQuery().involvedUser(startedByUserId).orderByProcessInstanceId().asc().list();
+			
+			if(processInstancesWithUserInvolved != null && processInstancesWithUserInvolved.size() > 0) {
+				processInstances = new ArrayList<ProcessInstance>();
+				
+				for(ProcessInstance pIWithUserInvolved : processInstancesWithUserInvolved) {
+					
+					// FIXME: Unclear if getId() or getInstanceId() should be used below
+					List<IdentityLink> identityLinks = engine.getRuntimeService().
+						getIdentityLinksForProcessInstance(pIWithUserInvolved.getProcessInstanceId());
+					
+					if(identityLinks != null && identityLinks.size() > 0) {
+						for(IdentityLink identityLink : identityLinks) {
+							if(identityLink.getUserId().equals(startedByUserId) &&
+								identityLink.getType().equals(IdentityLinkType.STARTER)) {
+								processInstances.add(pIWithUserInvolved);
+								break;
+							}
+						}
+					}
+				}
+			}
+		
+			// Filter due to fromIndex and pageSize
+			
+			if(processInstances != null) {
+				
+				try {
+					// If exception is thrown for fromIndex element then list is cleared.
+					processInstances.get(fromIndex);
+					
+					len = processInstances.size();
+					
+					if((fromIndex + pageSize) <= len) {
+						toIndex = fromIndex + pageSize;
+						processInstances = processInstances.subList(fromIndex, toIndex);
+					} else {
+						processInstances = processInstances.subList(fromIndex, len);
+					}	
+				} catch (Exception e) {
+					processInstances.clear();
+				}
+			}
+			
+			if(processInstances != null) {
+				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
+				
+				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
+			
+				for(ProcessInstance processInstance : processInstances) {
+					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
+					
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
+					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
+					processInstanceListItem.setStartDate(null); // FIXME
+					processInstanceListItem.setStartedBy(""); // FIXME: Could be fetched from LinkedIdentity if it was set.
+					processInstanceListItem.setStartedByFormPath("");
+					processInstanceListItem.setEndDate(null); // FIXME
+					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
+					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setActivities
+						(getUserInboxByInvolvedUser(startedByUserId, processInstance.getProcessInstanceId()));
+					
+					processInstanceListItems.add(processInstanceListItem);
+				}
+
+				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstancesStartedBy with startedByUserId: " + startedByUserId +
+					" by userId: " + userId);
+			pagedProcessInstanceSearchResult = null;	
+		}
+		return pagedProcessInstanceSearchResult;
 	}
 	
 	// FIXME: sortBy is always processInstanceId for the moment.
@@ -713,6 +802,14 @@ public class ActivitiEngineService {
 			String sortBy, String sortOrder, String filter, String userId) {
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 			
+		if(fromIndex < 0) {
+			fromIndex = 0;
+		}
+		
+		if(pageSize < 0) {
+			pageSize = 0;
+		}
+		
 		pagedProcessInstanceSearchResult.setFromIndex(fromIndex);
 		pagedProcessInstanceSearchResult.setPageSize(pageSize);
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
@@ -756,12 +853,6 @@ public class ActivitiEngineService {
 		}
 		return pagedProcessInstanceSearchResult;
 	}
-	
-	/*	
-	private Set<InboxTaskItem> activities;        Här kan man säkert återanvända kod från getInboxByUser, eller måste
-	                                              getInboxByUser söka involvedUser för att det skall fungera?
-
-    */
 
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
 			List<String> uuids, int fromIndex, int pageSize, String sortBy,
@@ -877,12 +968,16 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
+		//activitiEngineService.startProcess("Arendeprocess:1:3904", "ulric");
+		
 		/*
 		PagedProcessInstanceSearchResult p = activitiEngineService.
-				getProcessInstancesWithInvolvedUser("kermit", 0, 100, null, null, null, "kermit");
+				getProcessInstancesStartedBy("ulric", 3, 100, null, null, null, "ulric");
 
-		log.severe("p:" + p.getHits());
+		log.severe("p:" + p);
 		*/
+		//log.severe("p:" + p.getHits());
+		
 		/*
 		List<CommentFeedItem> comments =  activitiEngineService.getProcessInstanceCommentFeedByActivity("4204");
 		
