@@ -883,6 +883,7 @@ public class ActivitiEngineService {
 
 		log.severe("p:" + p.getHits());
 		*/
+		/*
 		List<CommentFeedItem> comments =  activitiEngineService.getProcessInstanceCommentFeedByActivity("4204");
 		
 		for (CommentFeedItem c : comments) {
