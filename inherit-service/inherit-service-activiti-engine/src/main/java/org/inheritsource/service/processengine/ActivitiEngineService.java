@@ -206,6 +206,23 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
+	public Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
+		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
+		
+		List<Task> tasks = engine.getTaskService().createTaskQuery().processInstanceId(processInstanceId).
+			orderByTaskCreateTime().asc().list();
+		
+		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
+		
+		if(inboxTaskItemList != null) {
+			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
+				result.add(inboxTaskItem);
+			}
+		}
+		
+		return result;
+	}
+	
 	private List<InboxTaskItem> taskList2InboxTaskItemList(List<Task> tasks) {
 		List<InboxTaskItem> result = null;
 		if (tasks != null) {
@@ -687,6 +704,13 @@ public class ActivitiEngineService {
 	}
 
 	// FIXME: Shall pageSize for returned objekt be adjusted if answer is shorter than the requested pageSize?
+	// FIXME: sortBy is always processInstanceId for the moment.
+	// FIXME: sortOrder is always asc for the moment.
+	// FIXME: filter is not used for the moment.
+	// FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
+	// FIXME: setProcessInstanceUuid uses processInstanceId but could use id? This differs for subprocesses and
+	// embedded processes. This has to be clear but it is not for the moment.
+	// FIXME: set status is hardcoded to PENDING.
 	
 	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
 			String startedByUserId, int fromIndex, int pageSize,
@@ -757,7 +781,7 @@ public class ActivitiEngineService {
 				}
 			}
 			
-			if(processInstances != null) {
+			if(processInstances != null) { // FIXME: Refactoring is needed...
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
 				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
@@ -775,7 +799,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
 						(getUserInboxByInvolvedUser(startedByUserId, processInstance.getProcessInstanceId()));
-					
+					// FIXME: Should getUserInboxByInvolvedUser be used here? should tartedByUserId be used?
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -822,7 +846,7 @@ public class ActivitiEngineService {
 				createProcessInstanceQuery().involvedUser(searchForUserId).orderByProcessInstanceId().asc().
 					listPage(fromIndex, pageSize);
 			
-			if(processInstances != null) {
+			if(processInstances != null) {  // FIXME: Refactoring is needed...
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
 				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
@@ -840,7 +864,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
 						(getUserInboxByInvolvedUser(searchForUserId, processInstance.getProcessInstanceId()));
-					
+					// FIXME: Should getUserInboxByInvolvedUser be used here? should tartedByUserId be used?
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -853,12 +877,78 @@ public class ActivitiEngineService {
 		}
 		return pagedProcessInstanceSearchResult;
 	}
+	
+	// FIXME: sortBy is always processInstanceId for the moment.
+	// FIXME: sortOrder is always asc for the moment.
+	// FIXME: filter is not used for the moment.
+	// FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
+	// FIXME: setProcessInstanceUuid uses processInstanceId but could use id? This differs for subprocesses and
+	// embedded processes. This has to be clear but it is not for the moment.
+	// FIXME: set status is hardcoded to PENDING.	
 
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
 			List<String> uuids, int fromIndex, int pageSize, String sortBy,
 			String sortOrder, String filter, String userId) {
-		// TODO Auto-generated method stub
-		return null;
+		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
+		
+		if(fromIndex < 0) {
+			fromIndex = 0;
+		}
+		
+		if(pageSize < 0) {
+			pageSize = 0;
+		}
+		
+		pagedProcessInstanceSearchResult.setFromIndex(fromIndex);
+		pagedProcessInstanceSearchResult.setPageSize(pageSize);
+		pagedProcessInstanceSearchResult.setSortBy(sortBy);
+		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId);
+			
+			// convert list to set
+			Set<String> processInstanceIds = new HashSet<String>();
+			if(uuids != null) {
+				for(String uuid : uuids) {
+					processInstanceIds.add(uuid);
+				}
+			}
+			
+			List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery().
+				processInstanceIds(processInstanceIds).orderByProcessInstanceId().asc().
+					listPage(fromIndex, pageSize);
+			
+			if(processInstances != null) { // FIXME: Refactoring is needed...
+				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
+				
+				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
+			
+				for(ProcessInstance processInstance : processInstances) {
+					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
+					
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
+					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
+					processInstanceListItem.setStartDate(null); // FIXME
+					processInstanceListItem.setStartedBy(""); // FIXME: Could be fetched from LinkedIdentity if it was set.
+					processInstanceListItem.setStartedByFormPath("");
+					processInstanceListItem.setEndDate(null); // FIXME
+					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
+					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setActivities
+						(getUserInboxByProcessInstanceId(processInstance.getProcessInstanceId()));
+					// FIXME: Should getUserInboxByInvolvedUser be used here? should tartedByUserId be used?
+					processInstanceListItems.add(processInstanceListItem);
+				}
+
+				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstancesByUuids with uuids: " + uuids +
+					" by userId: " + userId);
+			pagedProcessInstanceSearchResult = null;	
+		}
+		return pagedProcessInstanceSearchResult;
 	}
 
 	public boolean createUser(String uuid) {
@@ -969,10 +1059,17 @@ public class ActivitiEngineService {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
 		//activitiEngineService.startProcess("Arendeprocess:1:3904", "ulric");
-		
 		/*
+		List<String> uuids = new ArrayList<String>();
+		
+		uuids.add("3905");
+		uuids.add("4001");
+		uuids.add("4101");
+		uuids.add("6501");
+		uuids.add("7001");
+		
 		PagedProcessInstanceSearchResult p = activitiEngineService.
-				getProcessInstancesStartedBy("ulric", 3, 100, null, null, null, "ulric");
+				getProcessInstancesByUuids(uuids, 0, 100, null, null, null, "ulric");
 
 		log.severe("p:" + p);
 		*/
