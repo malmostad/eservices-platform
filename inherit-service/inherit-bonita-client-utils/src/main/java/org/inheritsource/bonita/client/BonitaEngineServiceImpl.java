@@ -1128,8 +1128,14 @@ public class BonitaEngineServiceImpl {
 		taskItem.setActivityDefinitionUuid(activity.getActivityDefinitionUUID().getValue());
 		taskItem.setProcessDefinitionUuid(activity.getProcessDefinitionUUID().getValue());
 		
+		
+		taskItem.setRootProcessDefinitionUuid(getProcessDefinitionUuidByInstanceUuid(activity.getRootInstanceUUID()));
+		taskItem.setRootProcessInstanceUuid(activity.getRootInstanceUUID().getValue());
+		
 		return taskItem;
 		
 	}
+	
+	
 
 }

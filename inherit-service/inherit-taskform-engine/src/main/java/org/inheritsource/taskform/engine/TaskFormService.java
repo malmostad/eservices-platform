@@ -328,7 +328,7 @@ public class TaskFormService {
 		// TODO optimize ???
 		ProcessActivityFormInstance startedByForm = taskFormDb
 				.getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(item
-						.getProcessInstanceUuid());
+						.getRootProcessInstanceUuid());
 		if (startedByForm != null) {
 			item.setStartedByFormPath(startedByForm.getFormPath());
 		}
