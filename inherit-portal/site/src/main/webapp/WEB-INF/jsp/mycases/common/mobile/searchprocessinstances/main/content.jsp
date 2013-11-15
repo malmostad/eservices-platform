@@ -80,8 +80,8 @@
 		</form>
 		
 		<script type="text/javascript">
-			  $("#search-btn").click(function(event) {
-			   $("#searchPanelForm  > input[name=page]").prop("value", 1);
+			  $jq("#search-btn").click(function(event) {
+			   $jq("#searchPanelForm  > input[name=page]").prop("value", 1);
 			  });
 		</script>
        </div>		
