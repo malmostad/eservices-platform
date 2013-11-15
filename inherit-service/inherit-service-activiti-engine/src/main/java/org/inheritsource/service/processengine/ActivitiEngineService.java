@@ -25,6 +25,7 @@ import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.Deployment;
@@ -65,117 +66,30 @@ public class ActivitiEngineService {
 	public ActivitiEngineService() {
 		initEngine();		
 	}
-
-	public void logTableSizes() {
-		Map<String, Long> counts = engine.getManagementService().getTableCount();
-		
-		for (String key : counts.keySet()) {
-			log.info("Key: " + key + " count: " + counts.get(key));
-		}
-	}
 	
 	private void initEngine() {
-
-		ProcessEngineConfiguration engineConfig = null;
 		
-		// try to find config 
-		engineConfig = loadConfigFromFile("/usr/local/etc/motrice/activiti.cfg.xml");
+		final String ACTIVITI_ENGINE_CONFIG_FILEPATH = "/usr/local/etc/motrice/activiti.cfg.xml";
+		ProcessEngineConfiguration engineConfig = loadConfigFromFile(ACTIVITI_ENGINE_CONFIG_FILEPATH);
 		
 		if (engineConfig == null) {
-			// fall back to default - activiti.cfg.xml resource in classpath (src/main/resources) 
-			engineConfig = loadConfigFromResource("activiti.cfg.xml");
-		}
-		
-		if (engineConfig == null) {
-			log.severe("Could not find default config - the process engine will not be working");
+			log.severe("The process engine will not be working!");
 		}
 		else {
 			engine =  engineConfig.buildProcessEngine();
-		}
-		
+		}	
 	}
-	
 	
 	private ProcessEngineConfiguration loadConfigFromFile(String fileName) {
 		ProcessEngineConfiguration engineConfig = null;
 		try {
-			engineConfig = ProcessEngineConfiguration.createProcessEngineConfigurationFromInputStream(new FileInputStream(fileName))
-					  .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE)
-					  .setJobExecutorActivate(true);
+			engineConfig = ProcessEngineConfiguration.
+				createProcessEngineConfigurationFromInputStream(new FileInputStream(fileName));
 		}
 		catch (Exception e) {
 			log.severe("Could not find config file: " + fileName);
 		}
 		return engineConfig;
-	}
-	
-	private ProcessEngineConfiguration loadConfigFromResource(String resource) {
-		ProcessEngineConfiguration engineConfig = null;
-		try {
-			engineConfig = ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(resource)
-					  .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE)
-					  .setJobExecutorActivate(true);
-		}
-		catch (Exception e) {
-			log.severe("Could not find config resource: " + resource);
-		}
-		return engineConfig;
-	}
-	
-	public Deployment deployBpmn(String bpmnFile) {
-		RepositoryService repositoryService = engine.getRepositoryService();
-		Deployment deployment = null;
-		
-		try {
-			String resourceName = Paths.get(bpmnFile).getFileName().toString();
-			deployment = repositoryService.createDeployment().
-				addInputStream(resourceName, new FileInputStream(bpmnFile)).deploy();
-			
-		} catch (Exception e) {
-			log.severe("File '" + bpmnFile + "' not found: " + e.getMessage());
-		}
-		return deployment;
-	}
-	
-	public ProcessInstance startProcessInstanceByKey(String key, Map<String, Object> variables) {
-		RuntimeService runtimeService = engine.getRuntimeService();
-		ProcessInstance processInstance = null;
-		
-		try {
-			processInstance = runtimeService.startProcessInstanceByKey(key, variables);
-		} catch (Exception e) {
-			log.severe("Unable to start process instance with key: " + key);
-		}
-		return processInstance;
-	}
-		
-	public void listDeployedProcesses() {
-		List<ProcessDefinition> processes = engine.getRepositoryService().createProcessDefinitionQuery().list();
-		for (ProcessDefinition process : processes) {
-			log.severe("Process: " + process.getId() + ": " + process + "START");
-			log.severe("getDeploymentId: " + process.getDeploymentId());
-			log.severe("getDescription: " + process.getDescription());
-			log.severe("getDiagramResourceName: " + process.getDiagramResourceName());
-			log.severe("getId: " + process.getId());
-			log.severe("getKey: " + process.getKey());
-			log.severe("getName: " + process.getName());
-			log.severe("getResourceName: " + process.getResourceName());
-			log.severe("version: " + process.getVersion());
-			log.severe("END");
-		}
-	}
-	
-	public List<String> getDeployedDeploymentIds() {
-		List<Deployment> deployments = engine.getRepositoryService().createDeploymentQuery().list();
-		ArrayList<String> deploymentIds = new ArrayList<String>();
-		for (Deployment deployment : deployments) {
-			deploymentIds.add(deployment.getId());
-		}
-		return deploymentIds;
-	}
-	
-	public void deleteDeploymentByDeploymentId(String deploymentId, boolean cascade) {
-		engine.getRepositoryService().deleteDeployment(deploymentId, cascade);
 	}
 	
 	public List<InboxTaskItem> getUserInbox(String userId) {
@@ -206,6 +120,7 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
+	// FIXME: Should executionId be used instead?
 	public Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
@@ -247,7 +162,7 @@ public class ActivitiEngineService {
 			item.setExternalUrl(""); // Will be set in TaskFormService
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
-			item.setProcessInstanceUuid(task.getProcessInstanceId());
+			item.setProcessInstanceUuid(task.getProcessInstanceId());  // FIXME: Should task.getExecutionId() be used?
 			item.setProcessLabel("");
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
@@ -255,7 +170,10 @@ public class ActivitiEngineService {
 		return item;
 	}
 	
-	public String getActivityInstanceUuid(String processInstanceUuid,
+	// FIXME: Should methd use executionId instead of processInstanceId?
+	// FIXME: Should historic tasks be returned?
+	
+	public String getActivityInstanceUuid(String processInstanceUuid, 
 			String activityName) {
 		String taskId = null;
 		Task task = null;
@@ -275,6 +193,8 @@ public class ActivitiEngineService {
 		return taskId;
 	}
 
+	// FIXME: Here is historicTask searched if no current task was found!
+	
 	public ActivityInstanceItem getActivityInstanceItem(
 			String activityInstanceUuid) {
 		ActivityInstanceItem result = null;
@@ -298,8 +218,7 @@ public class ActivitiEngineService {
 	// FIXME: current state is not set
 	// FIXME: lastStateUpdate is not set
 	// FIXME: lastStateUpdateByUserId is not set
-	// FIXME: startedBy might not be correct?
-	// FIXME: activityType might not be correct?
+	// FIXME: activityType is not set
 	
 	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task) {
 		ActivityInstancePendingItem item = null;
@@ -316,11 +235,11 @@ public class ActivitiEngineService {
 			item.setCurrentState("");
 			item.setLastStateUpdate(null);
 			item.setLastStateUpdateByUserId("");
-			item.setStartedBy(task.getOwner());
+			item.setStartedBy(getStarterByTaskId(task.getId()));
 			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setFormUrl("");
 			item.setFormDocId("");
-			item.setActivityType(99);
+			item.setActivityType(0);
 			item.setPriority(task.getPriority());
 			item.setExpectedEndDate(task.getDueDate());
 			
@@ -338,8 +257,7 @@ public class ActivitiEngineService {
 	// FIXME: current state is not set
 	// FIXME: lastStateUpdate is not set
 	// FIXME: lastStateUpdateByUserId is not set
-	// FIXME: startedBy might not be correct?
-	// FIXME: activityType might not be correct?
+	// FIXME: activityType is not set
 	
 	private ActivityInstanceLogItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
 		ActivityInstanceLogItem item = null;
@@ -356,11 +274,11 @@ public class ActivitiEngineService {
 			item.setCurrentState("");
 			item.setLastStateUpdate(null);
 			item.setLastStateUpdateByUserId("");
-			item.setStartedBy(task.getOwner());
+			item.setStartedBy(getHistoricStarterByTaskId(task.getId()));
 			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setFormUrl("");
 			item.setFormDocId("");
-			item.setActivityType(99);
+			item.setActivityType(0);
 			item.setPriority(task.getPriority());
 			item.setExpectedEndDate(task.getDueDate());
 			
@@ -424,6 +342,8 @@ public class ActivitiEngineService {
 	}
 
 	// FIXME: Several fields are not set correct in the method!
+	// FIXME: Should executionId be used instead of processInstanceId?
+	// FIXME: Should historic ProcessInstanceDetails be returned?
 	
 	public ProcessInstanceDetails getProcessInstanceDetails(
 			String processInstanceUuid) {
@@ -439,7 +359,7 @@ public class ActivitiEngineService {
 			processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
 			
 			processInstanceDetails.setStartDate(null);
-			processInstanceDetails.setStartedBy(""); // FIXME: This could be fetched if it is earlier set with addUserIdentityLink
+			processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 			processInstanceDetails.setEndDate(null);
 			processInstanceDetails.setProcessInstanceLabel(processInstanceUuid);
 			processInstanceDetails.setStartedByFormPath("");
@@ -480,7 +400,7 @@ public class ActivitiEngineService {
 			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
 
 			if(task != null) {
-				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId());
+				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId()); // FIMXE: Should executionId be used?
 			}
 		} catch (Exception e) {
 			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with activityInstanceUuid: " + activityInstanceUuid);
@@ -496,12 +416,12 @@ public class ActivitiEngineService {
 		int retVal = -1;
 		
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used?
 			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
 			
 			if(task != null) {
 				Comment addedComment = 
-					engine.getTaskService().addComment(activityInstanceUuid, task.getProcessInstanceId(), comment);
+					engine.getTaskService().addComment(activityInstanceUuid, "", comment);
 
 				if(addedComment != null) {
 					String msg = addedComment.getFullMessage();
@@ -671,9 +591,9 @@ public class ActivitiEngineService {
 		String processInstanceId = null;
 		
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should user be validated?
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used here?
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
-			processInstanceId = processInstance.getProcessInstanceId();
+			processInstanceId = processInstance.getProcessInstanceId(); // FIXME: should getId() be used here?
 		} catch (Exception e) {
 			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId);
 		}
@@ -682,13 +602,10 @@ public class ActivitiEngineService {
 	}
 
 	public boolean executeTask(String activityInstanceUuid, String userId) {
-		
-		// FIXME: Does clame the job?
-		
 		boolean successful = false;
 			
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should login be used?
+			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used here?
 			// Note: ActivitiTaskAlreadyClaimedException - when the task is already claimed by another user.
 			engine.getTaskService().claim(activityInstanceUuid, userId);
 			
@@ -743,19 +660,10 @@ public class ActivitiEngineService {
 				processInstances = new ArrayList<ProcessInstance>();
 				
 				for(ProcessInstance pIWithUserInvolved : processInstancesWithUserInvolved) {
+					String starterUserId = getStarterByProcessInstanceId(pIWithUserInvolved.getProcessInstanceId());
 					
-					// FIXME: Unclear if getId() or getInstanceId() should be used below
-					List<IdentityLink> identityLinks = engine.getRuntimeService().
-						getIdentityLinksForProcessInstance(pIWithUserInvolved.getProcessInstanceId());
-					
-					if(identityLinks != null && identityLinks.size() > 0) {
-						for(IdentityLink identityLink : identityLinks) {
-							if(identityLink.getUserId().equals(startedByUserId) &&
-								identityLink.getType().equals(IdentityLinkType.STARTER)) {
-								processInstances.add(pIWithUserInvolved);
-								break;
-							}
-						}
+					if(starterUserId.equals(startedByUserId)) {
+						processInstances.add(pIWithUserInvolved);
 					}
 				}
 			}
@@ -1054,10 +962,32 @@ public class ActivitiEngineService {
 		
 		return processDefinitionDetails;
 	}
+
+	public String getParentProcessInstanceUuid(String processInstanceUuid) {
+		String parentExecId = null;
+
+		try {
+			parentExecId = engine.getRuntimeService().createExecutionQuery().
+					executionId(processInstanceUuid).singleResult().getParentId();
+		} catch (Exception e) {
+			log.severe("Unable to getParentProcessInstanceUuid: " + e);
+		}
+
+		return parentExecId;
+	}
+
+	// FIXME: No idea for the moment how to solve this...
+	
+	public InboxTaskItem getNextInboxTaskItem(String currentProcessInstance, String userId) {
+		return null;
+	 // TODO		
+	}
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 
+		log.severe(activitiEngineService.getActivityInstanceItem("4204").toString());
+		
 		//activitiEngineService.startProcess("Arendeprocess:1:3904", "ulric");
 		/*
 		List<String> uuids = new ArrayList<String>();
@@ -1206,14 +1136,129 @@ public class ActivitiEngineService {
 	
 		return candidates;
 	}
+	
+		
+	private String getStarterByProcessInstanceId(String processInstanceId) {
+		List<IdentityLink> identityLinks = engine.getRuntimeService().
+			getIdentityLinksForProcessInstance(processInstanceId);
+				
+		if(identityLinks != null) {
+			for(IdentityLink iL : identityLinks) {
+				if(iL.getType().equals(IdentityLinkType.STARTER)) {
+					return(iL.getUserId());
+				}
+			}
+		}
+		
+		return "";
+	}
+	
+	private String getStarterByTaskId(String taskId) {
+		List<IdentityLink> identityLinks = 
+				engine.getTaskService().getIdentityLinksForTask(taskId);
+			
+		if(identityLinks != null) {
+			for(IdentityLink iL : identityLinks) {
+				if(iL.getType().equals(IdentityLinkType.STARTER)) {
+					return(iL.getUserId());
+				}
+			}
+		}
+		
+		return "";
+	}
+	
+	private String getHistoricStarterByTaskId(String taskId) {
+		List<HistoricIdentityLink> historicIdentityLinks = 
+				engine.getHistoryService().getHistoricIdentityLinksForTask(taskId);
+			
+		if(historicIdentityLinks != null) {
+			for(HistoricIdentityLink iL : historicIdentityLinks) {
+				if(iL.getType().equals(IdentityLinkType.STARTER)) {
+					return(iL.getUserId());
+				}
+			}
+		}
+		
+		return "";
+	}
 
-    public String getParentProcessInstanceUuid(String processInstanceUuid) {
-	String parentProcessInstanceUuid = null;
-
-	return parentProcessInstanceUuid;
-    }
-
-    public InboxTaskItem getNextInboxTaskItem(String currentProcessInstance, String userId) {
-	return null;
-    }
+    // Methods below is used for testing and developement for the moment
+    
+	public void listDeployedProcesses() {
+		List<ProcessDefinition> processes = engine.getRepositoryService().createProcessDefinitionQuery().list();
+		for (ProcessDefinition process : processes) {
+			log.severe("Process: " + process.getId() + ": " + process + "START");
+			log.severe("getDeploymentId: " + process.getDeploymentId());
+			log.severe("getDescription: " + process.getDescription());
+			log.severe("getDiagramResourceName: " + process.getDiagramResourceName());
+			log.severe("getId: " + process.getId());
+			log.severe("getKey: " + process.getKey());
+			log.severe("getName: " + process.getName());
+			log.severe("getResourceName: " + process.getResourceName());
+			log.severe("version: " + process.getVersion());
+			log.severe("END");
+		}
+	}
+	
+	public List<String> getDeployedDeploymentIds() {
+		List<Deployment> deployments = engine.getRepositoryService().createDeploymentQuery().list();
+		ArrayList<String> deploymentIds = new ArrayList<String>();
+		for (Deployment deployment : deployments) {
+			deploymentIds.add(deployment.getId());
+		}
+		return deploymentIds;
+	}
+	
+	public void deleteDeploymentByDeploymentId(String deploymentId, boolean cascade) {
+		engine.getRepositoryService().deleteDeployment(deploymentId, cascade);
+	}
+	
+	public void logTableSizes() {
+		Map<String, Long> counts = engine.getManagementService().getTableCount();
+		
+		for (String key : counts.keySet()) {
+			log.info("Key: " + key + " count: " + counts.get(key));
+		}
+	}
+	
+	private ProcessEngineConfiguration loadConfigFromResource(String resource) {
+		ProcessEngineConfiguration engineConfig = null;
+		try {
+			engineConfig = ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(resource)
+					  .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE)
+					  .setJobExecutorActivate(true);
+		}
+		catch (Exception e) {
+			log.severe("Could not find config resource: " + resource);
+		}
+		return engineConfig;
+	}
+	
+	public Deployment deployBpmn(String bpmnFile) {
+		RepositoryService repositoryService = engine.getRepositoryService();
+		Deployment deployment = null;
+		
+		try {
+			String resourceName = Paths.get(bpmnFile).getFileName().toString();
+			deployment = repositoryService.createDeployment().
+				addInputStream(resourceName, new FileInputStream(bpmnFile)).deploy();
+			
+		} catch (Exception e) {
+			log.severe("File '" + bpmnFile + "' not found: " + e.getMessage());
+		}
+		return deployment;
+	}
+	
+	public ProcessInstance startProcessInstanceByKey(String key, Map<String, Object> variables) {
+		RuntimeService runtimeService = engine.getRuntimeService();
+		ProcessInstance processInstance = null;
+		
+		try {
+			processInstance = runtimeService.startProcessInstanceByKey(key, variables);
+		} catch (Exception e) {
+			log.severe("Unable to start process instance with key: " + key);
+		}
+		return processInstance;
+	}
 }
