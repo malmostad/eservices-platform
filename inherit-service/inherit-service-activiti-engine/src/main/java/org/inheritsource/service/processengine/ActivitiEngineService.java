@@ -31,6 +31,7 @@ import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.IdentityLink;
@@ -55,8 +56,6 @@ import org.inheritsource.service.common.domain.UserInfo;
 
 // FIXME: Should be added everywhere a userID is sent to activiti?
 // engine.getIdentityService().setAuthenticatedUserId(userId); 
-
-// FIXME: Execution klassen skall diskuteras med de andra hur den kommer in i det här...
 
 public class ActivitiEngineService {
 
@@ -103,29 +102,11 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	public Set<InboxTaskItem> getUserInboxByInvolvedUser(String involvedUserId, String processInstanceId) {
+	private Set<InboxTaskItem> getUserInboxByInvolvedUser(String involvedUserId, String executionId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
 		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(involvedUserId).
-				processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
-		
-		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
-		
-		if(inboxTaskItemList != null) {
-			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
-				result.add(inboxTaskItem);
-			}
-		}
-		
-		return result;
-	}
-	
-	// FIXME: Should executionId be used instead?
-	public Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
-		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
-		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().processInstanceId(processInstanceId).
-			orderByTaskCreateTime().asc().list();
+				executionId(executionId).orderByTaskCreateTime().asc().list();
 		
 		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
 		
@@ -149,7 +130,7 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	// FIXME: label is not set
+	// FIXME: label fields are not set
 	
 	private InboxTaskItem task2InboxTaskItem(Task task) {
 		InboxTaskItem item = null;
@@ -157,33 +138,31 @@ public class ActivitiEngineService {
 			item = new InboxTaskItem();
 			item.setActivityCreated(task.getCreateTime());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
-			item.setActivityLabel(task.getName());
+			item.setActivityLabel(""); // FIXME
 			item.setExpectedEndDate(task.getDueDate());
 			item.setExternalUrl(""); // Will be set in TaskFormService
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
-			item.setProcessInstanceUuid(task.getProcessInstanceId());  // FIXME: Should task.getExecutionId() be used?
-			item.setProcessLabel("");
+			item.setProcessInstanceUuid(task.getExecutionId());
+			item.setProcessLabel(""); // FIXME
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
 		}
 		return item;
 	}
 	
-	// FIXME: Should methd use executionId instead of processInstanceId?
 	// FIXME: Should historic tasks be returned?
 	
-	public String getActivityInstanceUuid(String processInstanceUuid, 
-			String activityName) {
+	public String getActivityInstanceUuid(String executionId, String taskName) {
 		String taskId = null;
 		Task task = null;
 		
 		try {
-			task = engine.getTaskService().createTaskQuery().
-				processInstanceId(processInstanceUuid).taskName(activityName).singleResult();
+			task = engine.getTaskService().createTaskQuery().executionId(executionId).
+					taskName(taskName).singleResult();
 		} catch (Exception e) {
-			log.severe("More than one task with processInstanceUuid: " + processInstanceUuid + 
-					" and name: " + activityName + "exists! ... returning taskId = null");
+			log.severe("Unable to getActivityInstanceUuid with executionId: " + executionId +
+					" and taskName: " + taskName);
 		}
 		
 		if(task != null) {
@@ -193,19 +172,18 @@ public class ActivitiEngineService {
 		return taskId;
 	}
 
-	// FIXME: Here is historicTask searched if no current task was found!
+	// FIXME: Here is historicTask searched if no current task was found! Wrong?
 	
-	public ActivityInstanceItem getActivityInstanceItem(
-			String activityInstanceUuid) {
+	public ActivityInstanceItem getActivityInstanceItem(String taskId) {
 		ActivityInstanceItem result = null;
 		
-		//activityInstanceUuid is taskId
-		Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+		Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 		
 		if(task != null) {
 			result = task2ActivityInstancePendingItem(task);
 		} else {
-			HistoricTaskInstance historicTask = engine.getHistoryService().createHistoricTaskInstanceQuery().taskId(activityInstanceUuid).singleResult();
+			HistoricTaskInstance historicTask = engine.getHistoryService().
+				createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
 			if(historicTask != null) {
 				result = task2ActivityInstanceLogItem(historicTask);
 			}
@@ -226,7 +204,7 @@ public class ActivitiEngineService {
 			item = new ActivityInstancePendingItem();
 			
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
-			item.setProcessInstanceUuid(task.getProcessInstanceId());
+			item.setProcessInstanceUuid(task.getExecutionId());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
 			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
@@ -265,7 +243,7 @@ public class ActivitiEngineService {
 			item = new ActivityInstanceLogItem();
 			
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
-			item.setProcessInstanceUuid(task.getProcessInstanceId());
+			item.setProcessInstanceUuid(task.getExecutionId());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
 			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
@@ -295,8 +273,7 @@ public class ActivitiEngineService {
 	
 	// FIXME NOTE: If due date is not given it will always be classified as a 'atRisk'. 
 	
-	public DashOpenActivities getDashOpenActivitiesByUserId(String userId,
-			int remainingDays) {
+	public DashOpenActivities getDashOpenActivitiesByUserId(String userId, int remainingDays) {
 		
 		if(remainingDays < 0) {
 			remainingDays = 0;
@@ -334,7 +311,8 @@ public class ActivitiEngineService {
 			dashOpenActivities.setOverdue(overdue);
 		
 		} catch (Exception e) {
-			log.severe("Unable to getDashOpenActivitiesByUserId with taskId: " + dashOpenActivities);
+			log.severe("Unable to getDashOpenActivitiesByUserId with userId: " + userId +
+					" and remaining days: " + remainingDays);
 			dashOpenActivities = null;
 		}
 		
@@ -342,16 +320,15 @@ public class ActivitiEngineService {
 	}
 
 	// FIXME: Several fields are not set correct in the method!
-	// FIXME: Should executionId be used instead of processInstanceId?
 	// FIXME: Should historic ProcessInstanceDetails be returned?
+	// FIXME: timeline is not implemented!
 	
-	public ProcessInstanceDetails getProcessInstanceDetails(
-			String processInstanceUuid) {
+	public ProcessInstanceDetails getProcessInstanceDetails(String executionId) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
 		try {
-			ProcessInstance processInstance = engine.getRuntimeService().
-				createProcessInstanceQuery().processInstanceId(processInstanceUuid).singleResult();
+			Execution execution = engine.getRuntimeService().createExecutionQuery().
+				executionId(executionId).singleResult();
 
 			processInstanceDetails = new ProcessInstanceDetails();
 			
@@ -359,15 +336,15 @@ public class ActivitiEngineService {
 			processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
 			
 			processInstanceDetails.setStartDate(null);
-			processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
+			processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(execution.getProcessInstanceId()));
 			processInstanceDetails.setEndDate(null);
-			processInstanceDetails.setProcessInstanceLabel(processInstanceUuid);
+			processInstanceDetails.setProcessInstanceLabel(""); //FIXME
 			processInstanceDetails.setStartedByFormPath("");
 				
 			// Handle pendings
 			
 			List<Task> tasks = engine.getTaskService().createTaskQuery().
-				processInstanceId(processInstance.getId()).orderByTaskName().asc().list();
+				executionId(execution.getId()).orderByTaskName().asc().list();
 						
 			if(tasks != null && tasks.size() > 0) {
 				List<ActivityInstancePendingItem> activityInstancePendingItems = new ArrayList<ActivityInstancePendingItem>();
@@ -386,24 +363,23 @@ public class ActivitiEngineService {
 				processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks)));
 			}	
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceDetails with processInstanceUuid: " + processInstanceUuid);
+			log.severe("Unable to getProcessInstanceDetails with executionId: " + executionId);
 			processInstanceDetails = null;	
 		}
 		return processInstanceDetails;
 	}
 
-	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(
-			String activityInstanceUuid) {
+	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(String taskId) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
 		try {
-			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 
 			if(task != null) {
-				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId()); // FIMXE: Should executionId be used?
+				processInstanceDetails = getProcessInstanceDetails(task.getExecutionId());
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with activityInstanceUuid: " + activityInstanceUuid);
+			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with taskId: " + taskId);
 			processInstanceDetails = null;	
 		}
 		return processInstanceDetails;
@@ -411,17 +387,16 @@ public class ActivitiEngineService {
 
 	// FIXME: returning number of characters in message. What should be returned?
 	
-	public int addComment(String activityInstanceUuid, String comment,
-			String userId) {
+	public int addComment(String taskId, String comment, String userId) {
 		int retVal = -1;
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used?
-			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 			
 			if(task != null) {
 				Comment addedComment = 
-					engine.getTaskService().addComment(activityInstanceUuid, "", comment);
+					engine.getTaskService().addComment(taskId, "", comment);
 
 				if(addedComment != null) {
 					String msg = addedComment.getFullMessage();
@@ -432,7 +407,7 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to addComment with activityInstanceUuid: " + activityInstanceUuid + 
+			log.severe("Unable to addComment with taskId: " + taskId + 
 				" and userId: " + userId);
 			retVal = -1;	
 		}
@@ -444,27 +419,29 @@ public class ActivitiEngineService {
 	// Could be fixed.
 	// FIXME: Two label fields are set to blank for the moment.
 
-	public List<CommentFeedItem> getProcessInstanceCommentFeedByActivity(
-			String activityInstanceUuid) {
+	public List<CommentFeedItem> getProcessInstanceCommentFeedByActivity(String taskId) {
 		List<CommentFeedItem> commentFeedItems = new ArrayList<CommentFeedItem>();
 		CommentFeedItem cFItem = null;
 		UserInfo userInfo = null;
 		Task task = null;
 		String processDefinitionUuid = null;
 		String activityDefinitionUuid = null;
+		String executionId = null;
 		
 		try {
-			List<Comment> comments = engine.getTaskService().getTaskComments(activityInstanceUuid);
+			List<Comment> comments = engine.getTaskService().getTaskComments(taskId);
 
 			if(comments != null && comments.size() > 0) {
-				task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+				task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 				
 				if(task != null) {
 					processDefinitionUuid = task.getProcessDefinitionId();
 					activityDefinitionUuid = task.getTaskDefinitionKey();
+					executionId = task.getExecutionId();
 				} else {
 					processDefinitionUuid = "";
 					activityDefinitionUuid = "";
+					executionId = "";
 				}
 				
 				for(Comment comment : comments) {
@@ -472,7 +449,7 @@ public class ActivitiEngineService {
 					cFItem = new CommentFeedItem();
 					
 					cFItem.setProcessDefinitionUuid(processDefinitionUuid);
-					cFItem.setProcessInstanceUuid(comment.getProcessInstanceId());
+					cFItem.setProcessInstanceUuid(executionId);
 					cFItem.setProcessLabel(""); // FIXME
 					cFItem.setActivityDefinitionUuid(activityDefinitionUuid);
 					cFItem.setActivityInstanceUuid(comment.getTaskId());
@@ -488,40 +465,38 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceCommentFeedByActivity with activityInstanceUuid: " + activityInstanceUuid);
+			log.severe("Unable to getProcessInstanceCommentFeedByActivity with taskId: " + taskId);
 			commentFeedItems = new ArrayList<CommentFeedItem>();
 		}
 		return commentFeedItems;
 	}
 
-	public ActivityWorkflowInfo getActivityWorkflowInfo(
-			String activityInstanceUuid) {
+	public ActivityWorkflowInfo getActivityWorkflowInfo(String taskId) {
 	
 		ActivityWorkflowInfo activityWorkflowInfo = null;
 		
 		try {
-			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 			
 			activityWorkflowInfo = new ActivityWorkflowInfo();
 			activityWorkflowInfo.setPriority(task.getPriority());
 			UserInfo assignedUser = new UserInfo();
 			assignedUser.setUuid(task.getAssignee());
 			activityWorkflowInfo.setAssignedUser(assignedUser);
-			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(activityInstanceUuid));
+			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
-			log.severe("Unable to getActivityWorkflowInfo with taskId: " + activityInstanceUuid);
+			log.severe("Unable to getActivityWorkflowInfo with taskId: " + taskId);
 			activityWorkflowInfo = null;
 		}
 		
 		return activityWorkflowInfo;
 	}
 
-	public ActivityWorkflowInfo assignTask(String activityInstanceUuid,
-			String userId) {
+	public ActivityWorkflowInfo assignTask(String taskId, String userId) {
 		ActivityWorkflowInfo activityWorkflowInfo = null;
 		
 		try {
-			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 			task.setAssignee(userId);
 			engine.getTaskService().saveTask(task);
 			
@@ -530,24 +505,23 @@ public class ActivitiEngineService {
 			UserInfo assignedUser = new UserInfo();
 			assignedUser.setUuid(userId);
 			activityWorkflowInfo.setAssignedUser(assignedUser);
-			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(activityInstanceUuid));
+			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
-			log.severe("Unable to assignTask with taskId: " + activityInstanceUuid);
+			log.severe("Unable to assignTask with taskId: " + taskId);
 			activityWorkflowInfo = null;
 		}
 		
 		return activityWorkflowInfo;
 	}
 
-	public ActivityWorkflowInfo addCandidate(String activityInstanceUuid,
-			String userId) {
+	public ActivityWorkflowInfo addCandidate(String taskId, String userId) {
 		ActivityWorkflowInfo activityWorkflowInfo = null;
 		
 		try {
-			engine.getTaskService().addCandidateUser(activityInstanceUuid, userId);
-			activityWorkflowInfo = getActivityWorkflowInfo(activityInstanceUuid);
+			engine.getTaskService().addCandidateUser(taskId, userId);
+			activityWorkflowInfo = getActivityWorkflowInfo(taskId);
 		} catch (Exception e) {
-			log.severe("Unable to addCandidate with taskId: " + activityInstanceUuid +
+			log.severe("Unable to addCandidate with taskId: " + taskId +
 					" and userId: " + userId);
 			activityWorkflowInfo = null;
 		}
@@ -555,15 +529,14 @@ public class ActivitiEngineService {
 		return activityWorkflowInfo;
 	}
 	
-	public ActivityWorkflowInfo removeCandidate(String activityInstanceUuid,
-			String userId) {
+	public ActivityWorkflowInfo removeCandidate(String taskId, String userId) {
 		ActivityWorkflowInfo activityWorkflowInfo = null;
 		
 		try {
-			engine.getTaskService().deleteCandidateUser(activityInstanceUuid, userId);
-			activityWorkflowInfo = getActivityWorkflowInfo(activityInstanceUuid);
+			engine.getTaskService().deleteCandidateUser(taskId, userId);
+			activityWorkflowInfo = getActivityWorkflowInfo(taskId);
 		} catch (Exception e) {
-			log.severe("Unable to removeCandidate with taskId: " + activityInstanceUuid +
+			log.severe("Unable to removeCandidate with taskId: " + taskId +
 					" and userId: " + userId);
 			activityWorkflowInfo = null;
 		}
@@ -571,15 +544,14 @@ public class ActivitiEngineService {
 		return activityWorkflowInfo;
 	}
 
-	public ActivityWorkflowInfo setPriority(String activityInstanceUuid,
-			int priority) {
+	public ActivityWorkflowInfo setPriority(String taskId, int priority) {
 		ActivityWorkflowInfo activityWorkflowInfo = null;
 		
 		try {
-			engine.getTaskService().setPriority(activityInstanceUuid, priority);
-			activityWorkflowInfo = getActivityWorkflowInfo(activityInstanceUuid);
+			engine.getTaskService().setPriority(taskId, priority);
+			activityWorkflowInfo = getActivityWorkflowInfo(taskId);
 		} catch (Exception e) {
-			log.severe("Unable to setPriority with taskId: " + activityInstanceUuid +
+			log.severe("Unable to setPriority with taskId: " + taskId +
 					" and priority: " + priority);
 			activityWorkflowInfo = null;
 		}
@@ -588,32 +560,32 @@ public class ActivitiEngineService {
 	}
 
 	public String startProcess(String processDefinitionId, String userId) {
-		String processInstanceId = null;
+		String executionId = null;
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used here?
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
-			processInstanceId = processInstance.getProcessInstanceId(); // FIXME: should getId() be used here?
+			executionId = processInstance.getId();
 		} catch (Exception e) {
 			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId);
 		}
 		
-		return processInstanceId;
+		return executionId;
 	}
 
-	public boolean executeTask(String activityInstanceUuid, String userId) {
+	public boolean executeTask(String taskId, String userId) {
 		boolean successful = false;
 			
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used here?
 			// Note: ActivitiTaskAlreadyClaimedException - when the task is already claimed by another user.
-			engine.getTaskService().claim(activityInstanceUuid, userId);
+			engine.getTaskService().claim(taskId, userId);
 			
 			// Note: ActivitiException is thrown when this task is DelegationState.PENDING delegation.
-			engine.getTaskService().complete(activityInstanceUuid);
+			engine.getTaskService().complete(taskId);
 			successful = true;
 		} catch (Exception e) {
-			log.severe("Could not executeTask with taskId: " + activityInstanceUuid + 
+			log.severe("Could not executeTask with taskId: " + taskId + 
 				" exception: " + e);
 		}
 
@@ -697,10 +669,10 @@ public class ActivitiEngineService {
 				for(ProcessInstance processInstance : processInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 					
-					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
 					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
 					processInstanceListItem.setStartDate(null); // FIXME
-					processInstanceListItem.setStartedBy(""); // FIXME: Could be fetched from LinkedIdentity if it was set.
+					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 					processInstanceListItem.setStartedByFormPath("");
 					processInstanceListItem.setEndDate(null); // FIXME
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
@@ -762,17 +734,17 @@ public class ActivitiEngineService {
 				for(ProcessInstance processInstance : processInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 					
-					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
 					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
 					processInstanceListItem.setStartDate(null); // FIXME
-					processInstanceListItem.setStartedBy(""); // FIXME: Could be fetched from LinkedIdentity if it was set.
+					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 					processInstanceListItem.setStartedByFormPath("");
 					processInstanceListItem.setEndDate(null); // FIXME
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
-						(getUserInboxByInvolvedUser(searchForUserId, processInstance.getProcessInstanceId()));
-					// FIXME: Should getUserInboxByInvolvedUser be used here? should tartedByUserId be used?
+						(getUserInboxByInvolvedUser(searchForUserId, processInstance.getId()));
+					// FIXME: Should getUserInboxByInvolvedUser be used here? should startedByUserId be used?
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -790,12 +762,11 @@ public class ActivitiEngineService {
 	// FIXME: sortOrder is always asc for the moment.
 	// FIXME: filter is not used for the moment.
 	// FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
-	// FIXME: setProcessInstanceUuid uses processInstanceId but could use id? This differs for subprocesses and
-	// embedded processes. This has to be clear but it is not for the moment.
-	// FIXME: set status is hardcoded to PENDING.	
+	// FIXME: set status is hardcoded to PENDING.
+	// FIXME: userId is not used for filtering on UserInbox (setActivities). Wrong?
 
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
-			List<String> uuids, int fromIndex, int pageSize, String sortBy,
+			List<String> executionIds, int fromIndex, int pageSize, String sortBy,
 			String sortOrder, String filter, String userId) {
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 		
@@ -815,13 +786,17 @@ public class ActivitiEngineService {
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			
-			// convert list to set
+			// convert to a set of processInstanceIds
 			Set<String> processInstanceIds = new HashSet<String>();
-			if(uuids != null) {
-				for(String uuid : uuids) {
-					processInstanceIds.add(uuid);
+			String processInstanceId = null;
+			if(executionIds != null) {
+				for(String executionId : executionIds) {
+					processInstanceId = engine.getRuntimeService().createExecutionQuery().
+							executionId(executionId).singleResult().getProcessInstanceId();
+					
+					processInstanceIds.add(processInstanceId);	
 				}
-			}
+			}	
 			
 			List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery().
 				processInstanceIds(processInstanceIds).orderByProcessInstanceId().asc().
@@ -835,16 +810,16 @@ public class ActivitiEngineService {
 				for(ProcessInstance processInstance : processInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 					
-					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
 					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
 					processInstanceListItem.setStartDate(null); // FIXME
-					processInstanceListItem.setStartedBy(""); // FIXME: Could be fetched from LinkedIdentity if it was set.
+					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId())); 
 					processInstanceListItem.setStartedByFormPath("");
 					processInstanceListItem.setEndDate(null); // FIXME
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
-						(getUserInboxByProcessInstanceId(processInstance.getProcessInstanceId()));
+						(getUserInboxByProcessInstanceId(processInstance.getId()));
 					// FIXME: Should getUserInboxByInvolvedUser be used here? should tartedByUserId be used?
 					processInstanceListItems.add(processInstanceListItem);
 				}
@@ -852,47 +827,47 @@ public class ActivitiEngineService {
 				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstancesByUuids with uuids: " + uuids +
+			log.severe("Unable to getProcessInstancesByUuids with executionIds: " + executionIds +
 					" by userId: " + userId);
 			pagedProcessInstanceSearchResult = null;	
 		}
 		return pagedProcessInstanceSearchResult;
 	}
 
-	public boolean createUser(String uuid) {
+	public boolean createUser(String userId) {
 		boolean successful = false;
 		
 		try {
-			User user = engine.getIdentityService().newUser(uuid);
+			User user = engine.getIdentityService().newUser(userId);
 			engine.getIdentityService().saveUser(user);
 			successful = true;
 		} catch (Exception e) {
-			log.severe("Could not createUser with uuid: " + uuid +  " exception: " + e);
+			log.severe("Could not createUser with userId: " + userId +  " exception: " + e);
 		}
 		
 		return successful;
 	}
 
-	public ActivityWorkflowInfo unassignTask(String activityInstanceUuid) {
+	public ActivityWorkflowInfo unassignTask(String taskId) {
 		ActivityWorkflowInfo activityWorkflowInfo = null;
 		
 		try {
-			Task task = engine.getTaskService().createTaskQuery().taskId(activityInstanceUuid).singleResult();
+			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 			task.setAssignee(null);
 			engine.getTaskService().saveTask(task);
 			
 			activityWorkflowInfo = new ActivityWorkflowInfo();
 			activityWorkflowInfo.setPriority(task.getPriority());
 			activityWorkflowInfo.setAssignedUser(null);
-			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(activityInstanceUuid));	
+			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));	
 		} catch (Exception e) {
-			log.severe("Unable to assignTask with taskIs: " + activityInstanceUuid);
+			log.severe("Unable to assignTask with taskId: " + taskId);
 		}
 		
 		return activityWorkflowInfo;
 	}
 	
-	// FIXME: Label for ProcessDefinitionInfo is not set!
+	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe key can be used?
 	
 	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
 		HashSet<ProcessDefinitionInfo> processDefinitions = new HashSet<ProcessDefinitionInfo>();
@@ -912,17 +887,17 @@ public class ActivitiEngineService {
 		return processDefinitions;
 	}
 	
-	// FIXME: Label for ProcessDefinitionInfo is not set!
-	// FIXME: Label for ActivityDefinitionInfo is not set!
+	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe key can be used?
+	// FIXME: Label for ActivityDefinitionInfo is not set! Maybe description can be used? 
 
 	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
-			String processDefinitionUUIDStr) {
+			String processDefinitionId) {
 		
 		ProcessDefinitionDetails processDefinitionDetails = null;
 		
 		try {
 			 ProcessDefinition processDefinition = 
-				engine.getRepositoryService().getProcessDefinition(processDefinitionUUIDStr);
+				engine.getRepositoryService().getProcessDefinition(processDefinitionId);
 			
 			 if(processDefinition != null) {
 				 processDefinitionDetails = new ProcessDefinitionDetails();
@@ -955,25 +930,27 @@ public class ActivitiEngineService {
 				 processDefinitionDetails.setActivities(activityDefinitionInfos);
 			 }
 		} catch (Exception e) {
-			log.severe("Unable to getProcessDefinitionDetailsByUuid with processDefinitionUUIDStr: " +
-				processDefinitionUUIDStr + " execption: " + e);
+			log.severe("Unable to getProcessDefinitionDetailsByUuid with processDefinitionId: " +
+					processDefinitionId + " execption: " + e);
 			processDefinitionDetails = null;
 		}
 		
 		return processDefinitionDetails;
 	}
 
-	public String getParentProcessInstanceUuid(String processInstanceUuid) {
-		String parentExecId = null;
+	public String getParentProcessInstanceUuid(String executionId) {
+		
+		String parentId = null;
 
 		try {
-			parentExecId = engine.getRuntimeService().createExecutionQuery().
-					executionId(processInstanceUuid).singleResult().getParentId();
+			parentId = engine.getRuntimeService().createExecutionQuery().
+					executionId(executionId).singleResult().getParentId();
 		} catch (Exception e) {
-			log.severe("Unable to getParentProcessInstanceUuid: " + e);
+			log.severe("Unable to getParentProcessInstanceUuid with exectionId: " + executionId +
+					" exception: "+ e);
 		}
 
-		return parentExecId;
+		return parentId;
 	}
 
 	// FIXME: No idea for the moment how to solve this...
@@ -1118,6 +1095,23 @@ public class ActivitiEngineService {
 		System.exit(0);
 	}
 	
+	private Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
+		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
+		
+		List<Task> tasks = engine.getTaskService().createTaskQuery().processInstanceId(processInstanceId).
+			orderByTaskCreateTime().asc().list();
+		
+		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
+		
+		if(inboxTaskItemList != null) {
+			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
+				result.add(inboxTaskItem);
+			}
+		}
+		
+		return result;
+	}
+	
 	private HashSet<UserInfo> getCandidatesByTaskId(String taskId) {
 		HashSet<UserInfo> candidates = new HashSet<UserInfo>();
 		List<IdentityLink> identityLinks = 
@@ -1185,7 +1179,7 @@ public class ActivitiEngineService {
 
     // Methods below is used for testing and developement for the moment
     
-	public void listDeployedProcesses() {
+	private void listDeployedProcesses() {
 		List<ProcessDefinition> processes = engine.getRepositoryService().createProcessDefinitionQuery().list();
 		for (ProcessDefinition process : processes) {
 			log.severe("Process: " + process.getId() + ": " + process + "START");
@@ -1201,7 +1195,7 @@ public class ActivitiEngineService {
 		}
 	}
 	
-	public List<String> getDeployedDeploymentIds() {
+	private List<String> getDeployedDeploymentIds() {
 		List<Deployment> deployments = engine.getRepositoryService().createDeploymentQuery().list();
 		ArrayList<String> deploymentIds = new ArrayList<String>();
 		for (Deployment deployment : deployments) {
@@ -1210,11 +1204,11 @@ public class ActivitiEngineService {
 		return deploymentIds;
 	}
 	
-	public void deleteDeploymentByDeploymentId(String deploymentId, boolean cascade) {
+	private void deleteDeploymentByDeploymentId(String deploymentId, boolean cascade) {
 		engine.getRepositoryService().deleteDeployment(deploymentId, cascade);
 	}
 	
-	public void logTableSizes() {
+	private void logTableSizes() {
 		Map<String, Long> counts = engine.getManagementService().getTableCount();
 		
 		for (String key : counts.keySet()) {
@@ -1235,7 +1229,7 @@ public class ActivitiEngineService {
 		return engineConfig;
 	}
 	
-	public Deployment deployBpmn(String bpmnFile) {
+	private Deployment deployBpmn(String bpmnFile) {
 		RepositoryService repositoryService = engine.getRepositoryService();
 		Deployment deployment = null;
 		
@@ -1250,7 +1244,7 @@ public class ActivitiEngineService {
 		return deployment;
 	}
 	
-	public ProcessInstance startProcessInstanceByKey(String key, Map<String, Object> variables) {
+	private ProcessInstance startProcessInstanceByKey(String key, Map<String, Object> variables) {
 		RuntimeService runtimeService = engine.getRuntimeService();
 		ProcessInstance processInstance = null;
 		
