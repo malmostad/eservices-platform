@@ -277,13 +277,6 @@
                       <context>/site</context>
                     </properties>
                   </deployable>
-                  <deployable>
-                    <location>${project.basedir}/../coordinatrice/target/coordinatrice.war</location>
-                    <type>war</type>
-                    <properties>
-                      <context>/coordinatrice</context>
-                    </properties>
-                  </deployable>
                 </deployables>
                 <configfiles>
                   <configfile>
