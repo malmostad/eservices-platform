@@ -24,12 +24,12 @@
       name="oxf.fr.persistence.exist.exist-uri" 
       value="http://orbeon:orb@localhost:8080/exist/rest/db/orbeon-pe/fr"/>
 
-  <property as="xs:string" name="oxf.fr.detail.buttons.*.*" value="clear save workflow-send"/>
-  <property as="xs:string" name="oxf.fr.detail.buttons.anonymous.*" value="workflow-send"/>
-  <property as="xs:string" name="oxf.fr.detail.buttons.start.demo-ansokan" value="workflow-send"/>
-  <property as="xs:string" name="oxf.fr.detail.buttons.miljoforvaltningen.anmalan-hemkompostering" value="workflow-send"/>
+  <property as="xs:string" name="oxf.fr.detail.buttons.*.*" value="clear save-draft send"/>
+  <property as="xs:string" name="oxf.fr.detail.buttons.anonymous.*" value="send"/>
+  <property as="xs:string" name="oxf.fr.detail.buttons.start.demo-ansokan" value="send"/>
+  <property as="xs:string" name="oxf.fr.detail.buttons.miljoforvaltningen.anmalan-hemkompostering" value="send"/>
   
-  <property as="xs:string" name="oxf.fr.detail.buttons.malmo.*" value="clear save"/>
+  <property as="xs:string" name="oxf.fr.detail.buttons.malmo.*" value="clear save-final"/>
 
   <property as="xs:string" name="oxf.fr.detail.buttons.view.*.*" value=""/>
   <property as="xs:string" name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
@@ -42,18 +42,15 @@
   <!-- HTTP method to use to navigate to the error page -->
   <property as="xs:string" name="oxf.fr.detail.send.error.method.*.*" value="get"/>
   
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.labels.submit-document"
-	    value="Skicka"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.labels.clear-document"
-	    value="Rensa"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.labels.save-document"
-                          value="Spara"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.send" value="Skicka"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.clear" value="Rensa"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.save-draft" value="Spara"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.save-final" value="Spara"/>
   
-  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.labels.submit-document"
-	    value="Skicka"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.labels.clear-document"
-	    value="Rensa"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.labels.save-document"
-	    value="Spara"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.send" value="Skicka"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.clear" value="Rensa"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.save-draft" value="Spara"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.save-final" value="Spara"/>
+  
   <property as="xs:boolean" name="oxf.fr.noscript-link.*.*" value="false"/>
 </properties>
