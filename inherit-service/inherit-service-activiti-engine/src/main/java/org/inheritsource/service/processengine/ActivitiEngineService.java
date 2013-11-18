@@ -102,7 +102,7 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	private Set<InboxTaskItem> getUserInboxByInvolvedUser(String involvedUserId, String executionId) {
+	private Set<InboxTaskItem> getUserInboxByInvolvedUserInProcess(String involvedUserId, String executionId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
 		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(involvedUserId).
@@ -271,7 +271,7 @@ public class ActivitiEngineService {
 		return item;
 	}
 	
-	// FIXME NOTE: If due date is not given it will always be classified as a 'atRisk'. 
+	// FIXME NOTE: If due date for a task is not given it will always be classified as a 'atRisk'. 
 	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId, int remainingDays) {
 		
@@ -597,8 +597,6 @@ public class ActivitiEngineService {
 	// FIXME: sortOrder is always asc for the moment.
 	// FIXME: filter is not used for the moment.
 	// FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
-	// FIXME: setProcessInstanceUuid uses processInstanceId but could use id? This differs for subprocesses and
-	// embedded processes. This has to be clear but it is not for the moment.
 	// FIXME: set status is hardcoded to PENDING.
 	
 	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
@@ -678,8 +676,8 @@ public class ActivitiEngineService {
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
-						(getUserInboxByInvolvedUser(startedByUserId, processInstance.getProcessInstanceId()));
-					// FIXME: Should getUserInboxByInvolvedUser be used here? should tartedByUserId be used?
+						(getUserInboxByInvolvedUserInProcess(startedByUserId, processInstance.getProcessInstanceId()));
+					// FIXME: Should getUserInboxByInvolvedUserInProcess be used here? should tartedByUserId be used?
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -697,8 +695,6 @@ public class ActivitiEngineService {
 	// FIXME: sortOrder is always asc for the moment.
     // FIXME: filter is not used for the moment.
     // FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
-	// FIXME: setProcessInstanceUuid uses processInstanceId but could use id? This differs for subprocesses and
-	// embedded processes. This has to be clear but it is not for the moment.
 	// FIXME: set status is hardcoded to PENDING.
 	
 	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(
@@ -743,8 +739,8 @@ public class ActivitiEngineService {
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
-						(getUserInboxByInvolvedUser(searchForUserId, processInstance.getId()));
-					// FIXME: Should getUserInboxByInvolvedUser be used here? should startedByUserId be used?
+						(getUserInboxByInvolvedUserInProcess(searchForUserId, processInstance.getId()));
+					// FIXME: Should getUserInboxByInvolvedUserInProcess be used here? should startedByUserId be used?
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
