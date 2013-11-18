@@ -1028,7 +1028,7 @@ public class BonitaEngineServiceImpl {
 					loadActivityInstanceLogItem(ai, (ActivityInstanceLogItem)result);
 				}
 			}
-			else {
+			else if (ai.getState().equals(ActivityState.READY)) {
 				// pending activity
 				if (ai.getType() == ActivityDefinition.Type.Human) { // perhaps show automatic tasks too?
 					result = new ActivityInstancePendingItem();
