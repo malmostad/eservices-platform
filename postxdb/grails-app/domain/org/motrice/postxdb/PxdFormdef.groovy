@@ -110,6 +110,21 @@ class PxdFormdef implements Comparable {
     "[Formdef ${path}, ${currentDraft}]"
   }
 
+  /**
+   * Bootstrap init causes this method to be used for rendering as XML
+   */
+  def toXML(xml) {
+    xml.build {
+      ref(gen: version, id)
+      created(dateCreated)
+      updated(lastUpdated)
+      app(appName)
+      form(formName)
+      uuid(uuid)
+      currentDraft(currentDraft)
+    }
+  }
+
   //-------------------- Comparable --------------------
 
   int hashCode() {

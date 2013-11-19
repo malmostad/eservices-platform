@@ -1,10 +1,12 @@
 package org.motrice.postxdb
 
 import org.springframework.dao.DataIntegrityViolationException
+import grails.converters.*
 
 /**
  * REST interface for reading the database according to the postxdb data model.
  * URL mappings begin with /postxdb/...
+ * See BootStrap for XML conversion init.
  */
 class RestPostxdbController {
   // PostxdbService injection
@@ -20,18 +22,8 @@ class RestPostxdbController {
     if (log.debugEnabled) log.debug "DEFGET(${id}): ${Util.clean(params)}, ${request.forwardURI}"
     def formdefList = postxdbService.formdefGet(id)
     if (formdefList) {
-      render(status: 200, contentType: 'text/xml', encoding: 'UTF-8') {
-	formdefs {
-	  for (f in formdefList) {
-	    formdef(dbid: f.id, version: f.version, created: f.createdr(), updated: f.updatedr()) {
-	      app(f.appName)
-	      form(f.formName)
-	      uuid(f.uuid)
-	      currentDraft(f.currentDraft)
-	    }
-	  }
-	}
-      }
+      response.status = 200
+      render formdefList as XML
     } else {
       render(status: 404, text: 'No formdef was found', contentType: 'text/plain')
     }
@@ -46,20 +38,7 @@ class RestPostxdbController {
     def map = postxdbService.formdefVerGet(id, params.uuid, params.formdef)
     response.status = map.status
     if (map.status == 200) {
-      render(contentType: 'text/xml', encoding: 'UTF-8') {
-	formdefvers {
-	  for (v in map.list) {
-	    formdefver(dbid: v.id, formdef: v.formdef.id, created: v.createdr()) {
-	      app(v.appName)
-	      form(v.formName)
-	      path(v.path)
-	      title(v.title)
-	      description(v.description)
-	      language(v.language)
-	    }
-	  }
-	}
-      }
+      render map.list as XML
     } else {
       render(contentType: 'text/plain', text: map.message)
     }
@@ -74,20 +53,8 @@ class RestPostxdbController {
     def map = postxdbService.defItemGet(params.uuid, params.formdef)
     response.status = map.status
     if (map.status == 200) {
-      render(contentType: 'text/xml', encoding: 'UTF-8') {
-	items {
-	  for (i in map.list) {
-	    item(dbid: i.id, instance: i.instance, created: i.createdr(), updated: i.updatedr()) {
-	      path(i.path)
-	      uuid(i.uuid)
-	      formDef(i.formDef)
-	      format(i.format)
-	      size(i.size)
-	      sha1(i.sha1)
-	    }
-	  }
-	}
-      }
+      map.list.each {item -> item.formref = map.formref}
+      render map.list as XML
     } else {
       render(contentType: 'text/plain', text: map.message)
     }
@@ -101,20 +68,8 @@ class RestPostxdbController {
     if (log.debugEnabled) log.debug "INSTITEM: ${Util.clean(params)}, ${request.forwardURI}"
     def itemList = postxdbService.instItemGet(params.formdefver)
     if (itemList) {
-      render(status: 200, contentType: 'text/xml', encoding: 'UTF-8') {
-	items {
-	  for (i in itemList) {
-	    item(dbid: i.id, instance: i.instance, created: i.createdr(), updated: i.updatedr()) {
-	      path(i.path)
-	      uuid(i.uuid)
-	      formDef(i.formDef)
-	      format(i.format)
-	      size(i.size)
-	      sha1(i.sha1)
-	    }
-	  }
-	}
-      }
+      response.status = 200
+      render itemList as XML
     } else {
       render(status: 404, text: 'No item found', contentType: 'text/plain')
     }

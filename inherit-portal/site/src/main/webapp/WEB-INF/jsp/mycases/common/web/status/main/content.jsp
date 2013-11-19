@@ -124,13 +124,13 @@
 		</c:if>
 		
 		<script type="text/javascript">
-		          $(".hitlist_goto_page").click(function(event) {
+		          $jq(".hitlist_goto_page").click(function(event) {
 		           event.preventDefault();
-		           var hrefPage = $(this).attr("href");
+		           var hrefPage = $jq(this).attr("href");
 		           
-		           $("#searchPanelForm  > input[name=page]").prop("value", hrefPage);
+		           $jq("#searchPanelForm  > input[name=page]").prop("value", hrefPage);
 		
-		            $("#searchPanelForm").submit();
+		            $jq("#searchPanelForm").submit();
 		          });
 		</script>
 		

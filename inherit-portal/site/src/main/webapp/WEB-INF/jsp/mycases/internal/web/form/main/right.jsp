@@ -246,7 +246,9 @@
 
 <!-- jquery scripts for dialogs etc TODO move to separate js file -->
 <script type="text/javascript" charset="utf-8">
-	$(".add-button").button({
+	
+	
+	$jq(".add-button").button({
 		color : 'green',
 		icons : {
 			primary : 'ui-icon-circle-plus',
@@ -261,11 +263,11 @@
 		console.log("refreshTags TODO, asynkront anrop lÃ¤gger till taggar sÃ¥ tÃ¤nk ut vettigaste sÃ¤ttet att Ã¥terkoppla");
 	}
 
-	$("#myTags").tagit({
+	$jq("#myTags").tagit({
 	       onTagClicked: function(event, ui) {
              // do something special
-             $("#searchTagForm input[name='searchStr']").val(ui.tagLabel);
-             $("#searchTagForm").submit();
+             $jq("#searchTagForm input[name='searchStr']").val(ui.tagLabel);
+             $jq("#searchTagForm").submit();
            },
            beforeTagRemoved: function(event, ui) {
              // do something special
@@ -297,7 +299,7 @@
            }
         });
 
-	$("#dialog-comment-case").dialog(
+	$jq("#dialog-comment-case").dialog(
 			{
 				autoOpen : false,
 				height : 300,
@@ -305,24 +307,32 @@
 				modal : true,
 				buttons : {
 					"Kommentera" : function(data) {
-						siteAjaxPost($("#addCommentForm").attr('action'), $(
+						siteAjaxPost($jq("#addCommentForm").attr('action'), $jq(
 								"#addCommentForm").serialize(), function() {
 							siteAjaxPost("/site/restservices/site-ajax/getCommentFeed", {activityInstanceUuid: '${activity.activityInstanceUuid}'}, function(data) {
 							    refreshCommentFeed(data);
 							});
-							$("#dialog-comment-case").dialog("close");
+							$jq("#dialog-comment-case").dialog("close");
 						});
 					},
 					Cancel : function() {
-						$(this).dialog("close");
+						$jq(this).dialog("close");
 					}
 				},
+				open: function() {
+				    $jq("#dialog-comment-case").keypress(function(e) {
+				      if (e.keyCode == $jq.ui.keyCode.ENTER) {
+				        $jq(this).parent().find("button:eq(0)").trigger("click");
+				        return false;
+				      }
+				    });
+				},
 				close : function() {
-					allFields.val("").removeClass("ui-state-error");
+					$jq("#addCommentForm input[name=comment]").val('');
 				}
 			});
 
-	$("#dialog-edit-candidates").dialog({
+	$jq("#dialog-edit-candidates").dialog({
 		autoOpen : false,
 		height : 500,
 		width : 400,
@@ -334,11 +344,11 @@
 				bValid = bValid && checkLength(name, "Namn", 1, 255);
 				if (bValid) {
 
-					$(this).dialog("close");
+					$jq(this).dialog("close");
 				}
 			},
 			Cancel : function() {
-				$(this).dialog("close");
+				$jq(this).dialog("close");
 			}
 		},
 		close : function() {
@@ -346,15 +356,15 @@
 		}
 	});
 
-	$("#add-candidate").click(function() {
-		$("#dialog-edit-candidates").dialog("open");
+	$jq("#add-candidate").click(function() {
+		$jq("#dialog-edit-candidates").dialog("open");
 	});
 
-	$("#add-comment").click(function() {
-		$("#dialog-comment-case").dialog("open");
+	$jq("#add-comment").click(function() {
+		$jq("#dialog-comment-case").dialog("open");
 	});
 
-	$(".remove-candidate-btn").button({
+	$jq(".remove-candidate-btn").button({
 		color : 'red',
 		icons : {
 			primary : 'ui-icon-trash',
@@ -362,7 +372,7 @@
 		}
 	});
 
-	$(".add-candidate-btn").button({
+	$jq(".add-candidate-btn").button({
 		color : 'green',
 		icons : {
 			primary : 'ui-icon-circle-plus',
@@ -370,14 +380,14 @@
 		}
 	});
 
-	$(".add-tag-btn").button({
+	$jq(".add-tag-btn").button({
 		icons : {
 			primary : 'ui-icon-circle-plus',
 			secondary : null
 		}
 	});
-	$(".edit-tag-btn").button();
-	$(".remove-tag-btn").button({
+	$jq(".edit-tag-btn").button();
+	$jq(".remove-tag-btn").button({
 		icons : {
 			primary : 'ui-icon-trash',
 			secondary : null
@@ -387,7 +397,7 @@
 	/*
 	 * Button and links to act on in page
 	 */
-	$("#assign-to-me").click(function() {
+	$jq("#assign-to-me").click(function() {
 		siteAjaxPost("/site/restservices/site-ajax/assignTask", {
 			activityInstanceUuid : '${activity.activityInstanceUuid}',
 			action : 'assign',
@@ -396,7 +406,7 @@
 			refreshActivityWorkflowInfo(data);
 		});
 	});
-	$("#unassign").click(function() {
+	$jq("#unassign").click(function() {
 		siteAjaxPost("/site/restservices/site-ajax/assignTask", {
 			activityInstanceUuid : '${activity.activityInstanceUuid}',
 			action : 'unassign',
@@ -406,10 +416,10 @@
 		});
 	});
 
-	$("#activity-priority").change(function() {
+	$jq("#activity-priority").change(function() {
 		siteAjaxPost("/site/restservices/site-ajax/setActivityPriority", {
 			activityInstanceUuid : '${activity.activityInstanceUuid}',
-			priority : $("select option:selected").val()
+			priority : $jq("select option:selected").val()
 		}, function(data) {
 			refreshActivityWorkflowInfo(data);
 		});
@@ -421,25 +431,25 @@
 	function refreshActivityWorkflowInfo(info) {
 		var str = "";
 
-		if (!$.isEmptyObject(info) && !$.isEmptyObject(info.assignedUser) && !$.isEmptyObject(info.assignedUser.uuid)) {
+		if (!$jq.isEmptyObject(info) && !$jq.isEmptyObject(info.assignedUser) && !$jq.isEmptyObject(info.assignedUser.uuid)) {
 			/* Assigned task */
 			if (info.assignedUser.uuid == '${user.uuid}') {
 				/* Assigned to me */
 				str = "Jag är tilldelad att utföra aktiviteten";
-				$("#assign-to-me").hide();
-				$("#unassign").show();
-				$("#edit-candidates").hide();
+				$jq("#assign-to-me").hide();
+				$jq("#unassign").show();
+				$jq("#edit-candidates").hide();
 			} else {
 				/* Assigned to someone else */
 				str = info.assignedUser.label
 						+ " är tilldelad att utföra aktiviteten";
-				$("#assign-to-me").show();
-				$("#unassign").show();
-				$("#edit-candidates").hide();
+				$jq("#assign-to-me").show();
+				$jq("#unassign").show();
+				$jq("#edit-candidates").hide();
 			}
 		} else {
 			/* not assigned i.e. list candidates */
-			if ($.isEmptyObject(info) || $.isEmptyObject(info.candidates)) {
+			if ($jq.isEmptyObject(info) || $jq.isEmptyObject(info.candidates)) {
 				str = "Ingen kandidat till att utföra aktiviteten";
 			} else {
 				if (info.candidates.length>0 && info.candidates.length < 4) {
@@ -455,24 +465,24 @@
 				}
 				str += " är kandidater till att utföra aktiviteten";
 			}
-			$("#assign-to-me").show();
-			$("#unassign").hide();
-			$("#edit-candidates").show();
+			$jq("#assign-to-me").show();
+			$jq("#unassign").hide();
+			$jq("#edit-candidates").show();
 		}
 
-		$("#activity-candidates").text(str);
-		$("#activity-priority").val(info.priority);
+		$jq("#activity-candidates").text(str);
+		$jq("#activity-priority").val(info.priority);
 	}
 	
 	function refreshCommentFeed(comments) {
-	   $("#commentfeed").empty();
+	   $jq("#commentfeed").empty();
        for (var i=0;i<comments.length;i++) {
     	   var commentDate = new Date(comments[i].timestamp);
-	       $("#commentfeed").append("<li><b>" + $.datepicker.formatDate('yy-mm-dd', commentDate) + " (" + comments[i].activityLabel + ") " + comments[i].user.label + ": </b><br/>" + comments[i].message + "</li>");
+	       $jq("#commentfeed").append("<li><b>" + $jq.datepicker.formatDate('yy-mm-dd', commentDate) + " (" + comments[i].activityLabel + ") " + comments[i].user.label + ": </b><br/>" + comments[i].message + "</li>");
 	   }
 	}
 	
-	$(document).ready(function() {
+	$jq(document).ready(function() {
 	
 		siteAjaxPost("/site/restservices/site-ajax/getActivityWorkflowInfo", {
 			activityInstanceUuid : '${activity.activityInstanceUuid}'
