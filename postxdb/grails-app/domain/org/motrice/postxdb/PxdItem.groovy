@@ -158,7 +158,7 @@ class PxdItem {
       created(dateCreated)
       path(path)
       uuid(uuid)
-      formdef(formDef)
+      formpath(formDef)
       format(format)
       size(size)
       sha1(sha1)
