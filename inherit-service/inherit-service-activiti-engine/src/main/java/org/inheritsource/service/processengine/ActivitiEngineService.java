@@ -175,16 +175,26 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getExecutionId());
-			item.setRootProcessDefinitionUuid(task.getProcessDefinitionId()); // TODO fix support for sub processes
-			item.setRootProcessInstanceUuid(task.getProcessInstanceId()); // TODO fix support for sub processes
 			item.setProcessLabel(""); // FIXME
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
+			item.setRootProcessInstanceUuid(task.getProcessInstanceId());
+
+			List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery()
+				.processInstanceId(task.getProcessInstanceId()).list();
+			
+			if(processInstances != null) {
+				for(ProcessInstance pI : processInstances) {
+					if(pI.getId().equals(pI.getProcessInstanceId())) {
+						item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
+					}
+				}
+			} else {
+				item.setRootProcessDefinitionUuid(""); 
+			}
 		}
 		return item;
 	}
-	
-	// FIXME: label fields are not set
 	
 	private InboxTaskItem historicTask2InboxTaskItem(HistoricTaskInstance task) {
 		InboxTaskItem item = null;
@@ -201,32 +211,49 @@ public class ActivitiEngineService {
 			item.setProcessLabel(""); // FIXME
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
+			item.setRootProcessInstanceUuid(task.getProcessInstanceId());
+			
+			// FIXME: Is this correct usage of HistoricActivityInstance
+			List<HistoricActivityInstance> historicActivityInstances = engine.getHistoryService().
+				createHistoricActivityInstanceQuery().processInstanceId(task.getProcessInstanceId()).list();
+				
+			if(historicActivityInstances != null) {
+				for(HistoricActivityInstance aI : historicActivityInstances) {
+					if(aI.getExecutionId().equals(aI.getProcessInstanceId())) {
+						item.setRootProcessDefinitionUuid(aI.getProcessDefinitionId()); 
+					}
+				}
+			} else {
+				item.setRootProcessDefinitionUuid(""); 
+			}
 		}
 		return item;
 	}
 	
-	// FIXME: Should historic tasks be returned?
-	
 	public String getActivityInstanceUuid(String executionId, String taskName) {
 		String taskId = null;
-		Task task = null;
 		
 		try {
-			task = engine.getTaskService().createTaskQuery().executionId(executionId).
-					taskName(taskName).singleResult();
+			Task task = engine.getTaskService().createTaskQuery().executionId(executionId).
+				taskName(taskName).singleResult();
+			
+			if(task != null) {
+				taskId = task.getId();
+			} else {
+				HistoricTaskInstance historicTask = engine.getHistoryService().
+					createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+				
+				if(historicTask != null) {
+					taskId = historicTask.getId();
+				}
+			}
 		} catch (Exception e) {
 			log.severe("Unable to getActivityInstanceUuid with executionId: " + executionId +
 					" and taskName: " + taskName);
 		}
-		
-		if(task != null) {
-			taskId = task.getId();
-		}
-		
+			
 		return taskId;
 	}
-
-	// FIXME: Here is historicTask searched if no current task was found! Wrong?
 	
 	public ActivityInstanceItem getActivityInstanceItem(String taskId) {
 		ActivityInstanceItem result = null;
@@ -379,24 +406,22 @@ public class ActivitiEngineService {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
 		try {
-
 			processInstanceDetails = new ProcessInstanceDetails();
 			
 			// Data  hard coded added first.
 			processInstanceDetails.setProcessInstanceLabel(""); // FIXME
-			processInstanceDetails.setStartDate(null);
-			processInstanceDetails.setEndDate(null);
-			processInstanceDetails.setProcessInstanceLabel(""); //FIXME
 			processInstanceDetails.setStartedByFormPath("");
 			
 			// Check if process is found among the active ones 
 			
 			Execution execution = engine.getRuntimeService().createExecutionQuery().
 				executionId(executionId).singleResult();
-
+			
 			if(execution != null) {
 				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
 				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(execution.getProcessInstanceId()));
+				processInstanceDetails.setStartDate(null);
+				processInstanceDetails.setEndDate(null);
 				
 				// Handle pendings
 				
@@ -425,6 +450,8 @@ public class ActivitiEngineService {
 					processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_FINISHED); // FIXME
 					processInstanceDetails.setStartedBy
 						(getHistoricStarterByProcessInstanceId(historicActivityInstance.getProcessInstanceId()));
+					processInstanceDetails.setStartDate(historicActivityInstance.getStartTime());
+					processInstanceDetails.setEndDate(historicActivityInstance.getEndTime());
 				} else {
 					// No process instances found at all, return null
 					return null;
@@ -447,7 +474,7 @@ public class ActivitiEngineService {
 				timeline.addAndSort(activityInstanceLogItems);
 			
 				
-				// FIXME: Should commentfeeditems be added as well+
+				// FIXME: Should commentfeeditems be added as well
 				// FIXME: If so: should only comments coupled to historic tasks be added?
 				// FIXME: Or should comments coupled to active tasks above be added as well?
 				
@@ -814,6 +841,7 @@ public class ActivitiEngineService {
 	// FIXME: set status is hardcoded to STATUS_FINISHED.
 	// FIXME: Historic identity links are coupled with processInstanceId and not executionid.
 	//        Historic id is processInstanceId ? or?
+	// FIXME: Should HistoricActivityInstance be used instead?
 	
 	private PagedProcessInstanceSearchResult historicProcessInstancesStartedBy(
 			String startedByUserId, int fromIndex, int pageSize,
@@ -849,7 +877,7 @@ public class ActivitiEngineService {
 				for(HistoricProcessInstance pIWithUserInvolved : processInstancesWithUserInvolved) {
 					// FIXME: Better if processInstanceId could be used but maybe impossible for historic data
 					String starterUserId = getHistoricStarterByProcessInstanceId(pIWithUserInvolved.getId());
-					
+
 					if(starterUserId.equals(startedByUserId)) {
 						processInstances.add(pIWithUserInvolved);
 					}
@@ -884,7 +912,7 @@ public class ActivitiEngineService {
 			
 				for(HistoricProcessInstance processInstance : processInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
-
+					
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
 					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_FINISHED);
 					processInstanceListItem.setStartDate(null); // FIXME
@@ -915,6 +943,7 @@ public class ActivitiEngineService {
     // FIXME: filter is not used for the moment.
     // FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
 	// FIXME: set status is hardcoded to PENDING.
+	// FIXME: Historic data is not implemented
 	
 	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(
 			String searchForUserId, int fromIndex, int pageSize,
@@ -979,6 +1008,7 @@ public class ActivitiEngineService {
 	// FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
 	// FIXME: set status is hardcoded to PENDING.
 	// FIXME: userId is not used for filtering on UserInbox (setActivities). Wrong?
+	// FIXME: Historic data is not implemented
 
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
 			List<String> executionIds, int fromIndex, int pageSize, String sortBy,
@@ -1153,6 +1183,8 @@ public class ActivitiEngineService {
 		return processDefinitionDetails;
 	}
 
+	// FIXME: Historic data is not implemented
+	
 	public String getParentProcessInstanceUuid(String executionId) {
 		
 		String parentId = null;
