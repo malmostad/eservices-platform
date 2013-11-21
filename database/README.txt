@@ -10,7 +10,7 @@ Delete a database:
 sudo sh -c "./delete_database.sh"
 sudo sh -c "./delete_database.sh <dbname>"
 
-Create a user: (lirar inte på Björns burk)
+Create a user:
 sudo sh -c "./create_user.sh"
 sudo sh -c "./create_user.sh <user>"
 
