@@ -452,7 +452,9 @@ public class TaskFormService {
 				details.setStartedByFormPath(startedByForm.getFormPath());
 			}
 			
-			details.getTimeline().addAndSort(startLogItem);
+			if(startLogItem != null) {
+				details.getTimeline().addAndSort(startLogItem);
+			}
 		}
 	}
 
