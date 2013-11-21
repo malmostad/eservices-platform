@@ -41,8 +41,10 @@ public class InboxTaskItem implements Serializable, Comparable{
 	// internal taskform-engine id, do not store, use in session communication 
 	Long processActivityFormInstanceId;
 
+	String rootProcessInstanceUuid;
 	String processInstanceUuid;
 	String taskUuid;
+	String rootProcessDefinitionUuid;
 	String processDefinitionUuid;
 	String activityDefinitionUuid;
 	
@@ -97,6 +99,14 @@ public class InboxTaskItem implements Serializable, Comparable{
 		this.processActivityFormInstanceId = processActivityFormInstanceId;
 	}
 	
+	public String getRootProcessInstanceUuid() {
+		return rootProcessInstanceUuid;
+	}
+
+	public void setRootProcessInstanceUuid(String rootProcessInstanceUuid) {
+		this.rootProcessInstanceUuid = rootProcessInstanceUuid;
+	}
+
 	public String getProcessInstanceUuid() {
 		return processInstanceUuid;
 	}
@@ -135,6 +145,14 @@ public class InboxTaskItem implements Serializable, Comparable{
 		return result;
 	}
 	
+	public String getRootProcessDefinitionUuid() {
+		return rootProcessDefinitionUuid;
+	}
+
+	public void setRootProcessDefinitionUuid(String rootProcessDefinitionUuid) {
+		this.rootProcessDefinitionUuid = rootProcessDefinitionUuid;
+	}
+
 	public String getProcessDefinitionUuid() {
 		return processDefinitionUuid;
 	}
@@ -162,7 +180,6 @@ public class InboxTaskItem implements Serializable, Comparable{
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -196,13 +213,21 @@ public class InboxTaskItem implements Serializable, Comparable{
 				+ ((processLabel == null) ? 0 : processLabel.hashCode());
 		result = prime
 				* result
+				+ ((rootProcessDefinitionUuid == null) ? 0
+						: rootProcessDefinitionUuid.hashCode());
+		result = prime
+				* result
+				+ ((rootProcessInstanceUuid == null) ? 0
+						: rootProcessInstanceUuid.hashCode());
+		result = prime
+				* result
 				+ ((startedByFormPath == null) ? 0 : startedByFormPath
 						.hashCode());
 		result = prime * result
 				+ ((taskUuid == null) ? 0 : taskUuid.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -258,6 +283,18 @@ public class InboxTaskItem implements Serializable, Comparable{
 				return false;
 		} else if (!processLabel.equals(other.processLabel))
 			return false;
+		if (rootProcessDefinitionUuid == null) {
+			if (other.rootProcessDefinitionUuid != null)
+				return false;
+		} else if (!rootProcessDefinitionUuid
+				.equals(other.rootProcessDefinitionUuid))
+			return false;
+		if (rootProcessInstanceUuid == null) {
+			if (other.rootProcessInstanceUuid != null)
+				return false;
+		} else if (!rootProcessInstanceUuid
+				.equals(other.rootProcessInstanceUuid))
+			return false;
 		if (startedByFormPath == null) {
 			if (other.startedByFormPath != null)
 				return false;
@@ -270,7 +307,7 @@ public class InboxTaskItem implements Serializable, Comparable{
 			return false;
 		return true;
 	}
-	
+
 	@Override
 	public int compareTo(Object o) {
 		int result = -1;

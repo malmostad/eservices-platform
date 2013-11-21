@@ -101,7 +101,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 			if (startForm != null) {
 				processLabel = startForm.getTitle();
 			}
-		} catch (ObjectBeanManagerException e) {
+		} catch (Exception e) {
 			// It is ok that no label can be found in jcr, log exception and continue
 			log.warn("Error while searching for start form with path=[" + startFormContentPath + "] Exception: " + e);
 		}

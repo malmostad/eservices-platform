@@ -479,21 +479,23 @@ public class BonitaEngineServiceImpl {
 
 			LightProcessInstance pi = (LightProcessInstance)o; 
 			
-			if (InstanceState.FINISHED.equals(pi.getInstanceState()) && "FINISHED".equalsIgnoreCase(filter)) {
-				if (numberOfHits>=fromIndex && result.getHits().size()<pageSize) {
-					ProcessInstanceListItem item = new ProcessInstanceListItem();
-					loadProcessInstanceBriefProperties(pi, item);
-					result.getHits().add(item);
+			if (pi.getRootInstanceUUID()==null || pi.getProcessInstanceUUID().getValue().equals(pi.getRootInstanceUUID().getValue())) {
+				if (InstanceState.FINISHED.equals(pi.getInstanceState()) && "FINISHED".equalsIgnoreCase(filter)) {
+					if (numberOfHits>=fromIndex && result.getHits().size()<pageSize) {
+						ProcessInstanceListItem item = new ProcessInstanceListItem();
+						loadProcessInstanceBriefProperties(pi, item);
+						result.getHits().add(item);
+					}
+					numberOfHits++;
 				}
-				numberOfHits++;
-			}
-			else if (InstanceState.STARTED.equals(pi.getInstanceState()) && "STARTED".equalsIgnoreCase(filter)) {
-				if (numberOfHits>=fromIndex && result.getHits().size()<pageSize) {
-					ProcessInstanceListItem item = new ProcessInstanceListItem();
-					loadProcessInstanceBriefProperties(pi, item);
-					result.getHits().add(item);
+				else if (InstanceState.STARTED.equals(pi.getInstanceState()) && "STARTED".equalsIgnoreCase(filter)) {
+					if (numberOfHits>=fromIndex && result.getHits().size()<pageSize) {
+						ProcessInstanceListItem item = new ProcessInstanceListItem();
+						loadProcessInstanceBriefProperties(pi, item);
+						result.getHits().add(item);
+					}
+					numberOfHits++;
 				}
-				numberOfHits++;
 			}
 		}
 		result.setFromIndex(fromIndex);
@@ -783,20 +785,30 @@ public class BonitaEngineServiceImpl {
 			//log.severe("loading brief properties: ");
 			loadProcessInstanceBriefProperties(pi, result);
 			//log.severe("brief properties: " + result);
-			Set<ActivityInstance> ais = pi.getActivities();
-			//log.severe("ais count: " + (ais != null ? ais.size() : "NONE"));
-			for (ActivityInstance ai : ais) {
-				//log.severe("call createActivityInstanceItem"); 
-				ActivityInstanceItem item = createActivityInstanceItem(ai);
-				//log.severe("item createActivityInstanceItem=" + item); 
-				if (item != null) {
-					result.addActivityInstanceItem(item);
-				}
-			}
+			appendActivityInstanceItems(result, pi);
 			// removed comments from timeline....think about it...  loadProcessInstanceCommentFeed(pi, result);
 		}
 		
 		return result;
+	}
+	
+	private void appendActivityInstanceItems(ProcessInstanceDetails details, ProcessInstance pi) throws Exception {
+		Set<ActivityInstance> ais = pi.getActivities();
+		//log.severe("ais count: " + (ais != null ? ais.size() : "NONE"));
+		for (ActivityInstance ai : ais) {
+			//log.severe("call createActivityInstanceItem"); 
+			ActivityInstanceItem item = createActivityInstanceItem(ai);
+			//log.severe("item createActivityInstanceItem=" + item); 
+			if (item != null) {
+				details.addActivityInstanceItem(item);
+			}
+		}
+		
+		Set<ProcessInstanceUUID> childPis = pi.getChildrenInstanceUUID();
+		for (ProcessInstanceUUID childPiUuid : childPis) {
+			ProcessInstance childPi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(childPiUuid);
+			appendActivityInstanceItems(details, childPi);
+		}
 	}
 	
 	public List<CommentFeedItem> getProcessInstanceCommentFeedByProcess(String processInstanceUuid) {
@@ -1010,16 +1022,18 @@ public class BonitaEngineServiceImpl {
 			//log.severe("BPMN activity uuid: " + ai.getActivityInstanceId() + " label=" + ai.getActivityLabel());
 			if (ai.getState().equals(ActivityState.FINISHED)) {
 				// Finished activity 
-				if (ai.getType() == ActivityDefinition.Type.Human) {
+				if (ai.getType() == ActivityDefinition.Type.Human) { // perhaps show automatic tasks too?
 					// only manual activities
 					result = new ActivityInstanceLogItem();
 					loadActivityInstanceLogItem(ai, (ActivityInstanceLogItem)result);
 				}
 			}
-			else {
+			else if (ai.getState().equals(ActivityState.READY)) {
 				// pending activity
-				result = new ActivityInstancePendingItem();
-				loadActivityInstancePendingItem(ai, (ActivityInstancePendingItem)result);
+				if (ai.getType() == ActivityDefinition.Type.Human) { // perhaps show automatic tasks too?
+					result = new ActivityInstancePendingItem();
+					loadActivityInstancePendingItem(ai, (ActivityInstancePendingItem)result);
+				}
 			}
 			loadActivityInstanceItem(ai, result);
 		}
@@ -1128,8 +1142,14 @@ public class BonitaEngineServiceImpl {
 		taskItem.setActivityDefinitionUuid(activity.getActivityDefinitionUUID().getValue());
 		taskItem.setProcessDefinitionUuid(activity.getProcessDefinitionUUID().getValue());
 		
+		
+		taskItem.setRootProcessDefinitionUuid(getProcessDefinitionUuidByInstanceUuid(activity.getRootInstanceUUID()));
+		taskItem.setRootProcessInstanceUuid(activity.getRootInstanceUUID().getValue());
+		
 		return taskItem;
 		
 	}
+	
+	
 
 }

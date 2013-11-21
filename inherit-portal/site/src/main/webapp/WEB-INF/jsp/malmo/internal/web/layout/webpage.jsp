@@ -41,7 +41,7 @@
 	<script src="https://www.malmo.se/assets-2.0/js/malmo.js" type="text/javascript"></script>
 	<script src="https://www.malmo.se/assets-2.0/js/internal.js" type="text/javascript"></script>
 	<!--  Malmö assets-2.0 end -->    
-    <script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script language="javascript" type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
     
     <link rel="stylesheet" href="<hst:link path="/css/platform/inherit-platform.css"/>" type="text/css"/>
@@ -51,6 +51,9 @@
     <link href=""/site/js/tag-it/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
     <script type="text/javascript" src="/site/js/tag-it/js/tag-it.min.js"></script>
     
+    <script type="text/javascript" charset="utf-8">
+    	var $jq = jQuery.noConflict();
+    </script>
   </head>
   <body>
   	<div class="wrap-all">

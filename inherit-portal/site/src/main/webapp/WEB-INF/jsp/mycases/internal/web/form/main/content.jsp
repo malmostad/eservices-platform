@@ -38,8 +38,8 @@
 
 	<c:if test="${not empty activity}">
     	<script type="text/javascript" charset="utf-8">
-		        $(document).ready(function () {
-		             $("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
+		        $jq(document).ready(function () {
+		             $jq("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
 		                if (typeof ORBEON != "undefined") { 
 		                    if (!document.all) {
 		                        ORBEON.xforms.Init.document(); 
