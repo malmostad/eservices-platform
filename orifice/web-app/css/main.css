@@ -48,7 +48,7 @@ body {
 }
 
 #grailsLogo {
-	background-color: #abbf78;
+	background-color: #FFDA73;
 }
 
 /* replace with .no-boxshadow body if you have modernizr available */
@@ -91,7 +91,13 @@ img {
 
 #grailsLogo a {
 	display: inline-block;
-	margin: 1em;
+	margin: 2px 1em;
+}
+
+#grailsLogo span.meta {
+        font-size: 150%;
+	color: #A67A00;
+	vertical-align: top;
 }
 
 .content {
@@ -108,7 +114,7 @@ img {
 }
 
 .footer {
-	background: #abbf78;
+	background: #FFDA73;
 	color: #000;
 	clear: both;
 	font-size: 0.8em;
@@ -136,7 +142,7 @@ img {
 
 .nav {
 	background-color: #efefef;
-	padding: 0.5em 0.75em;
+	padding: 0.2em 0.75em;
 	   -moz-box-shadow: 0 0 3px 1px #aaaaaa;
 	-webkit-box-shadow: 0 0 3px 1px #aaaaaa;
 	        box-shadow: 0 0 3px 1px #aaaaaa;
@@ -207,7 +213,7 @@ img {
 fieldset,
 .property-list {
 	margin: 0.6em 1.25em 0 1.25em;
-	padding: 0.3em 1.8em 1.25em;
+	padding: 0.11em 1.8em 0.99em;
 	position: relative;
 	zoom: 1;
 	border: none;
@@ -220,7 +226,7 @@ fieldset,
 }
 
 .fieldcontain {
-	margin-top: 1em;
+	margin-top: 0.55em;
 }
 
 .fieldcontain label,
@@ -418,8 +424,9 @@ tr>td:last-child, tr>th:last-child {
 }
 
 td, th {
+        font-size: 85%
 	line-height: 1.5em;
-	padding: 0.5em 0.6em;
+	padding: 0.1em 0.6em;
 	text-align: left;
 	vertical-align: top;
 }

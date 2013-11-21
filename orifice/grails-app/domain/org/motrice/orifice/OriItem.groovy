@@ -22,7 +22,7 @@ class OriItem {
   String uuid
 
   // Path of form definition to which this item belongs, if available
-  String formDef
+  String formpath
 
   // The format is either 'xml' or 'binary'
   String format
@@ -50,11 +50,16 @@ class OriItem {
     formref nullable: true
     path size: 3..400
     uuid maxSize: 200
-    formDef nullable: true, maxSize: 400
+    formpath nullable: true, maxSize: 400
     format maxSize: 80
     size range: 0..Integer.MAX_VALUE-1
     text nullable: true
     stream nullable: true
     sha1 maxSize: 400
   }
+
+  String display() {
+    "${path} (size ${size})"
+  }
+
 }

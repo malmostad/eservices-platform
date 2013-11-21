@@ -56,4 +56,8 @@ class OriFormdefVer {
     language nullable: true, maxSize: 80
   }
 
+  String display() {
+    path
+  }
+
 }

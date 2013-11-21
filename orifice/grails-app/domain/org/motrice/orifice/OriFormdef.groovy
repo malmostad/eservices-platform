@@ -44,6 +44,10 @@ class OriFormdef implements Comparable {
 
   String getPath() {"${app}/${form}"}
 
+  String display() {
+    path
+  }
+
   String toString() {
     "[Formdef ${path}, ${created}, ${currentDraft}]"
   }

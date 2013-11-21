@@ -24,6 +24,15 @@ class ViewUtilsTagLib {
   }
 
   /**
+   * Tag for displaying OriFormdefVer.published
+   */
+  def formatPublished = {attrs, body ->
+    def flag = attrs.flag
+    out << (flag? g.message(code: 'oriFormdefVer.ispublished.label') :
+	    g.message(code: 'oriFormdefVer.unpublished.label'))
+  }
+
+  /**
    * Tag for displaying Date with minute precision
    */
   def tstamp = {attrs, body ->
