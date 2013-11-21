@@ -80,7 +80,7 @@ public class InheritServiceClient {
 	XStream jsonxstream;
 	
 	public InheritServiceClient() {
-		serverBaseUrl = ConfigUtil.getConfigProperties().getProperty("rest_uri", "http://localhost:58080/restrice/");
+		serverBaseUrl = ConfigUtil.getConfigProperties().getProperty("rest_uri", "http://localhost:8080/restrice/");
 		serverBaseUrl = serverBaseUrl.trim();
 		if (!serverBaseUrl.endsWith("/")) {
 			serverBaseUrl += "/";
@@ -826,12 +826,17 @@ public class InheritServiceClient {
 		System.out.println("Testa InheritServ iceClient");
 		InheritServiceClient c = new InheritServiceClient();
 		
-		ActivityInstanceItem aIItem = c.getActivityInstanceItem("3908", "kermit");
-		System.out.println(aIItem);
+		PagedProcessInstanceSearchResult res = 
+		//c.searchProcessInstancesStartedByUser("admin", 0, 10, "started", "desc", "STARTED", "admin");
+		c.searchProcessInstancesStartedByUser("admin", 0, 10, "started", "desc", "FINISHED", "admin");
+		System.out.println("res: " + res);
+		
+		//ActivityInstanceItem aIItem = c.getActivityInstanceItem("3908", "kermit");
+		//System.out.println(aIItem);
 		
 		
 		/*
-		ArrayList<InboxTaskItem> inboxTaskItems = c.getInboxByUserId("kermit");
+		ArrayList<InboxTaskItem> inboxTaskItems = c.getInboxByUserId("admin");
 		
 		System.out.println("getInboxByUserId");
 		if(inboxTaskItems != null) {
