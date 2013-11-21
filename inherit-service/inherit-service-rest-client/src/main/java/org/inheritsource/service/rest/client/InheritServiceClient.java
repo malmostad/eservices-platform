@@ -80,7 +80,7 @@ public class InheritServiceClient {
 	XStream jsonxstream;
 	
 	public InheritServiceClient() {
-		serverBaseUrl = ConfigUtil.getConfigProperties().getProperty("rest_uri", "http://localhost:58080/restrice/");
+		serverBaseUrl = ConfigUtil.getConfigProperties().getProperty("rest_uri", "http://localhost:8080/restrice/");
 		serverBaseUrl = serverBaseUrl.trim();
 		if (!serverBaseUrl.endsWith("/")) {
 			serverBaseUrl += "/";
