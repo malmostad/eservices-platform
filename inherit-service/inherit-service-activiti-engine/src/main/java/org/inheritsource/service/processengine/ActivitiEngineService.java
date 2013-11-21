@@ -173,6 +173,8 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getExecutionId());
+			item.setRootProcessDefinitionUuid(task.getProcessDefinitionId()); // TODO fix support for sub processes
+			item.setRootProcessInstanceUuid(task.getProcessInstanceId()); // TODO fix support for sub processes
 			item.setProcessLabel(""); // FIXME
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
