@@ -3,7 +3,7 @@ package org.motrice.orifice
 /**
  * Contents of a form definition: XML or image files are the most common cases.
  */
-class OriItem {
+class OriItem implements Comparable {
   // Ref: the database id the form definition had in the originating system.
   // A new database id is generated for the snapshot, but the ref is vital
   // for resolving relationships within a package.
@@ -60,6 +60,47 @@ class OriItem {
 
   String display() {
     "${path} (size ${size})"
+  }
+
+  /**
+   * Bootstrap init causes this method to be used for rendering as XML
+   */
+  def toXML(xml) {
+    xml.build {
+      ref(id)
+      created(created)
+      path(path)
+      uuid(uuid)
+      formpath(formpath)
+      format(format)
+      size(size)
+      sha1(sha1)
+      if (formref) formref(formdef.id)
+      pkg(pkg.id)
+    }
+  }
+
+  //-------------------- Comparable --------------------
+
+  int hashCode() {
+    return (ref ^ formref).hashCode()
+  }
+
+  boolean equals(Object obj) {
+    def result = false
+    if (obj instanceof OriItem) {
+      def other = (OriItem)obj
+      result = formref == other.formref && path == other.path
+    }
+
+    return result
+  }
+
+  int compareTo(Object obj) {
+    def other = (OriItem)obj
+    def result = formref.compareTo(other.formref)
+    if (result == 0) result = path.compareTo(other.path)
+    return result
   }
 
 }

@@ -43,6 +43,18 @@ class OriPackage implements Comparable {
     items nullable: true
   }
 
+  /**
+   * Bootstrap init causes this method to be used for rendering as XML
+   */
+  def toXML(xml) {
+    siteName(siteName)
+    packageName(packageName)
+    ref(id)
+    siteTstamp(siteTstamp)
+    packageFormat(packageFormat)
+    created(dateCreated)
+  }
+
   //-------------------- Comparable --------------------
 
   int hashCode() {

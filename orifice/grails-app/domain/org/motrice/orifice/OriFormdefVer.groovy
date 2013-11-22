@@ -5,7 +5,7 @@ package org.motrice.orifice
  * The version is available as an integer code (verno) and also as part
  * of the path (a String).
  */
-class OriFormdefVer {
+class OriFormdefVer implements Comparable {
   // Ref: the database id the form definition had in the originating system.
   // A new database id is generated for the snapshot, but the ref is vital
   // for resolving relationships within a package.
@@ -58,6 +58,49 @@ class OriFormdefVer {
 
   String display() {
     path
+  }
+
+  /**
+   * Bootstrap init causes this method to be used for rendering as XML
+   */
+  def toXML(xml) {
+    xml.build {
+      ref(id)
+      created(created)
+      app(app)
+      form(form)
+      path(path)
+      verno(published: published, fvno)
+      published? draft() : draft(draft)
+      title(title)
+      description(description)
+      language(language)
+      formref(formdef.id)
+      pkg(pkg.id)
+    }
+  }
+
+  //-------------------- Comparable --------------------
+
+  int hashCode() {
+    return (ref ^ formref).hashCode()
+  }
+
+  boolean equals(Object obj) {
+    def result = false
+    if (obj instanceof OriFormdefVer) {
+      def other = (OriFormdefVer)obj
+      result = formref == other.formref && path == other.path
+    }
+
+    return result
+  }
+
+  int compareTo(Object obj) {
+    def other = (OriFormdefVer)obj
+    def result = formref.compareTo(other.formref)
+    if (result == 0) result = path.compareTo(other.path)
+    return result
   }
 
 }

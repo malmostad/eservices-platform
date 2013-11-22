@@ -37,6 +37,10 @@
 	    <span class="property-value" aria-labelledby="path-label"><g:fieldValue bean="${oriFormdefVerInst}" field="path"/></span>
 	  </li>
 	</g:if>
+	<li class="fieldcontain">
+	  <span id="published-label" class="property-label"><g:message code="oriFormdefVer.published.label" default="Published" /></span>
+	  <span class="property-value" aria-labelledby="published-label"><g:formatPublished flag="${oriFormdefVerInst?.published}" /></span>
+	</li>
 	<g:if test="${oriFormdefVerInst?.ref}">
 	  <li class="fieldcontain">
 	    <span id="ref-label" class="property-label"><g:message code="oriFormdefVer.ref.label" default="Ref" /></span>
@@ -49,10 +53,6 @@
 	    <span class="property-value" aria-labelledby="created-label"><g:formatDate date="${oriFormdefVerInst?.created}" /></span>
 	  </li>
 	</g:if>
-	<li class="fieldcontain">
-	  <span id="published-label" class="property-label"><g:message code="oriFormdefVer.published.label" default="Published" /></span>
-	  <span class="property-value" aria-labelledby="published-label"><g:formatPublished flag="${oriFormdefVerInst?.published}" /></span>
-	</li>
 	<g:if test="${oriFormdefVerInst?.title}">
 	  <li class="fieldcontain">
 	    <span id="title-label" class="property-label"><g:message code="oriFormdefVer.title.label" default="Title" /></span>

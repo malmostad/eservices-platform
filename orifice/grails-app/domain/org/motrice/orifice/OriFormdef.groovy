@@ -30,6 +30,8 @@ class OriFormdef implements Comparable {
   // The current draft at the time the package was generated
   String currentDraft
 
+  SortedSet versions
+  SortedSet items
   static belongsTo = [pkg: OriPackage]
   static hasMany = [versions: OriFormdefVer, items: OriItem]
   static transients = ['path']
@@ -50,6 +52,22 @@ class OriFormdef implements Comparable {
 
   String toString() {
     "[Formdef ${path}, ${created}, ${currentDraft}]"
+  }
+
+  /**
+   * Bootstrap init causes this method to be used for rendering as XML
+   */
+  def toXML(xml) {
+    xml.build {
+      ref(gen: version, id)
+      created(created)
+      updated(updated)
+      app(app)
+      form(form)
+      uuid(uuid)
+      currentDraft(currentDraft)
+      pkg(pkg.id)
+    }
   }
 
   //-------------------- Comparable --------------------

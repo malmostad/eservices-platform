@@ -37,10 +37,10 @@
 	    <span class="property-value" aria-labelledby="uuid-label"><g:fieldValue bean="${oriItemInst}" field="uuid"/></span>
 	  </li>
 	</g:if>
-	<g:if test="${oriItemInst?.formDef}">
+	<g:if test="${oriItemInst?.formpath}">
 	  <li class="fieldcontain">
-	    <span id="formDef-label" class="property-label"><g:message code="oriItem.formDef.label" default="Form Def" /></span>
-	    <span class="property-value" aria-labelledby="formDef-label"><g:fieldValue bean="${oriItemInst}" field="formDef"/></span>
+	    <span id="formpath-label" class="property-label"><g:message code="oriItem.formpath.label" default="Form Path" /></span>
+	    <span class="property-value" aria-labelledby="formpath-label"><g:fieldValue bean="${oriItemInst}" field="formpath"/></span>
 	  </li>
 	</g:if>
 	<g:if test="${oriItemInst?.format}">
