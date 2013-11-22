@@ -180,13 +180,16 @@ public class ActivitiEngineService {
 			item.setTaskUuid(task.getId());
 			item.setRootProcessInstanceUuid(task.getProcessInstanceId());
 
+			// Following could be optimized, use Execution and a cast to ProcessInstance to getProcessDefinitionId() 
+			
 			List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery()
 				.processInstanceId(task.getProcessInstanceId()).list();
 			
 			if(processInstances != null) {
 				for(ProcessInstance pI : processInstances) {
 					if(pI.getId().equals(pI.getProcessInstanceId())) {
-						item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
+						item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId());
+						break;
 					}
 				}
 			} else {
@@ -1144,7 +1147,7 @@ public class ActivitiEngineService {
 		return processDefinitions;
 	}
 	
-	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe key can be used?
+	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe description or key can be used?
 	// FIXME: Label for ActivityDefinitionInfo is not set! Maybe description can be used? 
 
 	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
@@ -1160,7 +1163,7 @@ public class ActivitiEngineService {
 				 processDefinitionDetails = new ProcessDefinitionDetails();
 				 
 				 // Handle ProcessDefinitionInfo
-				 
+				
 				 ProcessDefinitionInfo pDInfo = 
 					new ProcessDefinitionInfo(processDefinition.getId(), processDefinition.getName(), "");
 				 
@@ -1183,7 +1186,7 @@ public class ActivitiEngineService {
 					 
 					 activityDefinitionInfos.add(aDInfo);
 				 }
-
+				
 				 processDefinitionDetails.setActivities(activityDefinitionInfos);
 			 }
 		} catch (Exception e) {
@@ -1221,17 +1224,27 @@ public class ActivitiEngineService {
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
+	
 		
+		
+		
+		/*
+		Execution execution = activitiEngineService.engine.getRuntimeService().createExecutionQuery().
+				executionId("1301").singleResult();
+		
+		String p = ((ProcessInstance)execution).getProcessDefinitionId();
+		log.severe("p:" + p);
+		*/
 		//activitiEngineService.executeTask("1102", "admin");
 		/*
 		PagedProcessInstanceSearchResult p = activitiEngineService.
 				getProcessInstancesStartedBy("admin", 0, 100, null, null, "FINISHED", "admin");
 		log.severe("p:" + p);
 		*/
-		
+		/*
 		 ProcessInstanceDetails pIDetails = activitiEngineService.getProcessInstanceDetails("901"); 
 		 log.severe("pIDetails:" + pIDetails);
-		 
+		 */
 /*
 		log.severe(activitiEngineService.getActivityInstanceItem("4204").toString());
 		*/
