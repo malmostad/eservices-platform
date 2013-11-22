@@ -409,6 +409,7 @@ public class ActivitiEngineService {
 		
 		try {
 			processInstanceDetails = new ProcessInstanceDetails();
+			ArrayList<String> addedPendingTaskIds = new ArrayList<String>();
 			
 			// Data  hard coded added first.
 			processInstanceDetails.setProcessInstanceLabel(""); // FIXME
@@ -435,6 +436,7 @@ public class ActivitiEngineService {
 					
 					for(Task task : tasks) {
 						activityInstancePendingItems.add(task2ActivityInstancePendingItem(task));
+						addedPendingTaskIds.add(task.getId());
 					}
 					
 					processInstanceDetails.setPending(activityInstancePendingItems);	
@@ -481,17 +483,15 @@ public class ActivitiEngineService {
 				List<TimelineItem> activityInstanceLogItems = new ArrayList<TimelineItem>();
 				
 				for (HistoricTaskInstance historicTask : historicTasks) {
-					activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
+					
+					if(!addedPendingTaskIds.contains(historicTask.getId())) {
+						activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
+					}
 				}
 				
 				Timeline timeline = new Timeline();
 				timeline.addAndSort(activityInstanceLogItems);
-			
-				
-				// FIXME: Should commentfeeditems be added as well
-				// FIXME: If so: should only comments coupled to historic tasks be added?
-				// FIXME: Or should comments coupled to active tasks above be added as well?
-				
+	
 				processInstanceDetails.setTimeline(timeline);
 			}
 		} catch (Exception e) {
@@ -883,7 +883,7 @@ public class ActivitiEngineService {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			
 			List<HistoricProcessInstance> processInstancesWithUserInvolved = engine.getHistoryService().
-					createHistoricProcessInstanceQuery().involvedUser(startedByUserId).
+					createHistoricProcessInstanceQuery().involvedUser(startedByUserId).finished().
 						orderByProcessInstanceId().asc().list();
 		
 			if(processInstancesWithUserInvolved != null && processInstancesWithUserInvolved.size() > 0) {
