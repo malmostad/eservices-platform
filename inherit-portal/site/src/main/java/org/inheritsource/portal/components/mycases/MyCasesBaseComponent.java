@@ -65,7 +65,8 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 		String jcrActivityLabel = defaultLabel;
 		if (processDefinitionUuid != null && activityDefinitionUuid != null) {    			
 			String canonicalContentPath = getMount(request).getCanonicalContentPath();
-    		String guidePath = canonicalContentPath + "/mycases/processes/" + processDefinitionUuid.toLowerCase() + "/" + activityDefinitionUuid.toLowerCase();
+			String processContentPath = processDefinitionUuid.toLowerCase().replace(':', '-');
+    		String guidePath = canonicalContentPath + "/mycases/processes/" + processContentPath + "/" + activityDefinitionUuid.toLowerCase();
     		log.debug("getJcrTaskLabel look upp label from guide path: " + guidePath );
     		
     		try {

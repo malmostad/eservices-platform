@@ -121,7 +121,7 @@ public class UserInfo implements Serializable, Comparable {
 
 	@Override
 	public String toString() {
-		return labelShort;
+		return "" + labelShort;
 	}
 
 	@Override

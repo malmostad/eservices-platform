@@ -30,7 +30,7 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor--v002',
-            'Arendeprocess--1.0',
+            'Arendeprocess:1:4',
             ''
 );
 INSERT INTO mtf_start_form_definition(
@@ -108,7 +108,7 @@ INSERT INTO mtf_activity_form_definition(
             )
        VALUES (
             nextval('hibernate_sequence'), 
-            'Arendeprocess--1.0--Registrering', 
+            'sid-DE05B2D6-1F3B-425A-9D98-7513096A910F', 
             'basprocess/registrera--v002', 
             NULL
 );
@@ -120,7 +120,7 @@ INSERT INTO mtf_activity_form_definition(
             )
        VALUES (
             nextval('hibernate_sequence'), 
-            'Arendeprocess--1.0--Handlaggning', 
+            'sid-3BA63215-750B-4E88-95F4-7567FF8FF769', 
             'basprocess/handlagga--v002', 
             NULL
 );
@@ -132,7 +132,7 @@ INSERT INTO mtf_activity_form_definition(
             )
        VALUES (
             nextval('hibernate_sequence'), 
-            'Arendeprocess--1.0--Beslut', 
+            'sid-22F22FC8-281E-4155-BE3D-AF4BEC1D0C2D', 
             'basprocess/beslut--v002', 
             NULL
 );

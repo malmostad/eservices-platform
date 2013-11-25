@@ -97,7 +97,7 @@ public class ActivitiEngineService {
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().taskAssignee(userId).
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).
 			orderByTaskCreateTime().asc().list();
 		
 		result = taskList2InboxTaskItemList(tasks);
@@ -169,7 +169,7 @@ public class ActivitiEngineService {
 			item = new InboxTaskItem();
 			item.setActivityCreated(task.getCreateTime());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
-			item.setActivityLabel(""); // FIXME
+			item.setActivityLabel(task.getName()); 
 			item.setExpectedEndDate(task.getDueDate());
 			item.setExternalUrl(""); // Will be set in TaskFormService
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
@@ -180,17 +180,19 @@ public class ActivitiEngineService {
 			item.setTaskUuid(task.getId());
 			item.setRootProcessInstanceUuid(task.getProcessInstanceId());
 
-			List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery()
-				.processInstanceId(task.getProcessInstanceId()).list();
-			
-			if(processInstances != null) {
-				for(ProcessInstance pI : processInstances) {
-					if(pI.getId().equals(pI.getProcessInstanceId())) {
-						item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
+			if (task.getProcessInstanceId()!=null) {
+				List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery()
+					.processInstanceId(task.getProcessInstanceId()).list();
+				
+				if(processInstances != null) {
+					for(ProcessInstance pI : processInstances) {
+						if(pI.getId().equals(pI.getProcessInstanceId())) {
+							item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
+						}
 					}
+				} else {
+					item.setRootProcessDefinitionUuid(""); 
 				}
-			} else {
-				item.setRootProcessDefinitionUuid(""); 
 			}
 		}
 		return item;
@@ -1358,12 +1360,13 @@ public class ActivitiEngineService {
 			log.severe("Inbox item: " + t);
 		}
 		*/
-		/*
+		
 		Deployment deployment = activitiEngineService.deployBpmn
-				("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
+//				("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
+	            ("/home/bjmo/workspaces/motrice2/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
 		
 		log.severe("Deployment with id: " + deployment.getId());
-		*/
+		
 		System.exit(0);
 	}
 	
