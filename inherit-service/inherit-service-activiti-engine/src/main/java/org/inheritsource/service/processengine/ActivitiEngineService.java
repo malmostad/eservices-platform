@@ -181,19 +181,24 @@ public class ActivitiEngineService {
 			item.setRootProcessInstanceUuid(task.getProcessInstanceId());
 
 			if (task.getProcessInstanceId()!=null) {
-				List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery()
-					.processInstanceId(task.getProcessInstanceId()).list();
-				
+			// Following could be optimized, use Execution and a cast to ProcessInstance to getProcessDefinitionId() 
+			
+			List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery()
+				.processInstanceId(task.getProcessInstanceId()).list();
+			
 				if(processInstances != null) {
 					for(ProcessInstance pI : processInstances) {
 						if(pI.getId().equals(pI.getProcessInstanceId())) {
-							item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
+							item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId());
+							break;
 						}
-					}
-				} else {
+					} 
+				}
+				else {
 					item.setRootProcessDefinitionUuid(""); 
 				}
 			}
+			
 		}
 		return item;
 	}
@@ -408,6 +413,7 @@ public class ActivitiEngineService {
 		
 		try {
 			processInstanceDetails = new ProcessInstanceDetails();
+			ArrayList<String> addedPendingTaskIds = new ArrayList<String>();
 			
 			// Data  hard coded added first.
 			processInstanceDetails.setProcessInstanceLabel(""); // FIXME
@@ -434,6 +440,7 @@ public class ActivitiEngineService {
 					
 					for(Task task : tasks) {
 						activityInstancePendingItems.add(task2ActivityInstancePendingItem(task));
+						addedPendingTaskIds.add(task.getId());
 					}
 					
 					processInstanceDetails.setPending(activityInstancePendingItems);	
@@ -480,17 +487,15 @@ public class ActivitiEngineService {
 				List<TimelineItem> activityInstanceLogItems = new ArrayList<TimelineItem>();
 				
 				for (HistoricTaskInstance historicTask : historicTasks) {
-					activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
+					
+					if(!addedPendingTaskIds.contains(historicTask.getId())) {
+						activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
+					}
 				}
 				
 				Timeline timeline = new Timeline();
 				timeline.addAndSort(activityInstanceLogItems);
-			
-				
-				// FIXME: Should commentfeeditems be added as well
-				// FIXME: If so: should only comments coupled to historic tasks be added?
-				// FIXME: Or should comments coupled to active tasks above be added as well?
-				
+	
 				processInstanceDetails.setTimeline(timeline);
 			}
 		} catch (Exception e) {
@@ -882,7 +887,7 @@ public class ActivitiEngineService {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			
 			List<HistoricProcessInstance> processInstancesWithUserInvolved = engine.getHistoryService().
-					createHistoricProcessInstanceQuery().involvedUser(startedByUserId).
+					createHistoricProcessInstanceQuery().involvedUser(startedByUserId).finished().
 						orderByProcessInstanceId().asc().list();
 		
 			if(processInstancesWithUserInvolved != null && processInstancesWithUserInvolved.size() > 0) {
@@ -1146,7 +1151,7 @@ public class ActivitiEngineService {
 		return processDefinitions;
 	}
 	
-	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe key can be used?
+	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe description or key can be used?
 	// FIXME: Label for ActivityDefinitionInfo is not set! Maybe description can be used? 
 
 	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
@@ -1162,7 +1167,7 @@ public class ActivitiEngineService {
 				 processDefinitionDetails = new ProcessDefinitionDetails();
 				 
 				 // Handle ProcessDefinitionInfo
-				 
+				
 				 ProcessDefinitionInfo pDInfo = 
 					new ProcessDefinitionInfo(processDefinition.getId(), processDefinition.getName(), "");
 				 
@@ -1185,7 +1190,7 @@ public class ActivitiEngineService {
 					 
 					 activityDefinitionInfos.add(aDInfo);
 				 }
-
+				
 				 processDefinitionDetails.setActivities(activityDefinitionInfos);
 			 }
 		} catch (Exception e) {
@@ -1223,17 +1228,27 @@ public class ActivitiEngineService {
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
+	
 		
+		
+		
+		/*
+		Execution execution = activitiEngineService.engine.getRuntimeService().createExecutionQuery().
+				executionId("1301").singleResult();
+		
+		String p = ((ProcessInstance)execution).getProcessDefinitionId();
+		log.severe("p:" + p);
+		*/
 		//activitiEngineService.executeTask("1102", "admin");
 		/*
 		PagedProcessInstanceSearchResult p = activitiEngineService.
 				getProcessInstancesStartedBy("admin", 0, 100, null, null, "FINISHED", "admin");
 		log.severe("p:" + p);
 		*/
-		
+		/*
 		 ProcessInstanceDetails pIDetails = activitiEngineService.getProcessInstanceDetails("901"); 
 		 log.severe("pIDetails:" + pIDetails);
-		 
+		 */
 /*
 		log.severe(activitiEngineService.getActivityInstanceItem("4204").toString());
 		*/
