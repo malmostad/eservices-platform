@@ -62,7 +62,7 @@ import org.inheritsource.service.common.domain.UserInfo;
 
 public class ActivitiEngineService {
 
-	private ProcessEngine engine = null; 
+	private static ProcessEngine engine = null; 
 	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
 	
 	public ActivitiEngineService() {
@@ -71,15 +71,17 @@ public class ActivitiEngineService {
 	
 	private void initEngine() {
 		
-		final String ACTIVITI_ENGINE_CONFIG_FILEPATH = "/usr/local/etc/motrice/activiti.cfg.xml";
-		ProcessEngineConfiguration engineConfig = loadConfigFromFile(ACTIVITI_ENGINE_CONFIG_FILEPATH);
-		
-		if (engineConfig == null) {
-			log.severe("The process engine will not be working!");
+		if(engine == null) {
+			final String ACTIVITI_ENGINE_CONFIG_FILEPATH = "/usr/local/etc/motrice/activiti.cfg.xml";
+			ProcessEngineConfiguration engineConfig = loadConfigFromFile(ACTIVITI_ENGINE_CONFIG_FILEPATH);
+
+			if (engineConfig == null) {
+				log.severe("The process engine will not be working!");
+			}
+			else {
+				engine =  engineConfig.buildProcessEngine();
+			}	
 		}
-		else {
-			engine =  engineConfig.buildProcessEngine();
-		}	
 	}
 	
 	private ProcessEngineConfiguration loadConfigFromFile(String fileName) {
@@ -1240,11 +1242,11 @@ public class ActivitiEngineService {
 		log.severe("p:" + p);
 		*/
 		//activitiEngineService.executeTask("1102", "admin");
-		/*
+		
 		PagedProcessInstanceSearchResult p = activitiEngineService.
 				getProcessInstancesStartedBy("admin", 0, 100, null, null, "FINISHED", "admin");
 		log.severe("p:" + p);
-		*/
+		
 		/*
 		 ProcessInstanceDetails pIDetails = activitiEngineService.getProcessInstanceDetails("901"); 
 		 log.severe("pIDetails:" + pIDetails);
@@ -1376,11 +1378,11 @@ public class ActivitiEngineService {
 		}
 		*/
 		
-		Deployment deployment = activitiEngineService.deployBpmn
-//				("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
-	            ("/home/bjmo/workspaces/motrice2/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
+		//Deployment deployment = activitiEngineService.deployBpmn
+		//		("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
+//	            ("/home/bjmo/workspaces/motrice2/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
 		
-		log.severe("Deployment with id: " + deployment.getId());
+	//	log.severe("Deployment with id: " + deployment.getId());
 		
 		System.exit(0);
 	}
