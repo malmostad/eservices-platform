@@ -107,11 +107,11 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	private Set<InboxTaskItem> getUserInboxByInvolvedUserInProcess(String involvedUserId, String executionId) {
+	private Set<InboxTaskItem> getUserInboxInProcess(String executionId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(involvedUserId).
-				executionId(executionId).orderByTaskCreateTime().asc().list();
+		List<Task> tasks = engine.getTaskService().createTaskQuery().
+			executionId(executionId).orderByTaskCreateTime().asc().list();
 		
 		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
 		
@@ -124,11 +124,11 @@ public class ActivitiEngineService {
 		return result;
 	}
 
-	private Set<InboxTaskItem> getHistoricUserInboxByInvolvedUserInProcess(String involvedUserId, String executionId) {
+	private Set<InboxTaskItem> getHistoricUserInboxInProcess(String executionId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
 		List<HistoricTaskInstance> tasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
-		taskInvolvedUser(involvedUserId).executionId(executionId).orderByHistoricTaskInstanceStartTime().asc().list();
+			executionId(executionId).orderByHistoricTaskInstanceStartTime().asc().list();
 		
 		List<InboxTaskItem> inboxTaskItemList = historicTaskList2InboxTaskItemList(tasks);
 		
@@ -777,8 +777,6 @@ public class ActivitiEngineService {
 		return(null);
 	}
 	
-	
-	// FIXME: Should pageSize for returned objekt be adjusted if answer is shorter than the requested pageSize?
 	// FIXME: sortBy is always processInstanceId for the moment.
 	// FIXME: sortOrder is always asc for the moment.
 	
@@ -831,7 +829,7 @@ public class ActivitiEngineService {
 			if(processInstances != null) {
 				
 				// Filter due to fromIndex and pageSize
-				
+				// FIXME: Refactor this to a method!
 				try {
 					// If exception is thrown for fromIndex element then list is cleared.
 					processInstances.get(fromIndex);
@@ -865,8 +863,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setEndDate(null);
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
-					processInstanceListItem.setActivities
-						(getUserInboxByInvolvedUserInProcess(searchForUserId, processInstance.getId()));
+					processInstanceListItem.setActivities(getUserInboxInProcess(processInstance.getId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -909,7 +906,6 @@ public class ActivitiEngineService {
 		return(startDates);
 	}
 	
-	// FIXME: Should pageSize for returned objekt be adjusted if answer is shorter than the requested pageSize?
 	// FIXME: sortBy is always processInstanceId for the moment.
 	// FIXME: sortOrder is always asc for the moment.
 	
@@ -959,6 +955,7 @@ public class ActivitiEngineService {
 			if(processInstances != null) {
 				
 				// Filter due to fromIndex and pageSize
+				// FIXME: Refactor this to a method!
 				
 				try {
 					// If exception is thrown for fromIndex element then list is cleared.
@@ -991,8 +988,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setEndDate(processInstance.getEndTime());
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
-					processInstanceListItem.setActivities
-						(getHistoricUserInboxByInvolvedUserInProcess(searchForUserId, processInstance.getId()));
+					processInstanceListItem.setActivities(getHistoricUserInboxInProcess(processInstance.getId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -1008,15 +1004,141 @@ public class ActivitiEngineService {
 		
 	// FIXME: sortBy is always processInstanceId for the moment.
 	// FIXME: sortOrder is always asc for the moment.
-	// FIXME: filter is not used for the moment.
-	// FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
-	// FIXME: set status is hardcoded to PENDING.
-	// FIXME: userId is not used for filtering on UserInbox (setActivities). Wrong?
-	// FIXME: Historic data is not implemented
-
+	
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
 			List<String> executionIds, int fromIndex, int pageSize, String sortBy,
 			String sortOrder, String filter, String userId) {
+		
+		if(filter != null) {	
+			if(filter.equals("STARTED")) {
+				return(getPagedProcessInstanceSearchResultByUuids(executionIds, fromIndex, pageSize,
+						sortBy, sortOrder, userId));
+			}
+			else if (filter.equals("FINISHED")){
+				return(getHistoricPagedProcessInstanceSearchResultByUuids(executionIds, fromIndex, pageSize,
+						sortBy, sortOrder, userId));
+			}	
+		} 	
+		
+		return(null);
+	}
+	
+	// FIXME: sortBy is always processInstanceId for the moment.
+	// FIXME: sortOrder is always asc for the moment.
+	
+	// Note: CANCELLED and ABORTED statuses are not implemented.
+	
+	private PagedProcessInstanceSearchResult getPagedProcessInstanceSearchResultByUuids(List<String> executionIds,
+			int fromIndex, int pageSize, String sortBy, String sortOrder, String userId) {
+		List<ProcessInstance> processInstances = null;
+		int len = 0;
+		int toIndex = 0;
+		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
+			
+		if(fromIndex < 0) {
+			fromIndex = 0;
+		}
+		
+		if(pageSize < 0) {
+			pageSize = 0;
+		}
+		
+		pagedProcessInstanceSearchResult.setFromIndex(fromIndex);
+		pagedProcessInstanceSearchResult.setPageSize(pageSize);
+		pagedProcessInstanceSearchResult.setSortBy(sortBy);
+		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		if(executionIds == null) {
+			return pagedProcessInstanceSearchResult;
+		}
+		
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId);
+			
+			
+			// FIXME: Bad implementation without native query
+		
+			Set<String> processInstanceIds = new HashSet<String>();
+			for(String executionId : executionIds) {
+				processInstanceIds.add(engine.getRuntimeService().createExecutionQuery().
+						executionId(executionId).singleResult().getProcessInstanceId());
+			}
+			
+			List<ProcessInstance> processInstancesUnfiltered = engine.getRuntimeService().createProcessInstanceQuery().
+				processInstanceIds(processInstanceIds).orderByProcessInstanceId().asc().list();
+			
+			if(processInstancesUnfiltered != null && processInstancesUnfiltered.size() > 0) {
+				processInstances = new ArrayList<ProcessInstance>();
+				
+				for(ProcessInstance pIUnfiltered : processInstancesUnfiltered) {
+					if(executionIds.contains(pIUnfiltered.getId())) {
+						processInstances.add(pIUnfiltered);
+					}
+				}
+			}
+				
+			
+			if(processInstances != null) {
+				
+				// Filter due to fromIndex and pageSize
+				// FIXME: Refactor this to a method!
+				try {
+					// If exception is thrown for fromIndex element then list is cleared.
+					processInstances.get(fromIndex);
+					
+					len = processInstances.size();
+					
+					if((fromIndex + pageSize) <= len) {
+						toIndex = fromIndex + pageSize;
+						processInstances = processInstances.subList(fromIndex, toIndex);
+					} else {
+						processInstances = processInstances.subList(fromIndex, len);
+					}	
+				} catch (Exception e) {
+					processInstances.clear();
+				}
+				
+				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
+				
+				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
+			
+				HashMap<String, Date> startDates = getProcessInstanceStartDates(processInstances);
+				
+				for(ProcessInstance processInstance : processInstances) {
+					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
+					
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
+					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
+					processInstanceListItem.setStartDate(startDates.get(processInstance.getId()));
+					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
+					processInstanceListItem.setStartedByFormPath("");
+					processInstanceListItem.setEndDate(null);
+					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
+					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setActivities(getUserInboxInProcess(processInstance.getId()));
+					processInstanceListItems.add(processInstanceListItem);
+				}
+
+				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
+			}
+			
+		} catch (Exception e) {
+			log.severe("Unable to getPagedProcessInstanceSearchResult with executionIds: " + executionIds.toString() +
+					" by userId: " + userId);
+			pagedProcessInstanceSearchResult = null;	
+		}
+		return pagedProcessInstanceSearchResult;
+	}
+	
+	
+	// FIXME: sortBy is always processInstanceId for the moment.
+	// FIXME: sortOrder is always asc for the moment.
+	
+	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResultByUuids(List<String> executionIds,
+			int fromIndex, int pageSize, String sortBy, String sortOrder, String userId) {
+		List<HistoricProcessInstance> processInstances = null;
+		int len = 0;
+		int toIndex = 0;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 		
 		if(fromIndex < 0) {
@@ -1034,54 +1156,89 @@ public class ActivitiEngineService {
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
+		
 			
-			// convert to a set of processInstanceIds
+			// FIXME: Bad implementation without native query
+		
 			Set<String> processInstanceIds = new HashSet<String>();
-			String processInstanceId = null;
-			if(executionIds != null) {
-				for(String executionId : executionIds) {
-					processInstanceId = engine.getRuntimeService().createExecutionQuery().
-							executionId(executionId).singleResult().getProcessInstanceId();
-					
-					processInstanceIds.add(processInstanceId);	
+			for(String executionId : executionIds) {
+				List<HistoricActivityInstance> historicActivities = engine.getHistoryService().
+					createHistoricActivityInstanceQuery().executionId(executionId).list();
+				
+				if(historicActivities != null) {
+					for(HistoricActivityInstance historicActivity : historicActivities) {
+						if(historicActivity != null) {
+							processInstanceIds.add(historicActivity.getProcessInstanceId());
+						}
+					}
+				}		
+			}
+			
+			List<HistoricProcessInstance> processInstancesUnfiltered = engine.getHistoryService().
+				createHistoricProcessInstanceQuery().processInstanceIds(processInstanceIds).finished().
+					orderByProcessInstanceId().asc().list();
+	
+			if(processInstancesUnfiltered != null && processInstancesUnfiltered.size() > 0) {
+				processInstances = new ArrayList<HistoricProcessInstance>();
+				
+				for(HistoricProcessInstance pIUnfiltered : processInstancesUnfiltered) {
+					if(executionIds.contains(pIUnfiltered.getId())) {
+						processInstances.add(pIUnfiltered);
+					}
 				}
-			}	
+			}
 			
-			List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery().
-				processInstanceIds(processInstanceIds).orderByProcessInstanceId().asc().
-					listPage(fromIndex, pageSize);
 			
-			if(processInstances != null) { // FIXME: Refactoring is needed...
+			if(processInstances != null) {
+				
+				// Filter due to fromIndex and pageSize
+				// FIXME: Refactor this to a method!
+				
+				try {
+					// If exception is thrown for fromIndex element then list is cleared.
+					processInstances.get(fromIndex);
+					
+					len = processInstances.size();
+					
+					if((fromIndex + pageSize) <= len) {
+						toIndex = fromIndex + pageSize;
+						processInstances = processInstances.subList(fromIndex, toIndex);
+					} else {
+						processInstances = processInstances.subList(fromIndex, len);
+					}	
+				} catch (Exception e) {
+					processInstances.clear();
+				}
+				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
 				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
-			
-				for(ProcessInstance processInstance : processInstances) {
+		
+				for(HistoricProcessInstance processInstance : processInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
-					
+				
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
-					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
-					processInstanceListItem.setStartDate(null); // FIXME
-					processInstanceListItem.setStartedBy(/*FIXME: Maybe change */getStarterByProcessInstanceId(processInstance.getProcessInstanceId())); 
+					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_FINISHED);
+					processInstanceListItem.setStartDate(processInstance.getStartTime());
+					processInstanceListItem.setStartedBy(processInstance.getStartUserId());
 					processInstanceListItem.setStartedByFormPath("");
-					processInstanceListItem.setEndDate(null); // FIXME
+					processInstanceListItem.setEndDate(processInstance.getEndTime());
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
-					processInstanceListItem.setActivities
-						(getUserInboxByProcessInstanceId(processInstance.getId()));
-					// FIXME: Should getUserInboxByInvolvedUser be used here? should tartedByUserId be used?
+					processInstanceListItem.setActivities(getHistoricUserInboxInProcess(processInstance.getId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
 				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstancesByUuids with executionIds: " + executionIds +
+			log.severe("Unable to getHistoricPagedProcessInstanceSearchResult  executionIds: " + executionIds.toString() +
 					" by userId: " + userId);
 			pagedProcessInstanceSearchResult = null;	
 		}
 		return pagedProcessInstanceSearchResult;
 	}
+
 
 	public boolean createUser(String userId) {
 		boolean successful = false;
@@ -1214,6 +1371,19 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
+		/*
+		List<String> executionIds = new ArrayList<String>();
+		executionIds.add("701");
+		executionIds.add("601");
+		PagedProcessInstanceSearchResult p = activitiEngineService.
+				getProcessInstancesByUuids(executionIds, 0, 100, null, null, "STARTED", "admin");
+		log.severe("p:" + p);
+		*/
+		/*
+		PagedProcessInstanceSearchResult p = activitiEngineService.
+				getProcessInstancesByUuids(executionIds, 0, 100, null, null, "FINISHED", "admin");
+		log.severe("p:" + p);
+		*/
 		/*
 		Execution execution = activitiEngineService.engine.getRuntimeService().createExecutionQuery().
 				executionId("1301").singleResult();
