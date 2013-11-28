@@ -26,7 +26,7 @@ class PxdItem {
   // form instance resources
   String uuid
 
-  // Form definition version this item belongs to, if known, otherwise null.
+  // Path of form definition version this item belongs to, if known, otherwise null.
   // Examples: app/form--v002_03, app/form--v002
   // Form definition resources are stored before the form definition.
   // In such case the form definition cannot be known and is left as null, except
@@ -49,6 +49,7 @@ class PxdItem {
   Integer size
 
   // Id of PxdFormdef to which this item belongs, if known. Null otherwise.
+  // Private means not persisted.
   private Long formref
 
   // Content is either text or binary
@@ -58,7 +59,6 @@ class PxdItem {
   byte[] stream
 
   static mapping = {
-    name defaultValue: 'Cash'
     text type: 'text'
     uuid index: 'Uuid_Idx'
     formDef index: 'Formdef_Idx'
@@ -158,7 +158,7 @@ class PxdItem {
       created(dateCreated)
       path(path)
       uuid(uuid)
-      formdef(formDef)
+      formpath(formDef)
       format(format)
       size(size)
       sha1(sha1)

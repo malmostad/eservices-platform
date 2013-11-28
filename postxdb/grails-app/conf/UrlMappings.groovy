@@ -33,6 +33,6 @@ class UrlMappings {
     }
 
     "/"(controller: 'PxdFormdef', action: 'index')
-    "500"(view:'/error')
+    "500"(controller: 'errors', action: 'internalServerError')
   }
 }
