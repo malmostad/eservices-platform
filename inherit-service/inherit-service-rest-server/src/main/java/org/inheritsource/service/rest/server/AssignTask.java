@@ -30,6 +30,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AssignTask extends ServerResource {
 	
@@ -38,7 +39,8 @@ public class AssignTask extends ServerResource {
 	public static final String ACTION_REMOVE_CANDIDATE = "removecandidate";
 	public static final String ACTION_UNASSIGN = "unassign";
 	
-	TaskFormService engine = new TaskFormService();
+	@Autowired
+	TaskFormService engine;	
 	
 	@Get
 	@Post

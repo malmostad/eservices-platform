@@ -31,13 +31,16 @@ import org.restlet.data.Status;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 public class SubmitForm extends ServerResource {
 
 	public static final Logger log = Logger.getLogger(SubmitForm.class
 			.getName());
 
-	TaskFormService engine = new TaskFormService();
+	@Autowired
+	TaskFormService engine;	
 
 	@Post
 	public String submitForm() {

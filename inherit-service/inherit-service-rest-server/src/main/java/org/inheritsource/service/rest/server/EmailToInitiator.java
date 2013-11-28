@@ -28,15 +28,21 @@ import java.util.logging.Logger;
 
 import javax.mail.*;
 import javax.mail.internet.*;
+
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.common.util.ParameterEncoder;
 import org.inheritsource.taskform.engine.TaskFormService;
 import org.restlet.resource.Post;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 public class EmailToInitiator extends Emailer {
-	TaskFormService engine = new TaskFormService();
+
+	@Autowired
+	TaskFormService engine;	
+
 	MyProfile myProfile = null;
 
 	public EmailToInitiator() { 

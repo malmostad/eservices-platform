@@ -32,10 +32,12 @@ import org.restlet.resource.ServerResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class GetUsersByRoleAndActivity extends ServerResource {
 	
-	TaskFormService engine = new TaskFormService();
+	@Autowired
+	TaskFormService engine;	
 	
 	@Get
 	@Post

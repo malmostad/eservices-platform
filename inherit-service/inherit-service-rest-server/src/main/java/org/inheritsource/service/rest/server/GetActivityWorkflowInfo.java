@@ -30,6 +30,7 @@ import org.restlet.resource.ServerResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class GetActivityWorkflowInfo extends ServerResource {
 	
@@ -37,7 +38,8 @@ public class GetActivityWorkflowInfo extends ServerResource {
 	public static final String ACTION_ADD_CANDIDATE = "addcandidate";
 	public static final String ACTION_UNASSIGN = "unassign";
 	
-	TaskFormService engine = new TaskFormService();
+	@Autowired
+	TaskFormService engine;	
 	
 	@Get
 	@Post

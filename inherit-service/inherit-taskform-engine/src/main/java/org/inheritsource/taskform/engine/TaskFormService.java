@@ -73,6 +73,7 @@ public class TaskFormService {
     OrbeonService orbeonService;
 
 	public TaskFormService() {
+		log.severe("Creating TaskFormService");
 		taskFormDb = new TaskFormDb();
 		orbeonService = new OrbeonService();
 		activitiEngineService = new ActivitiEngineService();
@@ -1108,6 +1109,11 @@ public class TaskFormService {
 		return result;
 	}
 
+	public UserInfo getUserByUuid(String uuid) {
+		UserInfo userInfo = taskFormDb.getUserByUuid(uuid);
+		return userInfo;
+	}
+	
 	public UserInfo getUserByDn(String dn) {
 		UserInfo userInfo = taskFormDb.getUserByDn(dn);
 

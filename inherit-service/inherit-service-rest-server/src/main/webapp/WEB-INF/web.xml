@@ -4,22 +4,52 @@
             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
             xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee  
                  http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">  
-   <display-name>first steps servlet</display-name>  
+  <display-name>first steps servlet</display-name>
   
-   <!-- Restlet adapter -->  
-   <servlet>  
-      <servlet-name>RestletServlet</servlet-name>  
-      <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
-      <init-param>
-            <!-- Application class name -->
-            <param-name>org.restlet.application</param-name>
-            <param-value>org.inheritsource.service.rest.server.InheritServiceApplication</param-value>
-      </init-param>
-   </servlet>  
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:applicationContext.xml</param-value>
+  </context-param>
   
-   <!-- Catch all requests -->  
-   <servlet-mapping>  
-      <servlet-name>RestletServlet</servlet-name>  
-      <url-pattern>/*</url-pattern>  
-   </servlet-mapping>  
+  <context-param>
+    <param-name>org.restlet.component</param-name>
+    <param-value>motriceRestletComponent</param-value>
+  </context-param>
+  
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+	
+  <!-- Restlet -->  
+  <servlet>  
+    <servlet-name>RestletServlet</servlet-name>  
+    <servlet-class>org.restlet.ext.spring.SpringServerServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>  
+  
+  <!-- Jersey -->
+  <servlet>
+    <servlet-name>jersey-serlvet</servlet-name>
+    <servlet-class>
+      com.sun.jersey.spi.spring.container.servlet.SpringServlet
+    </servlet-class> <!-- com.sun.jersey.spi.container.servlet.ServletContainer -->
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>org.inheritsource.service.rest.server.services</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <!-- Default, requests to RESTlet-->  
+  <servlet-mapping>  
+    <servlet-name>RestletServlet</servlet-name>  
+    <url-pattern>/*</url-pattern>  
+  </servlet-mapping>  
+  
+  <!-- Requests to Jersey REST  -->
+  <servlet-mapping>
+    <servlet-name>jersey-serlvet</servlet-name>
+    <url-pattern>/jersey/*</url-pattern>
+  </servlet-mapping>
+   
 </web-app>  

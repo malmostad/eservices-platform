@@ -24,16 +24,21 @@
 package org.inheritsource.service.rest.server;
 
 import java.util.logging.Logger;
+
 import org.inheritsource.service.common.util.ParameterEncoder;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.taskform.engine.TaskFormService;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class GetMyProfileByUserId extends ServerResource{
 
 	public static final Logger log = Logger.getLogger(GetMyProfileByUserId.class.getName());
-	TaskFormService engine = new TaskFormService();
+
+	@Autowired
+	TaskFormService engine;	
 
 	@Post
 	public MyProfile getMyProfile() {

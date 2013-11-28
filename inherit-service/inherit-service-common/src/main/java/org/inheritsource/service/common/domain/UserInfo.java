@@ -24,7 +24,11 @@
 package org.inheritsource.service.common.domain;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.*;
 
+@XmlRootElement(name="userInfo")
+@XmlType(namespace="http://www.motrice.org/namespace")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class UserInfo implements Serializable, Comparable {
 
 	private static final long serialVersionUID = -4478283095497351127L;
@@ -34,18 +38,22 @@ public class UserInfo implements Serializable, Comparable {
 
 	public static final String ANONYMOUS_UUID = "anonymous";
 	
+	@XmlElement(required=true)
 	String uuid;
 	
+	@XmlElement(required=false)
 	String labelShort;
 	
+	@XmlElement(required=false)
 	String label;
 	
+	@XmlElement(required=false)
 	int category;
 
 	public UserInfo() {
 		
 	}
-	
+
 	public String getUuid() {
 		return uuid;
 	}
@@ -70,10 +78,17 @@ public class UserInfo implements Serializable, Comparable {
 		this.label = label;
 	}
 
+	/**
+	 * CATEGORY_INTERNAL or CATEGORY_EXTERNAL
+	 * @return
+	 */
 	public int getCategory() {
 		return category;
 	}
 
+	/**								
+	 * @param category CATEGORY_INTERNAL or CATEGORY_EXTERNAL
+	 */
 	public void setCategory(int category) {
 		this.category = category;
 	}

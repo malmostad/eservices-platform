@@ -33,12 +33,14 @@ import org.restlet.resource.ServerResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class AddTag extends ServerResource {
 		
 	public static final Logger log = Logger.getLogger(AddTag.class.getName());
 			
-	TaskFormService engine = new TaskFormService();
+	@Autowired
+	TaskFormService engine;	
 	
 	@Get
 	@Post

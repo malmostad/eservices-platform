@@ -31,13 +31,15 @@ import org.inheritsource.taskform.engine.TaskFormService;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class SearchProcessInstancesStartedByUser extends ServerResource {
 
 	public static final Logger log = Logger.getLogger(SearchProcessInstancesStartedByUser.class.getName());
 	
-	TaskFormService engine = new TaskFormService();
+	@Autowired
+	TaskFormService engine;	
 	
 	@Post
 	public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser() {
