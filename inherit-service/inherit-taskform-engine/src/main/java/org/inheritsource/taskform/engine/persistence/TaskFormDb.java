@@ -298,12 +298,19 @@ public class TaskFormDb {
 
 	public void saveProcessActivityFormInstance(ProcessActivityFormInstance processActivityFormInstance) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-		
-		saveProcessActivityFormInstance(session, processActivityFormInstance);
-		
-		session.getTransaction().commit();
-		session.close();
+		try {
+			session.beginTransaction();
+			
+			saveProcessActivityFormInstance(session, processActivityFormInstance);
+			
+			session.getTransaction().commit();
+		}
+		catch (Exception e) {
+			log.severe("Exception in saveProcessActivityFormInstance: " + e);
+		}
+		finally {
+			session.close();
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
