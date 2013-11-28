@@ -61,7 +61,7 @@
     <dependency>
       <groupId>org.activiti</groupId>
       <artifactId>activiti-ldap</artifactId>
-      <version>latest.version</version>
+      <version>5.14</version>
     </dependency>            
 
     <dependency>
