@@ -1,0 +1,67 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+ 
+
+ <bean id="engine" class="org.inheritsource.taskform.engine.TaskFormService" scope="singleton"/>
+
+ <!-- Jersey based rest server -->
+	<context:component-scan base-package="org.inheritsource.service.rest.server.services" />
+ 
+ <!-- Restlet based rest server -->
+ 
+ <bean id="motriceRestletComponent" class="org.restlet.ext.spring.SpringComponent">
+    <property name="defaultTarget" ref="motriceRestletAppliction" />
+  </bean>
+
+  <bean id="motriceRestletAppliction" class="org.inheritsource.service.rest.server.InheritServiceApplication">
+    <property name="root" ref="router" />
+  </bean>
+
+  <!--  Define the router -->
+  <bean name="router" class="org.restlet.ext.spring.SpringBeanRouter" />
+  
+  <!-- Define all the routes in RESTlet-->
+  
+  <bean name="/getActivityInstanceItemById/{processActivityFormInstanceId}" class="org.inheritsource.service.rest.server.ActivityInstanceItemById" scope="singleton" autowire="byName" />
+  <bean name="/getDashOpenActivitiesByUserId/{userid}/{remainingDays}" class="org.inheritsource.service.rest.server.DashOpenActivitiesByUserId" scope="singleton" autowire="byName" />
+  <bean name="/getStartActivityInstanceItem/{formPath}/{userId}" class="org.inheritsource.service.rest.server.StartActivityInstanceItemByFormPath" scope="singleton" autowire="byName" />
+  <bean name="/processInstanceDetailsByActivityInstanceUuid/{activityInstanceUuid}" class="org.inheritsource.service.rest.server.ProcessInstanceDetailByActivityInstanceUuid" scope="singleton" autowire="byName" /> 
+  <bean name="/processInstanceDetailsByUuid/{processInstanceUuid}" class="org.inheritsource.service.rest.server.ProcessInstanceDetailByUuid" scope="singleton" autowire="byName" /> 
+  <bean name="/getPreviousActivityDataByDocId/{currentActivityFormDocId}/{previousActivityName}/{uniqueXPathExpr}" class="org.inheritsource.service.rest.server.GetPreviousActivityDataByDocId" scope="singleton" autowire="byName" /> 
+  <bean name="/getPreviousActivityDataByInstanceUuid/{currentActivityInstanceUuid}/{previousActivityName}/{uniqueXPathExpr}" class="org.inheritsource.service.rest.server.GetPreviousActivityDataByInstanceUuid" scope="singleton" autowire="byName" /> 
+  <bean name="/getPreviousActivitiesDataByDocId/{currentActivityFormDocId}" class="org.inheritsource.service.rest.server.GetPreviousActivitiesDataByDocId" scope="singleton" autowire="byName" />
+  <bean name="/getPreviousActivityDataByProcessInstanceUuid/{processInstanceUuid}/{previousActivityName}/{uniqueXPathExpr}" class="org.inheritsource.service.rest.server.GetPreviousActivityDataByProcessInstanceUuid" scope="singleton" autowire="byName" />
+  
+  <!-- TODO take user from login instead of parameter userid -->
+  <bean name="/addComment/{activityInstanceUuid}/{comment}/{userid}" class="org.inheritsource.service.rest.server.AddComment" scope="singleton" autowire="byName" /> 
+  <bean name="/getCommentFeed/{activityInstanceUuid}/{userid}" class="org.inheritsource.service.rest.server.GetCommentFeed" scope="singleton" autowire="byName" /> 
+  <bean name="/assignTask/{activityInstanceUuid}/{action}/{userid}" class="org.inheritsource.service.rest.server.AssignTask" scope="singleton" autowire="byName" /> 
+  <bean name="/getActivityInstanceItem/{activityInstanceUuid}/{userId}" class="org.inheritsource.service.rest.server.ActivityInstanceItemByActivityInstanceUuid" scope="singleton" autowire="byName" />
+  <bean name="/getNextActivityInstanceItemByDocId/{docId}/{userId}" class="org.inheritsource.service.rest.server.NextActivityInstanceItemByDocId" scope="singleton" autowire="byName" />		
+  <bean name="/getActivityWorkflowInfo/{activityInstanceUuid}" class="org.inheritsource.service.rest.server.GetActivityWorkflowInfo" scope="singleton" autowire="byName" /> 
+  <bean name="/inboxByUserId/{userid}" class="org.inheritsource.service.rest.server.InboxByUserId" scope="singleton" autowire="byName" />
+  <bean name="/submitForm/{docId}/{userId}/{newDocId}" class="org.inheritsource.service.rest.server.SubmitForm" scope="singleton" autowire="byName" />
+  <bean name="/submitForm/{docId}/{userId}" class="org.inheritsource.service.rest.server.SubmitForm" scope="singleton" autowire="byName" />
+  <bean name="/submitStartForm/{formPath}/{docId}/{userId}" class="org.inheritsource.service.rest.server.SubmitStartForm" scope="singleton" autowire="byName" />
+  <bean name="/setActivityPriority/{activityInstanceUuid}/{priority}" class="org.inheritsource.service.rest.server.SetActivityPriority" scope="singleton" autowire="byName" /> 
+  <bean name="/addTag/{processActivityFormInstanceId}/{tagTypeId}/{value}/{userid}" class="org.inheritsource.service.rest.server.AddTag" scope="singleton" autowire="byName" /> 
+  <bean name="/deleteTag/{processInstanceUuid}/{value}/{userid}" class="org.inheritsource.service.rest.server.DeleteTagByValue" scope="singleton" autowire="byName" /> 
+  <bean name="/getTagsByProcessInstance/{processInstanceUuid}" class="org.inheritsource.service.rest.server.GetTagsByProcessInstance" scope="singleton" autowire="byName" /> 
+  <bean name="/searchProcessInstancesByTagValue/{tagValue}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}" class="org.inheritsource.service.rest.server.SearchProcessInstancesByTagValue" scope="singleton" autowire="byName" /> 
+  <bean name="/searchProcessInstancesStartedByUser/{searchForUserId}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}" class="org.inheritsource.service.rest.server.SearchProcessInstancesStartedByUser" scope="singleton" autowire="byName" />
+  <bean name="/searchProcessInstancesWithInvolvedUser/{searchForUserId}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}" class="org.inheritsource.service.rest.server.SearchProcessInstancesWithInvolvedUser" scope="singleton" autowire="byName" />
+  <bean name="/getUsersByRoleAndActivity/{roleName}/{activityInstanceUuid}" class="org.inheritsource.service.rest.server.GetUsersByRoleAndActivity" scope="singleton" autowire="byName" />
+  <bean name="/getUserByDn/{dn}" class="org.inheritsource.service.rest.server.GetUserByDn" scope="singleton" autowire="byName" />
+  <bean name="/getUserBySerial/{serial}/{certificateSubject}" class="org.inheritsource.service.rest.server.GetUserBySerial" scope="singleton" autowire="byName" />
+  <bean name="/emailToInitiator/{processInstanceUuid}/{activityInstanceUuid}/{mailSubject}/{mailBody}" class="org.inheritsource.service.rest.server.EmailToInitiator" scope="singleton" autowire="byName" />
+  <bean name="/emailTo/{mailTo}/{mailFrom}/{mailSubject}/{mailBody}" class="org.inheritsource.service.rest.server.EmailTo" scope="singleton" autowire="byName" />
+  <bean name="/getMyProfile/{userid}" class="org.inheritsource.service.rest.server.GetMyProfileByUserId" scope="singleton" autowire="byName" />
+  <bean name="/getProcessDefinitionDetails/{processDefinitionUUID}" class="org.inheritsource.service.rest.server.GetProcessDefinitionDetails" scope="singleton" autowire="byName" />
+  <bean name="/getProcessDefinitions" class="org.inheritsource.service.rest.server.GetProcessDefinitions" scope="singleton" autowire="byName" />
+  <bean name="/setActivityForm/{activityDefinitionUuid}/{formPath}" class="org.inheritsource.service.rest.server.SetActivityForm" scope="singleton" autowire="byName" />
+</beans>
