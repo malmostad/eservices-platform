@@ -62,7 +62,7 @@ import org.inheritsource.service.common.domain.UserInfo;
 
 public class ActivitiEngineService {
 
-	private ProcessEngine engine = null; 
+	private static ProcessEngine engine = null; 
 	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
 	
 	public ActivitiEngineService() {
@@ -71,15 +71,17 @@ public class ActivitiEngineService {
 	
 	private void initEngine() {
 		
-		final String ACTIVITI_ENGINE_CONFIG_FILEPATH = "/usr/local/etc/motrice/activiti.cfg.xml";
-		ProcessEngineConfiguration engineConfig = loadConfigFromFile(ACTIVITI_ENGINE_CONFIG_FILEPATH);
-		
-		if (engineConfig == null) {
-			log.severe("The process engine will not be working!");
+		if(engine == null) {
+			final String ACTIVITI_ENGINE_CONFIG_FILEPATH = "/usr/local/etc/motrice/activiti.cfg.xml";
+			ProcessEngineConfiguration engineConfig = loadConfigFromFile(ACTIVITI_ENGINE_CONFIG_FILEPATH);
+
+			if (engineConfig == null) {
+				log.severe("The process engine will not be working!");
+			}
+			else {
+				engine =  engineConfig.buildProcessEngine();
+			}	
 		}
-		else {
-			engine =  engineConfig.buildProcessEngine();
-		}	
 	}
 	
 	private ProcessEngineConfiguration loadConfigFromFile(String fileName) {
@@ -462,9 +464,7 @@ public class ActivitiEngineService {
 					for(HistoricProcessInstance historicProcessInstance: historicProcessInstances) {
 						if(historicProcessInstance.getId().equals(executionId)) {
 							processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_FINISHED); // FIXME
-							// Note: id and processInstanceId must be the same here so it can be used in the following
-							processInstanceDetails.setStartedBy
-								(getHistoricStarterByProcessInstanceId(historicProcessInstance.getId()));
+							processInstanceDetails.setStartedBy(historicProcessInstance.getStartUserId());
 							processInstanceDetails.setStartDate(historicProcessInstance.getStartTime());
 							processInstanceDetails.setEndDate(historicProcessInstance.getEndTime());
 							
@@ -740,17 +740,17 @@ public class ActivitiEngineService {
 	}
 
 	
-	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
-			String startedByUserId, int fromIndex, int pageSize,
+	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(
+			String involvedUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String filter, String userId) {
 		
 		if(filter != null) {	
 			if(filter.equals("STARTED")) {
-				return(processInstancesStartedBy(startedByUserId, fromIndex, pageSize,
+				return(getPagedProcessInstanceSearchResult("", involvedUserId, fromIndex, pageSize,
 						sortBy, sortOrder, userId));
 			}
 			else if (filter.equals("FINISHED")){
-				return(historicProcessInstancesStartedBy(startedByUserId, fromIndex, pageSize,
+				return(getHistoricPagedProcessInstanceSearchResult("", involvedUserId, fromIndex, pageSize,
 						sortBy, sortOrder, userId));
 			}	
 		} 	
@@ -759,14 +759,33 @@ public class ActivitiEngineService {
 	}
 	
 	
-	// FIXME: Shall pageSize for returned objekt be adjusted if answer is shorter than the requested pageSize?
+	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
+			String startedByUserId, int fromIndex, int pageSize,
+			String sortBy, String sortOrder, String filter, String userId) {
+		
+		if(filter != null) {	
+			if(filter.equals("STARTED")) {
+				return(getPagedProcessInstanceSearchResult(IdentityLinkType.STARTER, startedByUserId, fromIndex, pageSize,
+						sortBy, sortOrder, userId));
+			}
+			else if (filter.equals("FINISHED")){
+				return(getHistoricPagedProcessInstanceSearchResult(IdentityLinkType.STARTER, startedByUserId, fromIndex, pageSize,
+						sortBy, sortOrder, userId));
+			}	
+		} 	
+		
+		return(null);
+	}
+	
+	
+	// FIXME: Should pageSize for returned objekt be adjusted if answer is shorter than the requested pageSize?
 	// FIXME: sortBy is always processInstanceId for the moment.
 	// FIXME: sortOrder is always asc for the moment.
-	// FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
-	// FIXME: set status is hardcoded to PENDING.
 	
-	private PagedProcessInstanceSearchResult processInstancesStartedBy(
-			String startedByUserId, int fromIndex, int pageSize,
+	// Note: CANCELLED and ABORTED statuses are not implemented.
+	
+	private PagedProcessInstanceSearchResult getPagedProcessInstanceSearchResult(String userSearchCriteria,
+			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String userId) {
 		List<ProcessInstance> processInstances = null;
 		int len = 0;
@@ -790,23 +809,28 @@ public class ActivitiEngineService {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			
 			List<ProcessInstance> processInstancesWithUserInvolved = engine.getRuntimeService().
-				createProcessInstanceQuery().involvedUser(startedByUserId).orderByProcessInstanceId().asc().list();
+				createProcessInstanceQuery().involvedUser(searchForUserId).orderByProcessInstanceId().asc().list();
 			
 			if(processInstancesWithUserInvolved != null && processInstancesWithUserInvolved.size() > 0) {
-				processInstances = new ArrayList<ProcessInstance>();
 				
-				for(ProcessInstance pIWithUserInvolved : processInstancesWithUserInvolved) {
-					String starterUserId = getStarterByProcessInstanceId(pIWithUserInvolved.getProcessInstanceId());
+				if(userSearchCriteria != null && userSearchCriteria.equals(IdentityLinkType.STARTER)) {
+					processInstances = new ArrayList<ProcessInstance>();
 					
-					if(starterUserId.equals(startedByUserId)) {
-						processInstances.add(pIWithUserInvolved);
+					for(ProcessInstance pIWithUserInvolved : processInstancesWithUserInvolved) {
+						String starterUserId = getStarterByProcessInstanceId(pIWithUserInvolved.getProcessInstanceId());
+						
+						if(starterUserId.equals(searchForUserId)) {
+							processInstances.add(pIWithUserInvolved);
+						}
 					}
+				} else {
+					processInstances = processInstancesWithUserInvolved;
 				}
 			}
-		
-			// Filter due to fromIndex and pageSize
 			
 			if(processInstances != null) {
+				
+				// Filter due to fromIndex and pageSize
 				
 				try {
 					// If exception is thrown for fromIndex element then list is cleared.
@@ -823,47 +847,74 @@ public class ActivitiEngineService {
 				} catch (Exception e) {
 					processInstances.clear();
 				}
-			}
-			
-			if(processInstances != null) { // FIXME: Refactoring is needed...
+				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
 				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
 			
+				HashMap<String, Date> startDates = getProcessInstanceStartDates(processInstances);
+				
 				for(ProcessInstance processInstance : processInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 					
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
 					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
-					processInstanceListItem.setStartDate(null); // FIXME
+					processInstanceListItem.setStartDate(startDates.get(processInstance.getId()));
 					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 					processInstanceListItem.setStartedByFormPath("");
-					processInstanceListItem.setEndDate(null); // FIXME
+					processInstanceListItem.setEndDate(null);
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
-						(getUserInboxByInvolvedUserInProcess(startedByUserId, processInstance.getProcessInstanceId()));
-					// FIXME: Should getUserInboxByInvolvedUserInProcess be used here? should tartedByUserId be used?
+						(getUserInboxByInvolvedUserInProcess(searchForUserId, processInstance.getId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
 				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
 			}
+			
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstancesStartedBy with startedByUserId: " + startedByUserId +
+			log.severe("Unable to getPagedProcessInstanceSearchResult with startedByUserId: " + searchForUserId +
 					" by userId: " + userId);
 			pagedProcessInstanceSearchResult = null;	
 		}
 		return pagedProcessInstanceSearchResult;
 	}
 	
-	// FIXME: set status is hardcoded to STATUS_FINISHED.
-	// FIXME: Historic identity links are coupled with processInstanceId and not executionid.
-	//        Historic id is processInstanceId ? or?
-	// FIXME: Should HistoricActivityInstance be used instead?
+	private HashMap<String, Date> getProcessInstanceStartDates(List<ProcessInstance> processInstances) {
+		Set<String> processInstanceIds = new HashSet<String>();
+		HashMap<String, Date> startDates = new HashMap<String, Date>();
+		
+		if(processInstances == null) {
+			return(startDates);
+		}
+		
+		for(ProcessInstance pI : processInstances) {
+			if(pI != null) {
+				processInstanceIds.add(pI.getProcessInstanceId());
+			}
+		}
+		
+		List<HistoricProcessInstance> historicProcessInstances = engine.getHistoryService().
+				createHistoricProcessInstanceQuery().processInstanceIds(processInstanceIds).list();
+
+		if(historicProcessInstances != null) {
+			for(HistoricProcessInstance hPI : historicProcessInstances) {
+				if(hPI != null) {
+					startDates.put(hPI.getId(), hPI.getStartTime());
+				}	
+			}
+		}
+		
+		return(startDates);
+	}
 	
-	private PagedProcessInstanceSearchResult historicProcessInstancesStartedBy(
-			String startedByUserId, int fromIndex, int pageSize,
+	// FIXME: Should pageSize for returned objekt be adjusted if answer is shorter than the requested pageSize?
+	// FIXME: sortBy is always processInstanceId for the moment.
+	// FIXME: sortOrder is always asc for the moment.
+	
+	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResult(String userSearchCriteria,
+			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String userId) {
 		List<HistoricProcessInstance> processInstances = null;
 		int len = 0;
@@ -887,25 +938,27 @@ public class ActivitiEngineService {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			
 			List<HistoricProcessInstance> processInstancesWithUserInvolved = engine.getHistoryService().
-					createHistoricProcessInstanceQuery().involvedUser(startedByUserId).finished().
+					createHistoricProcessInstanceQuery().involvedUser(searchForUserId).finished().
 						orderByProcessInstanceId().asc().list();
 		
 			if(processInstancesWithUserInvolved != null && processInstancesWithUserInvolved.size() > 0) {
-				processInstances = new ArrayList<HistoricProcessInstance>();
 				
-				for(HistoricProcessInstance pIWithUserInvolved : processInstancesWithUserInvolved) {
-					// FIXME: Better if processInstanceId could be used but maybe impossible for historic data
-					String starterUserId = getHistoricStarterByProcessInstanceId(pIWithUserInvolved.getId());
-
-					if(starterUserId.equals(startedByUserId)) {
-						processInstances.add(pIWithUserInvolved);
+				if(userSearchCriteria != null && userSearchCriteria.equals(IdentityLinkType.STARTER)) {
+					processInstances = new ArrayList<HistoricProcessInstance>();
+					
+					for(HistoricProcessInstance pIWithUserInvolved : processInstancesWithUserInvolved) {
+						if(searchForUserId != null && searchForUserId.equals(pIWithUserInvolved.getStartUserId())) {
+							processInstances.add(pIWithUserInvolved);
+						}
 					}
-				}
+				} else {
+					processInstances = processInstancesWithUserInvolved;
+				}	
 			}
 			
-			// Filter due to fromIndex and pageSize
-			
 			if(processInstances != null) {
+				
+				// Filter due to fromIndex and pageSize
 				
 				try {
 					// If exception is thrown for fromIndex element then list is cleared.
@@ -922,105 +975,37 @@ public class ActivitiEngineService {
 				} catch (Exception e) {
 					processInstances.clear();
 				}
-			}
-			
-			if(processInstances != null) { // FIXME: Refactoring is needed...
+				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
 				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
-			
+		
 				for(HistoricProcessInstance processInstance : processInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
-					
+				
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
 					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_FINISHED);
-					processInstanceListItem.setStartDate(null); // FIXME
-					// FIXME: Better if processInstanceId could be used but maybe impossible for historic data
-					processInstanceListItem.setStartedBy(getHistoricStarterByProcessInstanceId(processInstance.getId()));
+					processInstanceListItem.setStartDate(processInstance.getStartTime());
+					processInstanceListItem.setStartedBy(processInstance.getStartUserId());
 					processInstanceListItem.setStartedByFormPath("");
-					processInstanceListItem.setEndDate(null); // FIXME
+					processInstanceListItem.setEndDate(processInstance.getEndTime());
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
-						(getHistoricUserInboxByInvolvedUserInProcess(startedByUserId, processInstance.getId()));
-					// FIXME: Should getUserInboxByInvolvedUserInProcess be used here? should tartedByUserId be used?
+						(getHistoricUserInboxByInvolvedUserInProcess(searchForUserId, processInstance.getId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
 				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to historicProcessInstancesStartedBy with startedByUserId: " + startedByUserId +
+			log.severe("Unable to getHistoricPagedProcessInstanceSearchResult with searchForUserId: " + searchForUserId +
 					" by userId: " + userId);
 			pagedProcessInstanceSearchResult = null;	
 		}
 		return pagedProcessInstanceSearchResult;
 	}
-	
-	// FIXME: sortBy is always processInstanceId for the moment.
-	// FIXME: sortOrder is always asc for the moment.
-    // FIXME: filter is not used for the moment.
-    // FIXME: userId is set as setAuthenticatedUserId, but it is maybe not necessary?
-	// FIXME: set status is hardcoded to PENDING.
-	// FIXME: Historic data is not implemented
-	
-	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(
-			String searchForUserId, int fromIndex, int pageSize,
-			String sortBy, String sortOrder, String filter, String userId) {
-		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
-			
-		if(fromIndex < 0) {
-			fromIndex = 0;
-		}
 		
-		if(pageSize < 0) {
-			pageSize = 0;
-		}
-		
-		pagedProcessInstanceSearchResult.setFromIndex(fromIndex);
-		pagedProcessInstanceSearchResult.setPageSize(pageSize);
-		pagedProcessInstanceSearchResult.setSortBy(sortBy);
-		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
-		
-		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId);
-			
-			List<ProcessInstance> processInstances = engine.getRuntimeService().
-				createProcessInstanceQuery().involvedUser(searchForUserId).orderByProcessInstanceId().asc().
-					listPage(fromIndex, pageSize);
-			
-			if(processInstances != null) {  // FIXME: Refactoring is needed...
-				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
-				
-				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
-			
-				for(ProcessInstance processInstance : processInstances) {
-					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
-					
-					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
-					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
-					processInstanceListItem.setStartDate(null); // FIXME
-					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
-					processInstanceListItem.setStartedByFormPath("");
-					processInstanceListItem.setEndDate(null); // FIXME
-					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
-					processInstanceListItem.setProcessLabel(""); // FIXME
-					processInstanceListItem.setActivities
-						(getUserInboxByInvolvedUserInProcess(searchForUserId, processInstance.getId()));
-					// FIXME: Should getUserInboxByInvolvedUserInProcess be used here? should startedByUserId be used?
-					processInstanceListItems.add(processInstanceListItem);
-				}
-
-				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
-			}
-		} catch (Exception e) {
-			log.severe("Unable to getProcessInstancesWithInvolvedUser with searchForUserId: " + searchForUserId +
-					" by userId: " + userId);
-			pagedProcessInstanceSearchResult = null;	
-		}
-		return pagedProcessInstanceSearchResult;
-	}
-	
 	// FIXME: sortBy is always processInstanceId for the moment.
 	// FIXME: sortOrder is always asc for the moment.
 	// FIXME: filter is not used for the moment.
@@ -1077,7 +1062,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
 					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
 					processInstanceListItem.setStartDate(null); // FIXME
-					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId())); 
+					processInstanceListItem.setStartedBy(/*FIXME: Maybe change */getStarterByProcessInstanceId(processInstance.getProcessInstanceId())); 
 					processInstanceListItem.setStartedByFormPath("");
 					processInstanceListItem.setEndDate(null); // FIXME
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
@@ -1229,9 +1214,6 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
-		
-		
-		
 		/*
 		Execution execution = activitiEngineService.engine.getRuntimeService().createExecutionQuery().
 				executionId("1301").singleResult();
@@ -1243,6 +1225,21 @@ public class ActivitiEngineService {
 		/*
 		PagedProcessInstanceSearchResult p = activitiEngineService.
 				getProcessInstancesStartedBy("admin", 0, 100, null, null, "FINISHED", "admin");
+		log.severe("p:" + p);
+		*/
+		/*
+		PagedProcessInstanceSearchResult p = activitiEngineService.
+				getProcessInstancesStartedBy("admin", 0, 100, null, null, "STARTED", "admin");
+		log.severe("p:" + p);
+		*/
+		/*
+		PagedProcessInstanceSearchResult p = activitiEngineService.
+				getProcessInstancesWithInvolvedUser("admin", 0, 100, null, null, "STARTED", "admin");
+		log.severe("p:" + p);
+		*/
+		/*
+		PagedProcessInstanceSearchResult p = activitiEngineService.
+				getProcessInstancesWithInvolvedUser("admin", 0, 100, null, null, "FINISHED", "admin");
 		log.severe("p:" + p);
 		*/
 		/*
@@ -1376,11 +1373,11 @@ public class ActivitiEngineService {
 		}
 		*/
 		
-		Deployment deployment = activitiEngineService.deployBpmn
-//				("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
-	            ("/home/bjmo/workspaces/motrice2/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
+		//Deployment deployment = activitiEngineService.deployBpmn
+		//		("/home/pama/workspace/motrice/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
+//	            ("/home/bjmo/workspaces/motrice2/pawap/bpm-processes/Arendeprocess.bpmn20.xml");
 		
-		log.severe("Deployment with id: " + deployment.getId());
+	//	log.severe("Deployment with id: " + deployment.getId());
 		
 		System.exit(0);
 	}
@@ -1434,22 +1431,7 @@ public class ActivitiEngineService {
 			}
 		}
 		
-		return "";
-	}
-	
-	private String getHistoricStarterByProcessInstanceId(String processInstanceId) {
-		List<HistoricIdentityLink> identityLinks = engine.getHistoryService().
-				getHistoricIdentityLinksForProcessInstance(processInstanceId);
-				
-		if(identityLinks != null) {
-			for(HistoricIdentityLink iL : identityLinks) {
-				if(iL.getType().equals(IdentityLinkType.STARTER)) {
-					return(iL.getUserId());
-				}
-			}
-		}
-		
-		return "";
+		return "";		
 	}
 	
 	private String getStarterByTaskId(String taskId) {
