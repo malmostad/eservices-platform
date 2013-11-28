@@ -180,7 +180,7 @@ class PxdFormdefVer implements Comparable {
       app(appName)
       form(formName)
       path(path)
-      version(published: publishedFlag, fvno)
+      verno(published: publishedFlag, fvno)
       publishedFlag? draft() : draft(draft)
       title(title)
       description(description)
