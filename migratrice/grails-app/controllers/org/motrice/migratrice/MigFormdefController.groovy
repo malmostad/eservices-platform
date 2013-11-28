@@ -41,8 +41,6 @@ class MigFormdefController {
       return
     }
 
-    // DEBUG
-    def wacko = params.max/0
     [migFormdefInst: migFormdefInst]
   }
 
