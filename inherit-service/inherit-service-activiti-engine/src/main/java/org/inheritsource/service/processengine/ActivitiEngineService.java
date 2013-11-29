@@ -309,12 +309,7 @@ public class ActivitiEngineService {
 			
 			// ActivityInstancePendingItem
 			item.setCandidates(getCandidatesByTaskId(task.getId()));
-			
-			UserInfo assignedUser = new UserInfo();
-			assignedUser.setUuid(task.getAssignee());
-			assignedUser.setLabel(task.getAssignee());
-			assignedUser.setLabelShort(task.getAssignee());
-			item.setAssignedUser(assignedUser);
+			item.setAssignedUser(userId2UserInfo(task.getAssignee()));
 		}
 		return item;
 	}
@@ -350,12 +345,7 @@ public class ActivitiEngineService {
 			
 			// ActivityInstancelogItem
 			item.setEndDate(task.getEndTime());
-			
-			UserInfo performedByUser = new UserInfo();
-			performedByUser.setUuid(task.getAssignee());
-			performedByUser.setLabel(task.getAssignee());
-			performedByUser.setLabelShort(task.getAssignee());
-			item.setPerformedByUser(performedByUser);
+			item.setPerformedByUser(userId2UserInfo(task.getAssignee()));
 			item.setViewUrl("");
 		}
 		return item;
@@ -427,7 +417,7 @@ public class ActivitiEngineService {
 			if(execution != null) {
 				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
 				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(execution.getProcessInstanceId()));
-				processInstanceDetails.setStartDate(getProcessInstanceStartDateByExecutionId(executionId)); // FIXME: Hämta från den historiska processen?
+				processInstanceDetails.setStartDate(getProcessInstanceStartDateByExecutionId(executionId));
 				processInstanceDetails.setEndDate(null);
 				processInstanceDetails.setProcessInstanceUuid(execution.getId());
 				
@@ -599,12 +589,7 @@ public class ActivitiEngineService {
 					cFItem.setActivityLabel(""); // FIXME
 					cFItem.setTimestamp(comment.getTime());
 					cFItem.setMessage(comment.getFullMessage());
-					
-					userInfo = new UserInfo();
-					userInfo.setUuid(comment.getUserId());
-					userInfo.setLabel(comment.getUserId());
-					userInfo.setLabelShort(comment.getUserId());
-					cFItem.setUser(userInfo);
+					cFItem.setUser(userId2UserInfo(comment.getUserId()));
 					
 					commentFeedItems.add(cFItem);
 				}
@@ -625,11 +610,7 @@ public class ActivitiEngineService {
 			
 			activityWorkflowInfo = new ActivityWorkflowInfo();
 			activityWorkflowInfo.setPriority(task.getPriority());
-			UserInfo assignedUser = new UserInfo();
-			assignedUser.setUuid(task.getAssignee());
-			assignedUser.setLabel(task.getAssignee());
-			assignedUser.setLabelShort(task.getAssignee());
-			activityWorkflowInfo.setAssignedUser(assignedUser);
+			activityWorkflowInfo.setAssignedUser(userId2UserInfo(task.getAssignee()));
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
 			log.severe("Unable to getActivityWorkflowInfo with taskId: " + taskId);
@@ -649,11 +630,7 @@ public class ActivitiEngineService {
 			
 			activityWorkflowInfo = new ActivityWorkflowInfo();
 			activityWorkflowInfo.setPriority(task.getPriority());
-			UserInfo assignedUser = new UserInfo();
-			assignedUser.setUuid(userId);
-			assignedUser.setLabel(userId);
-			assignedUser.setLabelShort(userId);
-			activityWorkflowInfo.setAssignedUser(assignedUser);
+			activityWorkflowInfo.setAssignedUser(userId2UserInfo(userId));
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
 			log.severe("Unable to assignTask with taskId: " + taskId);
@@ -1616,6 +1593,20 @@ public class ActivitiEngineService {
 		}
 	
 		return candidates;
+	}
+	
+	private UserInfo userId2UserInfo(String userId) {
+		UserInfo userInfo = new UserInfo();
+		
+		if(userId == null) {
+			userId = "";
+		}
+		
+		userInfo.setUuid(userId);
+		userInfo.setLabel(userId);
+		userInfo.setLabelShort(userId);
+		
+		return userInfo;
 	}
 	
 		
