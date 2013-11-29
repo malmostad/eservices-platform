@@ -415,9 +415,7 @@ public class ActivitiEngineService {
 		
 		try {
 			processInstanceDetails = new ProcessInstanceDetails();
-			ArrayList<String> addedPendingTaskIds = new ArrayList<String>();
-			
-			// Data  hard coded added first.
+
 			processInstanceDetails.setProcessInstanceLabel(""); // FIXME
 			processInstanceDetails.setStartedByFormPath("");
 			
@@ -443,7 +441,6 @@ public class ActivitiEngineService {
 					
 					for(Task task : tasks) {
 						activityInstancePendingItems.add(task2ActivityInstancePendingItem(task));
-						addedPendingTaskIds.add(task.getId());
 					}
 					
 					processInstanceDetails.setPending(activityInstancePendingItems);	
@@ -481,16 +478,13 @@ public class ActivitiEngineService {
 			// Handle historic tasks
 				
 			List<HistoricTaskInstance> historicTasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
-				executionId(executionId).orderByHistoricTaskInstanceStartTime().asc().list();
+				executionId(executionId).finished().orderByHistoricTaskInstanceStartTime().asc().list();
 			
 			if(historicTasks != null) {
 				List<TimelineItem> activityInstanceLogItems = new ArrayList<TimelineItem>();
 				
 				for (HistoricTaskInstance historicTask : historicTasks) {
-					
-					if(!addedPendingTaskIds.contains(historicTask.getId())) {
-						activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
-					}
+					activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
 				}
 				
 				Timeline timeline = new Timeline();
@@ -509,8 +503,10 @@ public class ActivitiEngineService {
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(String taskId) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
+		// Note: Both tasks and historic tasks are represented i the history service. 
+		
 		try {
-			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+			HistoricTaskInstance task = engine.getHistoryService().createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
 
 			if(task != null) {
 				processInstanceDetails = getProcessInstanceDetails(task.getExecutionId());
