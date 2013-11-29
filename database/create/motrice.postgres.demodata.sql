@@ -16,7 +16,7 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'start/demo-ansokan--v002',
-            'ArendeprocessSignStartForm--1.0',
+            'TestFunctionProcess1:1:9',
             ''
 );
 INSERT INTO mtf_start_form_definition(
@@ -44,7 +44,7 @@ INSERT INTO mtf_start_form_definition(
             nextval('hibernate_sequence'), 
             'USERSESSION',
             'miljoforvaltningen/anmalan-hemkompostering--v002',
-            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--3.0',
+            'Arendeprocess:1:4',
             ''
 );
 
@@ -305,6 +305,58 @@ INSERT INTO mtf_activity_form_definition(
             nextval('hibernate_sequence'), 
             'Forenklad_delgivning_till_inkorg--3.0--Ta_del_av_beslut', 
             'miljoforvaltningen/fdelgivning-ta-del-beslut--v002', 
+            NULL
+);
+
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            '_7', 
+            'none', 
+            NULL
+);
+
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            '_11', 
+            'none', 
+            NULL
+);
+
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            '_13', 
+            'none', 
+            NULL
+);
+
+INSERT INTO mtf_activity_form_definition(
+            activityformdefinitionid, 
+            activitydefinitionuuid, 
+            formpath, 
+            startformdefinitionid
+            )
+       VALUES (
+            nextval('hibernate_sequence'), 
+            '_27', 
+            'none', 
             NULL
 );
 
