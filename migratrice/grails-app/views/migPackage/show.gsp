@@ -67,6 +67,8 @@
       <g:form>
 	<fieldset class="buttons">
 	  <g:hiddenField name="id" value="${migPackageInst?.id}" />
+	  <g:actionSubmit class="export" action="export" value="${message(code: 'migPackage.button.label.export', default: 'Export')}"/>
+	  <g:actionSubmit class="install" action="install" value="${message(code: 'migPackage.button.label.install', default: 'Install')}"/>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirm deletion')}');" />
 	</fieldset>
       </g:form>

@@ -11,7 +11,7 @@
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<li><g:link class="create" action="listexp"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+	<li><g:link class="newpackage" action="listexp"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
       </ul>
     </div>
     <div id="list-migPackage" class="content scaffold-list" role="main">

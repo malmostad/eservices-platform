@@ -1,6 +1,8 @@
 package org.motrice.migratrice
 
+import groovy.xml.MarkupBuilder
 import org.springframework.dao.DataIntegrityViolationException
+import org.motrice.zip.ZipBuilder
 
 class MigPackageController {
   // Injection magic
@@ -31,6 +33,32 @@ class MigPackageController {
   }
 
   /**
+   * Export a package as a zip file
+   */
+  def export(Long id) {
+    def migPackageInst = MigPackage.get(id)
+    if (!migPackageInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'migPackage.label', default: 'MigPackage'), id])
+      redirect(action: "list")
+      return
+    }
+
+    new ZipBuilder(new FileOutputStream('/tmp/package.zip')).zip {
+      entry("package#${migPackageInst.id}") {
+	migPackageInst.toXml(new MarkupBuilder(new OutputStreamWriter(it, 'UTF-8')))
+      }
+    }
+
+    render(view: 'show', model: [migPackageInst: migPackageInst])
+  }
+
+  /**
+   * Install a package
+   */
+  def install() {
+  }
+
+  /**
    * List formdefs for creating an export package
    */
   def listexp(Integer max) {
@@ -56,17 +84,6 @@ class MigPackageController {
       flash.message = message(code: 'migPackage.package.name.required')
       redirect(action: 'listexp')
     }
-  }
-
-  def xxxsaveexp() {
-    def migPackageInst = new MigPackage(params)
-    if (!migPackageInst.save(flush: true)) {
-      render(view: "create", model: [migPackageInst: migPackageInst])
-      return
-    }
-
-    flash.message = message(code: 'default.created.message', args: [message(code: 'migPackage.label', default: 'MigPackage'), migPackageInst.id])
-    redirect(action: "show", id: migPackageInst.id)
   }
 
   def save() {

@@ -190,7 +190,7 @@ img {
 	text-decoration: underline;
 }
 
-.nav a.home, .nav a.list, .nav a.create {
+.nav a.home, .nav a.list, .nav a.create, .nav a.newpackage {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
@@ -206,6 +206,10 @@ img {
 
 .nav a.create {
 	background-image: url(../images/skin/database_add.png);
+}
+
+.nav a.newpackage {
+	background-image: url(../images/silk/package_add.png);
 }
 
 /* CREATE/EDIT FORMS AND SHOW PAGES */
@@ -576,7 +580,8 @@ th:hover, tr:hover {
 }
 
 .buttons .delete, .buttons .edit, .buttons .save,
-.buttons .add, .buttons .checkall, .buttons .clearall, .buttons .remove {
+.buttons .add, .buttons .checkall, .buttons .clearall, .buttons .remove,
+.buttons .export, .buttons .install {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
@@ -617,6 +622,14 @@ th:hover, tr:hover {
 
 .buttons .clearall {
 	background-image: url(../images/silk/cross.png);
+}
+
+.buttons .export {
+	background-image: url(../images/silk/arrow_down.png);
+}
+
+.buttons .install {
+	background-image: url(../images/silk/arrow_rotate_clockwise.png);
 }
 
 a.skip {
