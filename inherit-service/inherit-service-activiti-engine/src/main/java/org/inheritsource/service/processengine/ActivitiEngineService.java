@@ -57,9 +57,6 @@ import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
 
 
-// FIXME: Should be added everywhere a userID is sent to activiti?
-// engine.getIdentityService().setAuthenticatedUserId(userId); 
-
 public class ActivitiEngineService {
 
 	private static ProcessEngine engine = null; 
@@ -315,6 +312,8 @@ public class ActivitiEngineService {
 			
 			UserInfo assignedUser = new UserInfo();
 			assignedUser.setUuid(task.getAssignee());
+			assignedUser.setLabel(task.getAssignee());
+			assignedUser.setLabelShort(task.getAssignee());
 			item.setAssignedUser(assignedUser);
 		}
 		return item;
@@ -354,6 +353,8 @@ public class ActivitiEngineService {
 			
 			UserInfo performedByUser = new UserInfo();
 			performedByUser.setUuid(task.getAssignee());
+			performedByUser.setLabel(task.getAssignee());
+			performedByUser.setLabelShort(task.getAssignee());
 			item.setPerformedByUser(performedByUser);
 			item.setViewUrl("");
 		}
@@ -408,7 +409,6 @@ public class ActivitiEngineService {
 		return dashOpenActivities;
 	}
 
-	// FIXME: Several fields are not set correct in the method!
 	
 	public ProcessInstanceDetails getProcessInstanceDetails(String executionId) {
 		ProcessInstanceDetails processInstanceDetails = null;
@@ -426,11 +426,12 @@ public class ActivitiEngineService {
 			Execution execution = engine.getRuntimeService().createExecutionQuery().
 				executionId(executionId).singleResult();
 			
-			if(execution != null) {	
+			if(execution != null) {
 				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
 				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(execution.getProcessInstanceId()));
-				processInstanceDetails.setStartDate(null);
+				processInstanceDetails.setStartDate(getProcessInstanceStartDateByExecutionId(executionId)); // FIXME: Hämta från den historiska processen?
 				processInstanceDetails.setEndDate(null);
+				processInstanceDetails.setProcessInstanceUuid(execution.getId());
 				
 				// Handle pendings
 				
@@ -447,7 +448,6 @@ public class ActivitiEngineService {
 					
 					processInstanceDetails.setPending(activityInstancePendingItems);	
 					
-					// FIXME: Should historic tasks be added here?
 					processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks)));
 				}	
 			} else {
@@ -528,7 +528,7 @@ public class ActivitiEngineService {
 		int retVal = -1;
 		
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used?
+			engine.getIdentityService().setAuthenticatedUserId(userId);
 			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 			
 			if(task != null) {
@@ -606,6 +606,8 @@ public class ActivitiEngineService {
 					
 					userInfo = new UserInfo();
 					userInfo.setUuid(comment.getUserId());
+					userInfo.setLabel(comment.getUserId());
+					userInfo.setLabelShort(comment.getUserId());
 					cFItem.setUser(userInfo);
 					
 					commentFeedItems.add(cFItem);
@@ -629,6 +631,8 @@ public class ActivitiEngineService {
 			activityWorkflowInfo.setPriority(task.getPriority());
 			UserInfo assignedUser = new UserInfo();
 			assignedUser.setUuid(task.getAssignee());
+			assignedUser.setLabel(task.getAssignee());
+			assignedUser.setLabelShort(task.getAssignee());
 			activityWorkflowInfo.setAssignedUser(assignedUser);
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
@@ -651,6 +655,8 @@ public class ActivitiEngineService {
 			activityWorkflowInfo.setPriority(task.getPriority());
 			UserInfo assignedUser = new UserInfo();
 			assignedUser.setUuid(userId);
+			assignedUser.setLabel(userId);
+			assignedUser.setLabelShort(userId);
 			activityWorkflowInfo.setAssignedUser(assignedUser);
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
@@ -710,7 +716,7 @@ public class ActivitiEngineService {
 		String executionId = null;
 		
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used here?
+			engine.getIdentityService().setAuthenticatedUserId(userId);
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
 			executionId = processInstance.getId();
 		} catch (Exception e) {
@@ -724,7 +730,7 @@ public class ActivitiEngineService {
 		boolean successful = false;
 			
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used here?
+			engine.getIdentityService().setAuthenticatedUserId(userId);
 			// Note: ActivitiTaskAlreadyClaimedException - when the task is already claimed by another user.
 			engine.getTaskService().claim(taskId, userId);
 			
@@ -904,6 +910,32 @@ public class ActivitiEngineService {
 		}
 		
 		return(startDates);
+	}
+	
+	private Date getProcessInstanceStartDateByExecutionId(String executionId) {
+		Date startDate = null;
+		
+		if(executionId == null) {
+			return(startDate);
+		}
+	
+		// Note: Search at first for processInstanceId with value as executionId.
+		// This gives potentially several instances so the correct one haf to be found at first
+		// This can be optimized.
+		
+		List<HistoricProcessInstance> historicProcessInstances = engine.getHistoryService().
+				createHistoricProcessInstanceQuery().processInstanceId(executionId).list();
+
+		if(historicProcessInstances != null) {
+			for(HistoricProcessInstance hPI : historicProcessInstances) {
+				if(hPI != null && hPI.getId().equals(executionId)) {
+					startDate = hPI.getStartTime();
+					break;
+				}	
+			}
+		}
+		
+		return(startDate);
 	}
 	
 	// FIXME: sortBy is always processInstanceId for the moment.
@@ -1580,6 +1612,8 @@ public class ActivitiEngineService {
 				if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
 					candidate = new UserInfo();
 					candidate.setUuid(iL.getUserId());
+					candidate.setLabel(iL.getUserId());
+					candidate.setLabelShort(iL.getUserId());
 					candidates.add(candidate);
 				}
 			}
