@@ -1554,6 +1554,14 @@ public class ActivitiEngineService {
 		
 	//	log.severe("Deployment with id: " + deployment.getId());
 		
+		// run 
+		// mvn exec:java
+		// in inherit-service/inherit-service-activiti-engine directory
+		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
+		deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
+		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
+		
 		System.exit(0);
 	}
 	
