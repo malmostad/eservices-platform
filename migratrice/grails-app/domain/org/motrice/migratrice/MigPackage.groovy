@@ -45,6 +45,7 @@ class MigPackage implements Comparable {
 
   /**
    * Bootstrap init causes this method to be used for rendering as XML
+   * @param xml must be a grails.converters.XML
    */
   def toXML(xml) {
     siteName(siteName)

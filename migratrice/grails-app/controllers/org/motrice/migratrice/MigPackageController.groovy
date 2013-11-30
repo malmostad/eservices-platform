@@ -1,6 +1,5 @@
 package org.motrice.migratrice
 
-import groovy.xml.MarkupBuilder
 import org.springframework.dao.DataIntegrityViolationException
 import org.motrice.zip.ZipBuilder
 
@@ -42,14 +41,18 @@ class MigPackageController {
       redirect(action: "list")
       return
     }
-
+    /*
     new ZipBuilder(new FileOutputStream('/tmp/package.zip')).zip {
       entry("package#${migPackageInst.id}") {
-	migPackageInst.toXml(new MarkupBuilder(new OutputStreamWriter(it, 'UTF-8')))
+	(migPackageInst as XML).render(new OutputStreamWriter(it, 'UTF-8'))
       }
     }
+    */
 
-    render(view: 'show', model: [migPackageInst: migPackageInst])
+    render(contentType: "text/xml") {
+      migPackageInst
+    }
+    //render(view: 'show', model: [migPackageInst: migPackageInst])
   }
 
   /**
