@@ -110,11 +110,11 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	private Set<InboxTaskItem> getUserInboxInProcess(String executionId) {
+	private Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
 		List<Task> tasks = engine.getTaskService().createTaskQuery().
-			executionId(executionId).orderByTaskCreateTime().asc().list();
+			processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
 		
 		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
 		
@@ -126,7 +126,7 @@ public class ActivitiEngineService {
 		
 		return result;
 	}
-
+	
 	private Set<InboxTaskItem> getHistoricUserInboxInProcess(String executionId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
@@ -167,6 +167,9 @@ public class ActivitiEngineService {
 	}
 	
 	// FIXME: label fields are not set
+	// FIXME: setProcessInstanceUuid should be called setProcessInstanceId in InboxTaskItem
+	// FIXME: setRootProcessInstanceUuid should be called setMainProcessInstanceId in InboxTaskItem
+	// FIXME: setRootProcessDefinitionUuid should be called setMainProcessDefinitionId in InboxTaskItem
 	
 	private InboxTaskItem task2InboxTaskItem(Task task) {
 		InboxTaskItem item = null;
@@ -179,34 +182,63 @@ public class ActivitiEngineService {
 			item.setExternalUrl(""); // Will be set in TaskFormService
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
-			item.setProcessInstanceUuid(task.getExecutionId());
+			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setProcessLabel(""); // FIXME
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
-			item.setRootProcessInstanceUuid(task.getProcessInstanceId());
-
-			if (task.getProcessInstanceId()!=null) {
-			// Following could be optimized, use Execution and a cast to ProcessInstance to getProcessDefinitionId() 
-			
-			List<ProcessInstance> processInstances = engine.getRuntimeService().createProcessInstanceQuery()
-				.processInstanceId(task.getProcessInstanceId()).list();
-			
-				if(processInstances != null) {
-					for(ProcessInstance pI : processInstances) {
-						if(pI.getId().equals(pI.getProcessInstanceId())) {
-							item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId());
-							break;
-						}
-					} 
-				}
-				else {
-					item.setRootProcessDefinitionUuid(""); 
-				}
-			}
+			item.setRootProcessInstanceUuid(getMainProcessInstanceIdByProcessInstanceId
+				(task.getProcessInstanceId()));
+			item.setRootProcessDefinitionUuid(getProcessDefinitionIdByProcessInstanceId
+				(item.getRootProcessInstanceUuid())); 
 			
 		}
 		return item;
 	}
+	
+	private String getMainProcessInstanceIdByProcessInstanceId(String processInstanceId) {
+		
+		ProcessInstance processInstance = null;
+		String mainProcessInstanceId = null;
+		boolean mainProcessInstanceFound = false;
+		
+		try {
+			while(!mainProcessInstanceFound) {
+				processInstance = engine.getRuntimeService().createProcessInstanceQuery().
+						subProcessInstanceId(processInstanceId).singleResult();
+				
+				if(processInstance == null) {
+					mainProcessInstanceFound = true;
+					mainProcessInstanceId = processInstanceId;
+				} else {
+					processInstanceId = processInstance.getProcessInstanceId();
+				}
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getMainProcessInstanceIdByProcessInstanceId with processInstanceId: " +
+				processInstanceId);
+		}
+		
+		return mainProcessInstanceId;
+	}
+	
+	private String getProcessDefinitionIdByProcessInstanceId(String processInstanceId) {
+		String processDefinitionId = null;
+		
+		try {
+			ProcessInstance processInstance = engine.getRuntimeService().createProcessInstanceQuery().
+				processInstanceId(processInstanceId).singleResult();
+			
+			if(processInstance != null) {
+				processDefinitionId = processInstance.getProcessDefinitionId();
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessDefinitionIdByProcessInstanceId with processInstanceId: " +
+				processInstanceId);
+		}
+		
+		return processDefinitionId;
+	}
+	
 	
 	private InboxTaskItem historicTask2InboxTaskItem(HistoricTaskInstance task) {
 		InboxTaskItem item = null;
@@ -855,7 +887,8 @@ public class ActivitiEngineService {
 					processInstanceListItem.setEndDate(null);
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
-					processInstanceListItem.setActivities(getUserInboxInProcess(processInstance.getId()));
+					processInstanceListItem.setActivities(getUserInboxByProcessInstanceId
+						(processInstance.getProcessInstanceId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -1137,7 +1170,8 @@ public class ActivitiEngineService {
 					processInstanceListItem.setEndDate(null);
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
-					processInstanceListItem.setActivities(getUserInboxInProcess(processInstance.getId()));
+					processInstanceListItem.setActivities(getUserInboxByProcessInstanceId
+						(processInstance.getProcessInstanceId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -1397,6 +1431,27 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
+		/*
+		// getDeployedDeploymentIds
+		List<String> deploymentIds = activitiEngineService.getDeployedDeploymentIds();
+		// deleteDeploymentByDeploymentId
+		for(String deploymentId : deploymentIds) {
+			activitiEngineService.deleteDeploymentByDeploymentId(deploymentId, true);
+		}
+		
+		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
+		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
+		String processDefinitionId = engine.getRepositoryService().createProcessDefinitionQuery().
+			deploymentId(deployment.getId()).orderByProcessDefinitionId().desc().list().get(0).getId();
+		activitiEngineService.startProcess(processDefinitionId, "admin");
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
+		activitiEngineService.executeTask(inbox.get(0).getTaskUuid(), "admin");
+		inbox = activitiEngineService.getUserInbox("admin");
+		log.severe(inbox.toString());
+		activitiEngineService.executeTask(inbox.get(0).getTaskUuid(), "admin");
+		activitiEngineService.executeTask(inbox.get(1).getTaskUuid(), "admin");
+		log.severe(inbox.toString());
+		*/
 	/*	
 		log.severe(activitiEngineService.getPagedProcessInstanceSearchResult("",
 				null, 0, 100,
@@ -1599,23 +1654,6 @@ public class ActivitiEngineService {
 		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
 		
 		System.exit(0);
-	}
-	
-	private Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
-		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
-		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().processInstanceId(processInstanceId).
-			orderByTaskCreateTime().asc().list();
-		
-		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks);
-		
-		if(inboxTaskItemList != null) {
-			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
-				result.add(inboxTaskItem);
-			}
-		}
-		
-		return result;
 	}
 	
 	private HashSet<UserInfo> getCandidatesByTaskId(String taskId) {
