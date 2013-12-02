@@ -341,14 +341,13 @@ public class InboxTaskItem implements Serializable, Comparable{
 				+ "\n    expectedEndDate : " + expectedEndDate
 				+ "\n    processActivityFormInstanceId : "
 				+ processActivityFormInstanceId
+				+ "\n    rootProcessInstanceUuid : " + rootProcessInstanceUuid
 				+ "\n    processInstanceUuid : " + processInstanceUuid
 				+ "\n    taskUuid : " + taskUuid
-				+ "\n    processDefinitionUuid : " + processDefinitionUuid
-				+ "\n    activityDefinitionUuid : " + activityDefinitionUuid
-				+ "\n    externalUrl : " + externalUrl
+				+ "\n    rootProcessDefinitionUuid : "
+				+ rootProcessDefinitionUuid + "\n    processDefinitionUuid : "
+				+ processDefinitionUuid + "\n    activityDefinitionUuid : "
+				+ activityDefinitionUuid + "\n    externalUrl : " + externalUrl
 				+ "\n    startedByFormPath : " + startedByFormPath + "\n}";
 	}
-
-
-
 }
