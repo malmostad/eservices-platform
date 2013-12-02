@@ -373,6 +373,11 @@ public class ActivitiEngineService {
 			// tasks with a dueDate after (TODAY + remainingDays)
 			long onTrackLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueAfter(TODAY_ADDED_WITH_REMAINING_DAYS).count();
 			int onTrack = new Long(onTrackLong).intValue();
+			
+			// Add tasks without duedate to onTrack
+			long withoutDueDateLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueDate(null).count();
+			int withoutDueDate = new Long(withoutDueDateLong).intValue();
+			onTrack = onTrack + withoutDueDate;
 	
 			// overdue
 			// tasks with a duteDate before TODAY.
@@ -1376,6 +1381,8 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
+		log.severe(activitiEngineService.getDashOpenActivitiesByUserId("admin", 7).toString());
+		
 		/*
 		List<String> executionIds = new ArrayList<String>();
 		executionIds.add("701");
