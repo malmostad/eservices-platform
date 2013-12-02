@@ -785,7 +785,7 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
 		
-		if(userSearchCriteria == null) {
+		if(searchForUserId == null) {
 			return(pagedProcessInstanceSearchResult);
 		}
 		
@@ -942,7 +942,7 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
 		
-		if(userSearchCriteria == null) {
+		if(searchForUserId == null) {
 			return(pagedProcessInstanceSearchResult);
 		}
 		
@@ -1391,6 +1391,10 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
+		
+		log.severe(activitiEngineService.getPagedProcessInstanceSearchResult("",
+				null, 0, 100,
+				"", "", "admin").toString());
 		/*
 		List<String> emptyList = new ArrayList<String>();
 		log.severe(	activitiEngineService.getProcessInstancesByUuids
