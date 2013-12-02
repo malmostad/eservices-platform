@@ -785,6 +785,10 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
 		
+		if(userSearchCriteria == null) {
+			return(pagedProcessInstanceSearchResult);
+		}
+		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			
@@ -937,6 +941,10 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setPageSize(pageSize);
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		if(userSearchCriteria == null) {
+			return(pagedProcessInstanceSearchResult);
+		}
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
