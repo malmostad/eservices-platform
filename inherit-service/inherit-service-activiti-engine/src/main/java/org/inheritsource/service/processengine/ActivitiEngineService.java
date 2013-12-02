@@ -66,6 +66,12 @@ public class ActivitiEngineService {
 		initEngine();		
 	}
 	
+	public void close() {
+		if(engine != null) {
+			engine.close();
+		}
+	}
+	
 	private void initEngine() {
 		
 		if(engine == null) {
@@ -1391,10 +1397,11 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
-		
+	/*	
 		log.severe(activitiEngineService.getPagedProcessInstanceSearchResult("",
 				null, 0, 100,
 				"", "", "admin").toString());
+				*/
 		/*
 		List<String> emptyList = new ArrayList<String>();
 		log.severe(	activitiEngineService.getProcessInstancesByUuids
