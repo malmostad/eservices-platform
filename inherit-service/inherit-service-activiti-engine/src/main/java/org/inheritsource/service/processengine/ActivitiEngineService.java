@@ -88,7 +88,7 @@ public class ActivitiEngineService {
 				createProcessEngineConfigurationFromInputStream(new FileInputStream(fileName));
 		}
 		catch (Exception e) {
-			log.severe("Could not find config file: " + fileName);
+			log.severe("Could not find config file: " + fileName + e);
 		}
 		return engineConfig;
 	}
@@ -350,8 +350,6 @@ public class ActivitiEngineService {
 		}
 		return item;
 	}
-	
-	// FIXME NOTE: If due date for a task is not given it will always be classified as a 'atRisk'. 
 	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId, int remainingDays) {
 		
@@ -1381,8 +1379,7 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
-		log.severe(activitiEngineService.getDashOpenActivitiesByUserId("admin", 7).toString());
-		
+
 		/*
 		List<String> executionIds = new ArrayList<String>();
 		executionIds.add("701");
