@@ -23,10 +23,12 @@
  
 package org.inheritsource.test.service.processengine;
 
-import junit.framework.TestCase;
+import java.util.List;
 
+import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,7 +49,8 @@ public class ActivitiServiceEngineTest {
 	
 	@Test
 	public void tags() {
-		System.out.println("TESTING TESTING...");
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
+		Assert.assertNotNull(inbox);
 	}
 	
 }
