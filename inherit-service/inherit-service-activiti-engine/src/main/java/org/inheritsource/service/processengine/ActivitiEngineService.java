@@ -1056,8 +1056,8 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
 		
-		if(executionIds == null) {
-			return pagedProcessInstanceSearchResult;
+		if(executionIds != null && executionIds.size() == 0) {
+			return(pagedProcessInstanceSearchResult);
 		}
 		
 		try {
@@ -1131,8 +1131,8 @@ public class ActivitiEngineService {
 			}
 			
 		} catch (Exception e) {
-			log.severe("Unable to getPagedProcessInstanceSearchResult with executionIds: " + executionIds.toString() +
-					" by userId: " + userId);
+			log.severe("Unable to getPagedProcessInstanceSearchResultByUuids with executionIds: " + executionIds.toString() +
+					" by userId: " + userId + e);
 			pagedProcessInstanceSearchResult = null;	
 		}
 		return pagedProcessInstanceSearchResult;
@@ -1161,6 +1161,10 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setPageSize(pageSize);
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		if(executionIds != null && executionIds.size() == 0) {
+			return(pagedProcessInstanceSearchResult);
+		}
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
@@ -1240,8 +1244,8 @@ public class ActivitiEngineService {
 				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getHistoricPagedProcessInstanceSearchResult  executionIds: " + executionIds.toString() +
-					" by userId: " + userId);
+			log.severe("Unable to getHistoricPagedProcessInstanceSearchResultByUuids  executionIds: " + executionIds.toString() +
+					" by userId: " + userId + e);
 			pagedProcessInstanceSearchResult = null;	
 		}
 		return pagedProcessInstanceSearchResult;
@@ -1379,7 +1383,16 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
-
+		/*
+		List<String> emptyList = new ArrayList<String>();
+		log.severe(	activitiEngineService.getProcessInstancesByUuids
+				(emptyList, 0, 10, null, null, "FINISHED","admin").toString());
+		*/
+		/*
+		List<String> emptyList = new ArrayList<String>();
+		log.severe(activitiEngineService.getProcessInstancesByUuids
+				(emptyList, 0, 10, null, null, "STARTED","admin").toString());
+		*/
 		/*
 		List<String> executionIds = new ArrayList<String>();
 		executionIds.add("701");
@@ -1561,10 +1574,10 @@ public class ActivitiEngineService {
 		// run 
 		// mvn exec:java
 		// in inherit-service/inherit-service-activiti-engine directory
-		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
-		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
-		deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
-		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
+		//Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
+		//deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
+		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
 		
 		System.exit(0);
 	}
