@@ -98,9 +98,8 @@ public class ProcessInstanceDetails extends ProcessInstanceListItem {
 
 	@Override
 	public String toString() {
-		return "ProcessInstanceDetails [pending=" + pending + ", timeline="
-				+ timeline + "]";
+		return "ProcessInstanceDetails {\n    pending : " + pending
+				+ "\n    timeline : " + timeline + "\n" + super.toString()+ "}";
 	}
-
 	
 }

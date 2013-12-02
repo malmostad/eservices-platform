@@ -57,9 +57,6 @@ import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
 
 
-// FIXME: Should be added everywhere a userID is sent to activiti?
-// engine.getIdentityService().setAuthenticatedUserId(userId); 
-
 public class ActivitiEngineService {
 
 	private static ProcessEngine engine = null; 
@@ -67,6 +64,12 @@ public class ActivitiEngineService {
 	
 	public ActivitiEngineService() {
 		initEngine();		
+	}
+	
+	public void close() {
+		if(engine != null) {
+			engine.close();
+		}
 	}
 	
 	private void initEngine() {
@@ -91,7 +94,7 @@ public class ActivitiEngineService {
 				createProcessEngineConfigurationFromInputStream(new FileInputStream(fileName));
 		}
 		catch (Exception e) {
-			log.severe("Could not find config file: " + fileName);
+			log.severe("Could not find config file: " + fileName + e);
 		}
 		return engineConfig;
 	}
@@ -312,10 +315,7 @@ public class ActivitiEngineService {
 			
 			// ActivityInstancePendingItem
 			item.setCandidates(getCandidatesByTaskId(task.getId()));
-			
-			UserInfo assignedUser = new UserInfo();
-			assignedUser.setUuid(task.getAssignee());
-			item.setAssignedUser(assignedUser);
+			item.setAssignedUser(userId2UserInfo(task.getAssignee()));
 		}
 		return item;
 	}
@@ -351,16 +351,11 @@ public class ActivitiEngineService {
 			
 			// ActivityInstancelogItem
 			item.setEndDate(task.getEndTime());
-			
-			UserInfo performedByUser = new UserInfo();
-			performedByUser.setUuid(task.getAssignee());
-			item.setPerformedByUser(performedByUser);
+			item.setPerformedByUser(userId2UserInfo(task.getAssignee()));
 			item.setViewUrl("");
 		}
 		return item;
 	}
-	
-	// FIXME NOTE: If due date for a task is not given it will always be classified as a 'atRisk'. 
 	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId, int remainingDays) {
 		
@@ -382,6 +377,11 @@ public class ActivitiEngineService {
 			// tasks with a dueDate after (TODAY + remainingDays)
 			long onTrackLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueAfter(TODAY_ADDED_WITH_REMAINING_DAYS).count();
 			int onTrack = new Long(onTrackLong).intValue();
+			
+			// Add tasks without duedate to onTrack
+			long withoutDueDateLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueDate(null).count();
+			int withoutDueDate = new Long(withoutDueDateLong).intValue();
+			onTrack = onTrack + withoutDueDate;
 	
 			// overdue
 			// tasks with a duteDate before TODAY.
@@ -408,16 +408,13 @@ public class ActivitiEngineService {
 		return dashOpenActivities;
 	}
 
-	// FIXME: Several fields are not set correct in the method!
 	
 	public ProcessInstanceDetails getProcessInstanceDetails(String executionId) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
 		try {
 			processInstanceDetails = new ProcessInstanceDetails();
-			ArrayList<String> addedPendingTaskIds = new ArrayList<String>();
-			
-			// Data  hard coded added first.
+
 			processInstanceDetails.setProcessInstanceLabel(""); // FIXME
 			processInstanceDetails.setStartedByFormPath("");
 			
@@ -426,11 +423,12 @@ public class ActivitiEngineService {
 			Execution execution = engine.getRuntimeService().createExecutionQuery().
 				executionId(executionId).singleResult();
 			
-			if(execution != null) {	
+			if(execution != null) {
 				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
 				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(execution.getProcessInstanceId()));
-				processInstanceDetails.setStartDate(null);
+				processInstanceDetails.setStartDate(getProcessInstanceStartDateByExecutionId(executionId));
 				processInstanceDetails.setEndDate(null);
+				processInstanceDetails.setProcessInstanceUuid(execution.getId());
 				
 				// Handle pendings
 				
@@ -442,12 +440,10 @@ public class ActivitiEngineService {
 					
 					for(Task task : tasks) {
 						activityInstancePendingItems.add(task2ActivityInstancePendingItem(task));
-						addedPendingTaskIds.add(task.getId());
 					}
 					
 					processInstanceDetails.setPending(activityInstancePendingItems);	
 					
-					// FIXME: Should historic tasks be added here?
 					processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks)));
 				}	
 			} else {
@@ -481,16 +477,13 @@ public class ActivitiEngineService {
 			// Handle historic tasks
 				
 			List<HistoricTaskInstance> historicTasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
-				executionId(executionId).orderByHistoricTaskInstanceStartTime().asc().list();
+				executionId(executionId).finished().orderByHistoricTaskInstanceStartTime().asc().list();
 			
 			if(historicTasks != null) {
 				List<TimelineItem> activityInstanceLogItems = new ArrayList<TimelineItem>();
 				
 				for (HistoricTaskInstance historicTask : historicTasks) {
-					
-					if(!addedPendingTaskIds.contains(historicTask.getId())) {
-						activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
-					}
+					activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
 				}
 				
 				Timeline timeline = new Timeline();
@@ -509,8 +502,10 @@ public class ActivitiEngineService {
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(String taskId) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
+		// Note: Both tasks and historic tasks are represented i the history service. 
+		
 		try {
-			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+			HistoricTaskInstance task = engine.getHistoryService().createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
 
 			if(task != null) {
 				processInstanceDetails = getProcessInstanceDetails(task.getExecutionId());
@@ -528,7 +523,7 @@ public class ActivitiEngineService {
 		int retVal = -1;
 		
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used?
+			engine.getIdentityService().setAuthenticatedUserId(userId);
 			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 			
 			if(task != null) {
@@ -603,10 +598,7 @@ public class ActivitiEngineService {
 					cFItem.setActivityLabel(""); // FIXME
 					cFItem.setTimestamp(comment.getTime());
 					cFItem.setMessage(comment.getFullMessage());
-					
-					userInfo = new UserInfo();
-					userInfo.setUuid(comment.getUserId());
-					cFItem.setUser(userInfo);
+					cFItem.setUser(userId2UserInfo(comment.getUserId()));
 					
 					commentFeedItems.add(cFItem);
 				}
@@ -627,9 +619,7 @@ public class ActivitiEngineService {
 			
 			activityWorkflowInfo = new ActivityWorkflowInfo();
 			activityWorkflowInfo.setPriority(task.getPriority());
-			UserInfo assignedUser = new UserInfo();
-			assignedUser.setUuid(task.getAssignee());
-			activityWorkflowInfo.setAssignedUser(assignedUser);
+			activityWorkflowInfo.setAssignedUser(userId2UserInfo(task.getAssignee()));
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
 			log.severe("Unable to getActivityWorkflowInfo with taskId: " + taskId);
@@ -649,9 +639,7 @@ public class ActivitiEngineService {
 			
 			activityWorkflowInfo = new ActivityWorkflowInfo();
 			activityWorkflowInfo.setPriority(task.getPriority());
-			UserInfo assignedUser = new UserInfo();
-			assignedUser.setUuid(userId);
-			activityWorkflowInfo.setAssignedUser(assignedUser);
+			activityWorkflowInfo.setAssignedUser(userId2UserInfo(userId));
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
 			log.severe("Unable to assignTask with taskId: " + taskId);
@@ -710,7 +698,7 @@ public class ActivitiEngineService {
 		String executionId = null;
 		
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used here?
+			engine.getIdentityService().setAuthenticatedUserId(userId);
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
 			executionId = processInstance.getId();
 		} catch (Exception e) {
@@ -724,7 +712,7 @@ public class ActivitiEngineService {
 		boolean successful = false;
 			
 		try {
-			engine.getIdentityService().setAuthenticatedUserId(userId); // FIXME: should checkPassword be used here?
+			engine.getIdentityService().setAuthenticatedUserId(userId);
 			// Note: ActivitiTaskAlreadyClaimedException - when the task is already claimed by another user.
 			engine.getTaskService().claim(taskId, userId);
 			
@@ -802,6 +790,10 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setPageSize(pageSize);
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		if(searchForUserId == null) {
+			return(pagedProcessInstanceSearchResult);
+		}
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
@@ -906,6 +898,32 @@ public class ActivitiEngineService {
 		return(startDates);
 	}
 	
+	private Date getProcessInstanceStartDateByExecutionId(String executionId) {
+		Date startDate = null;
+		
+		if(executionId == null) {
+			return(startDate);
+		}
+	
+		// Note: Search at first for processInstanceId with value as executionId.
+		// This gives potentially several instances so the correct one haf to be found at first
+		// This can be optimized.
+		
+		List<HistoricProcessInstance> historicProcessInstances = engine.getHistoryService().
+				createHistoricProcessInstanceQuery().processInstanceId(executionId).list();
+
+		if(historicProcessInstances != null) {
+			for(HistoricProcessInstance hPI : historicProcessInstances) {
+				if(hPI != null && hPI.getId().equals(executionId)) {
+					startDate = hPI.getStartTime();
+					break;
+				}	
+			}
+		}
+		
+		return(startDate);
+	}
+	
 	// FIXME: sortBy is always processInstanceId for the moment.
 	// FIXME: sortOrder is always asc for the moment.
 	
@@ -929,6 +947,10 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setPageSize(pageSize);
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		if(searchForUserId == null) {
+			return(pagedProcessInstanceSearchResult);
+		}
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
@@ -1048,8 +1070,8 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
 		
-		if(executionIds == null) {
-			return pagedProcessInstanceSearchResult;
+		if(executionIds != null && executionIds.size() == 0) {
+			return(pagedProcessInstanceSearchResult);
 		}
 		
 		try {
@@ -1123,8 +1145,8 @@ public class ActivitiEngineService {
 			}
 			
 		} catch (Exception e) {
-			log.severe("Unable to getPagedProcessInstanceSearchResult with executionIds: " + executionIds.toString() +
-					" by userId: " + userId);
+			log.severe("Unable to getPagedProcessInstanceSearchResultByUuids with executionIds: " + executionIds.toString() +
+					" by userId: " + userId + e);
 			pagedProcessInstanceSearchResult = null;	
 		}
 		return pagedProcessInstanceSearchResult;
@@ -1153,6 +1175,10 @@ public class ActivitiEngineService {
 		pagedProcessInstanceSearchResult.setPageSize(pageSize);
 		pagedProcessInstanceSearchResult.setSortBy(sortBy);
 		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+		
+		if(executionIds != null && executionIds.size() == 0) {
+			return(pagedProcessInstanceSearchResult);
+		}
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
@@ -1232,8 +1258,8 @@ public class ActivitiEngineService {
 				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getHistoricPagedProcessInstanceSearchResult  executionIds: " + executionIds.toString() +
-					" by userId: " + userId);
+			log.severe("Unable to getHistoricPagedProcessInstanceSearchResultByUuids  executionIds: " + executionIds.toString() +
+					" by userId: " + userId + e);
 			pagedProcessInstanceSearchResult = null;	
 		}
 		return pagedProcessInstanceSearchResult;
@@ -1371,6 +1397,21 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
+	/*	
+		log.severe(activitiEngineService.getPagedProcessInstanceSearchResult("",
+				null, 0, 100,
+				"", "", "admin").toString());
+				*/
+		/*
+		List<String> emptyList = new ArrayList<String>();
+		log.severe(	activitiEngineService.getProcessInstancesByUuids
+				(emptyList, 0, 10, null, null, "FINISHED","admin").toString());
+		*/
+		/*
+		List<String> emptyList = new ArrayList<String>();
+		log.severe(activitiEngineService.getProcessInstancesByUuids
+				(emptyList, 0, 10, null, null, "STARTED","admin").toString());
+		*/
 		/*
 		List<String> executionIds = new ArrayList<String>();
 		executionIds.add("701");
@@ -1549,6 +1590,14 @@ public class ActivitiEngineService {
 		
 	//	log.severe("Deployment with id: " + deployment.getId());
 		
+		// run 
+		// mvn exec:java
+		// in inherit-service/inherit-service-activiti-engine directory
+		//Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
+		//deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
+		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
+		
 		System.exit(0);
 	}
 	
@@ -1580,12 +1629,28 @@ public class ActivitiEngineService {
 				if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
 					candidate = new UserInfo();
 					candidate.setUuid(iL.getUserId());
+					candidate.setLabel(iL.getUserId());
+					candidate.setLabelShort(iL.getUserId());
 					candidates.add(candidate);
 				}
 			}
 		}
 	
 		return candidates;
+	}
+	
+	private UserInfo userId2UserInfo(String userId) {
+		UserInfo userInfo = new UserInfo();
+		
+		if(userId == null) {
+			userId = "";
+		}
+		
+		userInfo.setUuid(userId);
+		userInfo.setLabel(userId);
+		userInfo.setLabelShort(userId);
+		
+		return userInfo;
 	}
 	
 		

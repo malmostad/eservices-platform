@@ -137,6 +137,21 @@ public class InheritServiceClient {
 	public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(
 			String searchForUserId, int fromIndex, int pageSize, String sortBy,
 			String sortOrder, String filter, String userId) {
+		
+		if(searchForUserId == null || searchForUserId.equals("")) {
+			PagedProcessInstanceSearchResult pRes = new PagedProcessInstanceSearchResult();
+			List<ProcessInstanceListItem> emptyList = new ArrayList<ProcessInstanceListItem>();
+			
+			pRes.setFromIndex(fromIndex);
+			pRes.setHits(emptyList);
+			pRes.setNumberOfHits(0);
+			pRes.setPageSize(pageSize);
+			pRes.setSortBy(sortBy);
+			pRes.setSortOrder(sortOrder);
+			
+			return(pRes);
+		}
+		
 		PagedProcessInstanceSearchResult result = null;
 		String uri = serverBaseUrl + "searchProcessInstancesStartedByUser/"
 				+ ParameterEncoder.encode(searchForUserId) + "/" + fromIndex
@@ -158,6 +173,21 @@ public class InheritServiceClient {
 	public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(
 			String searchForUserId, int fromIndex, int pageSize, String sortBy,
 			String sortOrder, String filter, String userId) {
+		
+		if(searchForUserId == null || searchForUserId.equals("")) {
+			PagedProcessInstanceSearchResult pRes = new PagedProcessInstanceSearchResult();
+			List<ProcessInstanceListItem> emptyList = new ArrayList<ProcessInstanceListItem>();
+			
+			pRes.setFromIndex(fromIndex);
+			pRes.setHits(emptyList);
+			pRes.setNumberOfHits(0);
+			pRes.setPageSize(pageSize);
+			pRes.setSortBy(sortBy);
+			pRes.setSortOrder(sortOrder);
+			
+			return(pRes);
+		}
+		
 		PagedProcessInstanceSearchResult result = null;
 		String uri = serverBaseUrl + "searchProcessInstancesWithInvolvedUser/"
 				+ ParameterEncoder.encode(searchForUserId) + "/" + fromIndex
@@ -517,6 +547,21 @@ public class InheritServiceClient {
 	}
 	@SuppressWarnings("unchecked")
 	public PagedProcessInstanceSearchResult searchProcessInstancesByTagValue(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) {
+		
+		if(tagValue == null || tagValue.equals("")) {
+			PagedProcessInstanceSearchResult pRes = new PagedProcessInstanceSearchResult();
+			List<ProcessInstanceListItem> emptyList = new ArrayList<ProcessInstanceListItem>();
+			
+			pRes.setFromIndex(fromIndex);
+			pRes.setHits(emptyList);
+			pRes.setNumberOfHits(0);
+			pRes.setPageSize(pageSize);
+			pRes.setSortBy(sortBy);
+			pRes.setSortOrder(sortOrder);
+			
+			return(pRes);
+		}
+		
 		PagedProcessInstanceSearchResult result = null;
 		String uri = serverBaseUrl + "searchProcessInstancesByTagValue/" + ParameterEncoder.encode(tagValue)+ "/" + fromIndex + "/" + pageSize + "/" + ParameterEncoder.encode(sortBy) + "/" + ParameterEncoder.encode(sortOrder)  + "/" + ParameterEncoder.encode(filter) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
 		String response = callAndCatchRE(uri);
