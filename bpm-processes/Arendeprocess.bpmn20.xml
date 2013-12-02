@@ -10,7 +10,7 @@
       <outgoing>sid-7CD17F22-84FF-460E-BD48-C51674F3B01E</outgoing>
       <potentialOwner id="sid-DE05B2D6-1F3B-425A-9D98-7513096A910F_RES_1" name="candidates">
         <resourceAssignmentExpression>
-          <formalExpression><![CDATA[user(jack), user(admin)]]></formalExpression>
+          <formalExpression><![CDATA[user(jack), user(admin), group(registrator)]]></formalExpression>
         </resourceAssignmentExpression>
       </potentialOwner>
     </userTask>
@@ -73,31 +73,31 @@
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="sid-55EC1F94-D3EB-4114-B360-1C8A27F3FC45" id="Yaoqiang-sid-55EC1F94-D3EB-4114-B360-1C8A27F3FC45" sourceElement="sid-22F22FC8-281E-4155-BE3D-AF4BEC1D0C2D" targetElement="sid-E6E7DAC9-B46E-4D79-9890-177A8AC77665">
-        <omgdi:waypoint x="670.5" y="81.0"/>
-        <omgdi:waypoint x="765.5078144082805" y="83.0"/>
+        <omgdi:waypoint x="670.0" y="81.0"/>
+        <omgdi:waypoint x="765.0078144082805" y="83.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="714.5" y="73.10156345414026"/>
+          <omgdc:Bounds height="18.8046875" width="6.0" x="714.5" y="72.60156345414026"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-7CD17F22-84FF-460E-BD48-C51674F3B01E" id="Yaoqiang-sid-7CD17F22-84FF-460E-BD48-C51674F3B01E" sourceElement="sid-DE05B2D6-1F3B-425A-9D98-7513096A910F" targetElement="sid-3BA63215-750B-4E88-95F4-7567FF8FF769">
-        <omgdi:waypoint x="250.5" y="81.0"/>
-        <omgdi:waypoint x="360.5" y="88.0"/>
+        <omgdi:waypoint x="250.0" y="81.0"/>
+        <omgdi:waypoint x="360.0" y="88.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="302.0" y="75.59765625"/>
+          <omgdc:Bounds height="18.8046875" width="6.0" x="302.0" y="75.09765625"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-7F4C6D99-68FC-4193-9A4E-486077B3A916" id="Yaoqiang-sid-7F4C6D99-68FC-4193-9A4E-486077B3A916" sourceElement="sid-3BA63215-750B-4E88-95F4-7567FF8FF769" targetElement="sid-22F22FC8-281E-4155-BE3D-AF4BEC1D0C2D">
-        <omgdi:waypoint x="460.5" y="88.0"/>
-        <omgdi:waypoint x="570.5" y="81.0"/>
+        <omgdi:waypoint x="460.0" y="88.0"/>
+        <omgdi:waypoint x="570.0" y="81.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="512.0" y="74.59765625"/>
+          <omgdc:Bounds height="18.8046875" width="6.0" x="512.0" y="75.09765625"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="sid-18E9E058-C190-498D-A85E-B602DC726303" id="Yaoqiang-sid-18E9E058-C190-498D-A85E-B602DC726303" sourceElement="sid-F7071C71-57DC-476D-94F5-52A25AFB5FFE" targetElement="sid-DE05B2D6-1F3B-425A-9D98-7513096A910F">
-        <omgdi:waypoint x="47.492185591719476" y="82.0"/>
-        <omgdi:waypoint x="150.5" y="81.0"/>
+        <omgdi:waypoint x="46.992185591719476" y="82.0"/>
+        <omgdi:waypoint x="150.0" y="81.0"/>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="18.8046875" width="6.0" x="95.5" y="71.60156345414026"/>
+          <omgdc:Bounds height="18.8046875" width="6.0" x="95.5" y="72.10156345414026"/>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
