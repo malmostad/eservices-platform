@@ -25,6 +25,7 @@ package org.inheritsource.test.service.processengine;
 
 import java.util.List;
 
+import org.activiti.engine.repository.Deployment;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.junit.After;
@@ -39,6 +40,19 @@ public class ActivitiEngineServiceTest {
 	@Before
 	public void before() {
 		activitiEngineService = new ActivitiEngineService();
+		
+		// Clear the deploymnent, processdefinitions, processinstances, task and history
+		for(String deploymentId : activitiEngineService.getDeployedDeploymentIds()) {
+			activitiEngineService.deleteDeploymentByDeploymentId(deploymentId, true);
+		}
+		
+		// Deploy a BPMN
+		String BPMN_FILE = "../../bpm-processes/TestFunctionProcess1.bpmn20.xml";
+		String PROCDEF_NAME = "TestFunctionProcess1";
+		String startUserId = "admin2";
+		
+		activitiEngineService.deployBpmn(BPMN_FILE);
+		activitiEngineService.startProcessInstanceByKey(PROCDEF_NAME, startUserId);
 	}
 	
 	@After
@@ -50,7 +64,11 @@ public class ActivitiEngineServiceTest {
 	@Test
 	public void tags() {
 		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
+		System.out.println("inbox: " + inbox.toString());
 		Assert.assertNotNull(inbox);
+		
+		activitiEngineService.executeTask(inbox.get(0).getTaskUuid(), "admin2");
+		
 	}
 	
 }

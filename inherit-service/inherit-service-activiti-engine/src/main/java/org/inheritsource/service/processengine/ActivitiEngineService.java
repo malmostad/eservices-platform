@@ -745,14 +745,25 @@ public class ActivitiEngineService {
 			
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
-			// Note: ActivitiTaskAlreadyClaimedException - when the task is already claimed by another user.
+		} catch (Exception e) {
+			log.fine("Could not setAuthenticatedUserId in executeTask with taskId: " + taskId + 
+				" exception: " + e);
+			return successful;
+		}
+		
+		try {
 			engine.getTaskService().claim(taskId, userId);
-			
-			// Note: ActivitiException is thrown when this task is DelegationState.PENDING delegation.
+		} catch (Exception e) {
+			log.fine("Could not claim in executeTask with taskId: " + taskId + 
+				" exception: " + e);
+			return successful;
+		}
+		
+		try {
 			engine.getTaskService().complete(taskId);
 			successful = true;
 		} catch (Exception e) {
-			log.severe("Could not executeTask with taskId: " + taskId + 
+			log.severe("Could not complete in executeTask with taskId: " + taskId + 
 				" exception: " + e);
 		}
 
@@ -1431,14 +1442,8 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
+	
 		/*
-		// getDeployedDeploymentIds
-		List<String> deploymentIds = activitiEngineService.getDeployedDeploymentIds();
-		// deleteDeploymentByDeploymentId
-		for(String deploymentId : deploymentIds) {
-			activitiEngineService.deleteDeploymentByDeploymentId(deploymentId, true);
-		}
-		
 		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
 		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
 		String processDefinitionId = engine.getRepositoryService().createProcessDefinitionQuery().
@@ -1755,7 +1760,7 @@ public class ActivitiEngineService {
 		}
 	}
 	
-	private List<String> getDeployedDeploymentIds() {
+	public List<String> getDeployedDeploymentIds() {
 		List<Deployment> deployments = engine.getRepositoryService().createDeploymentQuery().list();
 		ArrayList<String> deploymentIds = new ArrayList<String>();
 		for (Deployment deployment : deployments) {
@@ -1764,7 +1769,7 @@ public class ActivitiEngineService {
 		return deploymentIds;
 	}
 	
-	private void deleteDeploymentByDeploymentId(String deploymentId, boolean cascade) {
+	public void deleteDeploymentByDeploymentId(String deploymentId, boolean cascade) {
 		engine.getRepositoryService().deleteDeployment(deploymentId, cascade);
 	}
 	
@@ -1789,7 +1794,7 @@ public class ActivitiEngineService {
 		return engineConfig;
 	}
 	
-	private Deployment deployBpmn(String bpmnFile) {
+	public Deployment deployBpmn(String bpmnFile) {
 		RepositoryService repositoryService = engine.getRepositoryService();
 		Deployment deployment = null;
 		
@@ -1804,12 +1809,25 @@ public class ActivitiEngineService {
 		return deployment;
 	}
 	
-	private ProcessInstance startProcessInstanceByKey(String key, Map<String, Object> variables) {
+	public ProcessInstance startProcessInstanceByKey(String key, Map<String, Object> variables) {
 		RuntimeService runtimeService = engine.getRuntimeService();
 		ProcessInstance processInstance = null;
 		
 		try {
 			processInstance = runtimeService.startProcessInstanceByKey(key, variables);
+		} catch (Exception e) {
+			log.severe("Unable to start process instance with key: " + key);
+		}
+		return processInstance;
+	}
+	
+	public ProcessInstance startProcessInstanceByKey(String key, String userId) {
+		RuntimeService runtimeService = engine.getRuntimeService();
+		ProcessInstance processInstance = null;
+		
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId);
+			processInstance = runtimeService.startProcessInstanceByKey(key, new HashMap<String, Object>());
 		} catch (Exception e) {
 			log.severe("Unable to start process instance with key: " + key);
 		}
