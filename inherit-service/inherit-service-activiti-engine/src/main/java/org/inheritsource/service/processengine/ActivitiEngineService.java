@@ -110,7 +110,7 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	private Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
+	public Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
 		List<Task> tasks = engine.getTaskService().createTaskQuery().
@@ -127,34 +127,7 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	private Set<InboxTaskItem> getHistoricUserInboxInProcess(String executionId) {
-		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
-		
-		List<HistoricTaskInstance> tasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
-			executionId(executionId).orderByHistoricTaskInstanceStartTime().asc().list();
-		
-		List<InboxTaskItem> inboxTaskItemList = historicTaskList2InboxTaskItemList(tasks);
-		
-		if(inboxTaskItemList != null) {
-			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
-				result.add(inboxTaskItem);
-			}
-		}
-		
-		return result;
-	}
-	
-	private List<InboxTaskItem> historicTaskList2InboxTaskItemList(List<HistoricTaskInstance> tasks) {
-		List<InboxTaskItem> result = null;
-		if (tasks != null) {
-			result = new ArrayList<InboxTaskItem>();
-			for (HistoricTaskInstance task : tasks) {
-				result.add(historicTask2InboxTaskItem(task));
-			}
-	    }
-		return result;
-	}
-	
+
 	private List<InboxTaskItem> taskList2InboxTaskItemList(List<Task> tasks) {
 		List<InboxTaskItem> result = null;
 		if (tasks != null) {
@@ -186,59 +159,81 @@ public class ActivitiEngineService {
 			item.setProcessLabel(""); // FIXME
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
-			item.setRootProcessInstanceUuid(getMainProcessInstanceIdByProcessInstanceId
-				(task.getProcessInstanceId()));
-			item.setRootProcessDefinitionUuid(getProcessDefinitionIdByProcessInstanceId
-				(item.getRootProcessInstanceUuid())); 
 			
+		    ProcessInstance pI = getMainProcessInstanceByProcessInstanceId
+				(task.getProcessInstanceId());
+			
+		    if(pI != null) {
+		    	item.setRootProcessInstanceUuid(pI.getProcessInstanceId());
+				item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
+		    } else {
+		    	item.setRootProcessInstanceUuid(task.getProcessInstanceId());
+				item.setRootProcessDefinitionUuid(task.getProcessDefinitionId());
+		    }			
 		}
 		return item;
 	}
 	
-	private String getMainProcessInstanceIdByProcessInstanceId(String processInstanceId) {
-		
+	private ProcessInstance getMainProcessInstanceByProcessInstanceId(String processInstanceId) {
+		int turns = 0;
 		ProcessInstance processInstance = null;
-		String mainProcessInstanceId = null;
+		ProcessInstance mainProcessInstance = null;
 		boolean mainProcessInstanceFound = false;
 		
 		try {
 			while(!mainProcessInstanceFound) {
+				turns++;
 				processInstance = engine.getRuntimeService().createProcessInstanceQuery().
 						subProcessInstanceId(processInstanceId).singleResult();
 				
 				if(processInstance == null) {
 					mainProcessInstanceFound = true;
-					mainProcessInstanceId = processInstanceId;
+					mainProcessInstance = engine.getRuntimeService().createProcessInstanceQuery().
+						processInstanceId(processInstanceId).singleResult();
 				} else {
 					processInstanceId = processInstance.getProcessInstanceId();
+					
+					if(turns > 1000) { // If instance chain is incorrect this limits the loop
+						mainProcessInstance = processInstance;
+						break;
+					}
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getMainProcessInstanceIdByProcessInstanceId with processInstanceId: " +
-				processInstanceId);
+			log.severe("Unable to getMainProcessInstanceByProcessInstanceId with processInstanceId: " +
+					processInstanceId);
 		}
 		
-		return mainProcessInstanceId;
+		return mainProcessInstance;
 	}
 	
-	private String getProcessDefinitionIdByProcessInstanceId(String processInstanceId) {
-		String processDefinitionId = null;
+	private Set<InboxTaskItem> getHistoricUserInboxByProcessInstanceId(String processInstanceId) {
+		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
-		try {
-			ProcessInstance processInstance = engine.getRuntimeService().createProcessInstanceQuery().
-				processInstanceId(processInstanceId).singleResult();
-			
-			if(processInstance != null) {
-				processDefinitionId = processInstance.getProcessDefinitionId();
+		List<HistoricTaskInstance> tasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
+			processInstanceId(processInstanceId).finished().orderByHistoricTaskInstanceStartTime().asc().list();
+		
+		List<InboxTaskItem> inboxTaskItemList = historicTaskList2InboxTaskItemList(tasks);
+		
+		if(inboxTaskItemList != null) {
+			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
+				result.add(inboxTaskItem);
 			}
-		} catch (Exception e) {
-			log.severe("Unable to getProcessDefinitionIdByProcessInstanceId with processInstanceId: " +
-				processInstanceId);
 		}
 		
-		return processDefinitionId;
+		return result;
 	}
 	
+	private List<InboxTaskItem> historicTaskList2InboxTaskItemList(List<HistoricTaskInstance> tasks) {
+		List<InboxTaskItem> result = null;
+		if (tasks != null) {
+			result = new ArrayList<InboxTaskItem>();
+			for (HistoricTaskInstance task : tasks) {
+				result.add(historicTask2InboxTaskItem(task));
+			}
+	    }
+		return result;
+	}
 	
 	private InboxTaskItem historicTask2InboxTaskItem(HistoricTaskInstance task) {
 		InboxTaskItem item = null;
@@ -251,28 +246,60 @@ public class ActivitiEngineService {
 			item.setExternalUrl(""); // Will be set in TaskFormService
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
-			item.setProcessInstanceUuid(task.getExecutionId());
+			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setProcessLabel(""); // FIXME
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
-			item.setRootProcessInstanceUuid(task.getProcessInstanceId());
-					
-			List<HistoricProcessInstance> historicProcessInstances = engine.getHistoryService().
-					createHistoricProcessInstanceQuery().processInstanceId(task.getExecutionId()).list();
-				
-			if(historicProcessInstances != null) {
-				for(HistoricProcessInstance hPI : historicProcessInstances) {
-					if(hPI.getId().equals(task.getExecutionId())) {
-						item.setRootProcessDefinitionUuid(hPI.getProcessDefinitionId()); 
-					}
-				}
-			} else {
-				item.setRootProcessDefinitionUuid(""); 
-			}
+
+		    HistoricProcessInstance pI = getHistoricMainProcessInstanceByProcessInstanceId
+				(task.getProcessInstanceId());
+			
+		    if(pI != null) {
+		    	// Note:  // id is always the same as processInstanceId in this case
+		    	item.setRootProcessInstanceUuid(pI.getId());
+				item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
+		    } else {
+		    	item.setRootProcessInstanceUuid(task.getProcessInstanceId());
+				item.setRootProcessDefinitionUuid(task.getProcessDefinitionId());
+		    }			
+
+		
 		}
 		return item;
 	}
 	
+	private HistoricProcessInstance getHistoricMainProcessInstanceByProcessInstanceId(String processInstanceId) {
+		int turns = 0;
+		HistoricProcessInstance processInstance = null;
+		HistoricProcessInstance mainProcessInstance = null;
+		boolean mainProcessInstanceFound = false;
+		
+		try {
+			while(!mainProcessInstanceFound) {
+				turns++;
+				processInstance = engine.getHistoryService().createHistoricProcessInstanceQuery().
+						processInstanceId(processInstanceId).singleResult();
+				
+				if(processInstance.getSuperProcessInstanceId() == null) {
+					mainProcessInstanceFound = true;
+					mainProcessInstance = processInstance;
+				} else {
+					processInstanceId = processInstance.getSuperProcessInstanceId();
+					
+					if(turns > 1000) { // If instance chain is incorrect this limits the loop
+						mainProcessInstance = processInstance;
+						break;
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getHistoricMainProcessInstanceByProcessInstanceId with processInstanceId: " +
+					processInstanceId);
+		}
+		
+		return mainProcessInstance;
+	}
+		
 	public String getActivityInstanceUuid(String executionId, String taskName) {
 		String taskId = null;
 		
@@ -1054,7 +1081,8 @@ public class ActivitiEngineService {
 					processInstanceListItem.setEndDate(processInstance.getEndTime());
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
-					processInstanceListItem.setActivities(getHistoricUserInboxInProcess(processInstance.getId()));
+					processInstanceListItem.setActivities
+						(getHistoricUserInboxByProcessInstanceId(processInstance.getId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -1296,7 +1324,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setEndDate(processInstance.getEndTime());
 					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
 					processInstanceListItem.setProcessLabel(""); // FIXME
-					processInstanceListItem.setActivities(getHistoricUserInboxInProcess(processInstance.getId()));
+					processInstanceListItem.setActivities(getHistoricUserInboxByProcessInstanceId(processInstance.getId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -1442,7 +1470,10 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
-	
+		
+		
+		log.severe(activitiEngineService.getHistoricUserInboxByProcessInstanceId("4307").toString());
+		
 		/*
 		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
 		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
