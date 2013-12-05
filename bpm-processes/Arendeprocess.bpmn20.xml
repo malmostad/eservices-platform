@@ -10,7 +10,7 @@
       <outgoing>sid-7CD17F22-84FF-460E-BD48-C51674F3B01E</outgoing>
       <potentialOwner id="sid-DE05B2D6-1F3B-425A-9D98-7513096A910F_RES_1" name="candidates">
         <resourceAssignmentExpression>
-          <formalExpression><![CDATA[user(jack), user(admin), group(registrator)]]></formalExpression>
+          <formalExpression><![CDATA[user(jack), user(admin), group(Registrator)]]></formalExpression>
         </resourceAssignmentExpression>
       </potentialOwner>
     </userTask>
