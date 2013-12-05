@@ -29,7 +29,7 @@ class MigFormdefVer implements Comparable {
   // Form version number
   Integer verno
 
-  // Draft number
+  // Draft number, null if the version is published
   Integer draft
 
   // Is this version published? An explicit flag in addition to the version number.
@@ -44,7 +44,7 @@ class MigFormdefVer implements Comparable {
   // Form language
   String language
 
-  static belongsTo = [formdef: MigFormdef, pkg: MigPackage]
+  static belongsTo = [formdef: MigFormdef, pack: MigPackage]
   static constraints = {
     app size: 1..120
     form size: 1..120
@@ -70,13 +70,13 @@ class MigFormdefVer implements Comparable {
       app(app)
       form(form)
       path(path)
-      verno(published: published, fvno)
+      verno(published: published, verno)
       published? draft() : draft(draft)
       title(title)
       description(description)
       language(language)
       formref(formdef.id)
-      pkg(pkg.id)
+      pack(pack.id)
     }
   }
 

@@ -32,7 +32,7 @@ class MigFormdef implements Comparable {
 
   SortedSet versions
   SortedSet items
-  static belongsTo = [pkg: MigPackage]
+  static belongsTo = [pack: MigPackage]
   static hasMany = [versions: MigFormdefVer, items: MigItem]
   static transients = ['path']
   static constraints = {
@@ -66,24 +66,21 @@ class MigFormdef implements Comparable {
       form(form)
       uuid(uuid)
       currentDraft(currentDraft)
-      pkg(pkg.id)
+      pack(pack.id)
     }
   }
 
   //-------------------- Comparable --------------------
 
   int hashCode() {
-    def hash = path.hashCode()
-    if (pkg) hash ^= pkg.hashCode()
-    return hash
+    path.hashCode()
   }
 
   boolean equals(Object obj) {
     def result = false
     if (obj instanceof MigFormdef) {
       def other = (MigFormdef)obj
-      result = pkg? pkg.equals(other.pkg) : other.pkg == null
-      if (result) result = path == other.path
+      result = path == other.path
     }
 
     return result
@@ -94,10 +91,7 @@ class MigFormdef implements Comparable {
    */
   int compareTo(Object obj) {
     def other = (MigFormdef)obj
-    def result = pkg? pkg.compareTo(other.pkg) : null
-    // The condition can be written (result) but this is more readable
-    if (result == null || result == 0) result = path.compareTo(other.path)
-    return result
+    return path.compareTo(other.path)
   }
 
 }

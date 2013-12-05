@@ -535,7 +535,7 @@ th:hover, tr:hover {
 .buttons {
 	background-color: #efefef;
 	overflow: hidden;
-	padding: 0.3em;
+	padding: 0; /* was 0.3em */
 	   -moz-box-shadow: 0 0 3px 1px #aaaaaa;
 	-webkit-box-shadow: 0 0 3px 1px #aaaaaa;
 	        box-shadow: 0 0 3px 1px #aaaaaa;
@@ -581,7 +581,7 @@ th:hover, tr:hover {
 
 .buttons .delete, .buttons .edit, .buttons .save,
 .buttons .add, .buttons .checkall, .buttons .clearall, .buttons .remove,
-.buttons .export, .buttons .install {
+.buttons .export, .buttons .upload, .buttons .install {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
@@ -626,6 +626,10 @@ th:hover, tr:hover {
 
 .buttons .export {
 	background-image: url(../images/silk/arrow_down.png);
+}
+
+.buttons .upload {
+	background-image: url(../images/silk/arrow_up.png);
 }
 
 .buttons .install {

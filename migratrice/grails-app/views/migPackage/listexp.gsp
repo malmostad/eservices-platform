@@ -4,7 +4,7 @@
   <head>
     <meta name="layout" content="main"/>
     <g:set var="entityName" value="${message(code: 'migFormdef.label', default: 'MigFormdef')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title><g:message code="migPackage.create.title" args="[entityName]" /></title>
     <r:require modules="jquery"/>
   </head>
   <body>
@@ -30,7 +30,7 @@
       <g:form method="post" action="saveexp">
 	<div class="fieldcontain ${hasErrors(bean: migPackageInst, field: 'packageName', 'error')} ">
 	  <label for="packageName">
-	    <g:message code="migPackage.packageName.label" default="Package Name" />
+	    <g:message code="migPackage.new.package.name.label" default="Package Name" />
 	    <span class="required-indicator">*</span>
 	  </label>
 	  <g:textField name="packageName" maxlength="120" value="${migPackageInst?.packageName}"/>
@@ -41,7 +41,7 @@
 	<table>
 	  <thead>
 	    <tr>
-	      <th>Export</th>
+	      <th>${message(code: 'migPackage.create.include.label', default: 'Include')}</th>
 	      <g:sortableColumn property="app" title="${message(code: 'migFormdef.app.label', default: 'App')}" />
 	      <g:sortableColumn property="form" title="${message(code: 'migFormdef.form.label', default: 'Form')}" />
 	      <g:sortableColumn property="currentDraft" title="${message(code: 'migFormdef.currentDraft.label', default: 'Current Draft')}" />
@@ -64,7 +64,7 @@
 	  </tbody>
 	</table>
 	<fieldset class="buttons">
-	  <g:actionSubmit class="save" action="saveexp" value="${message(code: 'default.button.update.label', default: 'Update')}"/>
+	  <g:actionSubmit class="save" action="saveexp" value="${message(code: 'migPackage.button.create.label', default: 'Create package')}"/>
 	  <span class="checkall" onclick="exportCheckAll(true)">Check all</span>
 	  <span class="clearall" onclick="exportCheckAll(false)">Clear all</span>
 	  <span class="add" onclick="exportAddContaining($('#textForAddContaining').val(),true)">Add all containing:</span>

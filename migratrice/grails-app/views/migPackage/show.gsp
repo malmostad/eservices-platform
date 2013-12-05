@@ -11,6 +11,7 @@
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+	<li><g:link class="newpackage" action="listexp"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
       </ul>
     </div>
     <div id="show-migPackage" class="content scaffold-show" role="main">
@@ -67,7 +68,7 @@
       <g:form>
 	<fieldset class="buttons">
 	  <g:hiddenField name="id" value="${migPackageInst?.id}" />
-	  <g:actionSubmit class="export" action="export" value="${message(code: 'migPackage.button.label.export', default: 'Export')}"/>
+	  <g:actionSubmit class="export" action="export" value="${message(code: 'migPackage.button.download.label', default: 'Download')}"/>
 	  <g:actionSubmit class="install" action="install" value="${message(code: 'migPackage.button.label.install', default: 'Install')}"/>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirm deletion')}');" />
 	</fieldset>

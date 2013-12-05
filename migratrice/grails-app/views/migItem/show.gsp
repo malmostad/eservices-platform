@@ -73,10 +73,10 @@
 	    <span class="property-value" aria-labelledby="formdef-label"><g:link controller="migFormdef" action="show" id="${migItemInst?.formdef?.id}">${migItemInst?.formdef?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
-	<g:if test="${migItemInst?.pkg}">
+	<g:if test="${migItemInst?.pack}">
 	  <li class="fieldcontain">
-	    <span id="pkg-label" class="property-label"><g:message code="migItem.pkg.label" default="Pkg" /></span>
-	    <span class="property-value" aria-labelledby="pkg-label"><g:link controller="migPackage" action="show" id="${migItemInst?.pkg?.id}">${migItemInst?.pkg?.encodeAsHTML()}</g:link></span>
+	    <span id="pack-label" class="property-label"><g:message code="migItem.pack.label" default="Pack" /></span>
+	    <span class="property-value" aria-labelledby="pack-label"><g:link controller="migPackage" action="show" id="${migItemInst?.pack?.id}">${migItemInst?.pack?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>

@@ -1,7 +1,6 @@
 package org.motrice.migratrice
 
 import org.springframework.dao.DataIntegrityViolationException
-import org.motrice.zip.ZipBuilder
 
 class MigPackageController {
   // Injection magic
@@ -19,20 +18,28 @@ class MigPackageController {
   }
 
   /**
-   * Imported package -- no design yet
+   * Upload a package
    */
-  def create() {
-    def appName = grailsApplication.metadata['app.name']
-    def appVersion = grailsApplication.metadata['app.version']
-    params.packageFormat = "${appName}-${appVersion}"
-    params.siteName = grailsApplication.config.migratrice.local.site.name
-    params.originLocal = true
-    params.siteTstamp = new java.sql.Timestamp(System.currentTimeMillis())
-    [migPackageInst: new MigPackage(params)]
+  def upload() {
+    def file = request.getFile('pkgUpload')
+    if (file.empty) {
+      flash.message = message(code: 'migPackage.upload.file.empty')
+    } else {
+      try {
+	// If you want to save the file there is the transferTo(File) method
+	packageService.importPackage(file.inputStream)
+      } catch (MigratriceException exc) {
+	flash.message = message(code: exc.code)
+      } finally {
+	if (!log.debugEnabled) tempFile.delete()
+      }
+    }
+
+    redirect(action: "list")
   }
 
   /**
-   * Export a package as a zip file
+   * Download a package as a zip file
    */
   def export(Long id) {
     def migPackageInst = MigPackage.get(id)
@@ -41,22 +48,25 @@ class MigPackageController {
       redirect(action: "list")
       return
     }
-    /*
-    new ZipBuilder(new FileOutputStream('/tmp/package.zip')).zip {
-      entry("package#${migPackageInst.id}") {
-	(migPackageInst as XML).render(new OutputStreamWriter(it, 'UTF-8'))
-      }
-    }
-    */
 
-    render(contentType: "text/xml") {
-      migPackageInst
+    def downloadFileName = packageService.downloadFileName(migPackageInst)
+    def tempFile = File.createTempFile('migpackage', 'zip')
+    try {
+      packageService.toZip(migPackageInst, new FileOutputStream(tempFile))
+      response.setHeader('Content-Disposition', "attachment;filename=${downloadFileName}")
+      response.contentType = 'application/octet-stream'
+      response.outputStream << tempFile.bytes
+    } catch (MigratriceException exc) {
+      flash.message = message(code: exc.code)
+    } finally {
+      if (!log.debugEnabled) tempFile.delete()
     }
-    //render(view: 'show', model: [migPackageInst: migPackageInst])
+
+    render(view: 'show', model: [migPackageInst: migPackageInst])
   }
 
   /**
-   * Install a package
+   * Install a package.
    */
   def install() {
   }
@@ -66,12 +76,18 @@ class MigPackageController {
    */
   def listexp(Integer max) {
     if (log.debugEnabled) log.debug "LISTEXP: ${Util.clean(params)}, ${request.forwardURI}"
-    def formdefList = packageService.allLocalFormdefs()?.sort()
-    [migFormdefInstList: formdefList]
+    def formdefList = null
+    try {
+      formdefList = packageService.allLocalFormdefs()?.sort()
+      [migFormdefInstList: formdefList]
+    } catch (MigratriceException exc) {
+      flash.message = message(code: exc.code)
+      redirect(action: 'list')
+    }
   }
 
   /**
-   * Create a package for export.
+   * Create a package from a list of formdefs defined by the user
    */
   def saveexp() {
     if (log.debugEnabled) log.debug "SAVEEXP: ${Util.clean(params)}, ${request.forwardURI}"
@@ -80,25 +96,14 @@ class MigPackageController {
       try {
 	def migPackageInst = packageService.createExportPackage(packageName, params)
 	redirect(action: 'list')
-      } catch (Exception exc) {
-	log.error "Exception in saveexp: ${exc.message}"
+      } catch (MigratriceException exc) {
+	flash.message = message(code: exc.code)
+	redirect(action: 'list')
       }
     } else {
       flash.message = message(code: 'migPackage.package.name.required')
       redirect(action: 'listexp')
     }
-  }
-
-  def save() {
-    if (log.debugEnabled) log.debug "LISTEXP: ${Util.clean(params)}, ${request.forwardURI}"
-    def migPackageInst = new MigPackage(params)
-    if (!migPackageInst.save(flush: true)) {
-      render(view: "create", model: [migPackageInst: migPackageInst])
-      return
-    }
-
-    flash.message = message(code: 'default.created.message', args: [message(code: 'migPackage.label', default: 'MigPackage'), migPackageInst.id])
-    redirect(action: "show", id: migPackageInst.id)
   }
 
   def show(Long id) {

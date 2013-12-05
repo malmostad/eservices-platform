@@ -4,8 +4,6 @@ import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.XML
 
 class MigFormdefController {
-  // Injection magic
-  def packageService
 
   static allowedMethods = [export: "POST", save: "POST", update: "POST", delete: "POST"]
 

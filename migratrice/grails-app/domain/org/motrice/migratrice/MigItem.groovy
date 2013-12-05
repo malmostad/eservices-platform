@@ -42,7 +42,7 @@ class MigItem implements Comparable {
   // SHA1 hash sum of the contents
   String sha1
 
-  static belongsTo = [formdef: MigFormdef, pkg: MigPackage]
+  static belongsTo = [formdef: MigFormdef, pack: MigPackage]
   static mapping = {
     text type: 'text'
   }
@@ -58,8 +58,33 @@ class MigItem implements Comparable {
     sha1 maxSize: 400
   }
 
+  // Assign stream
+  def assignStream(byte[] stream) {
+    this.size = stream.length
+    this.stream = stream
+    this.text = null
+    return this
+  }
+
+  // Assign text
+  def assignText(String text) {
+    this.size = text.length()
+    this.text = text
+    this.stream = null
+    return this
+  }
+
+  // Is this item XML?
+  boolean xmlFormat() {
+    format == 'xml'
+  }
+
   String display() {
     "${path} (size ${size})"
+  }
+
+  String toString() {
+    "[Item ${path}: ${id}/${ref}, ${size}]"
   }
 
   /**
@@ -76,7 +101,7 @@ class MigItem implements Comparable {
       size(size)
       sha1(sha1)
       if (formref) formref(formdef.id)
-      pkg(pkg.id)
+      pack(pack.id)
     }
   }
 

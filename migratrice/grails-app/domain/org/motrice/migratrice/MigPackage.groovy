@@ -43,17 +43,23 @@ class MigPackage implements Comparable {
     items nullable: true
   }
 
+  String toString() {
+    "[Package ${siteName}-${packageName} ${originLocal?'Local':'Remote'}]"
+  }
+
   /**
    * Bootstrap init causes this method to be used for rendering as XML
    * @param xml must be a grails.converters.XML
    */
   def toXML(xml) {
-    siteName(siteName)
-    packageName(packageName)
-    ref(id)
-    siteTstamp(siteTstamp)
-    packageFormat(packageFormat)
-    created(dateCreated)
+    xml.build {
+      siteName(siteName)
+      packageName(packageName)
+      ref(id)
+      siteTstamp(siteTstamp)
+      packageFormat(packageFormat)
+      created(dateCreated)
+    }
   }
 
   //-------------------- Comparable --------------------
