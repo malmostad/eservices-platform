@@ -29,6 +29,7 @@ import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.DeploymentBuilder;
@@ -101,9 +102,32 @@ public class ActivitiEngineService {
 	
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
+
+		List<Group> groups = engine.getIdentityService().createGroupQuery().groupMember(userId).list();
+		List<String> groupsStr = new ArrayList<String>();
+		for (Group group : groups) {
+			log.severe("Group with id: '" + group.getId()  + "' and name '" + group.getName() + "' added" );
+			groupsStr.add(group.getId());
+		}
 		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).
-			orderByTaskCreateTime().asc().list();
+		List<Task> groupCandidateTasks = null;
+		if (! groupsStr.isEmpty()) {
+			groupCandidateTasks = engine.getTaskService().createTaskQuery().taskCandidateGroupIn(groupsStr).list();
+		} else {
+			groupCandidateTasks = new ArrayList<Task>();
+		}
+		
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).				
+				orderByTaskCreateTime().asc().list();
+		
+		// exclude duplicate tasks when merging		
+		for (Task t : groupCandidateTasks) {
+			if ( !tasks.contains(t) ) {
+				tasks.add(t);
+			}
+		}
+		
+		//TODO sort tasks by taskCreateTime
 		
 		result = taskList2InboxTaskItemList(tasks);
 		
@@ -1593,8 +1617,8 @@ public class ActivitiEngineService {
 		// run 
 		// mvn exec:java
 		// in inherit-service/inherit-service-activiti-engine directory
-		//Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
-		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
+		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
 		//deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
 		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
 		
