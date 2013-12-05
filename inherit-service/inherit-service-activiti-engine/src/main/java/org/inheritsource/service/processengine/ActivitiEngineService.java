@@ -139,7 +139,7 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	// FIXME: label fields are not set
+	// FIXME: label field is not set
 	// FIXME: setProcessInstanceUuid should be called setProcessInstanceId in InboxTaskItem
 	// FIXME: setRootProcessInstanceUuid should be called setMainProcessInstanceId in InboxTaskItem
 	// FIXME: setRootProcessDefinitionUuid should be called setMainProcessDefinitionId in InboxTaskItem
@@ -207,7 +207,7 @@ public class ActivitiEngineService {
 		return mainProcessInstance;
 	}
 	
-	private Set<InboxTaskItem> getHistoricUserInboxByProcessInstanceId(String processInstanceId) {
+	public Set<InboxTaskItem> getHistoricUserInboxByProcessInstanceId(String processInstanceId) {
 		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
 		
 		List<HistoricTaskInstance> tasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
@@ -241,7 +241,7 @@ public class ActivitiEngineService {
 			item = new InboxTaskItem();
 			item.setActivityCreated(task.getStartTime());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
-			item.setActivityLabel(""); // FIXME
+			item.setActivityLabel(task.getName());
 			item.setExpectedEndDate(task.getDueDate());
 			item.setExternalUrl(""); // Will be set in TaskFormService
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
