@@ -300,25 +300,28 @@ public class ActivitiEngineService {
 		return mainProcessInstance;
 	}
 		
-	public String getActivityInstanceUuid(String executionId, String taskName) {
+	// FIXME: Should this method check the historic data or not?
+	
+	public String getActivityInstanceUuid(String processInstanceId, String taskName) {
 		String taskId = null;
 		
 		try {
-			Task task = engine.getTaskService().createTaskQuery().executionId(executionId).
+			Task task = engine.getTaskService().createTaskQuery().processInstanceId(processInstanceId).
 				taskName(taskName).singleResult();
 			
 			if(task != null) {
 				taskId = task.getId();
 			} else {
 				HistoricTaskInstance historicTask = engine.getHistoryService().
-					createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+					createHistoricTaskInstanceQuery().processInstanceId(processInstanceId).
+						taskName(taskName).singleResult();
 				
 				if(historicTask != null) {
 					taskId = historicTask.getId();
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getActivityInstanceUuid with executionId: " + executionId +
+			log.severe("Unable to getActivityInstanceUuid with processInstanceId: " + processInstanceId +
 					" and taskName: " + taskName);
 		}
 			
