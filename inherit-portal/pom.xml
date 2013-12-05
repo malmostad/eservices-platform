@@ -296,6 +296,9 @@
                   <rebel.log4j-plugin>true</rebel.log4j-plugin>
                   <project.basedir>${project.basedir}</project.basedir>
                 </systemProperties>
+                <output>${project.basedir}/target/logs-cargo/container.log</output>
+    			<append>false</append>
+    			<log>${project.basedir}/target/logs-cargo/cargo.log</log>
               </container>
             </configuration>
           </plugin>
