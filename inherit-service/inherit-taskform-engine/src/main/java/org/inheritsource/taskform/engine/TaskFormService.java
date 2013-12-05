@@ -1163,9 +1163,12 @@ public class TaskFormService {
 			userInfo = taskFormDb.createUser(user);
 
 			// create user in BOS engine
+			// TODO tentatively removed
+			/*
 			if (!activitiEngineService.createUser(uuid)) {
 				log.severe("Failed to create user in engine");
 			}
+			 */
 		}
 
 		return userInfo;
@@ -1220,9 +1223,10 @@ public class TaskFormService {
 			userInfo = taskFormDb.createUser(user);
 
 			// create user in BOS engine
-			if (!activitiEngineService.createUser(uuid)) {
-				log.severe("Failed to create user in engine");
-			}
+			// TODO tentatively removed
+//			if (!activitiEngineService.createUser(uuid)) {
+//				log.severe("Failed to create user in engine");
+//			}
 		}
 
 		return userInfo;
