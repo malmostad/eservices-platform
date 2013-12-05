@@ -346,7 +346,6 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	// FIXME: label is not set
 	// FIXME: current state is not set
 	// FIXME: lastStateUpdate is not set
 	// FIXME: lastStateUpdateByUserId is not set
@@ -358,11 +357,11 @@ public class ActivitiEngineService {
 			item = new ActivityInstancePendingItem();
 			
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
-			item.setProcessInstanceUuid(task.getExecutionId());
+			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
 			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
-			item.setActivityLabel("");
+			item.setActivityLabel(task.getName());
 			item.setStartDate(task.getCreateTime());
 			item.setCurrentState("");
 			item.setLastStateUpdate(null);
@@ -382,7 +381,6 @@ public class ActivitiEngineService {
 		return item;
 	}
 	
-	// FIXME: label is not set
 	// FIXME: current state is not set
 	// FIXME: lastStateUpdate is not set
 	// FIXME: lastStateUpdateByUserId is not set
@@ -394,11 +392,11 @@ public class ActivitiEngineService {
 			item = new ActivityInstanceLogItem();
 			
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
-			item.setProcessInstanceUuid(task.getExecutionId());
+			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
 			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
-			item.setActivityLabel("");
+			item.setActivityLabel(task.getName());
 			item.setStartDate(task.getStartTime());
 			item.setCurrentState("");
 			item.setLastStateUpdate(null);
