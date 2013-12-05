@@ -24,6 +24,7 @@
 package org.inheritsource.test.service.processengine;
 
 import java.util.List;
+import java.util.Set;
 
 import org.activiti.engine.repository.Deployment;
 import org.inheritsource.service.common.domain.InboxTaskItem;
@@ -40,19 +41,6 @@ public class ActivitiEngineServiceTest {
 	@Before
 	public void before() {
 		activitiEngineService = new ActivitiEngineService();
-		
-		// Clear the deploymnent, processdefinitions, processinstances, task and history
-		for(String deploymentId : activitiEngineService.getDeployedDeploymentIds()) {
-			activitiEngineService.deleteDeploymentByDeploymentId(deploymentId, true);
-		}
-		
-		// Deploy a BPMN
-		String BPMN_FILE = "../../bpm-processes/TestFunctionProcess1.bpmn20.xml";
-		String PROCDEF_NAME = "TestFunctionProcess1";
-		String startUserId = "admin2";
-		
-		activitiEngineService.deployBpmn(BPMN_FILE);
-		activitiEngineService.startProcessInstanceByKey(PROCDEF_NAME, startUserId);
 	}
 	
 	@After
@@ -62,13 +50,42 @@ public class ActivitiEngineServiceTest {
 
 	
 	@Test
-	public void tags() {
+	public void userInbox() {
+		String userId = "admin";
+		clearDatabase();
+		
+		// Deploy a BPMN and start a process with a certain user
+		activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
+		activitiEngineService.startProcessInstanceByKey("TestFunctionProcess1", userId);
+
+		// Get the inbox and verify some data
 		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
-		System.out.println("inbox: " + inbox.toString());
 		Assert.assertNotNull(inbox);
+		Assert.assertEquals(inbox.size(), 1);
+		Assert.assertEquals(inbox.get(0).getActivityLabel(), "Registrera");
 		
-		activitiEngineService.executeTask(inbox.get(0).getTaskUuid(), "admin2");
+		// Get the inbox from another method and verify inboxes are equal
+		Set<InboxTaskItem> inbox2 = activitiEngineService.getUserInboxByProcessInstanceId(inbox.get(0).getProcessInstanceUuid());
+		Assert.assertNotNull(inbox2);
+		Assert.assertEquals(inbox2.size(), 1);
+		Assert.assertEquals(inbox2.toArray()[0], inbox.get(0));
+				
+		Set<InboxTaskItem> historicInbox = activitiEngineService.getHistoricUserInboxByProcessInstanceId(inbox.get(0).getProcessInstanceUuid());
+		Assert.assertEquals(historicInbox.size(), 0);
 		
+		activitiEngineService.executeTask(inbox.get(0).getTaskUuid(), "admin");
+		historicInbox = activitiEngineService.getHistoricUserInboxByProcessInstanceId(inbox.get(0).getProcessInstanceUuid());
+		Assert.assertNotNull(historicInbox);
+		Assert.assertEquals(historicInbox.size(), 1);
+		Assert.assertEquals(inbox.get(0), historicInbox.toArray()[0]);
+	}
+
+	private void clearDatabase() {
+		
+		// Clear the deployment, processdefinitions, processinstances, task and history
+		for(String deploymentId : activitiEngineService.getDeployedDeploymentIds()) {
+			activitiEngineService.deleteDeploymentByDeploymentId(deploymentId, true);
+		}		
 	}
 	
 }
