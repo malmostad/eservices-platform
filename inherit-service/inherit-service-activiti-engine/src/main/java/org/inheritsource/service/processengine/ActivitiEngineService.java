@@ -373,8 +373,7 @@ public class ActivitiEngineService {
 	// FIXME: current state is not set
 	// FIXME: lastStateUpdate is not set
 	// FIXME: lastStateUpdateByUserId is not set
-	// FIXME: activityType is not set
-	
+
 	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task) {
 		ActivityInstancePendingItem item = null;
 		if (task != null) {
@@ -394,7 +393,7 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setFormUrl("");
 			item.setFormDocId("");
-			item.setActivityType(0);
+			item.setActivityType(getActivityTypeByExecutionIdTaskId(task.getExecutionId(), task.getId()));
 			item.setPriority(task.getPriority());
 			item.setExpectedEndDate(task.getDueDate());
 			
@@ -405,10 +404,42 @@ public class ActivitiEngineService {
 		return item;
 	}
 	
+	private int getActivityTypeByExecutionIdTaskId(String executionId, String taskId) {
+		
+		int activityType = 0;
+		try {
+			List<HistoricActivityInstance> historicActivityInstances = 
+				engine.getHistoryService().createHistoricActivityInstanceQuery().executionId(executionId).list();
+			
+			if(historicActivityInstances != null) {
+				for(HistoricActivityInstance historicActivityInstance : historicActivityInstances) {
+					if(historicActivityInstance != null) {
+						if(historicActivityInstance.getTaskId() != null &&
+							historicActivityInstance.getTaskId().equals(taskId)) {
+								
+							if(historicActivityInstance.getActivityType() != null &&
+								historicActivityInstance.getActivityType().equals("userTask")) {
+								activityType = ActivityInstanceItem.ACTIVITY_TYPE_USER_TASK;
+							} else {
+								activityType = ActivityInstanceItem.ACTIVITY_TYPE_SERVICE_TASK;
+							}
+							
+						}
+					}
+				}
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getActivityTypeByExecutionIdTaskId with executionId: " + executionId +
+					" and taskId: " + taskId + "exception: " + e);
+		}
+		
+		return activityType;
+	}
+	
+	
 	// FIXME: current state is not set
 	// FIXME: lastStateUpdate is not set
 	// FIXME: lastStateUpdateByUserId is not set
-	// FIXME: activityType is not set
 	
 	private ActivityInstanceLogItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
 		ActivityInstanceLogItem item = null;
@@ -429,7 +460,7 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setFormUrl("");
 			item.setFormDocId("");
-			item.setActivityType(0);
+			item.setActivityType(getActivityTypeByExecutionIdTaskId(task.getExecutionId(), task.getId()));
 			item.setPriority(task.getPriority());
 			item.setExpectedEndDate(task.getDueDate());
 			
