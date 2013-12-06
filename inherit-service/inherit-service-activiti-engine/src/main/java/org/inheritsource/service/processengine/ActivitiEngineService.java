@@ -1382,7 +1382,7 @@ public class ActivitiEngineService {
 	}
 	
 	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe key can be used?
-	
+
 	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
 		HashSet<ProcessDefinitionInfo> processDefinitions = new HashSet<ProcessDefinitionInfo>();
 		
@@ -1401,6 +1401,7 @@ public class ActivitiEngineService {
 		return processDefinitions;
 	}
 	
+	// FIXME: Should historic data be used?
 	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe description or key can be used?
 	// FIXME: Label for ActivityDefinitionInfo is not set! Maybe description can be used? 
 
@@ -1428,6 +1429,8 @@ public class ActivitiEngineService {
 				 Set<ActivityDefinitionInfo> activityDefinitionInfos = 
 					new HashSet<ActivityDefinitionInfo>();
 				 
+				 // FIXME: Should historic data be used?
+				 
 				 List<Task> tasks = engine.getTaskService().createTaskQuery().
 					processDefinitionId(processDefinition.getId()).orderByProcessInstanceId().asc().list();
 				 
@@ -1452,21 +1455,51 @@ public class ActivitiEngineService {
 		return processDefinitionDetails;
 	}
 
-	// FIXME: Historic data is not implemented
 	
-	public String getParentProcessInstanceUuid(String executionId) {
+	public String getParentProcessInstanceUuid(String processInstanceId) {
+		String parentId = getParentProcessInstanceIdByProcessInstanceId(processInstanceId);
 		
-		String parentId = null;
-
-		try {
-			parentId = engine.getRuntimeService().createExecutionQuery().
-					executionId(executionId).singleResult().getParentId();
-		} catch (Exception e) {
-			log.severe("Unable to getParentProcessInstanceUuid with exectionId: " + executionId +
-					" exception: "+ e);
+		if(parentId == null) {
+			parentId = getHistoricParentProcessInstanceIdByProcessInstanceId(processInstanceId);
 		}
 
 		return parentId;
+	}
+	
+	private String getParentProcessInstanceIdByProcessInstanceId(String processInstanceId) {
+		String parentProcessInstanceId = null;
+		
+		try {
+			ProcessInstance processInstance = engine.getRuntimeService().createProcessInstanceQuery().
+					subProcessInstanceId(processInstanceId).singleResult();
+
+			if(processInstance != null) {
+				parentProcessInstanceId = processInstance.getProcessInstanceId();
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getParentProcessInstanceIdByProcessInstanceId with processInstanceId: " +
+				processInstanceId);
+		}
+		
+		return parentProcessInstanceId;
+	}
+	
+	private String getHistoricParentProcessInstanceIdByProcessInstanceId(String processInstanceId) {
+		String parentProcessInstanceId = null;
+		
+		try {
+			HistoricProcessInstance processInstance = engine.getHistoryService().createHistoricProcessInstanceQuery().
+					processInstanceId(processInstanceId).singleResult();
+
+			if(processInstance != null && processInstance.getSuperProcessInstanceId() != null) {
+				parentProcessInstanceId = processInstance.getSuperProcessInstanceId();
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getHistoricMainProcessInstanceByProcessInstanceId with processInstanceId: " +
+					processInstanceId);
+		}
+		
+		return parentProcessInstanceId;
 	}
 
 	// FIXME: No idea for the moment how to solve this...
