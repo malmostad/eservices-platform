@@ -49,7 +49,7 @@ public class ActivitiEngineServiceTest {
 		activitiEngineService.close();
 	}
 
-	
+
 	@Test
 	public void userInbox() {
 		String userId = "admin";
@@ -136,6 +136,30 @@ public class ActivitiEngineServiceTest {
 		Assert.assertEquals(historicTaskItem.getActivityLabel(), inbox.get(0).getActivityLabel());
 	}
 
+	@Test
+	public void taskItem() {
+		String userId = "admin";
+		clearDatabase();
+		
+		// Deploy a BPMN and start a process with a certain user
+		activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
+		activitiEngineService.startProcessInstanceByKey("TestFunctionProcess1", userId);
+
+		// Get the inbox and verify some data
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
+		Assert.assertNotNull(inbox);
+		Assert.assertEquals(inbox.size(), 1);
+		
+		ActivityInstanceItem taskItem = activitiEngineService.getActivityInstanceItem(inbox.get(0).getTaskUuid()); 
+		Assert.assertEquals(taskItem.getActivityLabel(), inbox.get(0).getActivityLabel());
+
+		// One executeTask should make the task passed into history
+		activitiEngineService.executeTask(inbox.get(0).getTaskUuid(), "admin");
+		
+		ActivityInstanceItem historicTaskItem = activitiEngineService.getActivityInstanceItem(inbox.get(0).getTaskUuid()); 
+		Assert.assertEquals(historicTaskItem.getActivityLabel(), inbox.get(0).getActivityLabel());
+	}
+	
 	private void clearDatabase() {
 		
 		// Clear the deployment, processdefinitions, processinstances, task and history
