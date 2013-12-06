@@ -279,7 +279,7 @@ public class ActivitiEngineService {
 				(task.getProcessInstanceId());
 			
 		    if(pI != null) {
-		    	// Note:  // id is always the same as processInstanceId in this case
+		    	// Note: id is always the same as processInstanceId in this case
 		    	item.setRootProcessInstanceUuid(pI.getId());
 				item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
 		    } else {
@@ -524,7 +524,7 @@ public class ActivitiEngineService {
 	}
 
 	
-	public ProcessInstanceDetails getProcessInstanceDetails(String executionId) {
+	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceId) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
 		try {
@@ -535,20 +535,23 @@ public class ActivitiEngineService {
 			
 			// Check if process is found among the active ones 
 			
-			Execution execution = engine.getRuntimeService().createExecutionQuery().
-				executionId(executionId).singleResult();
+			//Execution execution = engine.getRuntimeService().createExecutionQuery().
+			//	executionId(executionId).singleResult();
 			
-			if(execution != null) {
+			ProcessInstance processInstance = engine.getRuntimeService().createProcessInstanceQuery().
+				processInstanceId(processInstanceId).singleResult();
+			
+			if(processInstance != null) {
 				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
-				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(execution.getProcessInstanceId()));
-				processInstanceDetails.setStartDate(getProcessInstanceStartDateByExecutionId(executionId));
+				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
+				processInstanceDetails.setStartDate(getProcessInstanceStartDateByProcessInstanceId(processInstance.getProcessInstanceId()));
 				processInstanceDetails.setEndDate(null);
-				processInstanceDetails.setProcessInstanceUuid(execution.getId());
+				processInstanceDetails.setProcessInstanceUuid(processInstance.getProcessInstanceId());
 				
 				// Handle pendings
 				
 				List<Task> tasks = engine.getTaskService().createTaskQuery().
-					executionId(execution.getId()).orderByTaskName().asc().list();
+					processInstanceId(processInstance.getProcessInstanceId()).orderByTaskName().asc().list();
 							
 				if(tasks != null && tasks.size() > 0) {
 					List<ActivityInstancePendingItem> activityInstancePendingItems = new ArrayList<ActivityInstancePendingItem>();
@@ -564,25 +567,14 @@ public class ActivitiEngineService {
 			} else {
 				// Check if process is found among the historic ones 
 				
-				// Note: executionId is used as processInstanceId which could give several process instances.
-				// So a search for the one with correct executionId has to be done.
+				HistoricProcessInstance historicProcessInstance = engine.getHistoryService().
+					createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
 				
-				List<HistoricProcessInstance> historicProcessInstances = engine.getHistoryService().
-					createHistoricProcessInstanceQuery().processInstanceId(executionId).list();
-				
-				if(historicProcessInstances != null && historicProcessInstances.size() > 0) {
-					
-					for(HistoricProcessInstance historicProcessInstance: historicProcessInstances) {
-						if(historicProcessInstance.getId().equals(executionId)) {
-							processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_FINISHED); // FIXME
-							processInstanceDetails.setStartedBy(historicProcessInstance.getStartUserId());
-							processInstanceDetails.setStartDate(historicProcessInstance.getStartTime());
-							processInstanceDetails.setEndDate(historicProcessInstance.getEndTime());
-							
-							break;
-						}
-					}
-				
+				if(historicProcessInstance != null) {
+					processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_FINISHED); // FIXME
+					processInstanceDetails.setStartedBy(historicProcessInstance.getStartUserId());
+					processInstanceDetails.setStartDate(historicProcessInstance.getStartTime());
+					processInstanceDetails.setEndDate(historicProcessInstance.getEndTime());
 				} else {
 					// No process instances found at all, return null
 					return null;
@@ -592,7 +584,7 @@ public class ActivitiEngineService {
 			// Handle historic tasks
 				
 			List<HistoricTaskInstance> historicTasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
-				executionId(executionId).finished().orderByHistoricTaskInstanceStartTime().asc().list();
+				processInstanceId(processInstanceId).finished().orderByHistoricTaskInstanceStartTime().asc().list();
 			
 			if(historicTasks != null) {
 				List<TimelineItem> activityInstanceLogItems = new ArrayList<TimelineItem>();
@@ -607,7 +599,7 @@ public class ActivitiEngineService {
 				processInstanceDetails.setTimeline(timeline);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceDetails with executionId: " + executionId + 
+			log.severe("Unable to getProcessInstanceDetails with processInstanceId: " + processInstanceId + 
 					" execption: " + e);
 			processInstanceDetails = null;	
 		}
@@ -617,13 +609,13 @@ public class ActivitiEngineService {
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(String taskId) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
-		// Note: Both tasks and historic tasks are represented i the history service. 
+		// Note: Both tasks and historic tasks are represented in the history service. 
 		
 		try {
 			HistoricTaskInstance task = engine.getHistoryService().createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
 
 			if(task != null) {
-				processInstanceDetails = getProcessInstanceDetails(task.getExecutionId());
+				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId());
 			}
 		} catch (Exception e) {
 			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with taskId: " + taskId);
@@ -667,12 +659,12 @@ public class ActivitiEngineService {
 	public List<CommentFeedItem> getProcessInstanceCommentFeedByActivity(String taskId) {
 		List<CommentFeedItem> commentFeedItems = new ArrayList<CommentFeedItem>();
 		CommentFeedItem cFItem = null;
-		UserInfo userInfo = null;
 		Task task = null;
 		HistoricTaskInstance historicTask = null;
 		String processDefinitionUuid = null;
 		String activityDefinitionUuid = null;
-		String executionId = null;
+		String processInstanceId = null;
+		String setActivityLabel = null;
 		
 		try {
 			List<Comment> comments = engine.getTaskService().getTaskComments(taskId);
@@ -685,7 +677,8 @@ public class ActivitiEngineService {
 				if(task != null) {
 					processDefinitionUuid = task.getProcessDefinitionId();
 					activityDefinitionUuid = task.getTaskDefinitionKey();
-					executionId = task.getExecutionId();
+					processInstanceId = task.getProcessInstanceId();
+					setActivityLabel = task.getName();
 				} else {
 					historicTask = engine.getHistoryService().createHistoricTaskInstanceQuery().
 						taskId(taskId).singleResult();
@@ -693,11 +686,13 @@ public class ActivitiEngineService {
 					if(historicTask != null) {
 						processDefinitionUuid = historicTask.getProcessDefinitionId();
 						activityDefinitionUuid = historicTask.getTaskDefinitionKey();
-						executionId = historicTask.getExecutionId();
+						processInstanceId = historicTask.getProcessInstanceId();
+						setActivityLabel = historicTask.getName();
 					} else {
 						processDefinitionUuid = "";
 						activityDefinitionUuid = "";
-						executionId = "";
+						processInstanceId = "";
+						setActivityLabel = "";
 					}
 				}
 				
@@ -706,11 +701,11 @@ public class ActivitiEngineService {
 					cFItem = new CommentFeedItem();
 					
 					cFItem.setProcessDefinitionUuid(processDefinitionUuid);
-					cFItem.setProcessInstanceUuid(executionId);
+					cFItem.setProcessInstanceUuid(processInstanceId);
 					cFItem.setProcessLabel(""); // FIXME
 					cFItem.setActivityDefinitionUuid(activityDefinitionUuid);
 					cFItem.setActivityInstanceUuid(comment.getTaskId());
-					cFItem.setActivityLabel(""); // FIXME
+					cFItem.setActivityLabel(setActivityLabel);
 					cFItem.setTimestamp(comment.getTime());
 					cFItem.setMessage(comment.getFullMessage());
 					cFItem.setUser(userId2UserInfo(comment.getUserId()));
@@ -1025,27 +1020,18 @@ public class ActivitiEngineService {
 		return(startDates);
 	}
 	
-	private Date getProcessInstanceStartDateByExecutionId(String executionId) {
+	private Date getProcessInstanceStartDateByProcessInstanceId(String processInstanceId) {
 		Date startDate = null;
 		
-		if(executionId == null) {
+		if(processInstanceId == null) {
 			return(startDate);
 		}
 	
-		// Note: Search at first for processInstanceId with value as executionId.
-		// This gives potentially several instances so the correct one haf to be found at first
-		// This can be optimized.
-		
-		List<HistoricProcessInstance> historicProcessInstances = engine.getHistoryService().
-				createHistoricProcessInstanceQuery().processInstanceId(executionId).list();
+		HistoricProcessInstance historicProcessInstances = engine.getHistoryService().
+				createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
 
 		if(historicProcessInstances != null) {
-			for(HistoricProcessInstance hPI : historicProcessInstances) {
-				if(hPI != null && hPI.getId().equals(executionId)) {
-					startDate = hPI.getStartTime();
-					break;
-				}	
-			}
+			startDate = historicProcessInstances.getStartTime();
 		}
 		
 		return(startDate);
