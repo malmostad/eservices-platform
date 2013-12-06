@@ -805,17 +805,17 @@ public class ActivitiEngineService {
 	}
 
 	public String startProcess(String processDefinitionId, String userId) {
-		String executionId = null;
+		String processInstanceId = null;
 		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
-			executionId = processInstance.getId();
+			processInstanceId = processInstance.getId();
 		} catch (Exception e) {
 			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId);
 		}
 		
-		return executionId;
+		return processInstanceId;
 	}
 
 	public boolean executeTask(String taskId, String userId) {
@@ -968,7 +968,7 @@ public class ActivitiEngineService {
 				for(ProcessInstance processInstance : processInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 					
-					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
+					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
 					processInstanceListItem.setStatus(ProcessInstanceListItem.STATUS_PENDING);
 					processInstanceListItem.setStartDate(startDates.get(processInstance.getId()));
 					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
@@ -1125,6 +1125,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setProcessLabel(""); // FIXME
 					processInstanceListItem.setActivities
 						(getHistoricUserInboxByProcessInstanceId(processInstance.getId()));
+					
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
