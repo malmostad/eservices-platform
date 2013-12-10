@@ -319,8 +319,6 @@ public class ActivitiEngineService {
 		return mainProcessInstance;
 	}
 		
-	// FIXME: Should this method check the historic data or not?
-	
 	public String getActivityInstanceUuid(String processInstanceId, String taskName) {
 		String taskId = null;
 		
@@ -1333,7 +1331,7 @@ public class ActivitiEngineService {
 				 // Handle ProcessDefinitionInfo
 				
 				 ProcessDefinitionInfo pDInfo = 
-					new ProcessDefinitionInfo(processDefinition.getId(), processDefinition.getName(), "");
+					new ProcessDefinitionInfo(processDefinition.getId(), processDefinition.getName(), processDefinition.getName());
 				 
 				 processDefinitionDetails.setProcess(pDInfo);
 				 
