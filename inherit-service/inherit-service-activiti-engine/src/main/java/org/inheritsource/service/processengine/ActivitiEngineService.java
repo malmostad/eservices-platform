@@ -624,8 +624,6 @@ public class ActivitiEngineService {
 		return processInstanceDetails;
 	}
 
-	// FIXME: returning number of characters in message. What should be returned?
-	
 	public int addComment(String taskId, String comment, String userId) {
 		int retVal = -1;
 		
@@ -641,7 +639,7 @@ public class ActivitiEngineService {
 					String msg = addedComment.getFullMessage();
 					
 					if(msg != null) {
-						retVal = msg.length();
+						retVal = 1;
 					}
 				}
 			}
