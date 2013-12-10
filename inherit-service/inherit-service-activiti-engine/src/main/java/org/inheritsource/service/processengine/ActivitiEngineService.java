@@ -931,23 +931,8 @@ public class ActivitiEngineService {
 			
 			if(processInstances != null) {
 				
-				// Filter due to fromIndex and pageSize
-				// FIXME: Refactor this to a method!
-				try {
-					// If exception is thrown for fromIndex element then list is cleared.
-					processInstances.get(fromIndex);
-					
-					len = processInstances.size();
-					
-					if((fromIndex + pageSize) <= len) {
-						toIndex = fromIndex + pageSize;
-						processInstances = processInstances.subList(fromIndex, toIndex);
-					} else {
-						processInstances = processInstances.subList(fromIndex, len);
-					}	
-				} catch (Exception e) {
-					processInstances.clear();
-				}
+				// Filter due to fromIndex and pageSize	
+				processInstances = pageList(processInstances, fromIndex, pageSize);
 				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
@@ -1077,24 +1062,8 @@ public class ActivitiEngineService {
 			
 			if(processInstances != null) {
 				
-				// Filter due to fromIndex and pageSize
-				// FIXME: Refactor this to a method!
-				
-				try {
-					// If exception is thrown for fromIndex element then list is cleared.
-					processInstances.get(fromIndex);
-					
-					len = processInstances.size();
-					
-					if((fromIndex + pageSize) <= len) {
-						toIndex = fromIndex + pageSize;
-						processInstances = processInstances.subList(fromIndex, toIndex);
-					} else {
-						processInstances = processInstances.subList(fromIndex, len);
-					}	
-				} catch (Exception e) {
-					processInstances.clear();
-				}
+				// Filter due to fromIndex and pageSize	
+				processInstances = pageHistoricList(processInstances, fromIndex, pageSize);
 				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
@@ -1185,23 +1154,8 @@ public class ActivitiEngineService {
 			
 			if(processInstances != null) {
 				
-				// Filter due to fromIndex and pageSize
-				// FIXME: Refactor this to a method!
-				try {
-					// If exception is thrown for fromIndex element then list is cleared.
-					processInstances.get(fromIndex);
-					
-					len = processInstances.size();
-					
-					if((fromIndex + pageSize) <= len) {
-						toIndex = fromIndex + pageSize;
-						processInstances = processInstances.subList(fromIndex, toIndex);
-					} else {
-						processInstances = processInstances.subList(fromIndex, len);
-					}	
-				} catch (Exception e) {
-					processInstances.clear();
-				}
+				// Filter due to fromIndex and pageSize	
+				processInstances = pageList(processInstances, fromIndex, pageSize);
 				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
@@ -1277,24 +1231,8 @@ public class ActivitiEngineService {
 			
 			if(processInstances != null) {
 				
-				// Filter due to fromIndex and pageSize
-				// FIXME: Refactor this to a method!
-				
-				try {
-					// If exception is thrown for fromIndex element then list is cleared.
-					processInstances.get(fromIndex);
-					
-					len = processInstances.size();
-					
-					if((fromIndex + pageSize) <= len) {
-						toIndex = fromIndex + pageSize;
-						processInstances = processInstances.subList(fromIndex, toIndex);
-					} else {
-						processInstances = processInstances.subList(fromIndex, len);
-					}	
-				} catch (Exception e) {
-					processInstances.clear();
-				}
+				// Filter due to fromIndex and pageSize	
+				processInstances = pageHistoricList(processInstances, fromIndex, pageSize);
 				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
@@ -1899,6 +1837,60 @@ public class ActivitiEngineService {
 		}
 		
 		return name;
+	}
+	
+	private List<ProcessInstance> pageList(List<ProcessInstance> processInstances, int fromIndex, int pageSize) {
+		int len;
+		int toIndex;
+		
+		if(processInstances == null) {
+			return(null);
+		}
+		
+		try {
+			// If exception is thrown for fromIndex element then list is cleared.
+			processInstances.get(fromIndex);
+			
+			len = processInstances.size();
+			
+			if((fromIndex + pageSize) <= len) {
+				toIndex = fromIndex + pageSize;
+				processInstances = processInstances.subList(fromIndex, toIndex);
+			} else {
+				processInstances = processInstances.subList(fromIndex, len);
+			}	
+		} catch (Exception e) {
+			processInstances.clear();
+		}
+		
+		return processInstances;
+	}
+
+	private List<HistoricProcessInstance> pageHistoricList(List<HistoricProcessInstance> processInstances, int fromIndex, int pageSize) {
+		int len;
+		int toIndex;
+		
+		if(processInstances == null) {
+			return(null);
+		}
+		
+		try {
+			// If exception is thrown for fromIndex element then list is cleared.
+			processInstances.get(fromIndex);
+			
+			len = processInstances.size();
+			
+			if((fromIndex + pageSize) <= len) {
+				toIndex = fromIndex + pageSize;
+				processInstances = processInstances.subList(fromIndex, toIndex);
+			} else {
+				processInstances = processInstances.subList(fromIndex, len);
+			}	
+		} catch (Exception e) {
+			processInstances.clear();
+		}
+		
+		return processInstances;
 	}
 
 }
