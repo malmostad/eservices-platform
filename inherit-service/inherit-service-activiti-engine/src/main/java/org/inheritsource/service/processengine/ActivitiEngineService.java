@@ -163,11 +163,6 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	// FIXME: label field is not set
-	// FIXME: setProcessInstanceUuid should be called setProcessInstanceId in InboxTaskItem
-	// FIXME: setRootProcessInstanceUuid should be called setMainProcessInstanceId in InboxTaskItem
-	// FIXME: setRootProcessDefinitionUuid should be called setMainProcessDefinitionId in InboxTaskItem
-	
 	private InboxTaskItem task2InboxTaskItem(Task task) {
 		InboxTaskItem item = null;
 		if (task != null) {
@@ -180,9 +175,9 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
-			item.setProcessLabel(""); // FIXME
-			item.setStartedByFormPath(""); // Will be set in TaskFormService
+			item.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId(task.getProcessDefinitionId()));
 			item.setTaskUuid(task.getId());
+			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			
 		    ProcessInstance pI = getMainProcessInstanceByProcessInstanceId
 				(task.getProcessInstanceId());
@@ -193,7 +188,7 @@ public class ActivitiEngineService {
 		    } else {
 		    	item.setRootProcessInstanceUuid(task.getProcessInstanceId());
 				item.setRootProcessDefinitionUuid(task.getProcessDefinitionId());
-		    }			
+		    }
 		}
 		return item;
 	}
@@ -271,7 +266,7 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0)); // Will be set in TaskFormService
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
-			item.setProcessLabel(""); // FIXME
+			item.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId(task.getProcessDefinitionId()));
 			item.setStartedByFormPath(""); // Will be set in TaskFormService
 			item.setTaskUuid(task.getId());
 
@@ -530,7 +525,7 @@ public class ActivitiEngineService {
 		try {
 			processInstanceDetails = new ProcessInstanceDetails();
 
-			processInstanceDetails.setProcessInstanceLabel(""); // FIXME
+			processInstanceDetails.setProcessInstanceLabel("");
 			processInstanceDetails.setStartedByFormPath("");
 			
 			// Check if process is found among the active ones 
@@ -542,7 +537,7 @@ public class ActivitiEngineService {
 				processInstanceId(processInstanceId).singleResult();
 			
 			if(processInstance != null) {
-				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING); // FIXME
+				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING);
 				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 				processInstanceDetails.setStartDate(getProcessInstanceStartDateByProcessInstanceId(processInstance.getProcessInstanceId()));
 				processInstanceDetails.setEndDate(null);
@@ -571,7 +566,7 @@ public class ActivitiEngineService {
 					createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
 				
 				if(historicProcessInstance != null) {
-					processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_FINISHED); // FIXME
+					processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_FINISHED);
 					processInstanceDetails.setStartedBy(historicProcessInstance.getStartUserId());
 					processInstanceDetails.setStartDate(historicProcessInstance.getStartTime());
 					processInstanceDetails.setEndDate(historicProcessInstance.getEndTime());
@@ -652,8 +647,6 @@ public class ActivitiEngineService {
 		return retVal;
 	}
 	
-	// FIXME: Two label fields are set to blank for the moment.
-
 	public List<CommentFeedItem> getProcessInstanceCommentFeedByActivity(String taskId) {
 		List<CommentFeedItem> commentFeedItems = new ArrayList<CommentFeedItem>();
 		CommentFeedItem cFItem = null;
@@ -663,6 +656,7 @@ public class ActivitiEngineService {
 		String activityDefinitionUuid = null;
 		String processInstanceId = null;
 		String setActivityLabel = null;
+		String processLabel = null;
 		
 		try {
 			List<Comment> comments = engine.getTaskService().getTaskComments(taskId);
@@ -677,6 +671,7 @@ public class ActivitiEngineService {
 					activityDefinitionUuid = task.getTaskDefinitionKey();
 					processInstanceId = task.getProcessInstanceId();
 					setActivityLabel = task.getName();
+					processLabel = getProcessDefinitionNameByProcessDefinitionId(task.getProcessDefinitionId());
 				} else {
 					historicTask = engine.getHistoryService().createHistoricTaskInstanceQuery().
 						taskId(taskId).singleResult();
@@ -686,11 +681,13 @@ public class ActivitiEngineService {
 						activityDefinitionUuid = historicTask.getTaskDefinitionKey();
 						processInstanceId = historicTask.getProcessInstanceId();
 						setActivityLabel = historicTask.getName();
+						processLabel = getProcessDefinitionNameByProcessDefinitionId(historicTask.getProcessDefinitionId());
 					} else {
 						processDefinitionUuid = "";
 						activityDefinitionUuid = "";
 						processInstanceId = "";
 						setActivityLabel = "";
+						processLabel = "";
 					}
 				}
 				
@@ -700,7 +697,7 @@ public class ActivitiEngineService {
 					
 					cFItem.setProcessDefinitionUuid(processDefinitionUuid);
 					cFItem.setProcessInstanceUuid(processInstanceId);
-					cFItem.setProcessLabel(""); // FIXME
+					cFItem.setProcessLabel(processLabel);
 					cFItem.setActivityDefinitionUuid(activityDefinitionUuid);
 					cFItem.setActivityInstanceUuid(comment.getTaskId());
 					cFItem.setActivityLabel(setActivityLabel);
@@ -883,12 +880,7 @@ public class ActivitiEngineService {
 		
 		return(null);
 	}
-	
-	// FIXME: sortBy is always processInstanceId for the moment.
-	// FIXME: sortOrder is always asc for the moment.
-	
-	// Note: CANCELLED and ABORTED statuses are not implemented.
-	
+		
 	private PagedProcessInstanceSearchResult getPagedProcessInstanceSearchResult(String userSearchCriteria,
 			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String userId) {
@@ -972,8 +964,9 @@ public class ActivitiEngineService {
 					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 					processInstanceListItem.setStartedByFormPath("");
 					processInstanceListItem.setEndDate(null);
-					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
-					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setProcessInstanceLabel("");
+					processInstanceListItem.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId
+						(processInstance.getProcessDefinitionId()));
 					processInstanceListItem.setActivities(getUserInboxByProcessInstanceId
 						(processInstance.getProcessInstanceId()));
 					processInstanceListItems.add(processInstanceListItem);
@@ -1034,9 +1027,6 @@ public class ActivitiEngineService {
 		
 		return(startDate);
 	}
-	
-	// FIXME: sortBy is always processInstanceId for the moment.
-	// FIXME: sortOrder is always asc for the moment.
 	
 	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResult(String userSearchCriteria,
 			String searchForUserId, int fromIndex, int pageSize,
@@ -1119,8 +1109,9 @@ public class ActivitiEngineService {
 					processInstanceListItem.setStartedBy(processInstance.getStartUserId());
 					processInstanceListItem.setStartedByFormPath("");
 					processInstanceListItem.setEndDate(processInstance.getEndTime());
-					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
-					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setProcessInstanceLabel("");
+					processInstanceListItem.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId
+						(processInstance.getProcessDefinitionId()));
 					processInstanceListItem.setActivities
 						(getHistoricUserInboxByProcessInstanceId(processInstance.getId()));
 					
@@ -1137,9 +1128,6 @@ public class ActivitiEngineService {
 		return pagedProcessInstanceSearchResult;
 	}
 		
-	// FIXME: sortBy is always processInstanceId for the moment.
-	// FIXME: sortOrder is always asc for the moment.
-	
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
 			List<String> processInstanceIds, int fromIndex, int pageSize, String sortBy,
 			String sortOrder, String filter, String userId) {
@@ -1157,11 +1145,6 @@ public class ActivitiEngineService {
 		
 		return(null);
 	}
-	
-	// FIXME: sortBy is always processInstanceId for the moment.
-	// FIXME: sortOrder is always asc for the moment.
-	
-	// Note: CANCELLED and ABORTED statuses are not implemented.
 	
 	private PagedProcessInstanceSearchResult getPagedProcessInstanceSearchResultByUuids(List<String> processInstanceIdList,
 			int fromIndex, int pageSize, String sortBy, String sortOrder, String userId) {
@@ -1235,8 +1218,9 @@ public class ActivitiEngineService {
 					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 					processInstanceListItem.setStartedByFormPath("");
 					processInstanceListItem.setEndDate(null);
-					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
-					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setProcessInstanceLabel("");
+					processInstanceListItem.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId
+						(processInstance.getProcessDefinitionId()));
 					processInstanceListItem.setActivities(getUserInboxByProcessInstanceId
 						(processInstance.getProcessInstanceId()));
 					processInstanceListItems.add(processInstanceListItem);
@@ -1252,10 +1236,6 @@ public class ActivitiEngineService {
 		}
 		return pagedProcessInstanceSearchResult;
 	}
-	
-	
-	// FIXME: sortBy is always processInstanceId for the moment.
-	// FIXME: sortOrder is always asc for the moment.
 	
 	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResultByUuids(List<String> processInstanceIdList,
 			int fromIndex, int pageSize, String sortBy, String sortOrder, String userId) {
@@ -1329,8 +1309,9 @@ public class ActivitiEngineService {
 					processInstanceListItem.setStartedBy(processInstance.getStartUserId());
 					processInstanceListItem.setStartedByFormPath("");
 					processInstanceListItem.setEndDate(processInstance.getEndTime());
-					processInstanceListItem.setProcessInstanceLabel(""); // FIXME
-					processInstanceListItem.setProcessLabel(""); // FIXME
+					processInstanceListItem.setProcessInstanceLabel("");
+					processInstanceListItem.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId
+							(processInstance.getProcessDefinitionId()));
 					processInstanceListItem.setActivities(getHistoricUserInboxByProcessInstanceId(processInstance.getId()));
 					processInstanceListItems.add(processInstanceListItem);
 				}
@@ -1379,8 +1360,6 @@ public class ActivitiEngineService {
 		return activityWorkflowInfo;
 	}
 	
-	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe key can be used?
-
 	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
 		HashSet<ProcessDefinitionInfo> processDefinitions = new HashSet<ProcessDefinitionInfo>();
 		
@@ -1389,7 +1368,7 @@ public class ActivitiEngineService {
 				createProcessDefinitionQuery().orderByProcessDefinitionName().asc().list();
 			
 			 for(ProcessDefinition pDItem : processDefinitionList) {
-				 processDefinitions.add(new ProcessDefinitionInfo(pDItem.getId(), pDItem.getName(), ""));
+				 processDefinitions.add(new ProcessDefinitionInfo(pDItem.getId(), pDItem.getName(), pDItem.getName()));
 			 }
 		} catch (Exception e) {
 			log.severe("Unable to getProcessDefinitions" + e);
@@ -1400,8 +1379,6 @@ public class ActivitiEngineService {
 	}
 	
 	// FIXME: Should historic data be used?
-	// FIXME: Label for ProcessDefinitionInfo is not set! Maybe description or key can be used?
-	// FIXME: Label for ActivityDefinitionInfo is not set! Maybe description can be used? 
 
 	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
 			String processDefinitionId) {
@@ -1436,7 +1413,7 @@ public class ActivitiEngineService {
 					 ActivityDefinitionInfo aDInfo = new ActivityDefinitionInfo();
 					 aDInfo.setUuid(task.getId());
 					 aDInfo.setName(task.getName());
-					 aDInfo.setLabel("");
+					 aDInfo.setLabel(task.getName());
 					 aDInfo.setFormPath("");
 					 
 					 activityDefinitionInfos.add(aDInfo);
@@ -1904,4 +1881,24 @@ public class ActivitiEngineService {
 		}
 		return processInstance;
 	}
+	
+	private String getProcessDefinitionNameByProcessDefinitionId(String processDefinitionId) {
+		String name = null;
+		
+		try {
+			ProcessDefinition processDefinition = engine.getRepositoryService().createProcessDefinitionQuery().
+				processDefinitionId(processDefinitionId).singleResult();
+			
+			if(processDefinition != null) {
+				name = processDefinition.getName();
+			} else {
+				name = "";
+			}
+		} catch (Exception e) {
+			log.severe("Unable to getProcessInstanceByProcessInstanceId with processDefinitionId: " + processDefinitionId);
+		}
+		
+		return name;
+	}
+
 }
