@@ -51,7 +51,7 @@ public class ActivitiEngineServiceTest {
 
 
 	@Test
-	public void userInbox() {
+	public void testCase1() {
 		String userId = "admin";
 		clearDatabase();
 		
@@ -82,7 +82,7 @@ public class ActivitiEngineServiceTest {
 	}
 	
 	@Test
-	public void taskId() {
+	public void testCase2() {
 		String userId = "admin";
 		clearDatabase();
 		
@@ -109,7 +109,7 @@ public class ActivitiEngineServiceTest {
 	}
 	
 	@Test
-	public void taskItem() {
+	public void testCase3() {
 		String userId = "admin";
 		clearDatabase();
 		
@@ -137,7 +137,7 @@ public class ActivitiEngineServiceTest {
 	}
 
 	@Test
-	public void taskItem() {
+	public void testCase4() {
 		String userId = "admin";
 		clearDatabase();
 		
