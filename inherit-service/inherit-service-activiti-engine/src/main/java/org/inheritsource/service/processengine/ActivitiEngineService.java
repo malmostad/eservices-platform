@@ -20,6 +20,9 @@ import java.util.logging.Logger;
 import javax.security.auth.login.LoginContext;
 
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.Pool;
+import org.activiti.bpmn.model.Process;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.ProcessEngines;
@@ -1313,8 +1316,6 @@ public class ActivitiEngineService {
 		
 		return processDefinitions;
 	}
-	
-	// FIXME: Should historic data be used?
 
 	public ProcessDefinitionDetails getProcessDefinitionDetailsByUuid(
 			String processDefinitionId) {
@@ -1340,21 +1341,38 @@ public class ActivitiEngineService {
 				 Set<ActivityDefinitionInfo> activityDefinitionInfos = 
 					new HashSet<ActivityDefinitionInfo>();
 				 
-				 // FIXME: Should historic data be used?
-				 
-				 List<Task> tasks = engine.getTaskService().createTaskQuery().
-					processDefinitionId(processDefinition.getId()).orderByProcessInstanceId().asc().list();
-				 
-				 for(Task task : tasks) {
-					 ActivityDefinitionInfo aDInfo = new ActivityDefinitionInfo();
-					 aDInfo.setUuid(task.getId());
-					 aDInfo.setName(task.getName());
-					 aDInfo.setLabel(task.getName());
-					 aDInfo.setFormPath("");
-					 
-					 activityDefinitionInfos.add(aDInfo);
-				 }
+				 BpmnModel bpmnModel = engine.getRepositoryService().getBpmnModel(processDefinitionId);
 				
+				 if(bpmnModel != null) {
+					 // Note: bpmnModel.getProcess( ... ) seems to work bad due to a pools issue in activiti
+					 List<org.activiti.bpmn.model.Process> processes = bpmnModel.getProcesses();
+					 
+					 if(processes != null && processes.size() > 0) {
+						 
+						 for(Process proc : processes) {
+							 
+							 if(proc != null) {
+								 
+								 if(proc.getId().equals(processDefinition.getKey())) {
+								 
+									 for(FlowElement fE : proc.getFlowElements()) {
+										
+										 if(fE.getClass().getName().contains("UserTask")) {
+											 ActivityDefinitionInfo aDInfo = new ActivityDefinitionInfo();
+											 aDInfo.setUuid(fE.getId());
+											 aDInfo.setName(fE.getName());
+											 aDInfo.setLabel(fE.getName());
+											 aDInfo.setFormPath("");
+											 
+											 activityDefinitionInfos.add(aDInfo);
+										 }
+									 }
+								 }
+							 }
+						 } 
+					 }
+				 }
+				 
 				 processDefinitionDetails.setActivities(activityDefinitionInfos);
 			 }
 		} catch (Exception e) {
@@ -1423,9 +1441,8 @@ public class ActivitiEngineService {
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
 	
-		
-		
-		log.severe(activitiEngineService.getHistoricUserInboxByProcessInstanceId("4307").toString());
+		//log.severe("attributes: " + process.getAttributes().toString());
+		//log.severe(activitiEngineService.getHistoricUserInboxByProcessInstanceId("4307").t);
 		
 		/*
 		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
@@ -1637,8 +1654,8 @@ public class ActivitiEngineService {
 		// run 
 		// mvn exec:java
 		// in inherit-service/inherit-service-activiti-engine directory
-		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
-		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
+		//Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
 		//deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
 		//log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
 		
