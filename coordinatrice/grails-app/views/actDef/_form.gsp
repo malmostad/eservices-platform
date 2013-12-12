@@ -1,17 +1,17 @@
-<%@ page import="org.motrice.coordinatrice.bonita.BnActDef" %>
+<%@ page import="org.motrice.coordinatrice.bonita.ActDef" %>
 <%@ page import="org.motrice.coordinatrice.ActivityConnection" %>
-<g:set var="bnProcDefInst" value="${bnActDefInst?.process}"/>
+<g:set var="procDefInst" value="${actDefInst?.process}"/>
 <div class="fieldcontain">
   <label>
-    <g:message code="bnProcDef.label" default="Process" />
+    <g:message code="procDef.label" default="Process" />
   </label>
-  <g:link controller="bnProcDef" action="show" id="${bnProcDefInst?.id}">${bnProcDefInst?.uuid.encodeAsHTML()}</g:link>
+  <g:link controller="procDef" action="show" id="${procDefInst?.id}">${procDefInst?.uuid.encodeAsHTML()}</g:link>
 </div>
 <div class="fieldcontain">
   <label>
-    <g:message code="bnActDef.label" default="Label" />
+    <g:message code="actDef.label" default="Label" />
   </label>
-  <g:link controller="bnActDef" action="show" id="${bnActDefInst?.id}">${bnActDefInst?.label.encodeAsHTML()}</g:link>
+  <g:link controller="actDef" action="show" id="${actDefInst?.id}">${actDefInst?.label.encodeAsHTML()}</g:link>
 </div>
 <div class="fieldcontain">
   <g:set var="stateInfo" value="${activityConnection?.stateInfo()}"/>

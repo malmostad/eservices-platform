@@ -7,7 +7,7 @@ class UrlMappings {
       }
     }
 
-    "/"(controller: 'BnProcDef', action:'/index')
+    "/"(controller: 'ProcDef', action:'/index')
     "500"(controller: 'errors', action: 'internalServerError')
   }
 }

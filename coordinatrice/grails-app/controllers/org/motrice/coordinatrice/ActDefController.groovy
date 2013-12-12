@@ -1,4 +1,4 @@
-package org.motrice.coordinatrice.bonita
+package org.motrice.coordinatrice
 
 import org.springframework.dao.DataIntegrityViolationException
 import org.motrice.coordinatrice.ActivityConnection
@@ -6,9 +6,9 @@ import org.motrice.coordinatrice.MtfActivityFormDefinition
 import org.motrice.coordinatrice.pxd.PxdFormdefVer
 
 /**
- * Activity definition controller tailored to Bonita
+ * Activity definition controller
  */
-class BnActDefController {
+class ActDefController {
 
   def activityService
 
@@ -18,18 +18,18 @@ class BnActDefController {
 
   def list(Integer max) {
     params.max = Math.min(max ?: 10, 100)
-    [bnActDefInstList: BnActDef.list(params), bnActDefInstTotal: BnActDef.count()]
+    [actDefInstList: ActDef.list(params), actDefInstTotal: ActDef.count()]
   }
 
   def show(Long id) {
-    def bnActDefInst = BnActDef.get(id)
-    if (!bnActDefInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'bnActDef.label', default: 'BnActDef'), id])
+    def actDefInst = ActDef.get(id)
+    if (!actDefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
       redirect(action: "list")
       return
     }
 
-    [bnActDefInst: bnActDefInst]
+    [actDefInst: actDefInst]
   }
 
   /**
@@ -38,9 +38,9 @@ class BnActDefController {
    */
   def edit(Long id) {
     if (log.debugEnabled) log.debug "EDIT ${params}"
-    def bnActDefInst = BnActDef.get(id)
-    if (!bnActDefInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'bnActDef.label', default: 'BnActDef'), id])
+    def actDefInst = ActDef.get(id)
+    if (!actDefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
       redirect(action: "list")
       return
     }
@@ -48,16 +48,16 @@ class BnActDefController {
     // Create a list containing the activities of this process, except this activity
     // Only human activities are interesting in this context
     def activityList = []
-    bnActDefInst.process.humanActivities.each {activity ->
-      if (activity != bnActDefInst) activityList << activity
+    actDefInst.process.humanActivities.each {activity ->
+      if (activity != actDefInst) activityList << activity
     }
 
     // Note that activityFormdef may be null, no error
-    def activityConnection = new ActivityConnection(bnActDefInst,
-						    bnActDefInst?.activityFormdef?.formPath)
+    def activityConnection = new ActivityConnection(actDefInst,
+						    actDefInst?.activityFormdef?.formPath)
     def formMap = activityService.activityFormSelection(activityConnection)
     
-    [bnActDefInst: bnActDefInst, activityList: activityList,
+    [actDefInst: actDefInst, activityList: activityList,
     activityConnection: activityConnection, formList: formMap.formList,
     selectedFormId: formMap.selectedFormId]
   }
@@ -72,32 +72,32 @@ class BnActDefController {
       log.debug "ACC ${acc}"
     }
     
-    def bnActDefInst = BnActDef.get(acc.id)
-    if (!bnActDefInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'bnActDef.label', default: 'BnActDef'), id])
+    def actDefInst = ActDef.get(acc.id)
+    if (!actDefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
       redirect(action: "list")
       return
     }
 
     // Find the activity connection database object (may be null)
-    def activityFormdef = MtfActivityFormDefinition.get(bnActDefInst?.activityFormdef?.id)
+    def activityFormdef = MtfActivityFormDefinition.get(actDefInst?.activityFormdef?.id)
     if (!activityFormdef) {
       activityFormdef =
-	new MtfActivityFormDefinition(activityDefinitionUuid: bnActDefInst.uuid)
+	new MtfActivityFormDefinition(activityDefinitionUuid: actDefInst.uuid)
     }
 
-    def activityConnection = new ActivityConnection(acc, bnActDefInst)
+    def activityConnection = new ActivityConnection(acc, actDefInst)
     activityFormdef.formPath = activityConnection.toString()
 
     if (log.debugEnabled) log.debug "update.activityFormdef: ${activityFormdef}"
 
     if (!activityFormdef.save(flush: true)) {
-      render(view: "edit", id: bnActDefInst.id)
+      render(view: "edit", id: actDefInst.id)
       return
     }
 
     flash.message = message(code: 'default.updated.message', args: [message(code: 'mtfActivityFormDefinition.label', default: 'ActivityFormDefinition'), activityFormdef.id])
-    redirect(controller: 'bnProcDef', action: "show", id: bnActDefInst.process.id)
+    redirect(controller: 'procDef', action: "show", id: actDefInst.process.id)
   }
 
 }
@@ -105,7 +105,7 @@ class BnActDefController {
 class ActivityConnectionCommand { 
   Integer id
   Integer connectionState
-  BnActDef activity
+  ActDef activity
   PxdFormdefVer form
 
   String toString() {
