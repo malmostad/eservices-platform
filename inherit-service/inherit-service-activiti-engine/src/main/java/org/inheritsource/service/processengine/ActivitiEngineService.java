@@ -1404,6 +1404,21 @@ public class ActivitiEngineService {
 		return parentProcessInstanceId;
 	}
 	
+	private List<String> getParentProcessInstanceIdListByProcessInstanceId(String processInstanceId) {
+		List<String> parentProcessInstanceIdList = new ArrayList<String>();
+		String parentProcessInstanceId = "";
+		
+		while(parentProcessInstanceId != null) {
+			parentProcessInstanceId = getParentProcessInstanceIdByProcessInstanceId(processInstanceId);
+			
+			if(parentProcessInstanceId != null) {
+				parentProcessInstanceIdList.add(parentProcessInstanceId);
+			}
+		}
+		
+		return parentProcessInstanceIdList;
+	}
+	
 	private String getHistoricParentProcessInstanceIdByProcessInstanceId(String processInstanceId) {
 		String parentProcessInstanceId = null;
 		
@@ -1422,11 +1437,52 @@ public class ActivitiEngineService {
 		return parentProcessInstanceId;
 	}
 
-	// FIXME: No idea for the moment how to solve this...
-	
 	public InboxTaskItem getNextInboxTaskItem(String currentProcessInstance, String userId) {
-		return null;
-	 // TODO		
+		List<String> parentProcessInstanceList = null;
+		
+		if (currentProcessInstance == null || userId == null) {
+			return null;
+		}
+		
+		try {
+			List<InboxTaskItem> inboxTaskItems = getUserInbox(userId);
+			
+			if(inboxTaskItems == null) {
+				return null;
+			}
+
+			// Check if task belongs to a subprocess of currentProcessInstance, 
+			// if so return that inboxTaskItem
+			for(InboxTaskItem inboxTaskItem : inboxTaskItems) {
+				
+				parentProcessInstanceList = getParentProcessInstanceIdListByProcessInstanceId
+					(inboxTaskItem.getProcessInstanceUuid());
+
+				if(parentProcessInstanceList.contains(currentProcessInstance)) {
+					return(inboxTaskItem);
+				}
+			}
+			
+			// Check if task belongs to currentProcessInstance, 
+			// if so return that inboxTaskItem
+			for(InboxTaskItem inboxTaskItem : inboxTaskItems) {
+				if(inboxTaskItem.equals(currentProcessInstance)) {
+					return(inboxTaskItem);
+				}
+			}
+			
+			// If any task in the list just return the first			
+			if(inboxTaskItems.size() > 0) {
+				return(inboxTaskItems.get(0));
+			}
+			
+		} catch (Exception e) {
+			log.severe("Unable to getNextInboxTaskItem with currentProcessInstance: " 
+					+ currentProcessInstance + " userId: " + userId + " exception: " + e);
+		}
+			
+		// No inboxTaskItems found at all, returning null
+		return null;		
 	}
 	
 	public static void main(String[] args) {
