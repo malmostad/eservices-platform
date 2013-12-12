@@ -3,6 +3,10 @@ package org.motrice.coordinatrice
 import java.text.SimpleDateFormat
 import org.motrice.coordinatrice.MtfStartFormDefinition
 
+/**
+ * A process definition.
+ * This class is not persisted, picked up read-only from the BPMN engine.
+ */
 class ProcDef implements Comparable {
   def grailsApplication
 
