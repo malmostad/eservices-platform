@@ -26,9 +26,13 @@ package org.inheritsource.test.service.processengine;
 import java.util.List;
 import java.util.Set;
 
+import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.repository.Deployment;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
+import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
+import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.InboxTaskItem;
+import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.junit.After;
 import org.junit.Assert;
@@ -49,7 +53,7 @@ public class ActivitiEngineServiceTest {
 		activitiEngineService.close();
 	}
 
-
+/*
 	@Test
 	public void testCase1() {
 		String userId = "admin";
@@ -160,6 +164,208 @@ public class ActivitiEngineServiceTest {
 		Assert.assertEquals(historicTaskItem.getActivityLabel(), inbox.get(0).getActivityLabel());
 	}
 	
+	// Test that a candidate user for a task is allowed to assign an unsassigned task
+	@Test
+	public void testCase5() {
+		String userId = "admin";
+		clearDatabase();
+		
+		// Deploy a BPMN and start a process with a certain user
+		activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		activitiEngineService.startProcessInstanceByKey("Arendeprocess", userId);
+		
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
+		Assert.assertNotNull(inbox);
+		Assert.assertNotNull(inbox.get(0));
+		String taskId = inbox.get(0).getTaskUuid();
+		ActivityWorkflowInfo aWFlowInfo = activitiEngineService.getActivityWorkflowInfo(taskId);
+		
+		// verify the task is unassigned
+		String assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+		Assert.assertEquals("assignedUserId should be blank!", assignedUserId, "");
+		
+		// get a candidate for the task
+		Set<UserInfo> candidates = aWFlowInfo.getCandidates();
+		String candidateForTask = "";
+		if(candidates != null && candidates.size() > 0) {
+			candidateForTask = ((UserInfo)(candidates.toArray()[0])).getUuid();
+		}
+		Assert.assertNotEquals("candidateForTask should not be blank!", candidateForTask, "");
+		aWFlowInfo = activitiEngineService.assignTask(taskId, candidateForTask);
+		assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+		
+		Assert.assertEquals("assignedUserId should be same as candidateForTask", assignedUserId, candidateForTask);
+	}
+	
+	// Test that a candidate user for a task is not allowed to assign an already assigned task
+	@Test
+	public void testCase6() {
+		String userId = "admin";
+		clearDatabase();
+
+		// Deploy a BPMN and start a process with a certain user
+		activitiEngineService
+				.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		activitiEngineService
+				.startProcessInstanceByKey("Arendeprocess", userId);
+
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
+		Assert.assertNotNull(inbox);
+		Assert.assertNotNull(inbox.get(0));
+		String taskId = inbox.get(0).getTaskUuid();
+		ActivityWorkflowInfo aWFlowInfo = activitiEngineService
+				.getActivityWorkflowInfo(taskId);
+
+		// verify the task is unassigned
+		String assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+		Assert.assertEquals("assignedUserId should be blank!", assignedUserId, "");
+
+		// get a candidate for the task
+		Set<UserInfo> candidates = aWFlowInfo.getCandidates();
+		String candidateForTask_1 = "";
+		String candidateForTask_2 = "";
+		if (candidates != null && candidates.size() > 0) {
+			candidateForTask_1 = ((UserInfo) (candidates.toArray()[0])).getUuid();
+			candidateForTask_2 = ((UserInfo) (candidates.toArray()[1])).getUuid();
+		}
+		Assert.assertNotEquals("candidateForTask_1 should not be blank!",
+				candidateForTask_1, "");
+		Assert.assertNotEquals("candidateForTask_2 should not be blank!",
+				candidateForTask_2, "");
+		
+		aWFlowInfo = activitiEngineService.assignTask(taskId, candidateForTask_1);
+		assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+
+		Assert.assertEquals("assignedUserId should be same as candidateForTask",
+			assignedUserId, candidateForTask_1);
+		
+		// This assignement should not be possible cause task is assigned by another user
+		aWFlowInfo = activitiEngineService.assignTask(taskId, candidateForTask_2);
+		assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+		Assert.assertNotEquals("assignedUserId should not be same as candidateForTask",
+				assignedUserId, candidateForTask_2);
+	}
+	
+	// Test that a candidate user for a task is not allowed to assign an already
+	// assigned task and the unassign it.
+	@Test
+	public void testCase7() {
+		String userId = "admin";
+		clearDatabase();
+
+		// Deploy a BPMN and start a process with a certain user
+		activitiEngineService
+				.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		activitiEngineService
+				.startProcessInstanceByKey("Arendeprocess", userId);
+
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
+		Assert.assertNotNull(inbox);
+		Assert.assertNotNull(inbox.get(0));
+		String taskId = inbox.get(0).getTaskUuid();
+		ActivityWorkflowInfo aWFlowInfo = activitiEngineService
+				.getActivityWorkflowInfo(taskId);
+
+		// verify the task is unassigned
+		String assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+		Assert.assertEquals("assignedUserId should be blank!", assignedUserId,
+				"");
+
+		// get a candidate for the task
+		Set<UserInfo> candidates = aWFlowInfo.getCandidates();
+		String candidateForTask_1 = "";
+		String candidateForTask_2 = "";
+		if (candidates != null && candidates.size() > 0) {
+			candidateForTask_1 = ((UserInfo) (candidates.toArray()[0]))
+					.getUuid();
+			candidateForTask_2 = ((UserInfo) (candidates.toArray()[1]))
+					.getUuid();
+		}
+		Assert.assertNotEquals("candidateForTask_1 should not be blank!",
+				candidateForTask_1, "");
+		Assert.assertNotEquals("candidateForTask_2 should not be blank!",
+				candidateForTask_2, "");
+
+		aWFlowInfo = activitiEngineService.assignTask(taskId,
+				candidateForTask_1);
+		assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+
+		Assert.assertEquals(
+				"assignedUserId should be same as candidateForTask",
+				assignedUserId, candidateForTask_1);
+
+		// This assignemrent should not be possible cause task is assigned by
+		// another user
+		aWFlowInfo = activitiEngineService.assignTask(taskId,
+				candidateForTask_2);
+		assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+		Assert.assertNotEquals(
+				"assignedUserId should not be same as candidateForTask",
+				assignedUserId, candidateForTask_2);
+		
+		// Unassign
+		
+		aWFlowInfo = activitiEngineService.unassignTask(taskId);
+		assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+
+		Assert.assertEquals(
+				"assignedUserId should be same as candidateForTask",
+				assignedUserId, "");
+	}
+	*/
+	/*
+	// assign and unassign a user
+	@Test
+	public void testCase8() {
+		String userId = "admin";
+		clearDatabase();
+
+		// Deploy a BPMN and start a process with a certain user
+		activitiEngineService
+				.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		activitiEngineService
+				.startProcessInstanceByKey("Arendeprocess", userId);
+
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox("admin");
+		Assert.assertNotNull(inbox);
+		Assert.assertNotNull(inbox.get(0));
+		String taskId = inbox.get(0).getTaskUuid();
+		ActivityWorkflowInfo aWFlowInfo = activitiEngineService
+				.getActivityWorkflowInfo(taskId);
+
+		// verify the task is unassigned
+		String assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+		Assert.assertEquals("assignedUserId should be blank!", assignedUserId,
+				"");
+
+		// get a candidate for the task
+		Set<UserInfo> candidates = aWFlowInfo.getCandidates();
+		String candidateForTask_1 = "";
+		if (candidates != null && candidates.size() > 0) {
+			candidateForTask_1 = ((UserInfo) (candidates.toArray()[0]))
+					.getUuid();
+		}
+		Assert.assertNotEquals("candidateForTask_1 should not be blank!",
+				candidateForTask_1, "");
+		
+		aWFlowInfo = activitiEngineService.assignTask(taskId,
+				candidateForTask_1);
+		assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+
+		Assert.assertEquals(
+				"assignedUserId should be same as candidateForTask",
+				assignedUserId, candidateForTask_1);
+
+		// Unassign
+
+		aWFlowInfo = activitiEngineService.unassignTask(taskId);
+		assignedUserId = aWFlowInfo.getAssignedUser().getUuid();
+
+		Assert.assertEquals(
+				"assignedUserId should be same as candidateForTask",
+				assignedUserId, "");
+	}
+	*/
 	private void clearDatabase() {
 		
 		// Clear the deployment, processdefinitions, processinstances, task and history

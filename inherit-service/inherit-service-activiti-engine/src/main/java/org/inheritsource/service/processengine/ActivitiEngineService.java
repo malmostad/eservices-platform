@@ -23,6 +23,7 @@ import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.Pool;
 import org.activiti.bpmn.model.Process;
+import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.ProcessEngines;
@@ -727,24 +728,29 @@ public class ActivitiEngineService {
 	}
 
 	public ActivityWorkflowInfo assignTask(String taskId, String userId) {
-		ActivityWorkflowInfo activityWorkflowInfo = null;
 		
-		try {
-			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
-			task.setAssignee(userId);
-			engine.getTaskService().saveTask(task);
-			
-			activityWorkflowInfo = new ActivityWorkflowInfo();
-			activityWorkflowInfo.setPriority(task.getPriority());
-			activityWorkflowInfo.setAssignedUser(userId2UserInfo(userId));
-			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
-		} catch (Exception e) {
-			log.severe("Unable to assignTask with taskId: " + taskId);
-			activityWorkflowInfo = null;
+		// FIXME: Check if userId is a candidate for this task or if userId is part of a candidate group
+
+		if(userId != null) {
+			try {	
+				engine.getTaskService().claim(taskId, userId);
+			} catch (Exception e) {
+			}
 		}
 		
-		return activityWorkflowInfo;
+		return getActivityWorkflowInfo(taskId);
 	}
+	
+	public ActivityWorkflowInfo unassignTask(String taskId) {
+		try {
+			engine.getTaskService().setAssignee(taskId, null);
+		} catch (Exception e) {
+			log.severe("Unable to unassignTask with taskId: " + taskId);
+		}
+		
+		return getActivityWorkflowInfo(taskId);
+	}
+	
 
 	public ActivityWorkflowInfo addCandidate(String taskId, String userId) {
 		ActivityWorkflowInfo activityWorkflowInfo = null;
@@ -1271,25 +1277,6 @@ public class ActivitiEngineService {
 		return successful;
 	}
 
-	public ActivityWorkflowInfo unassignTask(String taskId) {
-		ActivityWorkflowInfo activityWorkflowInfo = null;
-		
-		try {
-			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
-			task.setAssignee(null);
-			engine.getTaskService().saveTask(task);
-			
-			activityWorkflowInfo = new ActivityWorkflowInfo();
-			activityWorkflowInfo.setPriority(task.getPriority());
-			activityWorkflowInfo.setAssignedUser(null);
-			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));	
-		} catch (Exception e) {
-			log.severe("Unable to assignTask with taskId: " + taskId);
-		}
-		
-		return activityWorkflowInfo;
-	}
-	
 	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
 		HashSet<ProcessDefinitionInfo> processDefinitions = new HashSet<ProcessDefinitionInfo>();
 		
@@ -1506,15 +1493,20 @@ public class ActivitiEngineService {
 		List<IdentityLink> identityLinks = 
 				engine.getTaskService().getIdentityLinksForTask(taskId);
 		UserInfo candidate = null;
+		String userId = null;
 		
 		if(identityLinks != null) {
 			for(IdentityLink iL : identityLinks) {
 				if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
-					candidate = new UserInfo();
-					candidate.setUuid(iL.getUserId());
-					candidate.setLabel(iL.getUserId());
-					candidate.setLabelShort(iL.getUserId());
-					candidates.add(candidate);
+					userId = iL.getUserId();
+					
+					if(userId != null) {
+						candidate = new UserInfo();
+						candidate.setUuid(userId);
+						candidate.setLabel(userId);
+						candidate.setLabelShort(userId);
+						candidates.add(candidate);
+					}
 				}
 			}
 		}
