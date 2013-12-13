@@ -753,48 +753,36 @@ public class ActivitiEngineService {
 	
 
 	public ActivityWorkflowInfo addCandidate(String taskId, String userId) {
-		ActivityWorkflowInfo activityWorkflowInfo = null;
-		
 		try {
 			engine.getTaskService().addCandidateUser(taskId, userId);
-			activityWorkflowInfo = getActivityWorkflowInfo(taskId);
 		} catch (Exception e) {
 			log.severe("Unable to addCandidate with taskId: " + taskId +
 					" and userId: " + userId);
-			activityWorkflowInfo = null;
 		}
 		
-		return activityWorkflowInfo;
+		return getActivityWorkflowInfo(taskId);
 	}
 	
 	public ActivityWorkflowInfo removeCandidate(String taskId, String userId) {
-		ActivityWorkflowInfo activityWorkflowInfo = null;
-		
 		try {
 			engine.getTaskService().deleteCandidateUser(taskId, userId);
-			activityWorkflowInfo = getActivityWorkflowInfo(taskId);
 		} catch (Exception e) {
 			log.severe("Unable to removeCandidate with taskId: " + taskId +
 					" and userId: " + userId);
-			activityWorkflowInfo = null;
 		}
 		
-		return activityWorkflowInfo;
+		return getActivityWorkflowInfo(taskId);
 	}
 
 	public ActivityWorkflowInfo setPriority(String taskId, int priority) {
-		ActivityWorkflowInfo activityWorkflowInfo = null;
-		
 		try {
 			engine.getTaskService().setPriority(taskId, priority);
-			activityWorkflowInfo = getActivityWorkflowInfo(taskId);
 		} catch (Exception e) {
 			log.severe("Unable to setPriority with taskId: " + taskId +
 					" and priority: " + priority);
-			activityWorkflowInfo = null;
 		}
 		
-		return activityWorkflowInfo;
+		return getActivityWorkflowInfo(taskId);
 	}
 
 	public String startProcess(String processDefinitionId, String userId) {
@@ -883,8 +871,6 @@ public class ActivitiEngineService {
 			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String userId) {
 		List<ProcessInstance> processInstances = null;
-		int len = 0;
-		int toIndex = 0;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 		
 		if(fromIndex < 0) {
@@ -1015,8 +1001,6 @@ public class ActivitiEngineService {
 			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, String userId) {
 		List<HistoricProcessInstance> processInstances = null;
-		int len = 0;
-		int toIndex = 0;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 		
 		if(fromIndex < 0) {
@@ -1116,8 +1100,6 @@ public class ActivitiEngineService {
 	private PagedProcessInstanceSearchResult getPagedProcessInstanceSearchResultByUuids(List<String> processInstanceIdList,
 			int fromIndex, int pageSize, String sortBy, String sortOrder, String userId) {
 		List<ProcessInstance> processInstances = null;
-		int len = 0;
-		int toIndex = 0;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 			
 		if(fromIndex < 0) {
@@ -1192,8 +1174,6 @@ public class ActivitiEngineService {
 	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResultByUuids(List<String> processInstanceIdList,
 			int fromIndex, int pageSize, String sortBy, String sortOrder, String userId) {
 		List<HistoricProcessInstance> processInstances = null;
-		int len = 0;
-		int toIndex = 0;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 		
 		if(fromIndex < 0) {
