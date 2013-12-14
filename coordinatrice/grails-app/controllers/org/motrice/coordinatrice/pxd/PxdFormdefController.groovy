@@ -1,8 +1,10 @@
 package org.motrice.coordinatrice.pxd
 
-class PxdFormdefController {
+import org.motrice.coordinatrice.MtfStartFormDefinition
 
+class PxdFormdefController {
   def grailsApplication
+  def processEngineService
 
   def index() {
     redirect(action: "list", params: params)
@@ -24,8 +26,23 @@ class PxdFormdefController {
       return
     }
 
+    // Generate the list of versions
+    def formdefVerList = []
+    if (pxdFormdefInst.forms) {
+      pxdFormdefInst.forms.each {fdv ->
+	// Check if this version is used as start form
+	def process = null
+	def startForm = MtfStartFormDefinition.findByFormPath(fdv.path)
+	if (startForm) {
+	  process = processEngineService.findProcessDefinition(startForm.processDefinitionUuid)
+	}
+
+	formdefVerList << [formdefVer: fdv, procDef: process]
+      }
+    }
+
     String orbeonBaseUri = grailsApplication.config.coordinatrice.orbeon.builder.base.uri
-    [pxdFormdefInst: pxdFormdefInst, orbeonUri: orbeonBaseUri]
+    [pxdFormdefInst: pxdFormdefInst, formdefVerList: formdefVerList, orbeonUri: orbeonBaseUri]
   }
 
 }

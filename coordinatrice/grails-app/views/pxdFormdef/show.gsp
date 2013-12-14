@@ -45,11 +45,12 @@
 	    <span class="property-value" aria-labelledby="uuid-label"><g:fieldValue bean="${pxdFormdefInst}" field="uuid"/></span>
 	  </li>
 	</g:if>
-	<g:if test="${pxdFormdefInst?.forms}">
+	<g:if test="${!formdefVerList.isEmpty()}">
 	  <li class="fieldcontain">
 	    <span id="forms-label" class="property-label"><g:message code="pxdFormdef.forms.label" default="Forms" /></span>
-	    <g:each in="${pxdFormdefInst.forms}" var="f">
-	      <g:set var="proc" value="${f?.startFormProcess}"/>
+	    <g:each in="${formdefVerList}" var="entry">
+	      <g:set var="f" value="${entry.formdefVer}"/>
+	      <g:set var="proc" value="${entry?.procDef}"/>
 	      <span class="property-value" aria-labelledby="forms-label">
 		<g:link controller="pxdFormdefVer" action="show" id="${f.id}">${f?.encodeAsHTML()}</g:link>
 		<g:if test="${proc}">

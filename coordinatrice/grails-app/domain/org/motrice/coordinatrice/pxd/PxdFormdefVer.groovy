@@ -4,10 +4,6 @@ import org.motrice.coordinatrice.MtfStartFormDefinition
 import org.motrice.coordinatrice.ProcDef
 
 class PxdFormdefVer implements Comparable {
-  // Needed for connecting to process definition
-  // NOTE: Must be transient
-  def processEngineService
-
   // The magic draft number that means "published"
   static Integer PUBLISHED = 9999
 
@@ -27,7 +23,6 @@ class PxdFormdefVer implements Comparable {
     cache usage: 'read-only'
     version false
   }
-  static transients = ['processEngineService']
   static constraints = {
     path nullable: false, size: 3..400, unique: true
     appName size: 1..120
@@ -44,21 +39,6 @@ class PxdFormdefVer implements Comparable {
 
   static allPublishedForms() {
     PxdFormdefVer.findAllByDraft(PUBLISHED, [sort: 'path'])
-  }
-
-  /**
-   * Get the process where this form is the start form
-   * Return the process or null if the form is not used as a start form
-   * Invoked from pxdFormdef/show.gsp, not very elegant
-   */
-  ProcDef getStartFormProcess() {
-    def process = null
-    def startForm = MtfStartFormDefinition.findByFormPath(path)
-    if (startForm) {
-      process = processEngineService.findProcessDefinition(startForm.processDefinitionUuid)
-    }
-
-    return process
   }
 
   String toString() {
