@@ -25,8 +25,8 @@
 	  </g:eachError>
 	</ul>
       </g:hasErrors>
-      <g:form method="post" >
-	<g:hiddenField name="id" value="${procDefInst?.id}" />
+      <g:form method="post" action="update">
+	<g:hiddenField name="id" value="${procDefInst?.uuid}" />
 	<fieldset class="form">
 	  <g:render template="form"/>
 	</fieldset>

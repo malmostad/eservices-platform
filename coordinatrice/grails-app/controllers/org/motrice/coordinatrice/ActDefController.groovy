@@ -10,22 +10,15 @@ import org.motrice.coordinatrice.pxd.PxdFormdefVer
  */
 class ActDefController {
 
-  def activityService
+  def formService
+  def processEngineService
 
-  def index() {
-    redirect(action: "list", params: params)
-  }
-
-  def list(Integer max) {
-    params.max = Math.min(max ?: 10, 100)
-    [actDefInstList: ActDef.list(params), actDefInstTotal: ActDef.count()]
-  }
-
-  def show(Long id) {
-    def actDefInst = ActDef.get(id)
+  def show() {
+    if (log.debugEnabled) log.debug "SHOW ${params}"
+    def actDefInst = processEngineService.findActivityDefinition(params.id)
     if (!actDefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
-      redirect(action: "list")
+      redirect(controller: 'procDef', action: 'list')
       return
     }
 
@@ -36,26 +29,26 @@ class ActDefController {
    * Edit the activity connection (nothing else may be changed)
    * The activity connection is a self-contained object, MtfActivityFormDefinition
    */
-  def edit(Long id) {
+  def edit() {
     if (log.debugEnabled) log.debug "EDIT ${params}"
-    def actDefInst = ActDef.get(id)
+    def actDefInst = processEngineService.findActivityDefinition(params.id)
     if (!actDefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
-      redirect(action: "list")
+      redirect(controller: 'procDef', action: 'list')
       return
     }
 
     // Create a list containing the activities of this process, except this activity
     // Only human activities are interesting in this context
     def activityList = []
-    actDefInst.process.humanActivities.each {activity ->
+    actDefInst.process.userActivities.each {activity ->
       if (activity != actDefInst) activityList << activity
     }
 
     // Note that activityFormdef may be null, no error
     def activityConnection = new ActivityConnection(actDefInst,
 						    actDefInst?.activityFormdef?.formPath)
-    def formMap = activityService.activityFormSelection(activityConnection)
+    def formMap = formService.activityFormSelection(activityConnection)
     
     [actDefInst: actDefInst, activityList: activityList,
     activityConnection: activityConnection, formList: formMap.formList,
@@ -72,10 +65,10 @@ class ActDefController {
       log.debug "ACC ${acc}"
     }
     
-    def actDefInst = ActDef.get(acc.id)
+    def actDefInst = processEngineService.findActivityDefinition(params.id)
     if (!actDefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
-      redirect(action: "list")
+      redirect(controller: 'procDef', action: 'list')
       return
     }
 
@@ -83,7 +76,7 @@ class ActDefController {
     def activityFormdef = MtfActivityFormDefinition.get(actDefInst?.activityFormdef?.id)
     if (!activityFormdef) {
       activityFormdef =
-	new MtfActivityFormDefinition(activityDefinitionUuid: actDefInst.uuid)
+	new MtfActivityFormDefinition(activityDefinitionUuid: actDefInst.fullId.toString())
     }
 
     def activityConnection = new ActivityConnection(acc, actDefInst)
@@ -97,19 +90,18 @@ class ActDefController {
     }
 
     flash.message = message(code: 'default.updated.message', args: [message(code: 'mtfActivityFormDefinition.label', default: 'ActivityFormDefinition'), activityFormdef.id])
-    redirect(controller: 'procDef', action: "show", id: actDefInst.process.id)
+    redirect(controller: 'procDef', action: "show", id: actDefInst.process.uuid)
   }
 
 }
 
 class ActivityConnectionCommand { 
-  Integer id
+  String id
   Integer connectionState
-  ActDef activity
   PxdFormdefVer form
 
   String toString() {
-    "[ACC: id=${id} cst=${connectionState} form=${form} act=${activity?.uuid}]"
+    "[ACC: id=${id} cst=${connectionState} form=${form}]"
   }
 
 }

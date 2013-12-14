@@ -23,19 +23,21 @@
       <table>
 	<thead>
 	  <tr>
-	    <g:sortableColumn property="uuid" title="${message(code: 'procDef.uuid.label', default: 'Uuid')}" />
-	    <g:sortableColumn property="label" title="${message(code: 'procDef.label.label', default: 'Label')}" />
-	    <g:sortableColumn property="vno" title="${message(code: 'procDef.vno.label', default: 'Vno')}" />
-	    <g:sortableColumn property="type" title="${message(code: 'procDef.deployedTime.label', default: 'Deployed')}" />
+	    <g:sortableColumn property="name" title="${message(code: 'procDef.name.label', default: 'Name')}" />
+	    <g:sortableColumn property="vno" title="${message(code: 'procDef.vno.label', default: 'Version')}" />
+	    <g:sortableColumn property="type" title="${message(code: 'procDef.type.label', default: 'Type')}" />
+	    <g:sortableColumn property="deployedTime" title="${message(code: 'procDef.deployedTime.label', default: 'Deployed')}" />
+	    <g:sortableColumn property="state" title="${message(code: 'procDef.state.label', default: 'State')}" />
 	  </tr>
 	</thead>
 	<tbody>
 	  <g:each in="${procDefInstList}" status="i" var="procDefInst">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-	      <td><g:link action="show" id="${procDefInst.id}">${fieldValue(bean: procDefInst, field: "uuid")}</g:link></td>
-	      <td>${fieldValue(bean: procDefInst, field: "label")}</td>
+	      <td><g:link action="show" id="${procDefInst.uuid}">${fieldValue(bean: procDefInst, field: "name")}</g:link></td>
 	      <td>${fieldValue(bean: procDefInst, field: "vno")}</td>
-	      <td>${fieldValue(bean: procDefInst, field: "deployedTime")}</td>
+	      <td>${fieldValue(bean: procDefInst, field: "type")}</td>
+	      <td>${fieldValue(bean: procDefInst, field: "deployedTimeStr")}</td>
+	      <td><g:pdefstate state="${procDefInst?.state}"/></td>
 	    </tr>
 	  </g:each>
 	</tbody>

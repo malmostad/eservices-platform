@@ -1,4 +1,4 @@
-<g:set var="isHuman" value="${bnActDefInst?.type=='Human'}"/>
+<g:set var="isHuman" value="${actDefInst?.userTask}"/>
 <g:if test="${!isHuman}">
   <g:set var="statetitle"><g:message code="activity.connection.disabled"/></g:set>
   <td><g:img uri="/images/silk/lock.png" title="${statetitle}"/></td><td></td>
@@ -18,7 +18,7 @@
 </g:else>
 <td>
   <g:if test="${isHuman}">
-    <g:link class="edit" controller="bnActDef" action="edit" id="${connection?.activity?.id}">
+    <g:link class="edit" controller="actDef" action="edit" id="${connection?.activity?.fullId}">
       <g:img uri="/images/silk/connect.png" title="${message(code: 'activity.default.edit.label', default: 'Edit')}"/>
     </g:link>
   </g:if>

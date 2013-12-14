@@ -1,3 +1,7 @@
+import org.activiti.spring.ProcessEngineFactoryBean
+import org.activiti.spring.SpringProcessEngineConfiguration
+import org.springframework.jdbc.datasource.DataSourceTransactionManager
+import org.springframework.jdbc.datasource.SimpleDriverDataSource
 import org.springframework.jmx.export.MBeanExporter
 import org.springframework.jmx.support.MBeanServerFactoryBean
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource
@@ -35,5 +39,32 @@ beans = {
 
   // Our JMX management bean
   basicJmxManagement(BasicAppManagement)
+
+  // Activiti setup -- requires a transaction manager
+  // Note: The data source placeholders must use single quotes
+  // Placeholders get their values from normal config
+  activitiDataSource(SimpleDriverDataSource) {
+    driverClass = '${dataSource.driverClassName}'
+    url = '${dataSource.url}'
+    username = '${dataSource.username}'
+    password = '${dataSource.password}'
+  }
+
+  activitiTxManager(DataSourceTransactionManager) {
+    dataSource = activitiDataSource
+  }
+
+  activitiConfiguration(SpringProcessEngineConfiguration) {
+    dataSource = activitiDataSource
+    transactionManager = activitiTxManager
+    databaseSchemaUpdate = false
+    jobExecutorActivate = false
+  }
+
+  processEngine(ProcessEngineFactoryBean) {
+    processEngineConfiguration = activitiConfiguration
+  }
+
+  activitiRepositoryService(processEngine: "getRepositoryService")
 
 }

@@ -54,7 +54,7 @@
 		<g:link controller="pxdFormdefVer" action="show" id="${f.id}">${f?.encodeAsHTML()}</g:link>
 		<g:if test="${proc}">
 		  <g:set var="imgtitle"><g:message code="pxdFormdefVer.startform.link"/></g:set>
-		  <g:link controller="bnProcDef" action="show" id="${proc.id}">
+		  <g:link controller="procDef" action="show" id="${proc.uuid}">
 		    <g:img uri="/images/silk/asterisk_yellow.png" title="${imgtitle}"/>
 		  </g:link>
 		</g:if>

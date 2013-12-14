@@ -2,7 +2,7 @@ package org.motrice.coordinatrice
 
 import org.motrice.coordinatrice.pxd.PxdFormdefVer
 
-class ActivityService {
+class FormService {
 
   /**
    * Create a list of forms that may be associated with an activity.

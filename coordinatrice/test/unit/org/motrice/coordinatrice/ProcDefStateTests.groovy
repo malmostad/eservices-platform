@@ -1,4 +1,4 @@
-package org.motrice.coordinatrice.bonita
+package org.motrice.coordinatrice
 
 
 
@@ -8,10 +8,10 @@ import org.junit.*
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
-@TestFor(BnActDef)
-class BnActDefTests {
+@TestFor(SuspensionState)
+class SuspensionStateTests {
 
     void testSomething() {
-
+       fail "Implement me"
     }
 }

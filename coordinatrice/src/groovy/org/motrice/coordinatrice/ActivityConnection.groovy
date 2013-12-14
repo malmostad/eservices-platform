@@ -1,8 +1,5 @@
 package org.motrice.coordinatrice
 
-import org.motrice.coordinatrice.bonita.BnActDef
-import org.motrice.coordinatrice.bonita.ActivityConnectionCommand
-
 /**
  * Class for decoding and encoding formpath in MtfActivityFormDefinition, a string.
  * The value indicates one of several connection states.
@@ -46,13 +43,13 @@ class ActivityConnection {
   // FORM, SIGN_ACTIVITY, PAY_ACTIVITY
   String path
 
-  // The BnActDef instance to which this connection belongs
-  BnActDef activity
+  // The ActDef instance to which this connection belongs
+  ActDef activity
 
   /**
    * Construct from an activity definition and an existing formpath
    */
-  ActivityConnection(BnActDef activity, String formpath) {
+  ActivityConnection(ActDef activity, String formpath) {
     this.activity = activity
     if (formpath == null) {
       state = UNCONNECTED_STATE
@@ -89,7 +86,7 @@ class ActivityConnection {
    * Construct from an activity definition and activity connection edit input
    * Arguments reversed to avoid overloading conflicts.
    */
-  ActivityConnection(ActivityConnectionCommand command, BnActDef activity) {
+  ActivityConnection(ActivityConnectionCommand command, ActDef activity) {
     this.activity = activity
     state = command.connectionState
     
@@ -105,7 +102,7 @@ class ActivityConnection {
     break
     case SIGN_ACTIVITY_STATE:
     case PAY_ACTIVITY_STATE:
-    path = command?.activity?.uuid
+    path = activity?.fullId?.toString()
     break
     default:
     // No connection specified
@@ -187,7 +184,7 @@ class ActivityConnection {
     break
     case SIGN_ACTIVITY_STATE:
     case PAY_ACTIVITY_STATE:
-    BnActDef.findByUuid(path)
+    ActDef.fullId.toString()
     break
     default:
     ''

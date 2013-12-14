@@ -25,9 +25,8 @@
 	  </g:eachError>
 	</ul>
       </g:hasErrors>
-      <g:form method="post" >
-	<g:hiddenField name="id" value="${actDefInst?.id}" />
-	<g:hiddenField name="version" value="${actDefInst?.version}" />
+      <g:form method="post" action="update">
+	<g:hiddenField name="id" value="${actDefInst?.fullId}" />
 	<fieldset class="form">
 	  <g:render template="form"/>
 	</fieldset>

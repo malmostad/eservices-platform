@@ -24,7 +24,7 @@ grails.project.dependency.resolution = {
     // specify dependency exclusions here; for example, uncomment this to disable ehcache:
     // excludes 'ehcache'
   }
-  log "error" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
+  log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
   checksums true // Whether to verify checksums on resolve
   legacyResolve false // whether to do a secondary resolve on plugin installation, not advised and here for backwards compatibility
 
@@ -43,6 +43,10 @@ grails.project.dependency.resolution = {
     //mavenRepo "http://repository.codehaus.org"
     //mavenRepo "http://download.java.net/maven/2/"
     //mavenRepo "http://repository.jboss.com/maven2/"
+
+    // For Activiti
+    mavenRepo name: "Activiti",
+      root: "https://maven.alfresco.com/nexus/content/repositories/activiti/"
   }
 
   dependencies {
@@ -50,6 +54,15 @@ grails.project.dependency.resolution = {
 
     // runtime 'mysql:mysql-connector-java:5.1.22'
     runtime "postgresql:postgresql:9.2-1002.jdbc4"
+
+    // Activiti dependencies
+    compile ("org.activiti:activiti-engine:5.14") {
+      excludes "livetribe-jsr223"
+    }
+    runtime "org.activiti:activiti-bpmn-model:5.14"
+    runtime "org.activiti:activiti-bpmn-converter:5.14"
+    runtime "org.activiti:activiti-spring:5.14"
+    runtime "org.mybatis:mybatis:3.2.3"
   }
 
   plugins {

@@ -1,7 +1,5 @@
 package org.motrice.coordinatrice.pxd
 
-import org.springframework.dao.DataIntegrityViolationException
-
 class PxdFormdefController {
 
   def grailsApplication

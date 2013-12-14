@@ -3,7 +3,7 @@
   <label>
     <g:message code="procDef.label" default="Process" />
   </label>
-  <g:link action="show" id="${procDefInst?.id}">${procDefInst?.uuid.encodeAsHTML()}</g:link>
+  <g:link action="show" id="${procDefInst?.uuid}">${procDefInst?.display.encodeAsHTML()}</g:link>
 </div>
 <div class="fieldcontain">
   <label><g:message code="startform.selection.label"/></label>
@@ -14,7 +14,7 @@
 </div>
 <div class="fieldcontain">
   <g:if test="${procDefInst?.startForms}">
-    <g:set var="procDefId" value="${procDefInst?.id}"/>
+    <g:set var="procDefId" value="${procDefInst?.uuid}"/>
     <g:each in="${procDefInst.startForms}" var="msfd">
       <span class="property-value">
 	<g:set var="pfv" value="${msfd.formdef}"/>
