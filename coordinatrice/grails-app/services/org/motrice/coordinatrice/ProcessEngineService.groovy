@@ -28,6 +28,7 @@ class ProcessEngineService {
    * Does not populate activities
    */
   ProcDef createProcDef(ProcessDefinition entity) {
+    if (log.debugEnabled) log.debug "createProcDef << ${entity}"
     def state = ProcDefState.get(entity.suspended?
       ProcDefState.STATE_SUSPENDED_ID : ProcDefState.STATE_ACTIVE_ID)
     def deployment = activitiRepositoryService.createDeploymentQuery().
@@ -35,17 +36,21 @@ class ProcessEngineService {
     def procDef = new ProcDef(uuid: entity.id, key: entity.key, vno: entity.version,
     name: entity.name, type: entity.category, description: entity.description,
     state: state, deployment: deployment)
+    if (log.debugEnabled) log.debug "createProcDef >> ${procDef}"
+    return procDef
   }
 
   /**
    * Create a process definition and populate its activities
    */
   ProcDef createFullProcDef(ProcessDefinition entity) {
+    if (log.debugEnabled) log.debug "createFullProcDef << ${entity}"
     def procDef = createProcDef(entity)
     def model = activitiRepositoryService.getBpmnModel(procDef.uuid)
     def processModel = model.processes.find {process ->
       process.name == procDef.name
     }
+
     processModel.findFlowElementsOfType(Task.class).each {element ->
       def taskType = findTaskType(element)
       if (taskType) {
@@ -54,6 +59,8 @@ class ProcessEngineService {
 	procDef.addToActivities(actDef)
       }
     }
+
+    if (log.debugEnabled) log.debug "createFullProcDef >> ${procDef}"
     return procDef
   }
 
