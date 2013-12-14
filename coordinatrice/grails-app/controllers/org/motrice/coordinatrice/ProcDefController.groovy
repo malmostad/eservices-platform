@@ -1,12 +1,16 @@
-package org.motrice.coordinatrice.bonita
+package org.motrice.coordinatrice
 
 import org.springframework.dao.DataIntegrityViolationException
 import org.motrice.coordinatrice.pxd.PxdFormdefVer
 import org.motrice.coordinatrice.MtfStartFormDefinition
 
-class BnProcDefController {
+/**
+ * Process definition controller tailored to Bonita
+ */
+class ProcDefController {
 
-  def activityService
+  def formService
+  def processEngineService
 
   static allowedMethods = [update: 'POST']
 
@@ -15,37 +19,40 @@ class BnProcDefController {
   }
 
   def list(Integer max) {
+    if (log.debugEnabled) log.debug "LIST ${params}"
     params.max = Math.min(max ?: 10, 100)
     if (!params.sort) params.sort = 'uuid'
-    [bnProcDefInstList: BnProcDef.list(params), bnProcDefInstTotal: BnProcDef.count()]
+    // TODO: Currently no paging, all process definitions are shown on a single page
+    def procDefInstList = processEngineService.allProcessDefinitions()
+    [procDefInstList: procDefInstList, procDefInstTotal: procDefInstList.size()]
   }
 
-  def show(Long id) {
-    def bnProcDefInst = BnProcDef.get(id)
-    if (!bnProcDefInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'bnProcDef.label', default: 'BnProcDef'), id])
+  def show() {
+    if (log.debugEnabled) log.debug "SHOW ${params}"
+    def procDefInst = processEngineService.findProcessDefinition(params.id)
+    if (!procDefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procDef.label', default: 'ProcDef'), id])
       redirect(action: "list")
       return
     }
 
-    [bnProcDefInst: bnProcDefInst]
+    [procDefInst: procDefInst]
   }
 
   /**
    * Edit the start form connection (nothing else may be changed)
    */
-  def edit(Long id) {
+  def edit() {
     if (log.debugEnabled) log.debug "EDIT ${params}"
-    def bnProcDefInst = BnProcDef.get(id)
-    if (!bnProcDefInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'bnProcDef.label', default: 'BnProcDef'), id])
+    def procDefInst = processEngineService.findProcessDefinition(params.id)
+    if (!procDefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procDef.label', default: 'ProcDef'), id])
       redirect(action: "list")
       return
     }
 
-    def selection = activityService.startFormSelection(bnProcDefInst)
-    
-    [bnProcDefInst: bnProcDefInst, formList: selection]
+    def selection = formService.startFormSelection()
+    [procDefInst: procDefInst, formList: selection]
   }
 
   /**
@@ -57,9 +64,9 @@ class BnProcDefController {
       log.debug "SFSC ${sfsc}"
     }
 
-    def bnProcDefInst = BnProcDef.get(sfsc.id)
-    if (!bnProcDefInst) {
-      redirect(action: "edit", id: bnProcDefInst.id)
+    def procDefInst = processEngineService.findProcessDefinition(sfsc.id)
+    if (!procDefInst) {
+      redirect(action: "edit", id: procDefInst.uuid)
       return
     }
 
@@ -67,39 +74,39 @@ class BnProcDefController {
     
     if (formId < 0) {
       flash.message = message(code: 'startform.selection.no.form.selected')
-      redirect(action: "edit", id: bnProcDefInst.id)
+      redirect(action: "edit", id: procDefInst.uuid)
       return
     }
 
-    if (log.debugEnabled) log.debug "update.bnProcDefInst: ${bnProcDefInst?.uuid}"
+    if (log.debugEnabled) log.debug "update.procDefInst: ${procDefInst?.uuid}"
 
     // We have taken precautions to remove existing start forms from the selection
     // If we add an existing one anyway there will be a DataIntegrityViolationException
-    def inUse = activityService.checkStartFormInUse(sfsc.form)
+    def inUse = formService.checkStartFormInUse(sfsc.form)
     if (inUse) {
       flash.message = message(code: 'startform.selection.form.in.use', args: [sfsc.formPath])
-      redirect(action: "edit", id: bnProcDefInst.id)
+      redirect(action: "edit", id: procDefInst.uuid)
       return
     }
 
-    def startForm = new MtfStartFormDefinition(processDefinitionUuid: bnProcDefInst.uuid,
+    def startForm = new MtfStartFormDefinition(processDefinitionUuid: procDefInst.uuid,
     authTypeReq: 'USERSESSION', formPath: sfsc.formPath)
 
     if (log.debugEnabled) log.debug "update.startForm: ${startForm}"
 
     if (!startForm.save(flush: true)) {
-      redirect(action: "edit", id: bnProcDefInst.id)
+      redirect(action: "edit", id: procDefInst.uuid)
       return
     }
 
     flash.message = message(code: 'startform.updated.label', args: [startForm])
-    redirect(action: "edit", id: bnProcDefInst.id)
+    redirect(action: "edit", id: procDefInst.uuid)
   }
 
 }
 
 class StartFormSelectionCommand {
-  Integer id
+  String id
   PxdFormdefVer form
 
   String getFormPath() {

@@ -1,7 +1,7 @@
 package org.motrice.coordinatrice.pxd
 
 import org.motrice.coordinatrice.MtfStartFormDefinition
-import org.motrice.coordinatrice.bonita.BnProcDef
+import org.motrice.coordinatrice.ProcDef
 
 class PxdFormdefVer implements Comparable {
   // The magic draft number that means "published"
@@ -39,20 +39,6 @@ class PxdFormdefVer implements Comparable {
 
   static allPublishedForms() {
     PxdFormdefVer.findAllByDraft(PUBLISHED, [sort: 'path'])
-  }
-
-  /**
-   * Get the process where this form is the start form
-   * Return the process or null if the form is not used as a start form
-   */
-  BnProcDef getStartFormProcess() {
-    def process = null
-    def startForm = MtfStartFormDefinition.findByFormPath(path)
-    if (startForm) {
-      process = BnProcDef.findByUuid(startForm.processDefinitionUuid)
-    }
-
-    return process
   }
 
   String toString() {

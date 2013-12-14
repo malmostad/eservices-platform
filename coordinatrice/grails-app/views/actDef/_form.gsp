@@ -1,17 +1,17 @@
-<%@ page import="org.motrice.coordinatrice.bonita.BnActDef" %>
+<%@ page import="org.motrice.coordinatrice.ActDef" %>
 <%@ page import="org.motrice.coordinatrice.ActivityConnection" %>
-<g:set var="bnProcDefInst" value="${bnActDefInst?.process}"/>
+<g:set var="procDefInst" value="${actDefInst?.process}"/>
 <div class="fieldcontain">
   <label>
-    <g:message code="bnProcDef.label" default="Process" />
+    <g:message code="procDef.label" default="Process" />
   </label>
-  <g:link controller="bnProcDef" action="show" id="${bnProcDefInst?.id}">${bnProcDefInst?.uuid.encodeAsHTML()}</g:link>
+  <g:link controller="procDef" action="show" id="${procDefInst?.uuid}">${procDefInst?.display.encodeAsHTML()}</g:link>
 </div>
 <div class="fieldcontain">
   <label>
-    <g:message code="bnActDef.label" default="Label" />
+    <g:message code="actDef.label" default="Label" />
   </label>
-  <g:link controller="bnActDef" action="show" id="${bnActDefInst?.id}">${bnActDefInst?.label.encodeAsHTML()}</g:link>
+  <g:link controller="actDef" action="show" id="${actDefInst?.fullId}">${actDefInst?.name.encodeAsHTML()}</g:link>
 </div>
 <div class="fieldcontain">
   <g:set var="stateInfo" value="${activityConnection?.stateInfo()}"/>
@@ -33,10 +33,12 @@
     <g:radio name="connectionState" value="${ActivityConnection.SIGN_START_FORM_STATE}" checked="${activityConnection?.signStartFormState}"/>
     <g:message code="activity.connection.state.signstartform"/>
   </div>
-  <div class="property-value">
-    <hr class="property-value-sep"/>
-    <g:radio name="connectionState" value="${ActivityConnection.SIGN_ACTIVITY_STATE}" checked="${activityConnection?.signActivityState}"/>
-    <g:message code="activity.connection.state.signactivity"/>
-    <g:select id="activity" name="activity.id" from="${activityList}" optionKey="id" required="" class="many-to-one"/>
-  </div>
+  <g:if test="${!activityList.isEmpty()}">
+    <div class="property-value">
+      <hr class="property-value-sep"/>
+      <g:radio name="connectionState" value="${ActivityConnection.SIGN_ACTIVITY_STATE}" checked="${activityConnection?.signActivityState}"/>
+      <g:message code="activity.connection.state.signactivity"/>
+      <g:select id="activity" name="activity.id" from="${activityList}" optionKey="uuid" required="" class="many-to-one"/>
+    </div>
+  </g:if>
 </div>

@@ -1,6 +1,5 @@
 package org.motrice.coordinatrice
 
-import org.motrice.coordinatrice.bonita.BnProcDef
 import org.motrice.coordinatrice.pxd.PxdFormdefVer
 
 class MtfStartFormDefinition implements Comparable {

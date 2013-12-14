@@ -3,7 +3,7 @@ package org.motrice.coordinatrice
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
- * Only used for deleting start forms from BnProcDef.edit
+ * Only used for deleting start forms from ProcDef.edit
  */
 class MtfStartFormDefinitionController {
 
@@ -34,7 +34,7 @@ class MtfStartFormDefinitionController {
     def mtfStartFormDefinitionInst = MtfStartFormDefinition.get(id)
     if (!mtfStartFormDefinitionInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'mtfStartFormDefinition.label', default: 'MtfStartFormDefinition'), id])
-      redirect(controller: 'bnProcDef', action: 'edit', id: params.bnProcDefId)
+      redirect(controller: 'procDef', action: 'edit', id: params.procDefId)
       return
     }
 
@@ -43,11 +43,11 @@ class MtfStartFormDefinitionController {
     try {
       mtfStartFormDefinitionInst.delete(flush: true)
       flash.message = message(code: 'startform.deleted.label', args: [formName])
-      redirect(controller: 'bnProcDef', action: 'edit', id: params.bnProcDefId)
+      redirect(controller: 'procDef', action: 'edit', id: params.procDefId)
     }
     catch (DataIntegrityViolationException e) {
       flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'mtfStartFormDefinition.label', default: 'MtfStartFormDefinition'), id])
-      redirect(controller: 'bnProcDef', action: 'edit', id: params.bnProcDefId)
+      redirect(controller: 'procDef', action: 'edit', id: params.procDefId)
     }
   }
 }

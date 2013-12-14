@@ -1,9 +1,8 @@
 package org.motrice.coordinatrice
 
-import org.motrice.coordinatrice.bonita.BnProcDef
 import org.motrice.coordinatrice.pxd.PxdFormdefVer
 
-class ActivityService {
+class FormService {
 
   /**
    * Create a list of forms that may be associated with an activity.
@@ -24,7 +23,7 @@ class ActivityService {
     return [formList: formList, selectedFormId: selectedFormdefVer?.id]
   }
 
-  List startFormSelection(BnProcDef process) {
+  List startFormSelection() {
     def selection = []
     def formsInUse = new TreeSet()
     MtfStartFormDefinition.list().each {
