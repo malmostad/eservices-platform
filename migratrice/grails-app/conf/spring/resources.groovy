@@ -7,7 +7,8 @@ import org.motrice.jmx.BasicAppManagement
 
 // Place your Spring DSL code here
 beans = {
-  // Custom date editor for automatic data binding
+  // Custom date editor for automatic data binding when converting
+  // XML to domain objects
   customPropertyEditorRegistrar(org.motrice.migratrice.CustomDateEditorRegistrar)
 
   // The following stuff wires Spring components together for exporting

@@ -108,7 +108,7 @@ class PackageService {
   private List allLocalDefItems(MigFormdef formdef) {
     if (log.debugEnabled) log.debug "allLocalDefItems << ${formdef}"
     // This call returns a list
-    def formdefXml = localPostxdbText("defitem?formdef=${formdef?.ref}")
+    def formdefXml = localPostxdbText("defitem?uuid=${formdef?.uuid}")
     def map = parseXmlString(formdefXml)
     def resultList = []
     if (map.className == 'pxdItem') {
@@ -235,6 +235,22 @@ class PackageService {
     }
 
     if (log.debugEnabled) log.debug "toZip >> ${entryCount} entries"
+  }
+
+  /**
+   * Find the package to install, given its id.
+   * Check that it is not locally generated.
+   * RETURN a package (MigPackage) or a string containing a message code.
+   */
+  def findAndCheckPackageToInstall(Long id) {
+    def result = MigPackage.get(id)
+    if (result) {
+      if (result.originLocal) result = 'migPackage.install.local.package'
+    } else {
+      result = 'default.not.found.message'
+    }
+
+    return result
   }
 
   MigPackage importPackage(InputStream inputStream) {
@@ -406,6 +422,40 @@ class PackageService {
     // All objects are new, so always insert
     check(!obj.save(insert: true), 'migPackage.upload.file.dbconflict',
 	  "Cannot save ${obj}: ${obj.errors.allErrors.join(', ')}")
+  }
+
+  /**
+   * Install a package in the postxdb database.
+   */
+  def installPackage(MigPackage pkg) {
+    pkg.formdefs.each {formdef ->
+      installFormdef(formdef)
+    }
+  }
+
+  /**
+   * Install a form definition
+   */
+  private installFormdef(MigFormdef formdef) {
+    // We have to know what already is present in the database
+    def dbMap = installedDefItems(formdef)
+  }
+
+  /**
+   * Get all installed items.
+   * Return a  Map of MigItem where the key is item SHA1 hash.
+   */
+  private Map installedDefItems(MigFormdef formdef) {
+    // Get a list of domain objects, all installed items
+    def itemList = allLocalDefItems(formdef)
+    // Separate XML items from others ("binary")
+    // Create a map with SHA1 keys
+    def itemMap = [:]
+    itemList.each {item ->
+      itemMap[item.sha1] = item
+    }
+
+    return itemMap
   }
 
   private check(boolean condition, String code, String message) {

@@ -68,7 +68,23 @@ class MigPackageController {
   /**
    * Install a package.
    */
-  def install() {
+  def install(Long id) {
+    if (log.debugEnabled) log.debug "INSTALL: ${Util.clean(params)}, ${request.forwardURI}"
+    def obj = packageService.findAndCheckPackageToInstall(id)
+    if (obj instanceof String) {
+      flash.message = message(code: obj, args: [message(code: 'migPackage.label', default: 'MigPackage'), id])
+      redirect(action: "list")
+      return
+    }
+
+    try {
+      packageService.installPackage(obj)
+      flash.message = message(code: 'migPackage.install.complete', args: [obj.packageName])
+      redirect(action: 'show', id: obj.id)
+    } catch (MigratriceException exc) {
+      flash.message = message(code: exc.code)
+      redirect(action: "list")
+    }
   }
 
   /**
