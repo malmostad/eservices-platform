@@ -237,7 +237,7 @@ fieldset,
 .fieldcontain .property-label {
 	color: #666666;
 	text-align: right;
-	width: 25%;
+	width: 18%;
 }
 
 .fieldcontain .property-label {
@@ -246,7 +246,7 @@ fieldset,
 
 .fieldcontain .property-value {
 	display: block;
-	margin-left: 27%;
+	margin-left: 20%;
 }
 
 label {
@@ -270,8 +270,15 @@ select[multiple] {
 	vertical-align: top;
 }
 
+#report-body {
+	width: 600px;
+	height: 250px;
+	overflow: auto; /* IE always renders vertical scrollbar without this */
+	vertical-align: top;
+}
+
 textarea {
-	width: 250px;
+	width: 350px;
 	height: 150px;
 	overflow: auto; /* IE always renders vertical scrollbar without this */
 	vertical-align: top;

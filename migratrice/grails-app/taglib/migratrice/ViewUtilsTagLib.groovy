@@ -4,7 +4,8 @@ package migratrice
  * Various view utility tags
  */ 
 class ViewUtilsTagLib {
-  static final FMT = 'yyyy-MM-dd HH:mm'
+  static final FMTM = 'yyyy-MM-dd HH:mm'
+  static final FMTS = 'yyyy-MM-dd HH:mm:ss'
 
   /**
    * Tag for displaying an abbreviated string
@@ -37,7 +38,15 @@ class ViewUtilsTagLib {
    */
   def tstamp = {attrs, body ->
     def date = attrs.date
-    out << date.format(FMT)
+    out << date.format(FMTM)
+  }
+
+  /**
+   * Tag for displaying Date with second precision
+   */
+  def tstampsec = {attrs, body ->
+    def date = attrs.date
+    out << date.format(FMTS)
   }
 
 }

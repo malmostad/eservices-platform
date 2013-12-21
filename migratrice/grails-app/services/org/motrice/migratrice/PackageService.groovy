@@ -43,13 +43,16 @@ class PackageService {
   List allLocalFormdefs() {
     if (log.debugEnabled) log.debug "allLocalFormdefs <<"
     def allFormdefs = localPostxdbText('formdef')
-    def map = parseXmlString(allFormdefs)
     def formdefList = []
-    if (map.className == 'pxdFormdef') {
-      formdefList = map.instMaps.collect {params ->
-	def obj = new MigFormdef()
-	bindData(obj, params)
-	return obj
+    // allFormdefs is null if there are no form defs
+    if (allFormdefs) {
+      def map = parseXmlString(allFormdefs)
+      if (map.className == 'pxdFormdef') {
+	formdefList = map.instMaps.collect {params ->
+	  def obj = new MigFormdef()
+	  bindData(obj, params)
+	  return obj
+	}
       }
     }
     if (log.debugEnabled) log.debug "allLocalFormdefs >> ${formdefList.size()}"
@@ -64,13 +67,15 @@ class PackageService {
     if (log.debugEnabled) log.debug "singleLocalFormdefs << ${id}"
     // This call returns a list
     def formdefXml = localPostxdbText("formdef/${id}")
-    def map = parseXmlString(formdefXml)
     def formdefList = []
-    if (map.className == 'pxdFormdef') {
-      formdefList = map.instMaps.collect {params ->
-	def obj = new MigFormdef()
-	bindData(obj, params)
-	return obj
+    if (formdefXml) {
+      def map = parseXmlString(formdefXml)
+      if (map.className == 'pxdFormdef') {
+	formdefList = map.instMaps.collect {params ->
+	  def obj = new MigFormdef()
+	  bindData(obj, params)
+	  return obj
+	}
       }
     }
 
@@ -87,13 +92,15 @@ class PackageService {
     if (log.debugEnabled) log.debug "allLocalFormdefVers << ${formdef}"
     // This call returns a list
     def formdefXml = localPostxdbText("formdefver?formdef=${formdef?.ref}")
-    def map = parseXmlString(formdefXml)
     def resultList = []
-    if (map.className == 'pxdFormdefVer') {
-      resultList = map.instMaps.collect {params ->
-	def obj = new MigFormdefVer()
-	bindData(obj, params)
-	return obj
+    if (formdefXml) {
+      def map = parseXmlString(formdefXml)
+      if (map.className == 'pxdFormdefVer') {
+	resultList = map.instMaps.collect {params ->
+	  def obj = new MigFormdefVer()
+	  bindData(obj, params)
+	  return obj
+	}
       }
     }
 
@@ -109,13 +116,15 @@ class PackageService {
     if (log.debugEnabled) log.debug "allLocalDefItems << ${formdef}"
     // This call returns a list
     def formdefXml = localPostxdbText("defitem?uuid=${formdef?.uuid}")
-    def map = parseXmlString(formdefXml)
     def resultList = []
-    if (map.className == 'pxdItem') {
-      resultList = map.instMaps.collect {params ->
-	def obj = new MigItem()
-	bindData(obj, params)
-	return obj
+    if (formdefXml) {
+      def map = parseXmlString(formdefXml)
+      if (map.className == 'pxdItem') {
+	resultList = map.instMaps.collect {params ->
+	  def obj = new MigItem()
+	  bindData(obj, params)
+	  return obj
+	}
       }
     }
 
@@ -256,9 +265,20 @@ class PackageService {
   MigPackage importPackage(InputStream inputStream) {
     if (log.debugEnabled) log.debug "importPackage << ${inputStream?.class?.name}"
     def zipInput = new ZipInputStream(inputStream)
-    // The first entry is package metadata (XML)
-    def entry = zipInput.nextEntry
-    def ename = entry.name
+    def entry = null
+    def ename = null
+    try {
+      // The first entry is package metadata (XML)
+      entry = zipInput.nextEntry
+      // If the file is not a zip file it probably blows up here with NPE
+      ename = entry.name
+    } catch (NullPointerException exc) {
+      log.warn "Possibly invalid package file: ${exc}"
+      throw new MigratriceException('migPackage.import.invalid', exc.message, exc)
+    } catch (IOException exc) {
+      log.warn "Problem uploading file: ${exc}"
+      throw new MigratriceException('migPackage.import.error', exc.message, exc)
+    }
     assert ename?.startsWith('package')
     def baos = ZipUtil.read(zipInput)
     def xml = baos.toString('UTF-8')
@@ -426,19 +446,118 @@ class PackageService {
 
   /**
    * Install a package in the postxdb database.
+   * The progress of the operation is recorded in a log writer.
    */
-  def installPackage(MigPackage pkg) {
-    pkg.formdefs.each {formdef ->
-      installFormdef(formdef)
+  LogWriter installPackage(MigPackage pkg) {
+    if (log.debugEnabled) log.debug "installPackage << ${pkg}"
+    def lw = new LogWriter()
+    lw.println "Installing package ${pkg.packageName} ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
+    lw.println()
+
+    // Pre-installation check
+    def localMap = checkFormdefsToInstall(lw, pkg)
+    if (localMap.errorCount > 0) {
+      lw.code = 'migPackage.install.precheck'
+      lw.args = [errorCount]
+      return lw
+    } else {
+      localMap.remove('errorCount')
     }
+
+    // Install all form definitions
+    pkg.formdefs.each {formdef -> installFormdef(lw, formdef, localMap)}
+    if (log.debugEnabled) log.debug "installPackage >> "
+    return lw
   }
 
   /**
-   * Install a form definition
+   * Install a form definition.
+   * localMap key is formdef path (app/form), value is MigFormdef.
    */
-  private installFormdef(MigFormdef formdef) {
-    // We have to know what already is present in the database
+  private installFormdef(LogWriter lw, MigFormdef formdef, Map localMap) {
+    if (log.debugEnabled) log.debug "installFormdef << ${formdef}"
+    // Get a map of installed items keyed on sha1
     def dbMap = installedDefItems(formdef)
+    // Install all XML resources
+    def xmlItems = MigItem.findAllByFormdefAndFormat(formdef, 'xml',
+						     [sort: 'path', order: 'asc'])
+    def installCount = 0
+    xmlItems.each {xmlItem ->
+      // Check that the item is not already installed
+      if (dbMap[xmlItem.sha1] == null) {
+	def fdv = MigFormdefVer.findByFormdefAndPath(formdef, xmlItem.formpath)
+	if (fdv) {
+	  def result = null
+	  if (fdv.published) {
+	    def url = localPutPubl(formdef)
+	    result = localPutPostxdbText(url, xmlItem.text)
+	  } else {
+	    def url = localPutDraft(formdef, 'form.xml')
+	    result = localPutPostxdbText(url, xmlItem.text)
+	  }
+
+	  installCount++
+	} else {
+	  def msg = "Internal conflict: No MigFormdefVer found for item ${xmlItem}"
+	  lw.println msg
+	  log.error msg
+	}
+      }
+    }
+
+    lw.println "XML items    installed for [${formdef.display()}]: ${installCount}"
+
+    // Install all binary (non-XML) resources
+    def binItems = MigItem.findAllByFormdefAndFormatNot(formdef, 'xml')
+    if (binItems) {
+      installCount = 0
+      binItems.each {binItem ->
+	// Install only if there is no such item previously
+	if (dbMap[binItem.sha1] == null) {
+	  def url = localPutDraft(formdef, binItem.path)
+	  def result = localPutPostxdbBytes(url, binItem.stream)
+	  installCount++
+	}
+      }
+
+      lw.println "Binary items installed for [${formdef.display()}]: ${installCount}"
+    }
+
+    if (log.debugEnabled) log.debug "installFormdef >> ${binItems}"
+  }
+
+  /**
+   * Checks that formdefs we are about to install either are not present
+   * in the local database, or that their names and uuids are the same.
+   * RETURN a map keyed on formdef path (app/form).
+   * A special entry, errorCount, contains the number of errors detected
+   * during the check.
+   */
+  private Map checkFormdefsToInstall(LogWriter lw, MigPackage pkg) {
+    // Create a map of local form defs keyed on app/form
+    def localMap = [:]
+    allLocalFormdefs().each {formdef ->
+      localMap[formdef.path] = formdef
+    }
+    // If a named formdef in the package also exists locally, check that
+    // the uuids agree
+    def errorCount = 0
+    pkg.formdefs.each {formdef ->
+      lw.println "Package form def: ${formdef.path}"
+      def localFormdef = localMap[formdef.path]
+      if (localFormdef) {
+	lw.println "-- exists locally (current draft: ${localFormdef.currentDraft})"
+	if (formdef.uuid != localFormdef.uuid) {
+	  lw.println "   but with a different uuid. Package will NOT be installed."
+	  errorCount++
+	}
+      } else {
+	lw.println "-- does not exist locally"
+      }
+    }
+
+    localMap['errorCount'] = errorCount
+    return localMap
   }
 
   /**
@@ -476,6 +595,8 @@ class PackageService {
     } catch (ConnectException exc) {
       log.error "Postxdb connection problem: ${exc}"
       throw new MigratriceException('postxdb.connect.problem', exc.message)
+    } catch (FileNotFoundException exc) {
+      // This means 404, not an error, return null
     } catch (IOException exc) {
       log.error "Postxdb reading problem: ${exc}"
       throw new MigratriceException('postxdb.read.problem', exc.message)
@@ -495,6 +616,8 @@ class PackageService {
     } catch (ConnectException exc) {
       log.error "Postxdb connection problem: ${exc}"
       throw new MigratriceException('postxdb.connect.problem', exc.message)
+    } catch (FileNotFoundException exc) {
+      // This means 404, not an error, return null
     } catch (IOException exc) {
       log.error "Postxdb reading problem: ${exc}"
       throw new MigratriceException('postxdb.read.problem', exc.message)
@@ -504,7 +627,67 @@ class PackageService {
   }
 
   /**
-   * Create a request url for the local postxdb server.
+   * Put bytes to the local postxdb instance with exception handling.
+   * @param tail must be the last part of the postxdb uri
+   * Return a map containing responseCode/responseMessage.
+   */
+  private Map localPutPostxdbBytes(URL url, byte[] bytes) {
+    def result = null
+    try {
+      def worker = new HttpPut(url)
+      result = worker.putBytes(bytes)
+    } catch (ConnectException exc) {
+      log.error "Postxdb connection problem: ${exc}"
+      throw new MigratriceException('postxdb.connect.problem', exc.message)
+    } catch (IOException exc) {
+      log.error "Postxdb writing problem: ${exc}"
+      throw new MigratriceException('postxdb.write.problem', exc.message)
+    }
+
+    return result
+  }
+
+  /**
+   * Put text to the local postxdb instance with exception handling.
+   * @param tail must be the last part of the postxdb uri
+   * Return a map containing responseCode/responseMessage.
+   */
+  private Map localPutPostxdbText(URL url, String text) {
+    def result = null
+    try {
+      def worker = new HttpPut(url)
+      result = worker.putXml(text)
+    } catch (ConnectException exc) {
+      log.error "Postxdb connection problem: ${exc}"
+      throw new MigratriceException('postxdb.connect.problem', exc.message)
+    } catch (IOException exc) {
+      log.error "Postxdb writing problem: ${exc}"
+      throw new MigratriceException('postxdb.write.problem', exc.message)
+    }
+
+    return result
+  }
+
+  /**
+   * Create a request url for storing draft form resources
+   */
+  private URL localPutDraft(MigFormdef formdef, String tail) {
+    def head = grailsApplication.config.migratrice.postxdb.uri
+    return new
+    URL("${head}/rest/db/orbeon-pe/fr/orbeon/builder/data/${formdef.uuid}/${tail}")
+  }
+
+  /**
+   * Create a request url for storing published form resources
+   */
+  private URL localPutPubl(MigFormdef formdef) {
+    def head = grailsApplication.config.migratrice.postxdb.uri
+    return new
+    URL("${head}/rest/db/orbeon-pe/fr/${formdef.app}/${formdef.form}/form/form.xhtml")
+  }
+
+  /**
+   * Create a request url for postxdb methods.
    */
   private URL localPostxdb(String tail) {
     def head = grailsApplication.config.migratrice.postxdb.uri

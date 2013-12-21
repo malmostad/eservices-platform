@@ -56,6 +56,14 @@
 	    <span class="property-value" aria-labelledby="packageFormat-label"><g:fieldValue bean="${migPackageInst}" field="packageFormat"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${migPackageInst?.reports}">
+	  <li class="fieldcontain">
+	    <span id="reports-label" class="property-label"><g:message code="migPackage.reports.label" default="Reports" /></span>
+	    <g:each in="${migPackageInst.reports}" var="r">
+	      <span class="property-value" aria-labelledby="reports-label"><g:link controller="migReport" action="show" id="${r.id}">${r?.display()?.encodeAsHTML()}</g:link></span>
+	    </g:each>
+	  </li>
+	</g:if>
 	<g:if test="${migPackageInst?.formdefs}">
 	  <li class="fieldcontain">
 	    <span id="formdefs-label" class="property-label"><g:message code="migPackage.formdefs.label" default="Formdefs" /></span>

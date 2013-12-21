@@ -12,6 +12,6 @@ import org.junit.*
 class MigItemTests {
 
     void testSomething() {
-       fail "Implement me"
+
     }
 }

@@ -12,6 +12,6 @@ import org.junit.*
 class ViewUtilsTagLibTests {
 
     void testSomething() {
-        fail "Implement me"
+
     }
 }

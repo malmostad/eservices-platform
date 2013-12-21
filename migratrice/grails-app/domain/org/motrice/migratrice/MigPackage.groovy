@@ -32,7 +32,9 @@ class MigPackage implements Comparable {
   Date dateCreated
 
   SortedSet formdefs
-  static hasMany = [formdefs: MigFormdef, versions: MigFormdefVer, items: MigItem]
+  SortedSet reports
+  static hasMany = [formdefs: MigFormdef, versions: MigFormdefVer, items: MigItem,
+  reports: MigReport]
   static constraints = {
     siteName size: 1..120
     packageName size: 1..120
@@ -41,6 +43,16 @@ class MigPackage implements Comparable {
     formdefs nullable: true
     versions nullable: true
     items nullable: true
+  }
+
+  /**
+   * Create and save a report from a text and add it to the report collection.
+   */
+  MigReport createReport(String content) {
+    def report = MigReport.createReport(content)
+    addToReports(report)
+    report.save(flush: true)
+    return report
   }
 
   String toString() {

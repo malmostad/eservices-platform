@@ -77,14 +77,23 @@ class MigPackageController {
       return
     }
 
+    def lw = null
     try {
-      packageService.installPackage(obj)
-      flash.message = message(code: 'migPackage.install.complete', args: [obj.packageName])
+      lw = packageService.installPackage(obj)
+      obj.createReport(lw.toString())
+      flash.message = message(code: lw.code, args: lw.args)
       redirect(action: 'show', id: obj.id)
     } catch (MigratriceException exc) {
-      flash.message = message(code: exc.code)
+      if (lw) {
+	obj.createReport(lw.body)
+	flash.message = message(code: lw.code, args: lw.args)
+      } else {
+	flash.message = exc.message
+      }
+
       redirect(action: "list")
     }
+
   }
 
   /**

@@ -12,6 +12,6 @@ import org.junit.*
 class MigFormdefVerTests {
 
     void testSomething() {
-       fail "Implement me"
+
     }
 }
