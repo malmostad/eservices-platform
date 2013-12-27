@@ -42,6 +42,16 @@ class MigItem implements Comparable {
   // SHA1 hash sum of the contents
   String sha1
 
+  // Transient attribute for flagging XML items to be installed
+  boolean install
+
+  // Transient attribute for flagging published XML items
+  boolean published
+
+  // Transient form def version number
+  Integer verno
+
+  static transients = ['install','published','verno']
   static belongsTo = [formdef: MigFormdef, pack: MigPackage]
   static mapping = {
     text type: 'text'
@@ -85,6 +95,10 @@ class MigItem implements Comparable {
 
   String toString() {
     "[Item ${path}: ${id}/${ref}, ${size}]"
+  }
+
+  String toDump() {
+    "[Item ${path}: ${id}/${ref}, ${published?'published':'--'}, ${install?'install':'--'}]"
   }
 
   /**

@@ -6,7 +6,7 @@ class MigPackageController {
   // Injection magic
   def packageService
 
-  static allowedMethods = [save: "POST", saveexp: "POST", update: "POST", delete: "POST"]
+  static allowedMethods = [save: "POST", install: "POST", update: "POST", delete: "POST"]
 
   def index() {
     redirect(action: "list", params: params)
@@ -68,6 +68,22 @@ class MigPackageController {
   /**
    * Install a package.
    */
+  def installpre(Long id) {
+    if (log.debugEnabled) log.debug "INSTALLPRE: ${Util.clean(params)}, ${request.forwardURI}"
+    def obj = packageService.findAndCheckPackageToInstall(id)
+    if (obj instanceof String) {
+      flash.message = message(code: obj, args: [message(code: 'migPackage.label', default: 'MigPackage'), id])
+      redirect(action: "list")
+      return
+    }
+
+    [migPackageInst: obj]
+  }
+
+  /**
+   * Install a package. Requires parameter installOptions (String).
+   * The options are shown as radio buttons.
+   */
   def install(Long id) {
     if (log.debugEnabled) log.debug "INSTALL: ${Util.clean(params)}, ${request.forwardURI}"
     def obj = packageService.findAndCheckPackageToInstall(id)
@@ -78,8 +94,10 @@ class MigPackageController {
     }
 
     def lw = null
+    def installMode = params.installOptions
+    def installModeMsg = message(code: installMode)
     try {
-      lw = packageService.installPackage(obj)
+      lw = packageService.installPackage(obj, installMode, installModeMsg)
       obj.createReport(lw.toString())
       flash.message = message(code: lw.code, args: lw.args)
       redirect(action: 'show', id: obj.id)

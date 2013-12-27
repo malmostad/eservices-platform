@@ -86,7 +86,7 @@ class PackageService {
 
   /**
    * Find all form definition versions given a form definition.
-   * Return List of MigFormdefVer (not sorted).
+   * Return List of MigFormdefVer (not sorted) or null (not empty list)
    */
   private List allLocalFormdefVers(MigFormdef formdef) {
     if (log.debugEnabled) log.debug "allLocalFormdefVers << ${formdef}"
@@ -448,10 +448,11 @@ class PackageService {
    * Install a package in the postxdb database.
    * The progress of the operation is recorded in a log writer.
    */
-  LogWriter installPackage(MigPackage pkg) {
-    if (log.debugEnabled) log.debug "installPackage << ${pkg}"
+  LogWriter installPackage(MigPackage pkg, String installMode, String installModeMsg) {
+    if (log.debugEnabled) log.debug "installPackage << ${pkg}, ${installMode}"
     def lw = new LogWriter()
     lw.println "Installing package ${pkg.packageName} ${new Date().format('yyyy-MM-dd HH:mm:ss')}"
+    lw.println "Install mode: ${installModeMsg}"
     lw.println()
 
     // Pre-installation check
@@ -464,8 +465,8 @@ class PackageService {
       localMap.remove('errorCount')
     }
 
-    // Install all form definitions
-    pkg.formdefs.each {formdef -> installFormdef(lw, formdef, localMap)}
+    // Install each form definition
+    pkg.formdefs.each {formdef -> installFormdef(lw, formdef, localMap, installMode)}
     if (log.debugEnabled) log.debug "installPackage >> "
     return lw
   }
@@ -473,41 +474,60 @@ class PackageService {
   /**
    * Install a form definition.
    * localMap key is formdef path (app/form), value is MigFormdef.
+   * installMode is one of
+   * 'migPackage.install.option.latestPublished'
+   * 'migPackage.install.option.allPublished'
+   * 'migPackage.install.option.compareVersions'
+   * Those values are also message codes.
    */
-  private installFormdef(LogWriter lw, MigFormdef formdef, Map localMap) {
+  private installFormdef(LogWriter lw, MigFormdef formdef, Map localMap,
+			 String installMode)
+  {
     if (log.debugEnabled) log.debug "installFormdef << ${formdef}"
     // Get a map of installed items keyed on sha1
     def dbMap = installedDefItems(formdef)
-    // Install all XML resources
+    // Find all XML resources, order by ascending version
     def xmlItems = MigItem.findAllByFormdefAndFormat(formdef, 'xml',
 						     [sort: 'path', order: 'asc'])
-    def installCount = 0
+    // Set the transient published flag
     xmlItems.each {xmlItem ->
-      // Check that the item is not already installed
-      if (dbMap[xmlItem.sha1] == null) {
-	def fdv = MigFormdefVer.findByFormdefAndPath(formdef, xmlItem.formpath)
-	if (fdv) {
-	  def result = null
-	  if (fdv.published) {
-	    def url = localPutPubl(formdef)
-	    result = localPutPostxdbText(url, xmlItem.text)
-	  } else {
-	    def url = localPutDraft(formdef, 'form.xml')
-	    result = localPutPostxdbText(url, xmlItem.text)
-	  }
+      def fdv = MigFormdefVer.findByFormdefAndPath(formdef, xmlItem.formpath)
+      if (fdv?.published) xmlItem.published = true
+      xmlItem.verno = fdv.verno
+    }
 
-	  installCount++
+    // Modify the list according to the installation mode
+    if (installMode.endsWith('.latestPublished')) {
+      xmlItems = itemFilterLatestPublished(lw, formdef, xmlItems)
+    } else if (installMode.endsWith('.compareVersions')) {
+      // Find the local formdef, if any
+      def localFormdef = localMap[formdef.path]
+      xmlItems = itemFilterCompareVersions(lw, formdef, xmlItems, localFormdef)
+    } else {
+      xmlItems = itemNoFilter(lw, formdef, xmlItems)
+    }
+
+    def installCount = 0
+    // SHA1 is useless for XML items
+    xmlItems.each {xmlItem ->
+      def result = null
+      if (xmlItem.install) {
+	if (xmlItem.published) {
+	  def url = localPutPubl(formdef)
+	  result = localPutPostxdbText(url, xmlItem.text)
 	} else {
-	  def msg = "Internal conflict: No MigFormdefVer found for item ${xmlItem}"
-	  lw.println msg
-	  log.error msg
+	  def url = localPutDraft(formdef, 'form.xml')
+	  result = localPutPostxdbText(url, xmlItem.text)
 	}
+
+	++installCount
       }
+
     }
 
     lw.println "XML items    installed for [${formdef.display()}]: ${installCount}"
 
-    // Install all binary (non-XML) resources
+    // Install all binary (non-XML) resources regardless of installMode
     def binItems = MigItem.findAllByFormdefAndFormatNot(formdef, 'xml')
     if (binItems) {
       installCount = 0
@@ -516,7 +536,7 @@ class PackageService {
 	if (dbMap[binItem.sha1] == null) {
 	  def url = localPutDraft(formdef, binItem.path)
 	  def result = localPutPostxdbBytes(url, binItem.stream)
-	  installCount++
+	  ++installCount
 	}
       }
 
@@ -582,6 +602,127 @@ class PackageService {
       log.warn "Exception thrown: ${message}"
       throw new MigratriceException(code, message)
     }
+  }
+
+  /**
+   * Filter a list of xml items to be installed.
+   * Condition: Install the latest published version.
+   * Includes the preceding and subsequent drafts.
+   */
+  private List itemFilterLatestPublished(LogWriter lw, MigFormdef formdef, List xmlItems) {
+    def publishedFound = false
+    def precedingDraftFound = false
+    def installPublishedCount = 0
+    // Set installation flags
+    xmlItems.reverseEach {xmlItem ->
+      if (xmlItem.published) {
+	if (!publishedFound) {
+	  xmlItem.install = true
+	  publishedFound = true
+	  ++installPublishedCount
+	} else {
+	  xmlItem.install = false
+	}
+      } else {
+	if (!publishedFound) {
+	  xmlItem.install = true
+	} else if (publishedFound && !precedingDraftFound) {
+	  xmlItem.install = true
+	  precedingDraftFound = true
+	} else {
+	  xmlItem.install = false
+	}
+      }
+    }
+
+    lw.println "Mode: Latest published (marked for install: ${installPublishedCount})"
+
+    if (log.debugEnabled) {
+      log.debug "itemFilterLatestPublished ITEMS"
+      xmlItems.each {log.debug "   -- ${it?.toDump()}"}
+    }
+
+    return xmlItems
+  }
+
+  /**
+   * Filter a list of xml items to be installed.
+   * Condition: Compare versions (if the form def exists locally).
+   */
+  private List itemFilterCompareVersions(LogWriter lw, MigFormdef formdef, List xmlItems,
+					 MigFormdef localFormdef)
+  {
+    def higestLocalFormdefVer = null
+    if (localFormdef) {
+      // List of MigFormdefVer
+      def localFormdefVers = allLocalFormdefVers(localFormdef)
+      if (localFormdefVers) {
+	// Find the highest published version
+	higestLocalFormdefVer = localFormdefVers.find {it.published}
+      }
+    }
+
+    def installPublishedCount = 0
+    // Do not filter anything if the form def does not exist locally
+    if (higestLocalFormdefVer == null) {
+      if (log.debugEnabled) log.debug "No published local version"
+      xmlItems.each {xmlItem ->
+	xmlItem.install = true
+	if (xmlItem.published) ++installPublishedCount
+      }
+    } else {
+      if (log.debugEnabled) {
+	log.debug "HIGHEST published local version: ${higestLocalFormdefVer.verno}"
+      }
+
+      // First pass: Flag published items for installation strictly based on version number.
+      xmlItems.reverseEach {xmlItem ->
+	if (xmlItem.published) {
+	  boolean isHigher = xmlItem.verno > higestLocalFormdefVer.verno
+	  xmlItem.install = isHigher
+	  if (isHigher) ++installPublishedCount
+	}
+      }
+
+      // Second pass: Find the lowest published version to be installed, if any,
+      // flag the preceding draft and all following drafts.
+      def lowIndex = xmlItems.findIndexOf {it.published && it.install}
+      // findIndexOf returns -1 if not found
+      if (lowIndex >= 0) {
+	xmlItems.eachWithIndex {xmlItem, idx ->
+	  if (idx >= lowIndex - 1) xmlItem.install = true
+	}
+      }
+    } // higestLocalFormdefVer not null
+
+    lw.println "Mode: Compare versions (marked for install: ${installPublishedCount})"
+
+    if (log.debugEnabled) {
+      log.debug "itemFilterCompareVersions ITEMS"
+      xmlItems.each {log.debug "   -- ${it?.toDump()}"}
+    }
+
+    return xmlItems
+  }
+
+  /**
+   * Install everything
+   */
+  private List itemNoFilter(LogWriter lw, MigFormdef formdef, List xmlItems) {
+    def installPublishedCount = 0
+    xmlItems.each {xmlItem ->
+      xmlItem.install = true
+      if (xmlItem.published) ++installPublishedCount
+    }
+
+    lw.println "Mode: All versions (marked for install: ${installPublishedCount})"
+
+    if (log.debugEnabled) {
+      log.debug "itemNoFilter ITEMS"
+      xmlItems.each {log.debug "   -- ${it?.toDump()}"}
+    }
+
+    return xmlItems
   }
 
   /**

@@ -4,18 +4,18 @@
   <head>
     <meta name="layout" content="main">
       <g:set var="entityName" value="${message(code: 'migPackage.label', default: 'MigPackage')}" />
-      <title><g:message code="default.show.label" args="[entityName]" /></title>
+      <title><g:message code="default.edit.label" args="[entityName]" /></title>
   </head>
   <body>
-    <a href="#show-migPackage" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+    <a href="#edit-migPackage" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<li><g:link class="newpackage" action="listexp"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+	<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
       </ul>
     </div>
     <div id="show-migPackage" class="content scaffold-show" role="main">
-      <h1><g:message code="default.show.label" args="[entityName]" /></h1>
+      <h1><g:message code="migPackage.install.label" args="[entityName]" /></h1>
       <g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
@@ -50,20 +50,6 @@
 	    <span class="property-value" aria-labelledby="dateCreated-label"><g:tstamp date="${migPackageInst?.dateCreated}"/></span>
 	  </li>
 	</g:if>
-	<g:if test="${migPackageInst?.packageFormat}">
-	  <li class="fieldcontain">
-	    <span id="packageFormat-label" class="property-label"><g:message code="migPackage.packageFormat.label" default="Package Format" /></span>
-	    <span class="property-value" aria-labelledby="packageFormat-label"><g:fieldValue bean="${migPackageInst}" field="packageFormat"/></span>
-	  </li>
-	</g:if>
-	<g:if test="${migPackageInst?.reports}">
-	  <li class="fieldcontain">
-	    <span id="reports-label" class="property-label"><g:message code="migPackage.reports.label" default="Reports" /></span>
-	    <g:each in="${migPackageInst.reports}" var="r">
-	      <span class="property-value" aria-labelledby="reports-label"><g:link controller="migReport" action="show" id="${r.id}">${r?.display()?.encodeAsHTML()}</g:link></span>
-	    </g:each>
-	  </li>
-	</g:if>
 	<g:if test="${migPackageInst?.formdefs}">
 	  <li class="fieldcontain">
 	    <span id="formdefs-label" class="property-label"><g:message code="migPackage.formdefs.label" default="Formdefs" /></span>
@@ -73,15 +59,35 @@
 	  </li>
 	</g:if>
       </ol>
-      <g:form>
+    </div>
+    <div id="edit-migPackage" class="content scaffold-edit" role="main">
+      <h1><g:message code="migPackage.install.options.label" args="[entityName]" /></h1>
+      <g:hasErrors bean="${migPackageInst}">
+	<ul class="errors" role="alert">
+	  <g:eachError bean="${migPackageInst}" var="error">
+	    <li <g:if test="${error in org.springframework.validation.FieldError}">data-field-id="${error.field}"</g:if>><g:message error="${error}"/></li>
+	  </g:eachError>
+	</ul>
+      </g:hasErrors>
+      <g:form method="post" >
+	<g:hiddenField name="id" value="${migPackageInst?.id}" />
+	<g:hiddenField name="version" value="${migPackageInst?.version}" />
+	<fieldset class="form">
+	  <div class="fieldcontain">
+	    <g:radio name="installOptions" value="migPackage.install.option.latestPublished" checked="true"/>
+	    <g:message code="migPackage.install.option.latestPublished"/>
+	  </div>
+	  <div class="fieldcontain">
+	    <g:radio name="installOptions" value="migPackage.install.option.allPublished"/>
+	    <g:message code="migPackage.install.option.allPublished"/>
+	  </div>
+	  <div class="fieldcontain">
+	    <g:radio name="installOptions" value="migPackage.install.option.compareVersions"/>
+	    <g:message code="migPackage.install.option.compareVersions"/>
+	  </div>
+	</fieldset>
 	<fieldset class="buttons">
-	  <g:hiddenField name="id" value="${migPackageInst?.id}" />
-	  <g:actionSubmit class="export" action="export" value="${message(code: 'migPackage.button.download.label', default: 'Download')}"/>
-	  <g:if test="${migPackageInst?.originLocal}">
-	  </g:if><g:else>
-	    <g:actionSubmit class="install" action="installpre" value="${message(code: 'migPackage.button.label.install', default: 'Install')}"/>
-	  </g:else>
-	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Confirm deletion')}');" />
+	  <g:actionSubmit class="save" action="install" value="${message(code: 'migPackage.install.button', default: 'Install')}" />
 	</fieldset>
       </g:form>
     </div>
