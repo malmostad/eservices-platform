@@ -23,7 +23,6 @@
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
       </ul>
     </div>
     <div id="list-migFormdef" class="content scaffold-list" role="main">
@@ -65,11 +64,11 @@
 	</table>
 	<fieldset class="buttons">
 	  <g:actionSubmit class="save" action="saveexp" value="${message(code: 'migPackage.button.create.label', default: 'Create package')}"/>
-	  <span class="checkall" onclick="exportCheckAll(true)">Check all</span>
-	  <span class="clearall" onclick="exportCheckAll(false)">Clear all</span>
-	  <span class="add" onclick="exportAddContaining($('#textForAddContaining').val(),true)">Add all containing:</span>
+	  <span class="checkall" onclick="exportCheckAll(true)"><g:message code="migPackage.create.checkAll.label"/></span>
+	  <span class="clearall" onclick="exportCheckAll(false)"><g:message code="migPackage.create.clearAll.label"/></span>
+	  <span class="add" onclick="exportAddContaining($('#textForAddContaining').val(),true)"><g:message code="migPackage.create.addContaining.label"/>:</span>
 	  <g:textField id="textForAddContaining" name="ignoredOnInput" size="7" maxlength="20"/>
-	  <span class="remove" onclick="exportAddContaining($('#textForAddContaining').val(),false)">Clear all containing</span>
+	  <span class="remove" onclick="exportAddContaining($('#textForAddContaining').val(),false)"><g:message code="migPackage.create.clearContaining.label"/></span>
 	</fieldset>
       </g:form>
     </div>

@@ -30,18 +30,18 @@ class MigReportController {
         def migReportInst = MigReport.get(id)
         if (!migReportInst) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'migReport.label', default: 'MigReport'), id])
-            redirect(action: "list")
+            redirect(controller: 'migPackage', action: 'list')
             return
         }
 
         try {
             migReportInst.delete(flush: true)
             flash.message = message(code: 'default.deleted.message', args: [message(code: 'migReport.label', default: 'MigReport'), id])
-            redirect(action: "list")
+            redirect(controller: 'migPackage', action: 'show', id: migReportInst.pkg.id)
         }
         catch (DataIntegrityViolationException e) {
             flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'migReport.label', default: 'MigReport'), id])
-            redirect(action: "show", id: id)
+            redirect(action: 'show', id: id)
         }
     }
 }

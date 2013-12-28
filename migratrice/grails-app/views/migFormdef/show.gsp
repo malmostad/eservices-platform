@@ -72,6 +72,12 @@
 	    </g:each>
 	  </li>
 	</g:if>
+	<g:if test="${migFormdefInst?.pack}">
+	  <li class="fieldcontain">
+	    <span id="pack-label" class="property-label"><g:message code="migFormdef.pack.label" default="Pack" /></span>
+	    <span class="property-value" aria-labelledby="pack-label"><g:link controller="migPackage" action="show" id="${migFormdefInst?.pack?.id}">${migFormdefInst?.pack?.display()?.encodeAsHTML()}</g:link></span>
+	  </li>
+	</g:if>
       </ol>
     </div>
   </body>

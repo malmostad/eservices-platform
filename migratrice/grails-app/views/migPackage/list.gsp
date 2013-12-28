@@ -13,7 +13,7 @@
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 	<li><g:link class="newpackage" action="listexp"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
 	<div class="buttons"><g:uploadForm action="upload">
-	    <input class="upload" type="submit" value="Upload package"/><input type="file" name="pkgUpload"/>
+	    <input class="upload" type="submit" value="${message(code: 'migPackage.upload.file.label')}"/><input type="file" name="pkgUpload"/>
 	  </g:uploadForm></div>
       </ul>
     </div>

@@ -11,8 +11,6 @@
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-	<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
       </ul>
     </div>
     <div id="show-migReport" class="content scaffold-show" role="main">
@@ -38,14 +36,13 @@
 	<g:if test="${migReportInst?.pkg}">
 	  <li class="fieldcontain">
 	    <span id="pkg-label" class="property-label"><g:message code="migReport.pkg.label" default="Pkg" /></span>
-	    <span class="property-value" aria-labelledby="pkg-label"><g:link controller="migPackage" action="show" id="${migReportInst?.pkg?.id}">${migReportInst?.pkg?.encodeAsHTML()}</g:link></span>
+	    <span class="property-value" aria-labelledby="pkg-label"><g:link controller="migPackage" action="show" id="${migReportInst?.pkg?.id}">${migReportInst?.pkg?.display()?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>
       <g:form>
 	<fieldset class="buttons">
 	  <g:hiddenField name="id" value="${migReportInst?.id}" />
-	  <g:link class="edit" action="edit" id="${migReportInst?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 	</fieldset>
       </g:form>

@@ -71,6 +71,12 @@
 	    <span class="property-value" aria-labelledby="language-label"><g:fieldValue bean="${migFormdefVerInst}" field="language"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${migFormdefVerInst?.formdef}">
+	  <li class="fieldcontain">
+	    <span id="formdef-label" class="property-label"><g:message code="migFormdefVer.formdef.label" default="Formdef" /></span>
+	    <span class="property-value" aria-labelledby="formdef-label"><g:link controller="migFormdef" action="show" id="${migFormdefVerInst?.formdef?.id}">${migFormdefVerInst?.formdef?.display()?.encodeAsHTML()}</g:link></span>
+	  </li>
+	</g:if>
       </ol>
     </div>
   </body>

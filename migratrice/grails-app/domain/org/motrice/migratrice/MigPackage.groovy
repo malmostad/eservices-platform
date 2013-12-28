@@ -55,6 +55,10 @@ class MigPackage implements Comparable {
     return report
   }
 
+  String display() {
+    "${siteName}-${packageName}"
+  }
+
   String toString() {
     "[Package ${siteName}-${packageName} ${originLocal?'Local':'Remote'}]"
   }

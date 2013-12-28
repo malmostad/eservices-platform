@@ -160,46 +160,6 @@ class MigPackageController {
     [migPackageInst: migPackageInst]
   }
 
-  def edit(Long id) {
-    def migPackageInst = MigPackage.get(id)
-    if (!migPackageInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'migPackage.label', default: 'MigPackage'), id])
-      redirect(action: "list")
-      return
-    }
-
-    [migPackageInst: migPackageInst]
-  }
-
-  def update(Long id, Long version) {
-    def migPackageInst = MigPackage.get(id)
-    if (!migPackageInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'migPackage.label', default: 'MigPackage'), id])
-      redirect(action: "list")
-      return
-    }
-
-    if (version != null) {
-      if (migPackageInst.version > version) {
-	migPackageInst.errors.rejectValue("version", "default.optimistic.locking.failure",
-					  [message(code: 'migPackage.label', default: 'MigPackage')] as Object[],
-					  "Another user has updated this MigPackage while you were editing")
-	render(view: "edit", model: [migPackageInst: migPackageInst])
-	return
-      }
-    }
-
-    migPackageInst.properties = params
-
-    if (!migPackageInst.save(flush: true)) {
-      render(view: "edit", model: [migPackageInst: migPackageInst])
-      return
-    }
-
-    flash.message = message(code: 'default.updated.message', args: [message(code: 'migPackage.label', default: 'MigPackage'), migPackageInst.id])
-    redirect(action: "show", id: migPackageInst.id)
-  }
-
   def delete(Long id) {
     def migPackageInst = MigPackage.get(id)
     if (!migPackageInst) {

@@ -22,7 +22,7 @@
 		role="banner"><a href="http://motrice.org"><img src="${resource(dir:
 		'images', file: 'migratrice37.png')}" alt="Migratrice,
 		part of Motrice"/></a><span class="meta">
-		    migratrice <g:meta name="app.version"/> at site: ${grailsApplication.config.migratrice.local.site.name}
+		    migratrice <g:meta name="app.version"/> <g:message code="at.site.banner"/>: ${grailsApplication.config.migratrice.local.site.name}
 		</span></div>
 		<g:layoutBody/>
 		<div class="footer" role="contentinfo"></div>

@@ -70,13 +70,13 @@
 	<g:if test="${migItemInst?.formdef}">
 	  <li class="fieldcontain">
 	    <span id="formdef-label" class="property-label"><g:message code="migItem.formdef.label" default="Formdef" /></span>
-	    <span class="property-value" aria-labelledby="formdef-label"><g:link controller="migFormdef" action="show" id="${migItemInst?.formdef?.id}">${migItemInst?.formdef?.encodeAsHTML()}</g:link></span>
+	    <span class="property-value" aria-labelledby="formdef-label"><g:link controller="migFormdef" action="show" id="${migItemInst?.formdef?.id}">${migItemInst?.formdef?.display()?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
 	<g:if test="${migItemInst?.pack}">
 	  <li class="fieldcontain">
 	    <span id="pack-label" class="property-label"><g:message code="migItem.pack.label" default="Pack" /></span>
-	    <span class="property-value" aria-labelledby="pack-label"><g:link controller="migPackage" action="show" id="${migItemInst?.pack?.id}">${migItemInst?.pack?.encodeAsHTML()}</g:link></span>
+	    <span class="property-value" aria-labelledby="pack-label"><g:link controller="migPackage" action="show" id="${migItemInst?.pack?.id}">${migItemInst?.pack?.display()?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>

@@ -118,5 +118,5 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-	   debug 'grails.app.controllers', 'org.motrice.migratrice', 'org.motrice.migratrice.PackageService'
+	   error 'grails.app.controllers', 'org.motrice.migratrice', 'org.motrice.migratrice.PackageService'
 }
