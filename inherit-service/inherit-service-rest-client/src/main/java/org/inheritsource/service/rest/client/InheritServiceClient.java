@@ -638,6 +638,15 @@ public class InheritServiceClient {
 		return result;
 	}
 	
+	public String getActivityViewUrl(String processInstanceUuid, String activityName, String userId) {
+		String result = null;
+		String uri = serverBaseUrl + "getActivityViewUrl" + "/" + ParameterEncoder.encode(processInstanceUuid) + "/" + ParameterEncoder.encode(activityName) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
+		String response = callAndCatchRE(uri);
+		System.out.println(response);
+		result = response;
+		return result;
+	}
+	
 	public DocBoxFormData addDocBoxSignature(String docBoxRef, String signature) {
 		DocBoxFormData result = null;
 		
@@ -821,9 +830,10 @@ public class InheritServiceClient {
 		System.out.println("Testa InheritServiceClient");
 		
 		InheritServiceClient c = new InheritServiceClient();
-		System.out.println("DocBox form data: " + c.getDocBoxFormData("bmtestid1"));
+		System.out.println("getActivityViewUrl: " + c.getActivityViewUrl("Miljoforv_hemkompostering_matavfall_forenklad_delgivning--3.0--1", "Handlaggning", "john"));
+		//System.out.println("DocBox form data: " + c.getDocBoxFormData("bmtestid1"));
 		
-		System.out.println("Next activity inbox item: " + c.getNextActivityInstanceItemByDocId("74e40834-43fd-4c63-8bee-00219562fe85", "john"));
+		//System.out.println("Next activity inbox item: " + c.getNextActivityInstanceItemByDocId("74e40834-43fd-4c63-8bee-00219562fe85", "john"));
 		
 		/*
 

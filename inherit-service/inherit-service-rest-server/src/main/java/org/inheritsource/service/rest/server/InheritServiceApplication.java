@@ -55,6 +55,7 @@ public class InheritServiceApplication extends Application {
 		router.attach("/getCommentFeed/{activityInstanceUuid}/{userid}", GetCommentFeed.class); 
 		router.attach("/assignTask/{activityInstanceUuid}/{action}/{userid}", AssignTask.class); 
 		router.attach("/getActivityInstanceItem/{activityInstanceUuid}/{userId}", ActivityInstanceItemByActivityInstanceUuid.class);
+		router.attach("/getActivityViewUrl/{processInstanceUuid}/{activityName}/{userId}", GetActivityViewUrl.class);
 		router.attach("/getNextActivityInstanceItemByDocId/{docId}/{userId}", NextActivityInstanceItemByDocId.class);		
 		router.attach("/getActivityWorkflowInfo/{activityInstanceUuid}", GetActivityWorkflowInfo.class); 
 		router.attach("/inboxByUserId/{userid}", InboxByUserId.class);

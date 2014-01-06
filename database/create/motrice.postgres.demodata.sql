@@ -304,7 +304,7 @@ INSERT INTO mtf_activity_form_definition(
        VALUES (
             nextval('hibernate_sequence'), 
             'Forenklad_delgivning_till_inkorg--3.0--Ta_del_av_beslut', 
-            'miljoforvaltningen/fdelgivning-ta-del-beslut--v002', 
+            'notify/Handlaggning', 
             NULL
 );
 

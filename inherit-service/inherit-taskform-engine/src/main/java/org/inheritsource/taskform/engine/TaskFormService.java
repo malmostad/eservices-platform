@@ -371,8 +371,64 @@ public class TaskFormService {
 			String activityName = formPath.substring(13);
 			externalUrl = "signform?" + activityUrlIdStr + "&signActivityName=" + activityName;
 		}
+		else if (formPath.startsWith("notify/")) {
+			String activityName = formPath.substring(7);
+			externalUrl = "notify?" + activityUrlIdStr + "&notify=" + activityName;
+		}
+		else if (formPath.startsWith("notify")) {
+			externalUrl = "notify?" + activityUrlIdStr;			
+		}
 		
 		return externalUrl;
+	}
+	
+	public String getActivityViewUrl(String processInstanceUuid, String activityName, String userId) {
+		String viewUrl = null;
+		ProcessInstanceDetails piDetails = null;
+		
+		if (processInstanceUuid != null) {
+			piDetails = getProcessInstanceDetails(processInstanceUuid);
+						
+			if (piDetails != null) {
+				for (TimelineItem item : piDetails.getTimeline().getItems()) {
+					
+					if (item instanceof ActivityInstanceLogItem) {
+						ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)item;
+						if (logItem.getActivityName() != null && logItem.getActivityName().equals(activityName)) {
+							if (userId != null) {
+								if (userId.equals(piDetails.getStartedBy()) || 
+										(logItem.getPerformedByUser() != null && userId.equals(logItem.getPerformedByUser().getUuid()))) {
+									viewUrl = logItem.getViewUrl();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return viewUrl;
+	}
+
+	private String getActivityViewUrl(String processInstanceUuid, String activityName) {
+		String viewUrl = null;
+		ProcessInstanceDetails piDetails = null;
+		
+		if (processInstanceUuid != null) {
+			piDetails = getProcessInstanceDetails(processInstanceUuid);
+						
+			if (piDetails != null) {
+				for (TimelineItem item : piDetails.getTimeline().getItems()) {
+					
+					if (item instanceof ActivityInstanceLogItem) {
+						ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)item;
+						if (logItem.getActivityName() != null && logItem.getActivityName().equals(activityName)) {
+							viewUrl = logItem.getViewUrl();
+						}
+					}
+				}
+			}
+		}
+		return viewUrl;
 	}
 
 	public ProcessInstanceDetails getProcessInstanceDetails(
@@ -407,7 +463,8 @@ public class TaskFormService {
 						.setAssignedUser(appendTaskFormServiceUserData(pendingItem
 								.getAssignedUser()));
 			}
-
+			
+			String notifyUrl = null;
 			for (TimelineItem timelineItem : details.getTimeline().getItems()) {
 				if (timelineItem instanceof ActivityInstanceLogItem) {
 					ActivityInstanceLogItem logItem = (ActivityInstanceLogItem) timelineItem;
@@ -426,8 +483,27 @@ public class TaskFormService {
 						logItem.setPerformedByUser(taskFormDb
 								.getUserByUuid(activity.getUserId()));
 					}
+					
+					// TODO this is wrong way, fix solution in activiti branch
+					// ROLAND: Här sparas url till Beslutets formulär, notera aktivitetsnamn och ProcessInstanceUuid nedan
+					if (logItem.getActivityName() != null && logItem.getActivityName().equals("Handlaggning") && details.getProcessInstanceUuid().startsWith("Miljoforv_hemkompostering_matavfall_forenklad_delgivning")) {
+						notifyUrl = logItem.getViewUrl();
+					}
 				}
 			}
+
+			// TODO this is wrong way, fix solution in activiti branch
+			// ROLAND: Här skapas en logItem att visa i timeline med beslutet och processes endDate, notera att 
+			//         processen är avslutad och har ett endDate
+			if (details.getEndDate() != null && notifyUrl != null) {
+				ActivityInstanceLogItem logItem = new ActivityInstanceLogItem();
+				logItem.setViewUrl(notifyUrl);
+				logItem.setActivityLabel("Delgivet beslut");
+				logItem.setEndDate((Date)details.getEndDate().clone());
+				logItem.setPerformedByUser(taskFormDb.getUserByUuid(details.getStartedBy()));
+				details.getTimeline().add(logItem);
+			}
+
 			
 			StartLogItem startLogItem = getStartFormActivityInstanceLogItem(details.getProcessInstanceUuid());
 			
@@ -437,6 +513,8 @@ public class TaskFormService {
 			}
 			
 			details.getTimeline().addAndSort(startLogItem);
+
+
 		}
 	}
 
@@ -608,10 +686,20 @@ public class TaskFormService {
 	private void apppendTaskFormServiceData(ActivityInstanceItem item,
 			ProcessActivityFormInstance activityFormInstance) {
 		if (item instanceof ActivityInstanceLogItem) {
-			item.setFormUrl(activityFormInstance.calcViewUrl());
+			if (activityFormInstance.getFormPath() != null && activityFormInstance.getFormPath().startsWith("notify")) {
+				item.setFormUrl(getActivityViewUrl(activityFormInstance.getProcessInstanceUuid(), "Handlaggning"));
+			}
+			else {
+				item.setFormUrl(activityFormInstance.calcViewUrl());
+			}
 		} else if (item instanceof ActivityInstancePendingItem) {
 			ActivityInstancePendingItem aipi = (ActivityInstancePendingItem) item;
-			aipi.setFormUrl(activityFormInstance.calcEditUrl());
+			if (activityFormInstance.getFormPath() != null && activityFormInstance.getFormPath().startsWith("notify")) {
+				aipi.setFormUrl(getActivityViewUrl(activityFormInstance.getProcessInstanceUuid(), "Handlaggning"));
+			}
+			else {
+				aipi.setFormUrl(activityFormInstance.calcEditUrl());
+			}
 			appendCandidateUserInfo(aipi);
 		}
 

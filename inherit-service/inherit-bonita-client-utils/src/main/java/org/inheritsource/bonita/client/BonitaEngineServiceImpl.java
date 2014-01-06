@@ -780,6 +780,12 @@ public class BonitaEngineServiceImpl {
 		ProcessInstanceDetails result = null;
 		//log.severe("getProcessInstanceDetailsByUuid: " + (piUuid != null ? piUuid : "NONE"));
 		ProcessInstance pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(piUuid);
+		
+		ProcessInstanceUUID rootPiUuid = pi.getRootInstanceUUID();
+		if (rootPiUuid != null && piUuid != null && rootPiUuid.getValue() != piUuid.getValue()) {
+			pi = AccessorUtil.getQueryRuntimeAPI().getProcessInstance(rootPiUuid);
+		}
+		
 		if (pi != null) {
 			result = new ProcessInstanceDetails();
 			//log.severe("loading brief properties: ");
@@ -985,6 +991,10 @@ public class BonitaEngineServiceImpl {
 		dst.setPerformedByUser(this.createTemporaryUserInfo(src.getLastStateUpdate().getUpdatedBy())); // TODO check if this is correct userid
 	}
 	
+	private void loadAutoActivityInstanceLogItem(ActivityInstance src, ActivityInstanceLogItem dst) {
+		dst.setEndDate(src.getEndedDate());
+	}
+	
 	private UserInfo createTemporaryUserInfo(String bonitaUser) {
 		UserInfo userInfo = null;
 		if (bonitaUser != null && bonitaUser.trim().length()>0) {
@@ -1019,6 +1029,7 @@ public class BonitaEngineServiceImpl {
 		ActivityInstanceItem result = null;
 		//log.severe("createActivityInstanceItem START: " + ai);
 		if (ai != null) {
+			log.severe("TYPE: " + ai.getType() + "   name: " + ai.getActivityName() + " : " + ai.getActivityLabel() + "isTask: " + ai.isTask()  + "isAutomatic: " + ai.isAutomatic());
 			//log.severe("BPMN activity uuid: " + ai.getActivityInstanceId() + " label=" + ai.getActivityLabel());
 			if (ai.getState().equals(ActivityState.FINISHED)) {
 				// Finished activity 
@@ -1027,6 +1038,14 @@ public class BonitaEngineServiceImpl {
 					result = new ActivityInstanceLogItem();
 					loadActivityInstanceLogItem(ai, (ActivityInstanceLogItem)result);
 				}
+				/*
+				ROLAND: Här kan man lägga till automatiska tasks om man använder denna kommenterade kod 
+				else if (ai.getType() == ActivityDefinition.Type.Automatic && !ai.getActivityLabel().isEmpty()) {
+					// automatic activities FIXME, label isEmpty is a work around to hide gateways etc 
+					result = new ActivityInstanceLogItem();
+					loadAutoActivityInstanceLogItem(ai, (ActivityInstanceLogItem)result);
+				}
+				*/
 			}
 			else if (ai.getState().equals(ActivityState.READY)) {
 				// pending activity
