@@ -74,7 +74,7 @@ public class EmailTo extends Emailer {
 			message.setText(mailBody.replaceAll("\\+"," "));
 			
 			// Send message
-			log.info("EmailTo: Sending message to " + mailTo + " via smtpserver: " + SMTPSERVER);
+			log.info("EmailTo: Sending message from: " + mailFrom.replaceAll("\\+"," ") + ", to: " + mailTo + " via smtpserver: " + SMTPSERVER);
 			Transport.send(message);
 		}catch (MessagingException e) {
 			e.printStackTrace();

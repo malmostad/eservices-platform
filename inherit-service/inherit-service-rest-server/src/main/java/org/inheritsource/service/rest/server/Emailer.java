@@ -11,7 +11,7 @@ import org.restlet.resource.ServerResource;
 
 public abstract class Emailer extends ServerResource {
 
-	public static final String MOTRICE_PROPERTIES_DEFAULT_PATH = "/usr/local/etc/inherit/motrice.properties";
+	public static final String MOTRICE_PROPERTIES_DEFAULT_PATH = "/usr/local/etc/motrice/motrice.properties";
 	public static final String MOTRICE_HOME = "MOTRICE_HOME";
 	public static final Logger log = Logger.getLogger(Emailer.class.getName());
 
