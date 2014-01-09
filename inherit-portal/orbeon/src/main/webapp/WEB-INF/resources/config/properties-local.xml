@@ -41,17 +41,15 @@
   <!-- HTTP method to use to navigate to the error page -->
   <property as="xs:string" name="oxf.fr.detail.send.error.method.*.*" value="get"/>
 
-<!--   
-  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.send" value="Skicka"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.workflow-send" value="Skicka"/>
   <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.clear" value="Rensa"/>
   <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.save-draft" value="Spara"/>
   <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.save-final" value="Spara"/>
   
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.send" value="Skicka"/>
+  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.workflow-send" value="Skicka"/>
   <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.clear" value="Rensa"/>
   <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.save-draft" value="Spara"/>
   <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.save-final" value="Spara"/>
- -->
  
   <property as="xs:boolean" name="oxf.fr.noscript-link.*.*" value="false"/>
 </properties>
