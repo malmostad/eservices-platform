@@ -1038,14 +1038,17 @@ public class BonitaEngineServiceImpl {
 					result = new ActivityInstanceLogItem();
 					loadActivityInstanceLogItem(ai, (ActivityInstanceLogItem)result);
 				}
-				/*
-				ROLAND: Här kan man lägga till automatiska tasks om man använder denna kommenterade kod 
 				else if (ai.getType() == ActivityDefinition.Type.Automatic && !ai.getActivityLabel().isEmpty()) {
-					// automatic activities FIXME, label isEmpty is a work around to hide gateways etc 
-					result = new ActivityInstanceLogItem();
-					loadAutoActivityInstanceLogItem(ai, (ActivityInstanceLogItem)result);
+					/*
+					ROLAND: Här kan man lägga till automatiska tasks om man använder denna kommenterade kod 
+					*/
+					// automatic activities FIXME, label isEmpty is a work around to hide gateways etc
+					if (ai.getActivityName().startsWith("Meddelande_om_beslut_i_inbox") || ai.getActivityName().startsWith("Skicka_kontrollmeddelande")) {
+						result = new ActivityInstanceLogItem();
+						loadAutoActivityInstanceLogItem(ai, (ActivityInstanceLogItem)result);
+					}
 				}
-				*/
+				
 			}
 			else if (ai.getState().equals(ActivityState.READY)) {
 				// pending activity
