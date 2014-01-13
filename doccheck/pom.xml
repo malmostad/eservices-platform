@@ -42,6 +42,17 @@
 	  <mainClass>org.motrice.doccheck.Main</mainClass>
 	</configuration>
       </plugin>
+      <plugin>
+	<groupId> org.apache.maven.plugins</groupId>
+	<artifactId>maven-jar-plugin</artifactId>
+	<configuration>
+	  <archive>
+	    <manifest>
+	      <mainClass>org.motrice.doccheck.Main</mainClass>
+	    </manifest>
+	  </archive>
+	</configuration>
+      </plugin>
     </plugins>
   </build>
 
