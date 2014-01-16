@@ -81,7 +81,7 @@ public class ActivitiEngineService {
 		
 		if(engine == null) {
 			final String ACTIVITI_ENGINE_CONFIG_FILEPATH = "/usr/local/etc/motrice/activiti.cfg.xml";
-			ProcessEngineConfiguration engineConfig = loadConfigFromFile(ACTIVITI_ENGINE_CONFIG_FILEPATH);
+			ProcessEngineConfiguration engineConfig = ActivitiEngineUtil.loadConfigFromFile(ACTIVITI_ENGINE_CONFIG_FILEPATH);
 
 			if (engineConfig == null) {
 				log.severe("The process engine will not be working!");
@@ -90,18 +90,6 @@ public class ActivitiEngineService {
 				engine =  engineConfig.buildProcessEngine();
 			}	
 		}
-	}
-	
-	private ProcessEngineConfiguration loadConfigFromFile(String fileName) {
-		ProcessEngineConfiguration engineConfig = null;
-		try {
-			engineConfig = ProcessEngineConfiguration.
-				createProcessEngineConfigurationFromInputStream(new FileInputStream(fileName));
-		}
-		catch (Exception e) {
-			log.severe("Could not find config file: " + fileName + e);
-		}
-		return engineConfig;
 	}
 	
 	public List<InboxTaskItem> getUserInbox(String userId) {
@@ -284,9 +272,7 @@ public class ActivitiEngineService {
 		    } else {
 		    	item.setRootProcessInstanceUuid(task.getProcessInstanceId());
 				item.setRootProcessDefinitionUuid(task.getProcessDefinitionId());
-		    }			
-
-		
+		    }
 		}
 		return item;
 	}
@@ -352,18 +338,21 @@ public class ActivitiEngineService {
 	public ActivityInstanceItem getActivityInstanceItem(String taskId) {
 		ActivityInstanceItem result = null;
 		
-		Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
-		
-		if(task != null) {
-			result = task2ActivityInstancePendingItem(task);
-		} else {
-			HistoricTaskInstance historicTask = engine.getHistoryService().
-				createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
-			if(historicTask != null) {
-				result = task2ActivityInstanceLogItem(historicTask);
+		try {
+			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
+
+			if(task != null) {
+				result = task2ActivityInstancePendingItem(task);
+			} else {
+				HistoricTaskInstance historicTask = engine.getHistoryService().
+						createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+				if(historicTask != null) {
+					result = task2ActivityInstanceLogItem(historicTask);
+				}
 			}
+		} catch (Exception e) {
+			log.severe("Unable to getActivityInstanceItem with taskId: " + taskId);
 		}
-		
 		return result;
 	}
 	
@@ -522,9 +511,6 @@ public class ActivitiEngineService {
 			processInstanceDetails.setStartedByFormPath("");
 			
 			// Check if process is found among the active ones 
-			
-			//Execution execution = engine.getRuntimeService().createExecutionQuery().
-			//	executionId(executionId).singleResult();
 			
 			ProcessInstance processInstance = engine.getRuntimeService().createProcessInstanceQuery().
 				processInstanceId(processInstanceId).singleResult();
@@ -1591,19 +1577,6 @@ public class ActivitiEngineService {
 		for (String key : counts.keySet()) {
 			log.info("Key: " + key + " count: " + counts.get(key));
 		}
-	}
-	
-	private ProcessEngineConfiguration loadConfigFromResource(String resource) {
-		ProcessEngineConfiguration engineConfig = null;
-		try {
-			engineConfig = ProcessEngineConfiguration.createProcessEngineConfigurationFromResource(resource)
-					  .setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_FALSE)
-					  .setJobExecutorActivate(true);
-		}
-		catch (Exception e) {
-			log.severe("Could not find config resource: " + resource);
-		}
-		return engineConfig;
 	}
 	
 	public Deployment deployBpmn(String bpmnFile) {
