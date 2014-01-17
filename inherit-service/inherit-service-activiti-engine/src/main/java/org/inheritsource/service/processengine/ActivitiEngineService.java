@@ -1541,22 +1541,7 @@ public class ActivitiEngineService {
 	}
 
     // Methods below is used for testing and developement for the moment
-    
-	private void listDeployedProcesses() {
-		List<ProcessDefinition> processes = engine.getRepositoryService().createProcessDefinitionQuery().list();
-		for (ProcessDefinition process : processes) {
-			log.severe("Process: " + process.getId() + ": " + process + "START");
-			log.severe("getDeploymentId: " + process.getDeploymentId());
-			log.severe("getDescription: " + process.getDescription());
-			log.severe("getDiagramResourceName: " + process.getDiagramResourceName());
-			log.severe("getId: " + process.getId());
-			log.severe("getKey: " + process.getKey());
-			log.severe("getName: " + process.getName());
-			log.severe("getResourceName: " + process.getResourceName());
-			log.severe("version: " + process.getVersion());
-			log.severe("END");
-		}
-	}
+
 	
 	public List<String> getDeployedDeploymentIds() {
 		List<Deployment> deployments = engine.getRepositoryService().createDeploymentQuery().list();
@@ -1569,14 +1554,6 @@ public class ActivitiEngineService {
 	
 	public void deleteDeploymentByDeploymentId(String deploymentId, boolean cascade) {
 		engine.getRepositoryService().deleteDeployment(deploymentId, cascade);
-	}
-	
-	private void logTableSizes() {
-		Map<String, Long> counts = engine.getManagementService().getTableCount();
-		
-		for (String key : counts.keySet()) {
-			log.info("Key: " + key + " count: " + counts.get(key));
-		}
 	}
 	
 	public Deployment deployBpmn(String bpmnFile) {
