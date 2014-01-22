@@ -23,6 +23,7 @@ import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.Pool;
 import org.activiti.bpmn.model.Process;
+import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
@@ -621,7 +622,9 @@ public class ActivitiEngineService {
 			log.severe("Unable to addComment with taskId: " + taskId + 
 				" and userId: " + userId);
 			retVal = -1;	
-		}
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+	    }
 		
 		return retVal;
 	}
@@ -780,37 +783,36 @@ public class ActivitiEngineService {
 			processInstanceId = processInstance.getId();
 		} catch (Exception e) {
 			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId);
-		}
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+	    }
 		
 		return processInstanceId;
 	}
 
 	public boolean executeTask(String taskId, String userId) {
 		boolean successful = false;
-			
+		
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
-		} catch (Exception e) {
-			log.fine("Could not setAuthenticatedUserId in executeTask with taskId: " + taskId + 
-				" exception: " + e);
-			return successful;
-		}
-		
-		try {
 			engine.getTaskService().claim(taskId, userId);
-		} catch (Exception e) {
-			log.fine("Could not claim in executeTask with taskId: " + taskId + 
-				" exception: " + e);
-			return successful;
-		}
-		
-		try {
 			engine.getTaskService().complete(taskId);
 			successful = true;
-		} catch (Exception e) {
-			log.severe("Could not complete in executeTask with taskId: " + taskId + 
+		} catch (ActivitiTaskAlreadyClaimedException e) {
+			log.fine("Could not claim in executeTask with taskId: " + taskId + 
 				" exception: " + e);
-		}
+			successful = false;
+		}  catch (ActivitiObjectNotFoundException e) {
+			log.fine("Could not claim task in executeTask with taskId: " + taskId + 
+					" exception: " + e);
+			successful = false;	
+		} catch (Exception e) {
+			log.severe("Could not executeTask with taskId: " + taskId + 
+				" exception: " + e);
+			successful = false;
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+	    }
 
 		return successful;
 	}
@@ -934,7 +936,10 @@ public class ActivitiEngineService {
 			log.severe("Unable to getPagedProcessInstanceSearchResult with startedByUserId: " + searchForUserId +
 					" by userId: " + userId);
 			pagedProcessInstanceSearchResult = null;	
-		}
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+	    }
+		
 		return pagedProcessInstanceSearchResult;
 	}
 	
@@ -1061,7 +1066,10 @@ public class ActivitiEngineService {
 			log.severe("Unable to getHistoricPagedProcessInstanceSearchResult with searchForUserId: " + searchForUserId +
 					" by userId: " + userId);
 			pagedProcessInstanceSearchResult = null;	
-		}
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+	    }
+		
 		return pagedProcessInstanceSearchResult;
 	}
 		
@@ -1153,7 +1161,10 @@ public class ActivitiEngineService {
 			log.severe("Unable to getPagedProcessInstanceSearchResultByUuids with processInstanceIdList: " + processInstanceIdList.toString() +
 					" by userId: " + userId + e);
 			pagedProcessInstanceSearchResult = null;	
-		}
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+	    }
+		
 		return pagedProcessInstanceSearchResult;
 	}
 	
@@ -1224,7 +1235,9 @@ public class ActivitiEngineService {
 			log.severe("Unable to getHistoricPagedProcessInstanceSearchResultByUuids  processInstanceIdList: " + 
 					processInstanceIdList.toString() + " by userId: " + userId + e);
 			pagedProcessInstanceSearchResult = null;	
-		}
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+	    }
 		return pagedProcessInstanceSearchResult;
 	}
 
@@ -1592,7 +1605,10 @@ public class ActivitiEngineService {
 			processInstance = runtimeService.startProcessInstanceByKey(key, new HashMap<String, Object>());
 		} catch (Exception e) {
 			log.severe("Unable to start process instance with key: " + key);
-		}
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+	    }
+		
 		return processInstance;
 	}
 	
