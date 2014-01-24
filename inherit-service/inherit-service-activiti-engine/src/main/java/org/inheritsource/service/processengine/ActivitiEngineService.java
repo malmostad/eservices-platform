@@ -7,10 +7,12 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -119,16 +121,15 @@ public class ActivitiEngineService {
 				tasks.add(t);
 			}
 		}
-		
-		//TODO sort tasks by taskCreateTime
-		
+	
 		result = taskList2InboxTaskItemList(tasks);
+		Collections.sort(result);
 		
 		return result;
 	}
 	
 	public Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
-		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
+		Set<InboxTaskItem> result = new LinkedHashSet<InboxTaskItem>();
 		
 		List<Task> tasks = engine.getTaskService().createTaskQuery().
 			processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
@@ -220,7 +221,7 @@ public class ActivitiEngineService {
 	}
 	
 	public Set<InboxTaskItem> getHistoricUserInboxByProcessInstanceId(String processInstanceId) {
-		Set<InboxTaskItem> result = new HashSet<InboxTaskItem>();
+		Set<InboxTaskItem> result = new LinkedHashSet<InboxTaskItem>();
 		
 		List<HistoricTaskInstance> tasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
 			processInstanceId(processInstanceId).finished().orderByHistoricTaskInstanceStartTime().asc().list();
