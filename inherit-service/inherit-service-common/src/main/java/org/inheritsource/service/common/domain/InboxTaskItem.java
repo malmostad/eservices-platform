@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  */
 
 @XStreamAlias("InboxTaskItem")
-public class InboxTaskItem implements Serializable, Comparable{
+public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 	
 	private static final long serialVersionUID = -5668377849020426352L;
 		
@@ -307,17 +307,15 @@ public class InboxTaskItem implements Serializable, Comparable{
 			return false;
 		return true;
 	}
-
+	
 	@Override
-	public int compareTo(Object o) {
+	public int compareTo(InboxTaskItem other) {
 		int result = -1;
-		if (o == null) {
+		if (other == null) {
 			result = 1;
-		} 
-		else if (o instanceof InboxTaskItem) {
-			InboxTaskItem other =(InboxTaskItem) o;
-			if (getActivityCreated()==null) {
-				if (other.getActivityCreated()==null) {
+		} else {
+			if (getActivityCreated() == null) {
+				if (other.getActivityCreated() == null) {
 					result = 0;
 				} 
 			}
