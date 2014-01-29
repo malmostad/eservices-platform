@@ -608,8 +608,8 @@ public class ActivitiEngineService {
 			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 			
 			if(task != null) {
-				Comment addedComment = 
-					engine.getTaskService().addComment(taskId, "", comment);
+				Comment addedComment = engine.getTaskService().addComment
+					(taskId, task.getProcessInstanceId(), comment);
 
 				if(addedComment != null) {
 					String msg = addedComment.getFullMessage();
@@ -1454,7 +1454,7 @@ public class ActivitiEngineService {
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
-
+		
 		// run 
 		// mvn exec:java
 		// in inherit-service/inherit-service-activiti-engine directory
