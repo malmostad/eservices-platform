@@ -456,37 +456,37 @@ public class ActivitiEngineService {
 		if(remainingDays < 0) {
 			remainingDays = 0;
 		}
-		
+
 		DashOpenActivities dashOpenActivities = null;
+		int onTrack = 0;
+		int overdue = 0;
+		int atRisk = 0;
 		
-		try {			
-			SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(new Date()); // today date.
-			Date TODAY = formatter.parse(formatter.format(calendar.getTime()));
-			calendar.add(Calendar.DATE, remainingDays); // today date with remaining days added
-			Date TODAY_ADDED_WITH_REMAINING_DAYS = formatter.parse(formatter.format(calendar.getTime()));
+		try {
+			List<InboxTaskItem> inboxTaskItems = getUserInbox(userId);
+			
+			if(inboxTaskItems != null) {
+				// Create dates needed in calculation
+				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(new Date()); // today date.
+				Date TODAY = formatter.parse(formatter.format(calendar.getTime()));
+				calendar.add(Calendar.DATE, remainingDays); // today date with remaining days added
+				Date TODAY_ADDED_WITH_REMAINING_DAYS = formatter.parse(formatter.format(calendar.getTime()));
 				
-			// onTrack
-			// tasks with a dueDate after (TODAY + remainingDays)
-			long onTrackLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueAfter(TODAY_ADDED_WITH_REMAINING_DAYS).count();
-			int onTrack = new Long(onTrackLong).intValue();
-			
-			// Add tasks without duedate to onTrack
-			long withoutDueDateLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueDate(null).count();
-			int withoutDueDate = new Long(withoutDueDateLong).intValue();
-			onTrack = onTrack + withoutDueDate;
-	
-			// overdue
-			// tasks with a duteDate before TODAY.
-			long overdueLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).dueBefore(TODAY).count();
-			int overdue = new Long(overdueLong).intValue();
-			
-			// atRisk
-			// tasks with a duteDate after TODAY and before TODAY + remaningDays
-			long allTasksLong = engine.getTaskService().createTaskQuery().taskAssignee(userId).count();
-			int allTasks = new Long(allTasksLong).intValue();
-			int atRisk = allTasks - onTrack - overdue;
+				for (InboxTaskItem inboxTaskItem : inboxTaskItems) {
+					
+					if(inboxTaskItem.getExpectedEndDate() == null) {
+						onTrack++;
+					} else if (inboxTaskItem.getExpectedEndDate().after(TODAY_ADDED_WITH_REMAINING_DAYS)) {
+						 onTrack++;
+					} else if (inboxTaskItem.getExpectedEndDate().before(TODAY)) {
+						overdue++;
+					} else {
+						atRisk++;
+					}
+				}		
+			}
 			
 			dashOpenActivities = new DashOpenActivities();
 			dashOpenActivities.setOnTrack(onTrack);
