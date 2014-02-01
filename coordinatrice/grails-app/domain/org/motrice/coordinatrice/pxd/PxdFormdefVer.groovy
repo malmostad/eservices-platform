@@ -1,7 +1,7 @@
 package org.motrice.coordinatrice.pxd
 
 import org.motrice.coordinatrice.MtfStartFormDefinition
-import org.motrice.coordinatrice.ProcDef
+import org.motrice.coordinatrice.Procdef
 
 class PxdFormdefVer implements Comparable {
   // The magic draft number that means "published"

@@ -1,16 +1,36 @@
-import org.motrice.coordinatrice.ProcDefState
+import org.motrice.coordinatrice.CrdProcCategory
+import org.motrice.coordinatrice.CrdProcdefState
 import org.motrice.coordinatrice.TaskType
 
 class BootStrap {
 
   def init = { servletContext ->
+    // Make sure the default category is defined
+    CrdProcCategory.createCategory(CrdProcCategory.DEFAULT_CATEGORY_NAME,
+				CrdProcCategory.DEFAULT_CATEGORY_DESCRIPTION)
+
     // Make sure all process definition states exist
-    ProcDefState.createState(ProcDefState.STATE_ACTIVE_ID,
-			     ProcDefState.STATE_ACTIVE_RES,
-			     ProcDefState.STATE_ACTIVE_DEF)
-    ProcDefState.createState(ProcDefState.STATE_SUSPENDED_ID,
-			     ProcDefState.STATE_SUSPENDED_RES,
-			     ProcDefState.STATE_SUSPENDED_DEF)
+    CrdProcdefState.createState(CrdProcdefState.STATE_ACTIVE_ID,
+			     CrdProcdefState.STATE_ACTIVE_RES,
+			     CrdProcdefState.STATE_ACTIVE_DEF)
+    CrdProcdefState.createState(CrdProcdefState.STATE_SUSPENDED_ID,
+			     CrdProcdefState.STATE_SUSPENDED_RES,
+			     CrdProcdefState.STATE_SUSPENDED_DEF)
+    CrdProcdefState.createState(CrdProcdefState.STATE_EDIT_ID,
+			     CrdProcdefState.STATE_EDIT_RES,
+			     CrdProcdefState.STATE_EDIT_DEF)
+    CrdProcdefState.createState(CrdProcdefState.STATE_TRIAL_ID,
+			     CrdProcdefState.STATE_TRIAL_RES,
+			     CrdProcdefState.STATE_TRIAL_DEF)
+    CrdProcdefState.createState(CrdProcdefState.STATE_APPROVED_ID,
+			     CrdProcdefState.STATE_APPROVED_RES,
+			     CrdProcdefState.STATE_APPROVED_DEF)
+    CrdProcdefState.createState(CrdProcdefState.STATE_PUBLISHED_ID,
+			     CrdProcdefState.STATE_PUBLISHED_RES,
+			     CrdProcdefState.STATE_PUBLISHED_DEF)
+    CrdProcdefState.createState(CrdProcdefState.STATE_RETIRED_ID,
+			     CrdProcdefState.STATE_RETIRED_RES,
+			     CrdProcdefState.STATE_RETIRED_DEF)
 
     // Make sure all task types exist
     TaskType.createType(TaskType.TYPE_BUSINESS_RULE_ID,

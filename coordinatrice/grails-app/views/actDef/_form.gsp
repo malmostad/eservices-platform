@@ -1,11 +1,11 @@
 <%@ page import="org.motrice.coordinatrice.ActDef" %>
 <%@ page import="org.motrice.coordinatrice.ActivityConnection" %>
-<g:set var="procDefInst" value="${actDefInst?.process}"/>
+<g:set var="procdefInst" value="${actDefInst?.process}"/>
 <div class="fieldcontain">
   <label>
-    <g:message code="procDef.label" default="Process" />
+    <g:message code="procdef.label" default="Process" />
   </label>
-  <g:link controller="procDef" action="show" id="${procDefInst?.uuid}">${procDefInst?.display.encodeAsHTML()}</g:link>
+  <g:link controller="procdef" action="show" id="${procdefInst?.uuid}">${procdefInst?.display.encodeAsHTML()}</g:link>
 </div>
 <div class="fieldcontain">
   <label>

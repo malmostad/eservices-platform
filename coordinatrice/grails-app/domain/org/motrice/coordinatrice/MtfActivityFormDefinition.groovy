@@ -2,22 +2,26 @@ package org.motrice.coordinatrice
 
 class MtfActivityFormDefinition {
 
-  String activityDefinitionUuid
+  String processDefinitionId
+
+  String activityDefinitionId
 
   String formPath
 
   static mapping = {
     id column: 'activityformdefinitionid'
     version false
-    activityDefinitionUuid column: 'activitydefinitionuuid'
+    processDefinitionId column: 'processdefinitionuuid'
+    activityDefinitionId column: 'activitydefinitionuuid'
     formPath column: 'formpath'
   }
   static constraints = {
-    activityDefinitionUuid nullable: true, maxSize: 255
+    processDefinitionId nullable: true, maxSize: 255
+    activityDefinitionId nullable: true, maxSize: 255
     formPath nullable: true, maxSize: 255
   }
 
   String toString() {
-    "[ActFormDef: ${id}/${activityDefinitionUuid} formpath=${formPath}]"
+    "[ActFormDef: ${id}/${activityDefinitionId} formpath=${formPath}]"
   }
 }

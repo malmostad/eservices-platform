@@ -4,6 +4,8 @@ package org.motrice.coordinatrice;
  * The id of an activity definition.
  * It is the combination of a process and an activity id.
  * The activity id is relative to the process where it is defined.
+ * NOTE: Using the full id as a string is deprecated but useful
+ * for display.
  */
 public class ActDefId {
     public static final char SEP = '@';

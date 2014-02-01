@@ -8,6 +8,8 @@ import org.activiti.bpmn.model.SendTask
 import org.activiti.bpmn.model.ServiceTask
 import org.activiti.bpmn.model.Task
 import org.activiti.bpmn.model.UserTask
+import org.activiti.engine.repository.Deployment
+import org.activiti.engine.repository.DeploymentBuilder
 import org.activiti.engine.repository.ProcessDefinition
 import org.apache.commons.logging.LogFactory
 
@@ -19,77 +21,80 @@ class ProcessEngineService {
   static transactional = false
 
   // Injection magic, see resources.groovy
-  def processEngine
   def activitiRepositoryService
+  def procdefService
   private static final log = LogFactory.getLog(this)
 
   /**
-   * Create a process definition from an Activiti entity
-   * Does not populate activities
+   * Create a DeploymentBuilder and set its name to prepare for deployment
+   * key if not null will be part of the deployment name
    */
-  ProcDef createProcDef(ProcessDefinition entity) {
-    if (log.debugEnabled) log.debug "createProcDef << ${entity}"
-    def state = ProcDefState.get(entity.suspended?
-      ProcDefState.STATE_SUSPENDED_ID : ProcDefState.STATE_ACTIVE_ID)
-    def deployment = activitiRepositoryService.createDeploymentQuery().
-      deploymentId(entity.deploymentId).singleResult()
-    def procDef = new ProcDef(uuid: entity.id, key: entity.key, vno: entity.version,
-    name: entity.name, type: entity.category, description: entity.description,
-    state: state, deployment: deployment)
-    if (log.debugEnabled) log.debug "createProcDef >> ${procDef}"
-    return procDef
+  DeploymentBuilder createDeploymentBuilder(String key) {
+    if (log.debugEnabled) log.debug "createDeploymentBuilder << ${key}"
+    def tstamp = new Date().format('yyyyMMddHHmmss')
+    if (key) tstamp = "${key}-${tstamp}"
+    def deployment = activitiRepositoryService.createDeployment()
+    deployment.name(tstamp)
+    if (log.debugEnabled) log.debug "createDeploymentBuilder >> ${deployment}"
+    return deployment
   }
 
   /**
-   * Create a process definition and populate its activities
+   * Deploy from a resource map obtained from findProcessResource
    */
-  ProcDef createFullProcDef(ProcessDefinition entity) {
-    if (log.debugEnabled) log.debug "createFullProcDef << ${entity}"
-    def procDef = createProcDef(entity)
-    def model = activitiRepositoryService.getBpmnModel(procDef.uuid)
-    def processModel = model.processes.find {process ->
-      process.name == procDef.name
-    }
-
-    processModel.findFlowElementsOfType(Task.class).each {element ->
-      def taskType = findTaskType(element)
-      if (taskType) {
-	def actDef = new ActDef(uuid: element.id, name: element.name,
-	type: taskType, documentation: element.documentation)
-	procDef.addToActivities(actDef)
-      }
-    }
-
-    if (log.debugEnabled) log.debug "createFullProcDef >> ${procDef}"
-    return procDef
+  Deployment deployFromResourceMap(Map resourceMap) {
+    if (log.debugEnabled) log.debug "deployFromProcdef << ${resourceMap?.procdef}"
+    def procdef = resourceMap.procdef
+    def db = createDeploymentBuilder(procdef.key)
+    if (procdef.category) db.category(procdef.category.toString())
+    def is = new ByteArrayInputStream(resourceMap.bytes)
+    db.addInputStream(procdef.resourceName, is)
+    def deployment = db.deploy()
+    if (log.debugEnabled) log.debug "deployFromProcdef >> id: ${deployment?.id}, name: ${deployment?.name}"
+    return deployment
   }
 
   /**
-   * Collect all process definitions.
-   * Activity definitions are not collected.
+   * Find the diagram of a process definition with the given id.
+   * Return a map containing the following entries:
+   * bytes (byte[]) the contents of the diagram
+   * ctype (String) content type
+   * procdef (Procdef) the process definition or null if the process definition
+   * was not found
    */
-  List allProcessDefinitions() {
-    if (log.debugEnabled) log.debug "allProcessDefinitions <<"
-    def entityList = activitiRepositoryService.createProcessDefinitionQuery().list()
-    def result = entityList.collect {entity ->
-      createProcDef(entity)
-    }
-    if (log.debugEnabled) log.debug "allProcessDefinitions >> ${result.size()}"
-    return result
-  }
-
-  /**
-   * Find the process definition with the given id.
-   * Return the process definition or null if not found.
-   */
-  ProcDef findProcessDefinition(String id) {
-    if (log.debugEnabled) log.debug "findProcessDefinition << ${id}"
+  Map findProcessDiagram(String id) {
+    if (log.debugEnabled) log.debug "findProcessDiagram << ${id}"
     assert id
-    def entity = activitiRepositoryService.createProcessDefinitionQuery().
-    processDefinitionId(id).singleResult()
-    def procDef = createFullProcDef(entity)
-    if (log.debugEnabled) log.debug "findProcessDefinition >> ${procDef}"
-    return procDef
+    def map = [procdef: null, ctype: null, bytes: null]
+    def entity = activitiRepositoryService.getProcessDefinition(id)
+    if (entity) {
+      map.procdef = procdefService.createProcdef(entity)
+      map.bytes = activitiRepositoryService.getProcessDiagram(id).bytes
+      map.ctype = 'image/png'
+    }
+    if (log.debugEnabled) log.debug "findProcessDiagram >> [${map?.procdef}, ${map?.bytes?.size()}]"
+    return map
+  }
+
+  /**
+   * Find the resource that defines this process definition.
+   * Return a map containing the following entries,
+   * bytes (byte[]) the contents of the resource
+   * procdef (Procdef) the process definition or null if the process definition
+   * was not found
+   */
+  Map findProcessResource(String id) {
+    if (log.debugEnabled) log.debug "findProcessResource << ${id}"
+    assert id
+    def map = [procdef: null, bytes: null]
+    def entity = activitiRepositoryService.getProcessDefinition(id)
+    if (entity) {
+      map.procdef = procdefService.createProcdef(entity)
+      map.bytes = activitiRepositoryService.
+      getResourceAsStream(entity.deploymentId, entity.resourceName).bytes
+    }
+    if (log.debugEnabled) log.debug "findProcessResource >> [${map?.procdef}, ${map?.bytes?.size()}]"
+    return map
   }
 
   /**
@@ -98,39 +103,36 @@ class ProcessEngineService {
   ActDef findActivityDefinition(String fullId) {
     if (log.debugEnabled) log.debug "findActivityDefinition << ${fullId}"
     def id = new ActDefId(fullId)
-    def procDef = findProcessDefinition(id.procId)
-    def actDef = procDef.findActDef(id.actId)
+    def procdef = procdefService.findProcessDefinition(id.procId)
+    def actDef = procdef.findActDef(id.actId)
     if (log.debugEnabled) log.debug "findActivityDefinition >> ${actDef}"
     return actDef
   }
 
-  TaskType findTaskType(obj) {
-    def id = 0
-    switch (obj) {
-    case BusinessRuleTask:
-    id = TaskType.TYPE_BUSINESS_RULE_ID
-    break
-    case ManualTask:
-    id = TaskType.TYPE_MANUAL_ID
-    break
-    case ReceiveTask:
-    id = TaskType.TYPE_RECEIVE_ID
-    break
-    case ScriptTask:
-    id = TaskType.TYPE_SCRIPT_ID
-    break
-    case SendTask:
-    id = TaskType.TYPE_SEND_ID
-    break
-    case ServiceTask:
-    id = TaskType.TYPE_SERVICE_ID
-    break
-    case UserTask:
-    id = TaskType.TYPE_USER_ID
-    break
-    }
+  /**
+   * Duplicate a process definition, creating a new version.
+   * The process definition resource (BPMN xml) is re-deployed.
+   * If the resource contains more than one process definition, all of them
+   * will be duplicated to a new version.
+   * id must be the id of the process definition to duplicate
+   * Returns the duplicated process definitions (List of Procdef)
+   * The duplicated process definitions are in state Edit.
+   */
+  List duplicateProcdef(String id) {
+    if (log.debugEnabled) log.debug "duplicateProcdef << ${id}"
+    def resourceMap = findProcessResource(id)
+    def procdef = resourceMap.procdef
+    if (!procdef) throw new ServiceException("Process definition ${id} not found",
+					     'default.not.found.message', [id])
 
-    return TaskType.get(id) ?: null
+    def deployment = deployFromResourceMap(resourceMap)
+    def state = CrdProcdefState.get(CrdProcdefState.STATE_EDIT_ID)
+    def procdefList = procdefService.findProcessDefinitionsFromDeployment(deployment.id, state)
+    if (!procdefList) throw new ServiceException("Duplicated process definition not found",
+						 'procdef.deployed.not.found')
+    
+    if (log.debugEnabled) log.debug "duplicateProcdef >> ${procdefList}"
+    return procdefList
   }
 
 }

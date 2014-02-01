@@ -6,9 +6,10 @@ import org.activiti.engine.repository.Deployment
 
 /**
  * A process definition.
- * This class is not persisted, constructed read-only from the BPMN engine.
+ * This class is NOT PERSISTED, constructed read-only from the BPMN engine.
+ * A subset is persisted as CrdProcdef
  */
-class ProcDef implements Comparable {
+class Procdef implements Comparable {
   def grailsApplication
 
   // This is not literally a uuid, but a string that uniquely identifies this
@@ -28,16 +29,25 @@ class ProcDef implements Comparable {
 
   // State of this process definition
   // Valid values are Active and Suspended
-  ProcDefState state
+  CrdProcdefState state
 
   // The name of this process definition as used in human communication
   String name
 
-  // Currently taken from Activiti "category", a namespace url
-  String type
+  // The "category" attribute in Activiti process definitions
+  CrdProcCategory category
 
   // Text describing this process definition
   String description
+
+  // Resource name: name of XML process definition (in table act_ge_bytearray).
+  // Use RepositoryService.getResourceAsStream(deploymentId, resourceName)
+  // to access
+  String resourceName
+
+  // Diagram resource name: name of process definition image.
+  // Usage same as resourceName, but may be null.
+  String diagramResourceName
 
   // Deployment, a concept taken directly from Activiti
   // A unit containing this process definition and possibly others
@@ -48,6 +58,7 @@ class ProcDef implements Comparable {
 
   // Not a database object, never to be persisted
   static mapWith = 'none'
+  static belongsTo = [persisted: CrdProcdef]
   static hasMany = [activities: ActDef]
   static transients = ['deployedTime', 'deployedTimeStr', 'deploymentId', 'display', 'userActivities', 'startForms']
   static constraints = {
@@ -56,8 +67,9 @@ class ProcDef implements Comparable {
     vno min: 1
     state nullable: true
     name nullable: true, maxSize: 255
-    type nullable: true, maxSize: 255
-    type nullable: true
+    category nullable: true
+    resourceName nullable: true
+    diagramResourceName nullable: true
     deployment nullable: true
   }
 
@@ -116,7 +128,7 @@ class ProcDef implements Comparable {
    * Return SortedSet of MtfStartFormDefinition.
    */
   SortedSet getStartForms() {
-    def formList = MtfStartFormDefinition.findAllByProcessDefinitionUuid(uuid)
+    def formList = MtfStartFormDefinition.findAllByProcessDefinitionId(uuid)
     return new TreeSet(formList)
   }
 
@@ -131,11 +143,11 @@ class ProcDef implements Comparable {
   }
 
   boolean equals(Object obj) {
-    (obj instanceof ProcDef) && ((ProcDef)obj).uuid == uuid
+    (obj instanceof Procdef) && ((Procdef)obj).uuid == uuid
   }
 
   int compareTo(Object obj) {
-    def other = (ProcDef)obj
+    def other = (Procdef)obj
     return uuid.compareTo(obj.uuid)
   }
 

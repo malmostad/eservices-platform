@@ -18,7 +18,7 @@ class ActDefController {
     def actDefInst = processEngineService.findActivityDefinition(params.id)
     if (!actDefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
-      redirect(controller: 'procDef', action: 'list')
+      redirect(controller: 'procdef', action: 'list')
       return
     }
 
@@ -34,7 +34,11 @@ class ActDefController {
     def actDefInst = processEngineService.findActivityDefinition(params.id)
     if (!actDefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
-      redirect(controller: 'procDef', action: 'list')
+      redirect(controller: 'procdef', action: 'list')
+      return
+    } else if (!actDefInst.process.state.editable) {
+      flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), id])
+      redirect(action: "list")
       return
     }
 
@@ -68,7 +72,11 @@ class ActDefController {
     def actDefInst = processEngineService.findActivityDefinition(params.id)
     if (!actDefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
-      redirect(controller: 'procDef', action: 'list')
+      redirect(controller: 'procdef', action: 'list')
+      return
+    } else if (!actDefInst.process.state.editable) {
+      flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), id])
+      redirect(action: "list")
       return
     }
 
@@ -76,7 +84,8 @@ class ActDefController {
     def activityFormdef = MtfActivityFormDefinition.get(actDefInst?.activityFormdef?.id)
     if (!activityFormdef) {
       activityFormdef =
-	new MtfActivityFormDefinition(activityDefinitionUuid: actDefInst.fullId.toString())
+	new MtfActivityFormDefinition(processDefinitionId: actDefInst.process.uuid,
+	activityDefinitionId: actDefInst.uuid)
     }
 
     def activityConnection = new ActivityConnection(acc, actDefInst)
@@ -90,7 +99,7 @@ class ActDefController {
     }
 
     flash.message = message(code: 'default.updated.message', args: [message(code: 'mtfActivityFormDefinition.label', default: 'ActivityFormDefinition'), activityFormdef.id])
-    redirect(controller: 'procDef', action: "show", id: actDefInst.process.uuid)
+    redirect(controller: 'procdef', action: "show", id: actDefInst.process.uuid)
   }
 
 }

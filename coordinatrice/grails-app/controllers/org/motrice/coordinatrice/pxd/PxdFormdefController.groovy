@@ -37,7 +37,7 @@ class PxdFormdefController {
 	  process = processEngineService.findProcessDefinition(startForm.processDefinitionUuid)
 	}
 
-	formdefVerList << [formdefVer: fdv, procDef: process]
+	formdefVerList << [formdefVer: fdv, procdef: process]
       }
     }
 

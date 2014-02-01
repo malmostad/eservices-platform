@@ -36,7 +36,7 @@
 	<g:if test="${actDefInst?.process}">
 	  <li class="fieldcontain">
 	    <span id="process-label" class="property-label"><g:message code="actDef.process.label" default="Process" /></span>
-	    <span class="property-value" aria-labelledby="process-label"><g:link controller="procDef" action="show" id="${actDefInst?.process?.uuid}">${actDefInst?.process?.encodeAsHTML()}</g:link></span>
+	    <span class="property-value" aria-labelledby="process-label"><g:link controller="procdef" action="show" id="${actDefInst?.process?.uuid}">${actDefInst?.process?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>
