@@ -19,13 +19,29 @@ class ProcdefController {
     redirect(action: "list", params: params)
   }
 
+  // List process definition names without version
   def list(Integer max) {
     if (log.debugEnabled) log.debug "LIST ${params}"
-    params.max = Math.min(max ?: 10, 100)
-    if (!params.sort) params.sort = 'uuid'
-    // TODO: Currently no paging, all process definitions are shown on a single page
-    def procdefInstList = procdefService.allProcessDefinitions()
-    [procdefInstList: procdefInstList, procdefInstTotal: procdefInstList.size()]
+    params.max = Math.min(max ?: 20, 100)
+    params.offset = params.offset as Integer ?: 0
+    // Sorting is disabled
+    def procdefList = procdefService.allProcessDefinitionsGroupByName()
+    def length = procdefList.size()
+    def maxIndex = Math.min(params.offset  + params.max, length)
+    def procdefView = procdefList.subList(params.offset, maxIndex)
+    [procdefList: procdefView, procdefTotal: length]
+  }
+
+  def listname(Integer max) {
+    if (log.debugEnabled) log.debug "LISTNAME ${params}"
+    def key = params.id
+    params.max = Math.min(max ?: 20, 100)
+    params.offset = params.offset as Integer ?: 0
+    def procdefInstList = procdefService.allProcessDefinitionsByKey(key)
+    def length = procdefInstList.size()
+    def maxIndex = Math.min(params.offset + params.max, length)
+    def procdefView = procdefInstList.subList(params.offset, maxIndex)
+    [procdefInstList: procdefView, procdefInstTotal: length, procdefKey: key]
   }
 
   def show() {

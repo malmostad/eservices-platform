@@ -3,10 +3,10 @@
 <html>
   <head>
     <meta name="layout" content="main"/>
-      <g:set var="entityName" value="${message(code: 'procdef.label', default: 'Procdef')}" />
-      <g:set var="formEntityName" value="${message(code: 'pxdFormdef.label', default: 'PxdFormdef')}" />
-      <g:set var="categEntityName" value="${message(code: 'crdProcCategory.label', default: 'CrdProcCategory')}" />
-      <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <g:set var="entityName" value="${message(code: 'procdef.label', default: 'Procdef')}" />
+    <g:set var="formEntityName" value="${message(code: 'pxdFormdef.label', default: 'PxdFormdef')}" />
+    <g:set var="categEntityName" value="${message(code: 'crdProcCategory.label', default: 'CrdProcCategory')}" />
+    <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
   <body>
     <a href="#list-procdef" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -26,28 +26,20 @@
 	<thead>
 	  <tr>
 	    <g:sortableColumn property="name" title="${message(code: 'procdef.name.label', default: 'Name')}" />
-	    <g:sortableColumn property="vno" title="${message(code: 'procdef.vno.label', default: 'Version')}" />
-	    <g:sortableColumn property="state" title="${message(code: 'procdef.state.label', default: 'State')}" />
-	    <g:sortableColumn property="category" title="${message(code: 'procdef.category.label', default: 'Categ')}" />
-	    <g:sortableColumn property="deployedTime" title="${message(code: 'procdef.deployedTime.label', default: 'Deployed')}" />
-	    <th></th>
+	    <g:sortableColumn property="versions" title="${message(code: 'procdef.versions.label', default: 'Versions')}" />
 	  </tr>
 	</thead>
 	<tbody>
-	  <g:each in="${procdefInstList}" status="i" var="procdefInst">
+	  <g:each in="${procdefList}" status="i" var="procdefInfo">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-	      <td><g:link action="show" id="${procdefInst.uuid}">${fieldValue(bean: procdefInst, field: "name")}</g:link></td>
-	      <td>${fieldValue(bean: procdefInst, field: "vno")}</td>
-	      <td><g:pdefstate state="${procdefInst?.state}"/></td>
-	      <td>${fieldValue(bean: procdefInst, field: "category")}</td>
-	      <td>${fieldValue(bean: procdefInst, field: "deployedTimeStr")}</td>
-	      <td><g:link action="diagramDownload" id="${procdefInst.uuid}" target="_blank"><g:img uri="/images/silk/image.png" title="${message(code: 'procdef.diagram.label', default: 'Diagram')}"/></g:link></td>
+	      <td><g:link action="listname" id="${procdefInfo.key}">${procdefInfo.name}</g:link></td>
+	      <td>${procdefInfo.versions}</td>
 	    </tr>
 	  </g:each>
 	</tbody>
       </table>
       <div class="pagination">
-	<g:paginate total="${procdefInstTotal}" />
+	<g:paginate total="${procdefTotal}" />
       </div>
     </div>
   </body>

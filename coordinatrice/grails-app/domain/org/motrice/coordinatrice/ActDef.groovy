@@ -8,8 +8,8 @@ import org.motrice.coordinatrice.MtfActivityFormDefinition
  */
 class ActDef implements Comparable {
 
-  // Not literally a uuid, but a string that uniquely identifies this
-  // activity definition ('id' is a default Grails attribute)
+  // Usually far from a uuid, a string that identifies this activity
+  // definition in the process definition.
   String uuid
 
   // The name of this activity as used in human communication
@@ -47,6 +47,10 @@ class ActDef implements Comparable {
 
   boolean isUserTask() {
     type?.id == TaskType.TYPE_USER_ID
+  }
+
+  String toDisplay() {
+    "[ActDef ${process?.uuid}@${uuid}: ${name}, ${type}]"
   }
 
   String toString() {

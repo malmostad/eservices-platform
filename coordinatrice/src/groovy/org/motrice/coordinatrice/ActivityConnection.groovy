@@ -88,6 +88,10 @@ class ActivityConnection {
    */
   ActivityConnection(ActivityConnectionCommand command, ActDef activity) {
     this.activity = activity
+    // This happens if no radio button is selected
+    if (command.form && command.connectionState == null) {
+      command.connectionState = ActivityConnection.FORM_STATE
+    }
     state = command.connectionState
     
     switch (state) {

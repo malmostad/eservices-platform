@@ -21,6 +21,7 @@ class ProcessEngineService {
   static transactional = false
 
   // Injection magic, see resources.groovy
+  def activityFormdefService
   def activitiRepositoryService
   def procdefService
   private static final log = LogFactory.getLog(this)
@@ -100,12 +101,11 @@ class ProcessEngineService {
   /**
    * Find an activity definition given its full id.
    */
-  ActDef findActivityDefinition(String fullId) {
-    if (log.debugEnabled) log.debug "findActivityDefinition << ${fullId}"
-    def id = new ActDefId(fullId)
+  ActDef findActivityDefinition(ActDefId id) {
+    if (log.debugEnabled) log.debug "findActivityDefinition << ${id}"
     def procdef = procdefService.findProcessDefinition(id.procId)
     def actDef = procdef.findActDef(id.actId)
-    if (log.debugEnabled) log.debug "findActivityDefinition >> ${actDef}"
+    if (log.debugEnabled) log.debug "findActivityDefinition >> ${actDef?.toDisplay()}"
     return actDef
   }
 
@@ -131,8 +131,24 @@ class ProcessEngineService {
     if (!procdefList) throw new ServiceException("Duplicated process definition not found",
 						 'procdef.deployed.not.found')
     
+    // Copy activity form connections from previous version
+    procdefList.each {reconnectActivityForms(it)}
     if (log.debugEnabled) log.debug "duplicateProcdef >> ${procdefList}"
     return procdefList
+  }
+
+  /**
+   * Make a best effort to connect activities to forms for a new process version.
+   * Find the previous version and copy the connections.
+   */
+  private reconnectActivityForms(Procdef procdef) {
+    def procdefList = procdefService.findProcessDefinitionsFromKey(procdef.key)
+    // The two first elements should be the new and previous versions.
+    // No guarantee though.
+    if (procdefList.size() >= 2) {
+      activityFormdefService.connectActivityForms(procdefList[1], procdefList[0])
+    }
+    if (log.debugEnabled) log.debug "reconnectActivityForms >> ${procdefList}"
   }
 
 }

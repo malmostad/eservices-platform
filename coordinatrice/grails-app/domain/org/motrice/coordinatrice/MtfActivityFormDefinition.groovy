@@ -21,7 +21,14 @@ class MtfActivityFormDefinition {
     formPath nullable: true, maxSize: 255
   }
 
+  static MtfActivityFormDefinition createFromActDef(ActDef actDefInst) {
+    def afd = new MtfActivityFormDefinition()
+    afd.processDefinitionId = actDefInst.process.uuid
+    afd.activityDefinitionId = actDefInst.uuid
+    return afd
+  }
+
   String toString() {
-    "[ActFormDef: ${id}/${activityDefinitionId} formpath=${formPath}]"
+    "[ActFormDef(${id}): ${processDefinitionId}/${activityDefinitionId} formpath=${formPath}]"
   }
 }

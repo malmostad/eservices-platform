@@ -26,7 +26,36 @@ class ProcdefService {
   static transactional = true
   // Injection magic, see resources.groovy
   def activitiRepositoryService
+  // Datasource injected to allow direct SQL query
+  javax.sql.DataSource dataSource
   private static final log = LogFactory.getLog(this)
+
+  // Native SQL to query the Activiti process definition table.
+  static final PROCDEF_BY_NAME_Q = 'select name_ as name, key_ as key, ' +
+    'count(version_) as versions ' +
+    'from act_re_procdef group by name_, key_ order by name_'
+
+  /**
+   * Get a list of all process definition names and the number of versions
+   * of each.
+   * A bit of magic for reading an Activiti table directly.
+   * The datasource is injected above.
+   * The CrdProcdef table is not involved.
+   * Return a list of maps. Each map contains the entries,
+   * name: process definition name (String),
+   * key: process definition key (String),
+   * versions: number of versions (Integer).
+   */
+  List allProcessDefinitionsGroupByName() {
+    def db = new groovy.sql.Sql(dataSource)
+    def result = []
+    db.eachRow(PROCDEF_BY_NAME_Q) {tuple ->
+      result << [name: tuple.NAME as String, key: tuple.KEY as String,
+      versions: tuple.VERSIONS as Integer]
+    }
+
+    return result
+  }
 
   /**
    * Get all process definitions from Activiti.
@@ -40,6 +69,22 @@ class ProcdefService {
       createProcdef(entity)
     }
     if (log.debugEnabled) log.debug "allProcessDefinitions >> ${result.size()}"
+    return result
+  }
+
+  /**
+   * Get all process definitions from Activiti.
+   * Return a list of process definitions (List of Procdef)
+   * SIDE EFFECT: Updates crd_procdef
+   */
+  List allProcessDefinitionsByKey(String key) {
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByKey << ${key}"
+    def entityList = activitiRepositoryService.createProcessDefinitionQuery().
+    processDefinitionKey(key).orderByProcessDefinitionVersion().desc().list()
+    def result = entityList.collect {entity ->
+      createProcdef(entity)
+    }
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByKey >> ${result.size()}"
     return result
   }
 
@@ -148,6 +193,8 @@ class ProcdefService {
   /**
    * Find all process definitions from a given deployment id
    * Activity definitions are not populated.
+   * initState may be a process state for initializing the process definition,
+   * or null.
    */
   List findProcessDefinitionsFromDeployment(String id, CrdProcdefState initState) {
     if (log.debugEnabled) log.debug "findProcdefFromDeployment << ${id}"
@@ -157,6 +204,22 @@ class ProcdefService {
       createProcdef(entity, initState)
     }
     if (log.debugEnabled) log.debug "findProcdefFromDeployment >> ${result?.size()}"
+    return result
+  }
+
+  /**
+   * Find all process definitions from a process key (the version-independent
+   * part of the id) and populate their activities.
+   * Returns a list of process definitions ordered by descending version.
+   */
+  List findProcessDefinitionsFromKey(String key) {
+    if (log.debugEnabled) log.debug "findProcdefFromKey << ${key}"
+    def entityList = activitiRepositoryService.createProcessDefinitionQuery().
+    processDefinitionKey(key).orderByProcessDefinitionVersion().desc().list()
+    def result = entityList.collect {entity ->
+      createFullProcdef(entity)
+    }
+    if (log.debugEnabled) log.debug "findProcdefFromKey >> ${result?.size()}"
     return result
   }
 

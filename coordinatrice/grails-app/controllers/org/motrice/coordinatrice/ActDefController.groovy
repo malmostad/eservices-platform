@@ -10,12 +10,14 @@ import org.motrice.coordinatrice.pxd.PxdFormdefVer
  */
 class ActDefController {
 
+  def activityFormdefService
   def formService
   def processEngineService
 
   def show() {
     if (log.debugEnabled) log.debug "SHOW ${params}"
-    def actDefInst = processEngineService.findActivityDefinition(params.id)
+    def id = new ActDefId(params.id)
+    def actDefInst = processEngineService.findActivityDefinition(id)
     if (!actDefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
       redirect(controller: 'procdef', action: 'list')
@@ -31,7 +33,8 @@ class ActDefController {
    */
   def edit() {
     if (log.debugEnabled) log.debug "EDIT ${params}"
-    def actDefInst = processEngineService.findActivityDefinition(params.id)
+    def id = new ActDefId(params.id)
+    def actDefInst = processEngineService.findActivityDefinition(id)
     if (!actDefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
       redirect(controller: 'procdef', action: 'list')
@@ -62,6 +65,7 @@ class ActDefController {
   /**
    * Update the activity connection.
    * The only possibly updated object is MtfActivityFormDefinition
+   * The activity definition id comes as "procdef@actdef" in params.id.
    */
   def update(ActivityConnectionCommand acc) {
     if (log.debugEnabled) {
@@ -69,43 +73,26 @@ class ActDefController {
       log.debug "ACC ${acc}"
     }
     
-    def actDefInst = processEngineService.findActivityDefinition(params.id)
+    def actDefInst = processEngineService.findActivityDefinition(acc.id)
     if (!actDefInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), id])
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'actDef.label', default: 'ActDef'), acc.id])
       redirect(controller: 'procdef', action: 'list')
       return
     } else if (!actDefInst.process.state.editable) {
-      flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), id])
+      flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), acc.id])
       redirect(action: "list")
       return
     }
 
-    // Find the activity connection database object (may be null)
-    def activityFormdef = MtfActivityFormDefinition.get(actDefInst?.activityFormdef?.id)
-    if (!activityFormdef) {
-      activityFormdef =
-	new MtfActivityFormDefinition(processDefinitionId: actDefInst.process.uuid,
-	activityDefinitionId: actDefInst.uuid)
-    }
-
-    def activityConnection = new ActivityConnection(acc, actDefInst)
-    activityFormdef.formPath = activityConnection.toString()
-
-    if (log.debugEnabled) log.debug "update.activityFormdef: ${activityFormdef}"
-
-    if (!activityFormdef.save(flush: true)) {
-      render(view: "edit", id: actDefInst.id)
-      return
-    }
-
-    flash.message = message(code: 'default.updated.message', args: [message(code: 'mtfActivityFormDefinition.label', default: 'ActivityFormDefinition'), activityFormdef.id])
+    activityFormdefService.updateActivityConnection(actDefInst, acc)
     redirect(controller: 'procdef', action: "show", id: actDefInst.process.uuid)
   }
 
 }
 
 class ActivityConnectionCommand { 
-  String id
+  // Data binding will construct an ActDefId from the process@activity string.
+  ActDefId id
   Integer connectionState
   PxdFormdefVer form
 
