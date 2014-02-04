@@ -74,6 +74,22 @@ class ProcdefController {
     response.outputStream << diagramMap.bytes
   }
 
+  def xmlDownload() {
+    if (log.debugEnabled) log.debug "XML ${params}"
+    def uuid = params.id
+    def resourceMap = processEngineService.findProcessResource(uuid)
+    if (!resourceMap.procdef) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
+      redirect(action: "show", id: uuid)
+      return
+    }
+
+    def procdef = resourceMap.procdef
+    response.contentType = resourceMap.ctype
+    response.setHeader('Content-Disposition', "filename=${procdef.resourceName}")
+    response.outputStream << resourceMap.bytes
+  }
+
   /**
    * Edit the start form connection (nothing else may be changed)
    */

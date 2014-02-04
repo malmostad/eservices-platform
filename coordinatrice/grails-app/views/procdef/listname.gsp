@@ -31,6 +31,7 @@
 	    <g:sortableColumn property="category" title="${message(code: 'procdef.category.label', default: 'Categ')}" />
 	    <g:sortableColumn property="deployedTime" title="${message(code: 'procdef.deployedTime.label', default: 'Deployed')}" />
 	    <th></th>
+	    <th></th>
 	  </tr>
 	</thead>
 	<tbody>
@@ -41,7 +42,8 @@
 	      <td><g:pdefstate state="${procdefInst?.state}"/></td>
 	      <td>${fieldValue(bean: procdefInst, field: "category")}</td>
 	      <td>${fieldValue(bean: procdefInst, field: "deployedTimeStr")}</td>
-	      <td><g:link action="diagramDownload" id="${procdefInst.uuid}" target="_blank"><g:img uri="/images/silk/image.png" title="${message(code: 'procdef.diagram.label', default: 'Diagram')}"/></g:link></td>
+	      <td><g:link action="diagramDownload" id="${procdefInst.uuid}"><g:img uri="/images/silk/camera.png" title="${message(code: 'procdef.diagram.label', default: 'Diagram')}"/></g:link></td>
+	      <td><g:link action="xmlDownload" id="${procdefInst.uuid}"><g:img uri="/images/silk/map_edit.png" title="${message(code: 'procdef.xml.label', default: 'BPMN')}"/></g:link></td>
 	    </tr>
 	  </g:each>
 	</tbody>

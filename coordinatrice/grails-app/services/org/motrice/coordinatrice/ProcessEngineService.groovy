@@ -80,9 +80,10 @@ class ProcessEngineService {
   /**
    * Find the resource that defines this process definition.
    * Return a map containing the following entries,
-   * bytes (byte[]) the contents of the resource
-   * procdef (Procdef) the process definition or null if the process definition
+   * bytes (byte[]): the contents of the resource,
+   * procdef (Procdef): the process definition or null if the process definition
    * was not found
+   * ctype (String): content type
    */
   Map findProcessResource(String id) {
     if (log.debugEnabled) log.debug "findProcessResource << ${id}"
@@ -93,6 +94,7 @@ class ProcessEngineService {
       map.procdef = procdefService.createProcdef(entity)
       map.bytes = activitiRepositoryService.
       getResourceAsStream(entity.deploymentId, entity.resourceName).bytes
+      map.ctype = 'text/xml'
     }
     if (log.debugEnabled) log.debug "findProcessResource >> [${map?.procdef}, ${map?.bytes?.size()}]"
     return map
