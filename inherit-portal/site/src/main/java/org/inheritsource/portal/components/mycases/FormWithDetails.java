@@ -31,7 +31,6 @@ import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.Tag;
-import org.inheritsource.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,15 +48,14 @@ public class FormWithDetails extends Form  {
 				"taskUuid"); // TODO change to activityInstanceUuid???
 
 		log.debug("activityInstanceUuid=" + activityInstanceUuid);
-		InheritServiceClient isc = new InheritServiceClient();
 		
 		ProcessInstanceDetails piDetails = null;
 		if (activityInstanceUuid != null && activityInstanceUuid.trim().length() > 0) {
-			piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activityInstanceUuid);
+			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid);
 		} else {
 			ActivityInstanceItem activity = (ActivityInstanceItem)request.getAttribute("activity");
 			if (activity != null && activity.getActivityInstanceUuid()!=null) {
-				piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activity.getActivityInstanceUuid());
+				piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid());
 			}
 		}
 		
@@ -66,7 +64,7 @@ public class FormWithDetails extends Form  {
 		request.setAttribute("processInstanceDetails", piDetails);
 		
 		if (piDetails != null && piDetails.getProcessInstanceUuid() != null) {
-			List<Tag> tags = isc.getTagsByProcessInstance(piDetails.getProcessInstanceUuid());
+			List<Tag> tags = engine.getTagsByProcessInstance(piDetails.getProcessInstanceUuid());
 			request.setAttribute("tags", tags);
 		}
 		

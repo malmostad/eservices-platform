@@ -8,6 +8,18 @@
   <display-name>Inherit portal site</display-name>
   <description>Inherit portal site</description>
 
+  <!--  motrice spring config -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:applicationContext.xml</param-value>
+  </context-param>
+  
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+  
+  <!-- end of spring config -->
+
   <jsp-config>
     <jsp-property-group>
       <url-pattern>*.jsp</url-pattern>

@@ -43,9 +43,11 @@ import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
+import org.inheritsource.taskform.engine.TaskFormService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.ContextLoader;
 
 
 /**
@@ -64,6 +66,8 @@ public class SiteAjaxApplication extends AbstractResource {
 	public static int GENERAL_ERROR = -1000;
 	public static int PERMISSION_DENIED_ERROR = -1001;
 	
+	private TaskFormService engine;
+	
 	/*
 	@RolesAllowed(value = { "everybody" })
 	@GET
@@ -78,6 +82,11 @@ public class SiteAjaxApplication extends AbstractResource {
 	}
 */
 
+	public SiteAjaxApplication () {
+		ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();  
+		engine = (TaskFormService) ctx.getBean("engine");
+	}
+	
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
 	@Path("/addComment") // /{activityInstanceUuid}/{comment}/
@@ -96,8 +105,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		log.debug("userId: " + userId);
 
 		if (userId != null) {
-			InheritServiceClient isc = new InheritServiceClient();
-			result = isc.addComment(activityInstanceUuid, comment, userId);
+			result = engine.addComment(activityInstanceUuid, comment, userId);
 		}
 		else {
 			result = PERMISSION_DENIED_ERROR;
@@ -130,8 +138,8 @@ public class SiteAjaxApplication extends AbstractResource {
 			// user is authenticated
 			
 			// TODO check if user is authorized to assign task???
-			InheritServiceClient isc = new InheritServiceClient();
-			result = isc.assignTask(activityInstanceUuid, action, targetUserId);
+			result = engine.assignTask(activityInstanceUuid, action, targetUserId);
+			
 /*		}
 		else {
 			// TODO respone http error
@@ -161,8 +169,7 @@ public class SiteAjaxApplication extends AbstractResource {
 			// user is authenticated
 			
 			// TODO check if user is authorized to assign task???
-			InheritServiceClient isc = new InheritServiceClient();
-			result = isc.setActivityPriority(activityInstanceUuid, priority);
+			result = engine.setActivityPriority(activityInstanceUuid, priority);
 /*		}
 		else {
 			// TODO respone http error
@@ -191,8 +198,7 @@ public class SiteAjaxApplication extends AbstractResource {
 //		if (userId != null) {
 			// user is authenticated
 			
-			InheritServiceClient isc = new InheritServiceClient();
-			result = isc.getActivityWorkflowInfo(activityInstanceUuid);
+			result = engine.getActivityWorkflowInfo(activityInstanceUuid);
 /*		}
 		else {
 			// TODO respone http error
@@ -211,7 +217,7 @@ public class SiteAjaxApplication extends AbstractResource {
 			@Context HttpServletResponse servletResponse,
 			@FormParam("activityInstanceUuid") String activityInstanceUuid) {
 		
-		ArrayList<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
+		List<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
 		
 		String userId = getUserUuid(servletRequest);
 		
@@ -221,8 +227,7 @@ public class SiteAjaxApplication extends AbstractResource {
 //		if (userId != null) {
 			// user is authenticated
 			
-			InheritServiceClient isc = new InheritServiceClient();
-			result = isc.getCommentFeed(activityInstanceUuid, userId);
+			result = engine.getCommentFeed(activityInstanceUuid, userId);
 /*		}
 		else {
 			// TODO respone http error
@@ -253,8 +258,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		log.debug("userId: " + userId);
 
 //		if (userId != null) {
-			InheritServiceClient isc = new InheritServiceClient();
-			result = isc.addTag(processActivityFormInstanceId, tagTypeId, value, userId);
+			result = engine.addTag(processActivityFormInstanceId, tagTypeId, value, userId);
 	//	}
 //		else {
 	//				result = null;
@@ -282,8 +286,7 @@ public class SiteAjaxApplication extends AbstractResource {
 		log.debug("userId: " + userId);
 
 //		if (userId != null) {
-			InheritServiceClient isc = new InheritServiceClient();
-			result = isc.deleteTag(processInstanceUuid, value, userId);
+			result = engine.deleteTag(processInstanceUuid, value, userId);
 	//	}
 //		else {
 	//				result = false;
