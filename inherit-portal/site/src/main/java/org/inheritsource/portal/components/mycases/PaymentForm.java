@@ -61,12 +61,10 @@ public class PaymentForm extends Form  {
 		String formDocId = null;
 		String startFormDocId = null;
 		
-		InheritServiceClient isc = new InheritServiceClient();
-
 		ProcessInstanceDetails piDetails = null;
 		
 		if (activity != null && activity.getActivityInstanceUuid()!=null) {
-			piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activity.getActivityInstanceUuid());
+			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid());
 			
 			// pay process instance start form is the default behaviour
 			
@@ -94,6 +92,7 @@ public class PaymentForm extends Form  {
 			formDocId = startFormDocId;
 		}
 
+		InheritServiceClient isc = new InheritServiceClient();
 		DocBoxFormData docBoxFormData = isc.getDocBoxFormData(formDocId);
 		
 		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();

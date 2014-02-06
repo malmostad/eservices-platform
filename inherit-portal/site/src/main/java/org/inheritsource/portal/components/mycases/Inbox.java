@@ -23,7 +23,7 @@
  
 package org.inheritsource.portal.components.mycases;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
@@ -31,9 +31,12 @@ import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
+import org.inheritsource.taskform.engine.TaskFormService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.ContextLoader;
 
 public class Inbox extends MyCasesBaseComponent {
 
@@ -54,8 +57,7 @@ public class Inbox extends MyCasesBaseComponent {
         }
         request.setAttribute("document",doc);
 
-        InheritServiceClient isc = new InheritServiceClient();
-        ArrayList<InboxTaskItem> tasks = isc.getInboxByUserId(user.getUuid());
+        List<InboxTaskItem> tasks = engine.getInboxTaskItems(user.getUuid());
         
         // Lookup process and activity labels from JCR channel if they exist
         if (tasks != null) {

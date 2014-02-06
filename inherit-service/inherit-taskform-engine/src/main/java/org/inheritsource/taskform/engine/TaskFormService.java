@@ -66,6 +66,11 @@ public class TaskFormService {
 
 	private static final String MYPROFILEFORMPATH="malmo/profil";
 
+	public static final String ACTION_ASSIGN = "assign";
+	public static final String ACTION_ADD_CANDIDATE = "addcandidate";
+	public static final String ACTION_REMOVE_CANDIDATE = "removecandidate";
+	public static final String ACTION_UNASSIGN = "unassign";
+
 
 	TaskFormDb taskFormDb;
 	ActivitiEngineService activitiEngineService;
@@ -481,11 +486,29 @@ public class TaskFormService {
 		return result;
 	}
 
-	public ActivityWorkflowInfo assignTask(String activityInstanceUuid,
-			String userId) {
+	public ActivityWorkflowInfo assignTask(String activityInstanceUuid, String userId) {
 		ActivityWorkflowInfo result = activitiEngineService.assignTask(
 				activityInstanceUuid, userId);
 		appendTaskFormServiceData(result);
+		return result;
+	}
+
+	public ActivityWorkflowInfo assignTask(String activityInstanceUuid, String action, String userId) {
+		ActivityWorkflowInfo result = null;
+		
+		if (ACTION_ASSIGN.equals(action)) {
+			result = assignTask(activityInstanceUuid, userId);
+		}
+		else if (ACTION_ADD_CANDIDATE.equals(action)) {
+			result = addCandidate(activityInstanceUuid, userId);
+		}
+		else if (ACTION_REMOVE_CANDIDATE.equals(action)) {
+			result = removeCandidate(activityInstanceUuid, userId);
+		}
+		else if (ACTION_UNASSIGN.equals(action)) {
+			result = unassignTask(activityInstanceUuid);
+		}
+		
 		return result;
 	}
 
@@ -840,6 +863,18 @@ public class TaskFormService {
 		}
 	}
 
+	/**
+	 * submit form
+	 * 
+	 * @param docId
+	 * @param userId 
+	 * @param newDocId Replace docId with a new one on submit. 
+	 * @return confirmation form viewUrl. null if submission fails.
+	 */
+	public String submitActivityForm(String docId, String userId) throws Exception {
+		return submitActivityForm(docId, userId, null);
+	}
+			
 	
 	/**
 	 * submit form
