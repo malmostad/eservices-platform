@@ -1380,6 +1380,7 @@ public class ActivitiEngineService {
 			
 			if(parentProcessInstanceId != null) {
 				parentProcessInstanceIdList.add(parentProcessInstanceId);
+				processInstanceId = parentProcessInstanceId;
 			}
 		}
 		
@@ -1406,7 +1407,7 @@ public class ActivitiEngineService {
 
 	public InboxTaskItem getNextInboxTaskItem(String currentProcessInstance, String userId) {
 		List<String> parentProcessInstanceList = null;
-		
+	
 		if (currentProcessInstance == null || userId == null) {
 			return null;
 		}
@@ -1417,14 +1418,14 @@ public class ActivitiEngineService {
 			if(inboxTaskItems == null) {
 				return null;
 			}
-
+			
 			// Check if task belongs to a subprocess of currentProcessInstance, 
 			// if so return that inboxTaskItem
 			for(InboxTaskItem inboxTaskItem : inboxTaskItems) {
 				
 				parentProcessInstanceList = getParentProcessInstanceIdListByProcessInstanceId
 					(inboxTaskItem.getProcessInstanceUuid());
-
+			
 				if(parentProcessInstanceList.contains(currentProcessInstance)) {
 					return(inboxTaskItem);
 				}
@@ -1447,7 +1448,7 @@ public class ActivitiEngineService {
 			log.severe("Unable to getNextInboxTaskItem with currentProcessInstance: " 
 					+ currentProcessInstance + " userId: " + userId + " exception: " + e);
 		}
-			
+		
 		// No inboxTaskItems found at all, returning null
 		return null;		
 	}
