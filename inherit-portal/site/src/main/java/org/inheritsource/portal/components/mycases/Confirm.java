@@ -24,7 +24,6 @@
 package org.inheritsource.portal.components.mycases;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
@@ -33,8 +32,6 @@ import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.portal.beans.EServiceDocument;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
-import org.restlet.resource.ResourceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,15 +79,11 @@ public class Confirm extends MyCasesBaseComponent {
 		request.setAttribute("document", doc);
 		
 
-		
-		
-		InheritServiceClient isc = new InheritServiceClient();
-
 		String viewUrl = null;
 //		viewUrl = isc.submitForm(docId, user.getUuid());
 		try {
-			viewUrl = isc.submitForm(docId, userUuid);
-		} catch (ResourceException re) {
+			viewUrl = engine.submitActivityForm(docId, userUuid);
+		} catch (Exception re) {
 			try {
 				response.sendRedirect("/site/internal-error");
 			} catch (IOException ioe) {
@@ -119,10 +112,10 @@ public class Confirm extends MyCasesBaseComponent {
 				log.error("==============> orbeon confirm form url:" + formUrl);
 
 				try {
-					isc.submitStartForm(eServiceDocument.getFormPath(),
+					engine.submitStartForm(eServiceDocument.getFormPath(),
 							docId,
 							userUuid);
-				} catch (ResourceException re) {
+				} catch (Exception re) {
 					try {
 						response.sendRedirect("/site/internal-error");
 					} catch (IOException ioe) {
@@ -134,7 +127,7 @@ public class Confirm extends MyCasesBaseComponent {
 		
 		InboxTaskItem nextTask = null;
 		if (!UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
-	        nextTask = isc.getNextActivityInstanceItemByDocId(docId, user.getUuid());
+	        nextTask = engine.getNextActivityInstanceItemByDocId(docId, user.getUuid());
 	        appendChannelLabels(request, nextTask);
 		}
 		request.setAttribute("nextTask", nextTask);

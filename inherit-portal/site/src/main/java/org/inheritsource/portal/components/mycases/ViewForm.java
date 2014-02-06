@@ -35,7 +35,6 @@ import org.inheritsource.portal.beans.EServiceDocument;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,18 +53,25 @@ public class ViewForm extends MyCasesBaseComponent {
         
         
         log.debug("user: " + request.getUserPrincipal());
-        InheritServiceClient isc = new InheritServiceClient();
         
         String processActivityFormInstanceId = getPublicRequestParameter(request, "processActivityFormInstanceId");
         
-	ActivityInstanceLogItem logItem = null;
-	if (processActivityFormInstanceId != null && processActivityFormInstanceId.trim().length()>0) {
-	    // specific taskFormDb ProcessActivityFormInstance is requested
-	    ActivityInstanceItem activity = isc.getActivityInstanceItem(processActivityFormInstanceId);
-	    if (activity instanceof ActivityInstanceLogItem) {
-		logItem = (ActivityInstanceLogItem) activity;
-	    }
-	}
+		ActivityInstanceLogItem logItem = null;
+		if (processActivityFormInstanceId != null && processActivityFormInstanceId.trim().length()>0) {
+		    // specific taskFormDb ProcessActivityFormInstance is requested
+			Long id = null;
+			try {
+				id = Long.decode(processActivityFormInstanceId);
+				ActivityInstanceItem activity = engine.getActivityInstanceItem(id);
+			    if (activity instanceof ActivityInstanceLogItem) {
+			    	logItem = (ActivityInstanceLogItem) activity;
+			    }
+			}
+			catch (NumberFormatException nfe) {
+				log.info("processActivityFormInstanceId=[" + processActivityFormInstanceId + "] is not a valid id");
+			}		
+		    
+		}
         
         appendChannelLabels(request, logItem);
         

@@ -28,7 +28,6 @@ import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,12 +46,12 @@ public class ProcessInstanceDetail extends MyCasesBaseComponent {
 		String activityInstanceUuid = getPublicRequestParameter(request,
 				"activityInstanceUuid");
 
-		InheritServiceClient isc = new InheritServiceClient();
+		
 		ProcessInstanceDetails piDetails = null;
 		if (processInstanceUuid != null && processInstanceUuid.trim().length() > 0) {
-			piDetails = isc.getProcessInstanceDetailByUuid(processInstanceUuid);
+			piDetails = engine.getProcessInstanceDetails(processInstanceUuid);
 		} else if (activityInstanceUuid != null && activityInstanceUuid.trim().length() > 0) {
-			piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activityInstanceUuid);
+			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid);
 		}
 		
 		appendChannelLabels(request, piDetails);

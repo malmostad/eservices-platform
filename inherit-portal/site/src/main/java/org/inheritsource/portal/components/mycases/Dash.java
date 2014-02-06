@@ -30,7 +30,6 @@ import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,9 +53,8 @@ public class Dash extends MyCasesBaseComponent {
         }
         request.setAttribute("document",doc);
 
-        InheritServiceClient isc = new InheritServiceClient();
         
-        DashOpenActivities dash = isc.getDashOpenActivitiesByUserId(user.getUuid(), 7);
+        DashOpenActivities dash = engine.getDashOpenActivitiesByUserId(user.getUuid(), 7);
                 
         request.setAttribute("dash", dash);
         

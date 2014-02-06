@@ -39,8 +39,11 @@ import org.inheritsource.service.common.domain.ProcessInstanceListItem;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
+import org.inheritsource.taskform.engine.TaskFormService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.ContextLoader;
 
 
 		
@@ -48,10 +51,25 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 
 	public static final Logger log = LoggerFactory.getLogger(MyCasesBaseComponent.class);
 
+	protected TaskFormService engine;
+	
+	public MyCasesBaseComponent () {
+		ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();  
+		engine = (TaskFormService) ctx.getBean("engine");
+	}
+		
 	public UserInfo getUserName(final HstRequest request) {
 		return ServletUserNameUtil.getUserName(request);
 	}
 	
+	public TaskFormService getEngine() {
+		return engine;
+	}
+
+	public void setEngine(TaskFormService engine) {
+		this.engine = engine;
+	}
+
 	/**
 	 * Look up activity label from hippo content repository. 
 	 * The channel's mount point i.e. canonicalContentPath is used as base path

@@ -34,7 +34,6 @@ import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.portal.beans.EServiceDocument;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +52,6 @@ public class Form extends MyCasesBaseComponent {
         
         
         log.debug("user: " + request.getUserPrincipal());
-        InheritServiceClient isc = new InheritServiceClient();
         
         String processActivityFormInstanceId = getPublicRequestParameter(request, "processActivityFormInstanceId");
         String taskUuid = getPublicRequestParameter(request, "taskUuid");
@@ -70,12 +68,20 @@ public class Form extends MyCasesBaseComponent {
         ActivityInstanceItem activity = null;
         if (taskUuid != null && taskUuid.trim().length()>0) {
         	// specific BPMN engine activity instance is requested
-        	activity = isc.getActivityInstanceItem(taskUuid, user.getUuid());
+        	activity = engine.getActivityInstanceItem(taskUuid, user.getUuid());
         } 
         else {
         	if (processActivityFormInstanceId != null && processActivityFormInstanceId.trim().length()>0) {
         		// specific taskFormDb ProcessActivityFormInstance is requested
-        		activity = isc.getActivityInstanceItem(processActivityFormInstanceId);
+        		Long id = null;
+        		try {
+        			id = Long.decode(processActivityFormInstanceId);
+        			activity = engine.getActivityInstanceItem(id);
+        		}
+        		catch (NumberFormatException nfe) {
+        			log.info("processActivityFormInstanceId=[" + processActivityFormInstanceId + "] is not a valid id");
+        		}		
+        		
         	}
         	else if (doc instanceof EServiceDocument) {
 	        	// no activity is specified. Use content path to find a start form.
@@ -85,7 +91,11 @@ public class Form extends MyCasesBaseComponent {
 	        	
 	        	String userId = (user == null ? getTransientUserId(request) : user.getUuid());
 	        	
-	        	activity = isc.getStartActivityInstanceItem(eServiceDocument.getFormPath(), userId);
+	        	try {
+					activity = engine.getStartActivityInstanceItem(eServiceDocument.getFormPath(), userId);
+				} catch (Exception e) {
+					log.info("formPath=[" + eServiceDocument.getFormPath() + "] userId=[" + userId + "] doeas not identify an activity");
+        		}	
 	        }
         }
         
