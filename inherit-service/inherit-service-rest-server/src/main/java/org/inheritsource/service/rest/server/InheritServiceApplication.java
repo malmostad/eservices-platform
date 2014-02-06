@@ -59,6 +59,8 @@ public class InheritServiceApplication extends Application {
 		router.attach("/getNextActivityInstanceItemByDocId/{docId}/{userId}", NextActivityInstanceItemByDocId.class);		
 		router.attach("/getActivityWorkflowInfo/{activityInstanceUuid}", GetActivityWorkflowInfo.class); 
 		router.attach("/inboxByUserId/{userid}", InboxByUserId.class);
+		router.attach("/getUserEmailAddress/{userid}", GetUserEmailAddress.class);
+
 		router.attach("/submitForm/{docId}/{userId}/{newDocId}", SubmitForm.class);
 		router.attach("/submitForm/{docId}/{userId}", SubmitForm.class);
 		router.attach("/submitStartForm/{formPath}/{docId}/{userId}", SubmitStartForm.class);

@@ -33,6 +33,8 @@ import java.util.TreeSet;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import javax.naming.NamingException;
+
 import org.inheritsource.bonita.client.BonitaEngineServiceImpl;
 import org.inheritsource.service.common.domain.ActivityDefinitionInfo;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
@@ -53,11 +55,13 @@ import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.orbeon.OrbeonService;
+import org.inheritsource.taskform.engine.directory.ActorSelectorDirUtils;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inheritsource.taskform.engine.persistence.entity.ProcessActivityFormInstance;
 import org.inheritsource.taskform.engine.persistence.entity.StartFormDefinition;
 import org.inheritsource.taskform.engine.persistence.entity.UserEntity;
+import  org.inheritsource.taskform.engine.directory.UserDirectoryService;
 
 public class TaskFormService {
 
@@ -71,6 +75,8 @@ public class TaskFormService {
 	BonitaEngineServiceImpl bonitaClient;
 	ActorSelectorDirUtils aSelectorDirUtils;
     OrbeonService orbeonService;
+    UserDirectoryService userDirectoryService;
+    
 
 	public TaskFormService() {
 		taskFormDb = new TaskFormDb();
@@ -80,6 +86,7 @@ public class TaskFormService {
 		aSelectorDirUtils = new ActorSelectorDirUtils("localhost", "1389",
 				"ou=IDMGroups,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"); // Base
 																				// DN
+		userDirectoryService = new UserDirectoryService();
 	}
 
 	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
@@ -1027,6 +1034,10 @@ public class TaskFormService {
 		return result;
 	}
 	
+	public String getUserEmailAddress(String userid) {
+		return userDirectoryService.getEmailAddress(userid);
+	}
+
 	private String searchForBonitaUser(String searchForUserId) {
 		String searchForBonitaUser = searchForUserId;
 		

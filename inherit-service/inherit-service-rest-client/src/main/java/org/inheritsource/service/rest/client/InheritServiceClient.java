@@ -510,6 +510,19 @@ public class InheritServiceClient {
 
 		return result;
 	}
+	
+	public String getUserEmailAddress(String userid) {
+		String result = null;
+		String uri;
+		
+		uri = serverBaseUrl + "getUserEmailAddress/" 
+				+ ParameterEncoder.encode(userid) + "?media=xml";
+		log.severe("getUserEmailAddress uri: " + uri);
+		result = (String) call(uri);
+		return result;
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	public PagedProcessInstanceSearchResult searchProcessInstancesByTagValue(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) {
 		PagedProcessInstanceSearchResult result = null;
