@@ -8,6 +8,7 @@ import org.activiti.bpmn.model.SendTask
 import org.activiti.bpmn.model.ServiceTask
 import org.activiti.bpmn.model.Task
 import org.activiti.bpmn.model.UserTask
+import org.activiti.engine.ActivitiException
 import org.activiti.engine.repository.Deployment
 import org.activiti.engine.repository.DeploymentBuilder
 import org.activiti.engine.repository.ProcessDefinition
@@ -42,6 +43,8 @@ class ProcessEngineService {
 
   /**
    * Deploy from a resource map obtained from findProcessResource
+   * Throws org.activiti.engine.ActivitiException on conflicts in the BPMN
+   * xml definition.
    */
   Deployment deployFromResourceMap(Map resourceMap) {
     if (log.debugEnabled) log.debug "deployFromProcdef << ${resourceMap?.procdef}"
@@ -120,37 +123,62 @@ class ProcessEngineService {
    * Returns the duplicated process definitions (List of Procdef)
    * The duplicated process definitions are in state Edit.
    */
-  List duplicateProcdef(String id) {
-    if (log.debugEnabled) log.debug "duplicateProcdef << ${id}"
+  List createNewProcdefVersionByDuplication(String id) {
+    if (log.debugEnabled) log.debug "procdefVersionByDuplication << ${id}"
     def resourceMap = findProcessResource(id)
     def procdef = resourceMap.procdef
-    if (!procdef) throw new ServiceException("Process definition ${id} not found",
-					     'default.not.found.message', [id])
+    if (!resourceMap.procdef) throw new ServiceException("Process definition ${id} not found",
+							 'default.not.found.message', [id])
+    def procdefList = null
+    procdefList = deployAndReconnect(resourceMap)
+    if (log.debugEnabled) log.debug "procdefVersionByDuplication >> ${procdefList}"
+    return procdefList
+  }
 
-    def deployment = deployFromResourceMap(resourceMap)
+  private List deployAndReconnect(Map resourceMap) {
+    def deployment = null
+    try {
+      deployment = deployFromResourceMap(resourceMap)
+    } catch (ActivitiException exc) {
+      def msg = exc.message
+      throw new ServiceException(msg, 'procdef.xml.conflict', [msg])
+    }
+
     def state = CrdProcdefState.get(CrdProcdefState.STATE_EDIT_ID)
     def procdefList = procdefService.findProcessDefinitionsFromDeployment(deployment.id, state)
     if (!procdefList) throw new ServiceException("Duplicated process definition not found",
 						 'procdef.deployed.not.found')
     
     // Copy activity form connections from previous version
-    procdefList.each {reconnectActivityForms(it)}
-    if (log.debugEnabled) log.debug "duplicateProcdef >> ${procdefList}"
+    procdefList.each {reconnectActivityForms(resourceMap.procdef, it)}
     return procdefList
   }
 
   /**
    * Make a best effort to connect activities to forms for a new process version.
    * Find the previous version and copy the connections.
+   * origProcdef should be the original process definition that was duplicated,
+   * procdef should be the newly deployed copy.
    */
-  private reconnectActivityForms(Procdef procdef) {
+  private reconnectActivityForms(Procdef origProcdef, Procdef procdef) {
     def procdefList = procdefService.findProcessDefinitionsFromKey(procdef.key)
+    if (log.debugEnabled) log.debug "reconnectActivityForms >> ${procdefList.size()}"
     // The two first elements should be the new and previous versions.
     // No guarantee though.
     if (procdefList.size() >= 2) {
-      activityFormdefService.connectActivityForms(procdefList[1], procdefList[0])
+      activityFormdefService.connectActivityForms(origProcdef, procdefList[1], procdefList[0])
     }
-    if (log.debugEnabled) log.debug "reconnectActivityForms >> ${procdefList}"
+  }
+
+  /**
+   * Update a process definition by uploading a new BPMN model.
+   */
+  List createNewProcdefVersionByUpdate(Procdef origProc, InputStream is) {
+    if (log.debugEnabled) log.debug "procdefVersionByUpdate << ${origProc?.uuid}"
+    def resourceMap = [procdef: origProc, bytes: is.bytes, ctype: 'text/xml']
+    def procdefList = deployAndReconnect(resourceMap)
+    if (log.debugEnabled) log.debug "procdefVersionByUpdate >> ${procdefList}"
+    return procdefList
   }
 
 }

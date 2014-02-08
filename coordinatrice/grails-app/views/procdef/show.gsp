@@ -11,6 +11,10 @@
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
+	<div class="buttons"><g:uploadForm action="xmlUpload">
+	    <g:hiddenField name="id" value="${procdefInst?.uuid}" />
+	    <input class="upload" type="submit" value="${message(code: 'procdef.upload.bpmn.label')}"/><input type="file" name="bpmnDef"/>
+	  </g:uploadForm></div>
       </ul>
     </div>
     <div id="show-procdef" class="content scaffold-show" role="main">
@@ -50,9 +54,20 @@
 	<g:if test="${procdefInst?.deployment}">
 	  <li class="fieldcontain">
 	    <span id="deployedTime-label" class="property-label"><g:message code="procdef.deployedTime.label" default="Deployed" /></span>
-	    <span class="property-value" aria-labelledby="deployedTime-label"><g:fieldValue bean="${procdefInst}" field="deployedTimeStr"/></span>
+	    <span class="property-value" aria-labelledby="deployedTime-label">
+	      <g:link action="listdepl" id="${procdefInst?.deployment?.id}">
+	      <g:fieldValue bean="${procdefInst}" field="deployedTimeStr"/>
+	      </g:link>
+	    </span>
 	  </li>
 	</g:if>
+	<li class="fieldcontain">
+	  <span id="category-label" class="property-label"><g:message code="procdef.downloads.label" default="Downloads"/></span>
+	  <span class="property-value" aria-labelledby="category-label">
+	    <g:link action="diagramDownload" id="${procdefInst.uuid}"><g:img uri="/images/silk/camera.png" title="${message(code: 'procdef.diagram.label', default: 'Diagram')}"/></g:link>&nbsp;&nbsp;
+	    <g:link action="xmlDownload" id="${procdefInst.uuid}"><g:img uri="/images/silk/map_edit.png" title="${message(code: 'procdef.xml.label', default: 'BPMN')}"/></g:link>
+	  </span>
+	</li>
 
 	<li class="fieldcontain">
 	  <span class="property-label"><g:message code="startform.selection.label"/></span>

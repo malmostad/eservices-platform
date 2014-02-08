@@ -18,23 +18,17 @@
       </ul>
     </div>
     <div id="list-procdef" class="content scaffold-list" role="main">
-      <g:if test="${deploymentId}">
-	<g:set var="deplId" value="${deploymentId}"/>
-	<h1><g:message code="procdef.deployment.list.label" args="[deplId]" /></h1>
-      </g:if>
-      <g:else>
-	<h1><g:message code="default.list.label" args="[entityName]" /></h1>
-      </g:else>
+      <h1><g:message code="procdef.delete.confirm.header"/></h1>
       <g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
       <g:render template="procdeftable"/>
-      <div class="pagination">&nbsp;
-	<g:paginate id="${procdefKey}" total="${procdefInstTotal}" />
-	<g:link class="menu-left delete" action="listdeletion" id="${procdefKey}" params="[max:params.max,offset:params.offset]">
-	  <g:message code="procdef.deletion.label" default="Deletion"/>
-	</g:link>
-      </div>
+      <g:form>
+	<fieldset class="buttons">
+	  <g:hiddenField name="key" value="${deletionKey}" />
+	  <g:actionSubmit class="delete" action="deleteall" value="${message(code: 'procdef.delete.all.button.label', default: 'Delete')}" onclick="return confirm('${message(code: 'procdef.delete.confirm.message', default: 'Are you sure?')}');" />
+	</fieldset>
+      </g:form>
     </div>
   </body>
 </html>

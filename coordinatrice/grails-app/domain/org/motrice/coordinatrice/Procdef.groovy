@@ -60,7 +60,8 @@ class Procdef implements Comparable {
   static mapWith = 'none'
   static belongsTo = [persisted: CrdProcdef]
   static hasMany = [activities: ActDef]
-  static transients = ['deployedTime', 'deployedTimeStr', 'deploymentId', 'display', 'userActivities', 'startForms']
+  static transients = ['deletable', 'deployedTime', 'deployedTimeStr', 'deploymentId',
+		       'display', 'userActivities', 'startForms']
   static constraints = {
     uuid maxSize: 64
     key nullable: false, maxSize: 255
@@ -80,6 +81,10 @@ class Procdef implements Comparable {
     activities.find {activity ->
       activity.uuid == uuid
     }
+  }
+
+  boolean isDeletable() {
+    state.id == CrdProcdefState.STATE_EDIT_ID
   }
 
   /**

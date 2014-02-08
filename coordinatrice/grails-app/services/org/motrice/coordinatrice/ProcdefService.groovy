@@ -77,6 +77,22 @@ class ProcdefService {
    * Return a list of process definitions (List of Procdef)
    * SIDE EFFECT: Updates crd_procdef
    */
+  List allProcessDefinitionsByDeployment(String key) {
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByDeployment << ${key}"
+    def entityList = activitiRepositoryService.createProcessDefinitionQuery().
+    deploymentId(key).orderByProcessDefinitionName().asc().list()
+    def result = entityList.collect {entity ->
+      createProcdef(entity)
+    }
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByDeployment >> ${result.size()}"
+    return result
+  }
+
+  /**
+   * Get all process definitions from Activiti.
+   * Return a list of process definitions (List of Procdef)
+   * SIDE EFFECT: Updates crd_procdef
+   */
   List allProcessDefinitionsByKey(String key) {
     if (log.debugEnabled) log.debug "allProcessDefinitionsByKey << ${key}"
     def entityList = activitiRepositoryService.createProcessDefinitionQuery().
@@ -85,6 +101,57 @@ class ProcdefService {
       createProcdef(entity)
     }
     if (log.debugEnabled) log.debug "allProcessDefinitionsByKey >> ${result.size()}"
+    return result
+  }
+
+  /**
+   * Beginning from a list of process definitions, find all other process
+   * definitions from the same deployments.
+   * Return a list containing all these process definitions sorted in
+   * backward deployment date order (latest first), List of Procdef.
+   */
+  List allProcessDefinitionsByDeployment(List procdefList) {
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByDeployment << ${procdefList?.size()}"
+    def procSet = new TreeSet(new ProcdefByDateAndIdComparator())
+    procdefList.each {procdefId ->
+      def procdef = findProcessDefinition(procdefId)
+      if (!procdef) {
+	throw new ServiceException("Proc def ${procdefId} not found",
+				   'procdef.not.found', [procdefId])
+      }
+      // Process definitions in this deployment
+      def deplList = findProcessDefinitionsFromDeployment(procdef.deploymentId)
+      deplList.each {deplProc ->
+	if (!deplProc.deletable) {
+	  throw new ServiceException("Proc def ${deplProc} is not deletable",
+				     'procdef.deletion.not.deletable', [deplProc.uuid])
+	}
+
+	procSet.add(deplProc)
+      }
+    }
+
+    def result = new ArrayList(procSet)
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByDeployment >> ${result?.size()}"
+    return result
+  }
+
+  /**
+   * Get all process definitions from Activiti.
+   * Return a list of process definitions (List of Procdef)
+   * SIDE EFFECT: Updates crd_procdef
+   */
+  List allProcdefsByKeyAndState(String key, Long stateId) {
+    if (log.debugEnabled) log.debug "allProcdefsByKeyAndState << ${key}, ${stateId}"
+    def entityList = activitiRepositoryService.createProcessDefinitionQuery().
+    processDefinitionKey(key).orderByProcessDefinitionVersion().desc().list()
+
+    def result = entityList.inject([]) {list, entity ->
+      def pd = createProcdef(entity)
+      return (pd.state.id == stateId)? list + pd : list
+    }
+
+    if (log.debugEnabled) log.debug "allProcdefsByKeyAndState >> ${result.size()}"
     return result
   }
 
@@ -113,7 +180,8 @@ class ProcdefService {
 	state = CrdProcdefState.get(entity.suspended?
 	CrdProcdefState.STATE_SUSPENDED_ID : CrdProcdefState.STATE_ACTIVE_ID)
       }
-      persisted = new CrdProcdef(actid: entity.id, rev: entity.version, state: state)
+      persisted = new CrdProcdef(actid: entity.id, actver: entity.version,
+      actdepl: entity.deploymentId, state: state)
       if (!persisted.save()) log.error "CrdProcdef insert: ${persisted.errors.allErrors.join(',')}"
     }
 
@@ -170,6 +238,65 @@ class ProcdefService {
   }
 
   /**
+   * Delete deployments.
+   * deploymentIdList must be a list of deployment ids.
+   * Return the number of deployments deleted.
+   */
+  Integer deleteDeployments(List deploymentIdList) {
+    if (log.debugEnabled) log.debug "deleteDeployments << ${deploymentIdList}"
+    // Check that all process definitions are deletable
+    // deployments is a List of Map
+    def deployments = deploymentIdList.collect {checkDeploymentDeletable(it)}
+    def deleteCount =  deployments.inject(0) {count, deploymentMap ->
+      doDeleteDeployment(deploymentMap)
+    }
+    if (log.debugEnabled) log.debug "deleteDeployments >> ${deleteCount}"
+    return deleteCount
+  }
+
+  /**
+   * Check if a deployment is deletable.
+   * Throw a ServiceException otherwise (causing transaction rollback).
+   * Return a map with the following entries:
+   * depl: deployment id
+   * procdefs: process definitions (List of Procdef)
+   */
+  private Map checkDeploymentDeletable(String id) {
+    def procdefList = findProcessDefinitionsFromDeployment(id)
+    procdefList.each {procdef ->
+      if (!procdef.deletable) {
+	throw new ServiceException("Proc def ${procdef} is not deletable",
+				   'procdef.deletion.not.deletable', [procdef.uuid])
+      }
+    }
+
+    return [depl: id, procdefs: procdefList]
+  }
+
+  /**
+   * Delete a deployment.
+   * deploymentMap must be a map as returned by checkDeploymentDeletable.
+   * Return 1 if successful, throw ServiceException otherwise.
+   */
+  private int doDeleteDeployment(Map deploymentMap) {
+    // Delete activity form connections
+    deploymentMap.procdefs.each {doDeleteFormConnections(it)}
+    // Delete from the cache
+    def cacheList = CrdProcdef.findAllByActdepl(deploymentMap.depl)
+    cacheList.each {it.delete()}
+    // Delete from Activiti
+    activitiRepositoryService.deleteDeployment(deploymentMap.depl)
+    return 1
+  }
+
+  private doDeleteFormConnections(Procdef procdef) {
+    def connections = MtfActivityFormDefinition.findAllByProcessDefinitionId(procdef.uuid)
+    connections.each {it.delete()}
+    connections = MtfStartFormDefinition.findAllByProcessDefinitionId(procdef.uuid)
+    connections.each {it.delete()}
+  }
+
+  /**
    * Find the process definition with the given id.
    * Populate with activities.
    * Return the process definition or null if not found.
@@ -205,6 +332,10 @@ class ProcdefService {
     }
     if (log.debugEnabled) log.debug "findProcdefFromDeployment >> ${result?.size()}"
     return result
+  }
+
+  List findProcessDefinitionsFromDeployment(String id) {
+    findProcessDefinitionsFromDeployment(id, null)
   }
 
   /**

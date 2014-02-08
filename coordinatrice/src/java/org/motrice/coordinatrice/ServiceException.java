@@ -13,6 +13,10 @@ public class ServiceException extends RuntimeException {
     // Args for the localized message
     private List<Object> args;
 
+    public ServiceException(String message) {
+	super(message);
+    }
+
     public ServiceException(String message, String key) {
 	super(message);
 	this.key = key;

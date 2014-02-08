@@ -15,15 +15,19 @@ class ActivityFormdefService {
 
   /**
    * Connect activities using a process definition as template.
-   * srcProc must be a process definition with activity connections
-   * tgtProc must be the target process definition
+   * origProc may be the original process definition that was duplicated, or null,
+   * srcProc must be a process definition with activity connections,
+   * tgtProc must be the target process definition,
    * The process definitions must have their activities.
    */
-  def connectActivityForms(Procdef srcProc, Procdef tgtProc) {
+  def connectActivityForms(Procdef origProc, Procdef srcProc, Procdef tgtProc) {
     if (log.debugEnabled) log.debug "connectActivityForms << ${srcProc}, ${tgtProc}"
+    // Decide which process definition to copy from.
+    // Pick the original unless it has a different key.
+    def oldProc = (origProc?.key == tgtProc.key)? origProc : srcProc
     // Create a map for convenience
     def oldActMap = [:]
-    srcProc.activities.each {oldActMap[it.name] = it}
+    oldProc.activities.each {oldActMap[it.name] = it}
     def replaceCount = 0
     tgtProc.activities.each {act ->
       def oldAct = oldActMap[act.name]

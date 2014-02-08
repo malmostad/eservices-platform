@@ -7,19 +7,27 @@ class CrdProcdef {
   // The Activiti identity of the process definition
   String actid
 
-  // Process definition version (starting on 1)
-  Integer rev
+  // Activiti process definition version (starting on 1)
+  Integer actver
+
+  // Activiti deployment id
+  String actdepl
 
   // The Motrice state of the process definition
   CrdProcdefState state
 
+  static mapping = {
+    id name: 'actid', column: 'actid', generator: 'assigned'
+    cache usage: 'read-write'
+  }
   static constraints = {
     actid blank: false, maxSize: 64, unique: true
-    rev min: 1
+    actver min: 1
+    actdepl blank: false, maxSize: 64
   }
 
   String toString() {
-    "${actid}[v${rev}]${state}"
+    "${actid}[v${actver}]${state}"
   }
 
 }

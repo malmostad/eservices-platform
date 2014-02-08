@@ -13,7 +13,10 @@ class ProcdefController {
   def procdefService
   def processEngineService
 
-  static allowedMethods = [update: 'POST']
+  static allowedMethods = [update: 'POST', delete: 'POST']
+
+  private static final DELETION_PREFIX = 'deletion@'
+  private static final DELETION_PREFIX_LEN = DELETION_PREFIX.length()
 
   def index() {
     redirect(action: "list", params: params)
@@ -22,7 +25,7 @@ class ProcdefController {
   // List process definition names without version
   def list(Integer max) {
     if (log.debugEnabled) log.debug "LIST ${params}"
-    params.max = Math.min(max ?: 20, 100)
+    params.max = Math.min(max ?: 15, 100)
     params.offset = params.offset as Integer ?: 0
     // Sorting is disabled
     def procdefList = procdefService.allProcessDefinitionsGroupByName()
@@ -32,10 +35,42 @@ class ProcdefController {
     [procdefList: procdefView, procdefTotal: length]
   }
 
+  // List process definitions from a deployment
+  def listdepl(Integer max) {
+    if (log.debugEnabled) log.debug "LISTDEPL ${params}"
+    def key = params.id
+    params.max = Math.min(max ?: 15, 100)
+    params.offset = params.offset as Integer ?: 0
+    def procdefInstList = procdefService.allProcessDefinitionsByDeployment(key)
+    def length = procdefInstList.size()
+    def maxIndex = Math.min(params.offset + params.max, length)
+    def procdefView = procdefInstList.subList(params.offset, maxIndex)
+    render(view: 'listname',
+    model: [procdefInstList: procdefView, procdefInstTotal: length, procdefKey: key,
+	   deploymentId: key])
+  }
+
+  // List process definitions, show delete checkboxes
+  def listdeletion(Integer max) {
+    if (log.debugEnabled) log.debug "LISTDELETION ${params}"
+    def key = params.id
+    params.max = Math.min(max ?: 15, 100)
+    params.offset = params.offset as Integer ?: 0
+    // TODO: This might not be the exact condition for deletion
+    def procdefInstList = procdefService.allProcdefsByKeyAndState(key, CrdProcdefState.STATE_EDIT_ID)
+    def length = procdefInstList.size()
+    def maxIndex = Math.min(params.offset + params.max, length)
+    def minIndex = params.offset
+    def procdefView = (minIndex > maxIndex)? [] : procdefInstList.subList(params.offset, maxIndex)
+    [procdefInstList: procdefView, procdefInstTotal: length, procdefKey: key,
+    delprefix: DELETION_PREFIX]
+  }
+
+  // List process definitions with the same key
   def listname(Integer max) {
     if (log.debugEnabled) log.debug "LISTNAME ${params}"
     def key = params.id
-    params.max = Math.min(max ?: 20, 100)
+    params.max = Math.min(max ?: 15, 100)
     params.offset = params.offset as Integer ?: 0
     def procdefInstList = procdefService.allProcessDefinitionsByKey(key)
     def length = procdefInstList.size()
@@ -88,6 +123,40 @@ class ProcdefController {
     response.contentType = resourceMap.ctype
     response.setHeader('Content-Disposition', "filename=${procdef.resourceName}")
     response.outputStream << resourceMap.bytes
+  }
+
+  def xmlUpload() {
+    if (log.debugEnabled) log.debug "XMLUPLOAD ${params}"
+    def uuid = params.id
+    def procdefInst = procdefService.findProcessDefinition(uuid)
+    if (!procdefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
+      redirect(action: "list")
+      return
+    } else if (!procdefInst.state.editable) {
+      flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
+      redirect(action: "show", id: uuid)
+      return
+    }
+
+    def procList = []
+    def file = request.getFile('bpmnDef')
+    if (file.empty) {
+      flash.message = message(code: 'procdef.upload.bpmn.empty')
+    } else {
+      try {
+	// If you want to save the file there is the transferTo(File) method
+	procList = processEngineService.createNewProcdefVersionByUpdate(procdefInst, file.inputStream)
+      } catch (ServiceException exc) {
+	handleServiceException('xmlUpload', exc)
+	redirect(action: "list")
+	return
+      }
+    }
+
+    flash.message = message(code: 'procdef.newversion.count', args: [procList.size()])
+    render(view: 'listname', model: [procdefInstList: procList,
+	   procdefInstTotal: procList.size(), procdefKey: 'unknown'])
   }
 
   /**
@@ -172,18 +241,16 @@ class ProcdefController {
     def procdefList = null
 
     try {
-      procdefList = processEngineService.duplicateProcdef(uuid)
+      procdefList = processEngineService.createNewProcdefVersionByDuplication(uuid)
     } catch (ServiceException exc) {
-      log.error "newversion ${exc?.message}"
-      if (exc.key) {
-	flash.message = message(code: exc.key, args: exc.args ?: [])
-	redirect(action: "list")
-	return
-      }
+      handleServiceException('newversion', exc)
+      redirect(action: "list")
+      return
     }
 
     flash.message = message(code: 'procdef.newversion.count', args: [procdefList.size()])
-    redirect(action: 'list')
+    render(view: 'listname', model: [procdefInstList: procdefList,
+	   procdefInstTotal: procdefList.size(), procdefKey: 'unknown'])
   }
 
   /**
@@ -204,6 +271,104 @@ class ProcdefController {
 
     def selection = formService.startFormSelection()
     [procdefInst: procdefInst, formList: selection]
+  }
+
+  /**
+   * Confirm deletion of a number of process definitions
+   */
+  def deletionconfirm() {
+    if (log.debugEnabled) log.debug "DELETIONCONFIRM ${params}"
+    // Extract process definition ids the user marked for deletion (List of String)
+    def deletionIdList = params.inject([]) {list, entry ->
+      if (entry.key.startsWith(DELETION_PREFIX) && entry.value == 'on') {
+	list << entry.key.substring(DELETION_PREFIX_LEN)
+      }
+      return list
+    }
+
+    // Get all process definitions from all deployments involved
+    def procdefList = null
+    try {
+      procdefList = procdefService.allProcessDefinitionsByDeployment(deletionIdList)
+    } catch (ServiceException exc) {
+      handleServiceException('deletionconfirm', exc)
+      redirect(action: "list")
+      return
+    }
+
+    if (procdefList.isEmpty()) {
+      flash.message = message(code: 'procdef.delete.nothing')
+      redirect(action: "list")
+      return
+    } 
+
+    def deploymentSet = new TreeSet()
+    procdefList.each {deploymentSet << it.deploymentId}
+    def deploymentIdStr = deploymentSet.join('|').bytes.encodeBase64()
+    [procdefInstList: procdefList, deletionKey: deploymentIdStr]
+  }
+
+  /**
+   * Delete a number of deployments.
+   * The parameter 'key' contains a Base64-encoded list of deployment ids
+   * separated by vertical bar.
+   */
+  def deleteall() {
+    if (log.debugEnabled) log.debug "DELETEALL ${params}"
+    def deploymentIdStr = new String(params?.key?.decodeBase64())
+    def deploymentIdList = deploymentIdStr?.split('\\|')?.toList()
+    def deleteCount = 0
+    try {
+      deleteCount = procdefService.deleteDeployments(deploymentIdList)
+    } catch (ServiceException exc) {
+      handleServiceException('deletionconfirm', exc)
+    }
+
+    flash.message = message(code: 'procdef.deployments.deleted.message', args: [deleteCount])
+    redirect(action: "list")
+  }
+
+  /**
+   * Delete a number of process versions.
+   */
+  def delete() {
+    if (log.debugEnabled) log.debug "DELETE ${params}"
+    def deletionIdList = params.inject([]) {list, entry ->
+      if (entry.key.startsWith(DELETION_PREFIX) && entry.value == 'on') {
+	list << entry.key.substring(DELETION_PREFIX_LEN)
+      }
+
+      return list
+    }
+
+    // Get and check the process definitions
+    def procdefList = deletionIdList.inject([]) {list, id ->
+      def procdef = procdefService.findProcessDefinition(id)
+      if (procdef.deletable) list << procdef
+      return list
+    }
+
+    if (procdefList.isEmpty()) {
+      flash.message = message(code: 'procdef.delete.nothing')
+    } else {
+      def deleteCount = procdefList.inject(0) {count, procdef ->
+	procdefService.deleteProcessDefinition(procdef)
+	return count + 1
+      }
+      flash.message = message(code: 'procdef.deleted.count', args: [deleteCount])
+    }
+
+    def selection = formService.startFormSelection()
+    [procdefInst: procdefInst, formList: selection]
+  }
+
+  private handleServiceException(String op, ServiceException exc) {
+    log.error "${op} ${exc?.message}"
+    if (exc.key) {
+      flash.message = message(code: exc.key, args: exc.args ?: [])
+    } else {
+      flash.message = exc.message
+    }
   }
 
 }
