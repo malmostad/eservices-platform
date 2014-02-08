@@ -31,9 +31,16 @@
       <g:render template="procdeftable"/>
       <div class="pagination">&nbsp;
 	<g:paginate id="${procdefKey}" total="${procdefInstTotal}" />
+	<g:if test="${deleteEnabled}">
+	  <g:link class="menu-left delete" action="deletionconfirm" id="${deleteEnabled}">
+	    <g:message code="procdef.deletion.proceed.button.label" default="Deletion"/>
+	  </g:link>
+	</g:if>
+	<g:else>
 	<g:link class="menu-left delete" action="listdeletion" id="${procdefKey}" params="[max:params.max,offset:params.offset]">
 	  <g:message code="procdef.deletion.label" default="Deletion"/>
 	</g:link>
+	</g:else>
       </div>
     </div>
   </body>

@@ -74,13 +74,14 @@ class ProcdefService {
 
   /**
    * Get all process definitions from Activiti.
+   * deploymentId must be a deployment id.
    * Return a list of process definitions (List of Procdef)
    * SIDE EFFECT: Updates crd_procdef
    */
-  List allProcessDefinitionsByDeployment(String key) {
-    if (log.debugEnabled) log.debug "allProcessDefinitionsByDeployment << ${key}"
+  List allProcessDefinitionsByDeployment(String deploymentId) {
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByDeployment << ${deploymentId}"
     def entityList = activitiRepositoryService.createProcessDefinitionQuery().
-    deploymentId(key).orderByProcessDefinitionName().asc().list()
+    deploymentId(deploymentId).orderByProcessDefinitionName().asc().list()
     def result = entityList.collect {entity ->
       createProcdef(entity)
     }
@@ -89,23 +90,7 @@ class ProcdefService {
   }
 
   /**
-   * Get all process definitions from Activiti.
-   * Return a list of process definitions (List of Procdef)
-   * SIDE EFFECT: Updates crd_procdef
-   */
-  List allProcessDefinitionsByKey(String key) {
-    if (log.debugEnabled) log.debug "allProcessDefinitionsByKey << ${key}"
-    def entityList = activitiRepositoryService.createProcessDefinitionQuery().
-    processDefinitionKey(key).orderByProcessDefinitionVersion().desc().list()
-    def result = entityList.collect {entity ->
-      createProcdef(entity)
-    }
-    if (log.debugEnabled) log.debug "allProcessDefinitionsByKey >> ${result.size()}"
-    return result
-  }
-
-  /**
-   * Beginning from a list of process definitions, find all other process
+   * Beginning from a list of process definition ids, find all process
    * definitions from the same deployments.
    * Return a list containing all these process definitions sorted in
    * backward deployment date order (latest first), List of Procdef.
@@ -124,7 +109,7 @@ class ProcdefService {
       deplList.each {deplProc ->
 	if (!deplProc.deletable) {
 	  throw new ServiceException("Proc def ${deplProc} is not deletable",
-				     'procdef.deletion.not.deletable', [deplProc.uuid])
+				     'procdef.deletion.not.deletable', [deplProc.toString()])
 	}
 
 	procSet.add(deplProc)
@@ -133,6 +118,22 @@ class ProcdefService {
 
     def result = new ArrayList(procSet)
     if (log.debugEnabled) log.debug "allProcessDefinitionsByDeployment >> ${result?.size()}"
+    return result
+  }
+
+  /**
+   * Get all process definitions from Activiti.
+   * Return a list of process definitions (List of Procdef)
+   * SIDE EFFECT: Updates crd_procdef
+   */
+  List allProcessDefinitionsByKey(String key) {
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByKey << ${key}"
+    def entityList = activitiRepositoryService.createProcessDefinitionQuery().
+    processDefinitionKey(key).orderByProcessDefinitionVersion().desc().list()
+    def result = entityList.collect {entity ->
+      createProcdef(entity)
+    }
+    if (log.debugEnabled) log.debug "allProcessDefinitionsByKey >> ${result.size()}"
     return result
   }
 
@@ -266,7 +267,7 @@ class ProcdefService {
     procdefList.each {procdef ->
       if (!procdef.deletable) {
 	throw new ServiceException("Proc def ${procdef} is not deletable",
-				   'procdef.deletion.not.deletable', [procdef.uuid])
+				   'procdef.deletion.not.deletable', [procdef.toString()])
       }
     }
 
@@ -289,6 +290,9 @@ class ProcdefService {
     return 1
   }
 
+  /**
+   * Delete form connections for a given process definition
+   */
   private doDeleteFormConnections(Procdef procdef) {
     def connections = MtfActivityFormDefinition.findAllByProcessDefinitionId(procdef.uuid)
     connections.each {it.delete()}

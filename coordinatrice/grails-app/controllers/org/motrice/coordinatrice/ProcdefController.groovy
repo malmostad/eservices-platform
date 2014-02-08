@@ -38,6 +38,7 @@ class ProcdefController {
   // List process definitions from a deployment
   def listdepl(Integer max) {
     if (log.debugEnabled) log.debug "LISTDEPL ${params}"
+    // key is the deployment id
     def key = params.id
     params.max = Math.min(max ?: 15, 100)
     params.offset = params.offset as Integer ?: 0
@@ -47,7 +48,20 @@ class ProcdefController {
     def procdefView = procdefInstList.subList(params.offset, maxIndex)
     render(view: 'listname',
     model: [procdefInstList: procdefView, procdefInstTotal: length, procdefKey: key,
-	   deploymentId: key])
+	   deploymentId: key, deleteEnabled: "${DELETION_PREFIX}${key}"])
+  }
+
+  // List process definitions with the same key
+  def listname(Integer max) {
+    if (log.debugEnabled) log.debug "LISTNAME ${params}"
+    def key = params.id
+    params.max = Math.min(max ?: 15, 100)
+    params.offset = params.offset as Integer ?: 0
+    def procdefInstList = procdefService.allProcessDefinitionsByKey(key)
+    def length = procdefInstList.size()
+    def maxIndex = Math.min(params.offset + params.max, length)
+    def procdefView = procdefInstList.subList(params.offset, maxIndex)
+    [procdefInstList: procdefView, procdefInstTotal: length, procdefKey: key]
   }
 
   // List process definitions, show delete checkboxes
@@ -64,19 +78,6 @@ class ProcdefController {
     def procdefView = (minIndex > maxIndex)? [] : procdefInstList.subList(params.offset, maxIndex)
     [procdefInstList: procdefView, procdefInstTotal: length, procdefKey: key,
     delprefix: DELETION_PREFIX]
-  }
-
-  // List process definitions with the same key
-  def listname(Integer max) {
-    if (log.debugEnabled) log.debug "LISTNAME ${params}"
-    def key = params.id
-    params.max = Math.min(max ?: 15, 100)
-    params.offset = params.offset as Integer ?: 0
-    def procdefInstList = procdefService.allProcessDefinitionsByKey(key)
-    def length = procdefInstList.size()
-    def maxIndex = Math.min(params.offset + params.max, length)
-    def procdefView = procdefInstList.subList(params.offset, maxIndex)
-    [procdefInstList: procdefView, procdefInstTotal: length, procdefKey: key]
   }
 
   def show() {
@@ -276,9 +277,9 @@ class ProcdefController {
   /**
    * Confirm deletion of a number of process definitions
    */
-  def deletionconfirm() {
+  def deletionconfirm(String id) {
     if (log.debugEnabled) log.debug "DELETIONCONFIRM ${params}"
-    // Extract process definition ids the user marked for deletion (List of String)
+    // Delete a bunch of deployments: from listdeletion
     def deletionIdList = params.inject([]) {list, entry ->
       if (entry.key.startsWith(DELETION_PREFIX) && entry.value == 'on') {
 	list << entry.key.substring(DELETION_PREFIX_LEN)
@@ -286,10 +287,20 @@ class ProcdefController {
       return list
     }
 
+    // This case if we come from listdepl and a single deployment
+    def deploymentId = null
+    if (!deletionIdList && id?.startsWith(DELETION_PREFIX)) {
+      deploymentId = id.substring(DELETION_PREFIX_LEN)
+    }
+
     // Get all process definitions from all deployments involved
     def procdefList = null
     try {
-      procdefList = procdefService.allProcessDefinitionsByDeployment(deletionIdList)
+      if (deploymentId) {
+	procdefList = procdefService.allProcessDefinitionsByDeployment(deploymentId)
+      } else {
+	procdefList = procdefService.allProcessDefinitionsByDeployment(deletionIdList)
+      }
     } catch (ServiceException exc) {
       handleServiceException('deletionconfirm', exc)
       redirect(action: "list")
