@@ -8,8 +8,8 @@ import org.motrice.coordinatrice.MtfActivityFormDefinition
  */
 class ActDef implements Comparable {
 
-  // Not literally a uuid, but a string that uniquely identifies this
-  // activity definition
+  // Usually far from a uuid, a string that identifies this activity
+  // definition in the process definition.
   String uuid
 
   // The name of this activity as used in human communication
@@ -23,7 +23,7 @@ class ActDef implements Comparable {
 
   // Not a database object, never to be persisted
   static mapWith = 'none'
-  static belongsTo = [process: ProcDef]
+  static belongsTo = [process: Procdef]
   static transients = ['activityFormdef', 'fullId', 'userTask']
   static constraints = {
     uuid maxSize: 64
@@ -33,7 +33,9 @@ class ActDef implements Comparable {
   }
 
   MtfActivityFormDefinition getActivityFormdef() {
-    MtfActivityFormDefinition.findByActivityDefinitionUuid(fullId.toString())
+    def ref = fullId
+    MtfActivityFormDefinition.
+    findByProcessDefinitionIdAndActivityDefinitionId(ref.procId, ref.actId)
   }
 
   /**
@@ -45,6 +47,10 @@ class ActDef implements Comparable {
 
   boolean isUserTask() {
     type?.id == TaskType.TYPE_USER_ID
+  }
+
+  String toDisplay() {
+    "[ActDef ${process?.uuid}@${uuid}: ${name}, ${type}]"
   }
 
   String toString() {

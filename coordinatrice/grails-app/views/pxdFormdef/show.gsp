@@ -50,12 +50,12 @@
 	    <span id="forms-label" class="property-label"><g:message code="pxdFormdef.forms.label" default="Forms" /></span>
 	    <g:each in="${formdefVerList}" var="entry">
 	      <g:set var="f" value="${entry.formdefVer}"/>
-	      <g:set var="proc" value="${entry?.procDef}"/>
+	      <g:set var="proc" value="${entry?.procdef}"/>
 	      <span class="property-value" aria-labelledby="forms-label">
 		<g:link controller="pxdFormdefVer" action="show" id="${f.id}">${f?.encodeAsHTML()}</g:link>
 		<g:if test="${proc}">
 		  <g:set var="imgtitle"><g:message code="pxdFormdefVer.startform.link"/></g:set>
-		  <g:link controller="procDef" action="show" id="${proc.uuid}">
+		  <g:link controller="procdef" action="show" id="${proc.uuid}">
 		    <g:img uri="/images/silk/asterisk_yellow.png" title="${imgtitle}"/>
 		  </g:link>
 		</g:if>

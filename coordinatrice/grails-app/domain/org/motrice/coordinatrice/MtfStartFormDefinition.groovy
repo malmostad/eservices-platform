@@ -8,7 +8,7 @@ class MtfStartFormDefinition implements Comparable {
 
   String formPath
 
-  String processDefinitionUuid
+  String processDefinitionId
 
   String userDataXpath
 
@@ -17,14 +17,14 @@ class MtfStartFormDefinition implements Comparable {
     version false
     authTypeReq column: 'authtypereq'
     formPath column: 'formpath'
-    processDefinitionUuid column: 'processdefinitionuuid'
+    processDefinitionId column: 'processdefinitionuuid'
     userDataXpath column: 'userdataxpath'
   }
   static transients = ['formdef']
   static constraints = {
     authTypeReq nullable: false, maxSize: 255
     formPath nullable: false, maxSize: 255, unique: true
-    processDefinitionUuid nullable: true, maxSize: 255
+    processDefinitionId nullable: true, maxSize: 255
     userDataXpath nullable: true, maxSize: 255
   }
 

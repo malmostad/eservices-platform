@@ -510,7 +510,7 @@ th:hover, tr:hover {
 	border-top: 0;
 	margin: 0;
 	padding: 0.3em 0.2em;
-	text-align: center;
+	/*text-align: center;*/
 	   -moz-box-shadow: 0 0 3px 1px #AAAAAA;
 	-webkit-box-shadow: 0 0 3px 1px #AAAAAA;
 	        box-shadow: 0 0 3px 1px #AAAAAA;
@@ -542,6 +542,11 @@ th:hover, tr:hover {
 	background-color: transparent;
 	color: #444444;
 	text-decoration: underline;
+}
+
+.pagination .menu-left {
+    margin-left: 3em;
+    display: inline;
 }
 
 /* ACTION BUTTONS */

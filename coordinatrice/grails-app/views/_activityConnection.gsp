@@ -17,7 +17,7 @@
   </td>
 </g:else>
 <td>
-  <g:if test="${isHuman}">
+  <g:if test="${isHuman && isEditable}">
     <g:link class="edit" controller="actDef" action="edit" id="${connection?.activity?.fullId}">
       <g:img uri="/images/silk/connect.png" title="${message(code: 'activity.default.edit.label', default: 'Edit')}"/>
     </g:link>

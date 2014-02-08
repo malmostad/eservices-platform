@@ -56,4 +56,8 @@ class TaskType {
     }
   }
 
+  String toString() {
+    "[TaskType: ${id}: ${defaultMessage}]"
+  }
+
 }
