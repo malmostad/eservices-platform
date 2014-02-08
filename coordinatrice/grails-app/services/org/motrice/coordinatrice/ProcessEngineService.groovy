@@ -87,6 +87,7 @@ class ProcessEngineService {
    * procdef (Procdef): the process definition or null if the process definition
    * was not found
    * ctype (String): content type
+   * fname (String): file name adjusted to end with '.bpmn'
    */
   Map findProcessResource(String id) {
     if (log.debugEnabled) log.debug "findProcessResource << ${id}"
@@ -98,9 +99,24 @@ class ProcessEngineService {
       map.bytes = activitiRepositoryService.
       getResourceAsStream(entity.deploymentId, entity.resourceName).bytes
       map.ctype = 'text/xml'
+      map.fname = adjustBpmnFileName(map.procdef.resourceName)
     }
+
     if (log.debugEnabled) log.debug "findProcessResource >> [${map?.procdef}, ${map?.bytes?.size()}]"
     return map
+  }
+
+  private String adjustBpmnFileName(String origName) {
+    def name = stripExtension(origName, '.xml')
+    name = stripExtension(name, '.bpmn20')
+    return "${name}.bpmn"
+  }
+
+  private String stripExtension(String name, String extension) {
+    def result = name
+    def idx = name.lastIndexOf(extension)
+    if (idx > 0) result = name[0..idx-1]
+    return result
   }
 
   /**

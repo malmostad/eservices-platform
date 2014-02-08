@@ -22,7 +22,9 @@ class ProcdefController {
     redirect(action: "list", params: params)
   }
 
-  // List process definition names without version
+  /**
+   * List process definition keys (no versions, no full names)
+   */
   def list(Integer max) {
     if (log.debugEnabled) log.debug "LIST ${params}"
     params.max = Math.min(max ?: 15, 100)
@@ -35,7 +37,9 @@ class ProcdefController {
     [procdefList: procdefView, procdefTotal: length]
   }
 
-  // List process definitions from a deployment
+  /**
+   * List process definitions from a deployment
+   */
   def listdepl(Integer max) {
     if (log.debugEnabled) log.debug "LISTDEPL ${params}"
     // key is the deployment id
@@ -51,9 +55,12 @@ class ProcdefController {
 	   deploymentId: key, deleteEnabled: "${DELETION_PREFIX}${key}"])
   }
 
-  // List process definitions with the same key
+  /**
+   * List process definitions having a given key
+   */
   def listname(Integer max) {
     if (log.debugEnabled) log.debug "LISTNAME ${params}"
+    // key is the process definition key (id without version etc)
     def key = params.id
     params.max = Math.min(max ?: 15, 100)
     params.offset = params.offset as Integer ?: 0
@@ -64,13 +71,17 @@ class ProcdefController {
     [procdefInstList: procdefView, procdefInstTotal: length, procdefKey: key]
   }
 
-  // List process definitions, show delete checkboxes
+  /**
+   * List process definitions from a key, show delete checkboxes.
+   */
   def listdeletion(Integer max) {
     if (log.debugEnabled) log.debug "LISTDELETION ${params}"
+    // key is the process definition key (id without version etc)
     def key = params.id
     params.max = Math.min(max ?: 15, 100)
     params.offset = params.offset as Integer ?: 0
     // TODO: This might not be the exact condition for deletion
+    // Other parts of the code use the 'deletable' property.
     def procdefInstList = procdefService.allProcdefsByKeyAndState(key, CrdProcdefState.STATE_EDIT_ID)
     def length = procdefInstList.size()
     def maxIndex = Math.min(params.offset + params.max, length)
@@ -122,7 +133,7 @@ class ProcdefController {
 
     def procdef = resourceMap.procdef
     response.contentType = resourceMap.ctype
-    response.setHeader('Content-Disposition', "filename=${procdef.resourceName}")
+    response.setHeader('Content-Disposition', "filename=${resourceMap.fname}")
     response.outputStream << resourceMap.bytes
   }
 
