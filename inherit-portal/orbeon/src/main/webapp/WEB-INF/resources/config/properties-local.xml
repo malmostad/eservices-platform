@@ -30,7 +30,7 @@
   
   <property as="xs:string" name="oxf.fr.detail.buttons.malmo.*" value="clear save-final"/>
 
-  <property as="xs:string" name="oxf.fr.detail.buttons.view.*.*" value=""/>
+  <property as="xs:string" name="oxf.fr.detail.buttons.view.*.*" value="pdf"/>
   <property as="xs:string" name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
 
   <property as="xs:anyURI" name="oxf.fr.detail.send.success.uri.*.*"
