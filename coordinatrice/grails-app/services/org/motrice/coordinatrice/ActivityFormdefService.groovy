@@ -21,13 +21,14 @@ class ActivityFormdefService {
    * The process definitions must have their activities.
    */
   def connectActivityForms(Procdef origProc, Procdef srcProc, Procdef tgtProc) {
-    if (log.debugEnabled) log.debug "connectActivityForms << ${srcProc}, ${tgtProc}"
+    if (log.debugEnabled) log.debug "connectActivityForms << ${origProc}, ${srcProc}, ${tgtProc}"
     // Decide which process definition to copy from.
     // Pick the original unless it has a different key.
     def oldProc = (origProc?.key == tgtProc.key)? origProc : srcProc
     // Create a map for convenience
     def oldActMap = [:]
     oldProc.activities.each {oldActMap[it.name] = it}
+    if (log.debugEnabled) log.debug "connectActivityForms: ${oldProc?.toDump()}, ${oldActMap}"
     def replaceCount = 0
     tgtProc.activities.each {act ->
       def oldAct = oldActMap[act.name]
@@ -54,6 +55,7 @@ class ActivityFormdefService {
     def tgtActivityFormdef = MtfActivityFormDefinition.createFromActDef(tgtAct)
     // Copy formpath
     tgtActivityFormdef.formPath = srcActFormdef.formPath
+    if (log.debugEnabled) log.debug "doConnectActivityForms: ${tgtActivityFormdef}"
     if (!tgtActivityFormdef.save()) {
       log.error "doConnectActivityForms: ${tgtActivityFormdef.errors.allErrors.join(',')}"
     }

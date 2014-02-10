@@ -234,7 +234,7 @@ class ProcdefService {
       }
     }
 
-    if (log.debugEnabled) log.debug "createFullProcdef >> ${procdef}"
+    if (log.debugEnabled) log.debug "createFullProcdef >> ${procdef?.toDump()}"
     return procdef
   }
 

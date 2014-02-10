@@ -89,13 +89,14 @@ class ProcessEngineService {
    * ctype (String): content type
    * fname (String): file name adjusted to end with '.bpmn'
    */
-  Map findProcessResource(String id) {
+  Map findProcessResource(String id, boolean fullProcdef) {
     if (log.debugEnabled) log.debug "findProcessResource << ${id}"
     assert id
     def map = [procdef: null, bytes: null]
     def entity = activitiRepositoryService.getProcessDefinition(id)
     if (entity) {
-      map.procdef = procdefService.createProcdef(entity)
+      map.procdef = fullProcdef? procdefService.createFullProcdef(entity) :
+      procdefService.createProcdef(entity)
       map.bytes = activitiRepositoryService.
       getResourceAsStream(entity.deploymentId, entity.resourceName).bytes
       map.ctype = 'text/xml'
@@ -104,6 +105,10 @@ class ProcessEngineService {
 
     if (log.debugEnabled) log.debug "findProcessResource >> [${map?.procdef}, ${map?.bytes?.size()}]"
     return map
+  }
+
+  Map findProcessResource(String id) {
+    findProcessResource(id, false)
   }
 
   private String adjustBpmnFileName(String origName) {
@@ -141,7 +146,7 @@ class ProcessEngineService {
    */
   List createNewProcdefVersionByDuplication(String id) {
     if (log.debugEnabled) log.debug "procdefVersionByDuplication << ${id}"
-    def resourceMap = findProcessResource(id)
+    def resourceMap = findProcessResource(id, true)
     def procdef = resourceMap.procdef
     if (!resourceMap.procdef) throw new ServiceException("Process definition ${id} not found",
 							 'default.not.found.message', [id])
@@ -178,7 +183,7 @@ class ProcessEngineService {
    */
   private reconnectActivityForms(Procdef origProcdef, Procdef procdef) {
     def procdefList = procdefService.findProcessDefinitionsFromKey(procdef.key)
-    if (log.debugEnabled) log.debug "reconnectActivityForms >> ${procdefList.size()}"
+    if (log.debugEnabled) log.debug "reconnectActivityForms: ${procdefList.size()}"
     // The two first elements should be the new and previous versions.
     // No guarantee though.
     if (procdefList.size() >= 2) {

@@ -137,6 +137,10 @@ class Procdef implements Comparable {
     return new TreeSet(formList)
   }
 
+  String toDump() {
+    "[Procdef ${name}-v${vno}: depl ${deployment?.id}, act's: ${activities?.size()}]"
+  }
+
   String toString() {
     "${name} [v${vno}]"
   }

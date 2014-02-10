@@ -123,7 +123,6 @@
 	<fieldset class="buttons">
 	  <g:hiddenField name="uuid" value="${procdefInst?.uuid}" />
 	  <g:link class="edit" action="newversion" id="${procdefInst?.uuid}"><g:message code="procdef.edit.label" default="Edit" /></g:link>
-	  <g:actionSubmit class="delete" action="retire" value="${message(code: 'procdef.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 	</fieldset>
       </g:form>
     </div>
