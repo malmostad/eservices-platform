@@ -18,9 +18,9 @@ ALTER TABLE ONLY motrice_user
 
 CREATE TABLE mtf_activity_form_definition (
     activityformdefinitionid bigint NOT NULL,
+    processdefinitionuuid character varying(255),
     activitydefinitionuuid character varying(255),
-    formpath character varying(255),
-    startformdefinitionid bigint
+    formpath character varying(255)
 );
 
 ALTER TABLE ONLY mtf_activity_form_definition
@@ -93,9 +93,6 @@ ALTER TABLE ONLY mtf_process_activity_tag
 
 ALTER TABLE ONLY mtf_process_activity_form_instance
     ADD CONSTRAINT fk606cfcf095f89dba FOREIGN KEY (startformdefinitionid) REFERENCES mtf_start_form_definition(startformdefinitionid);
-
-ALTER TABLE ONLY mtf_activity_form_definition
-    ADD CONSTRAINT fkde55531e95f89dba FOREIGN KEY (startformdefinitionid) REFERENCES mtf_start_form_definition(startformdefinitionid);
 
 
 --
