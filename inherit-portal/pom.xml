@@ -243,6 +243,13 @@
                     </properties>
                   </deployable>
                   <deployable>
+                    <location>${project.basedir}/../coordinatrice/target/coordinatrice.war</location>
+                    <type>war</type>
+                    <properties>
+                      <context>/coordinatrice</context>
+                    </properties>
+                  </deployable>
+                  <deployable>
                     <location>${project.basedir}/../docbox/target/docbox.war</location>
                     <type>war</type>
                     <properties>
