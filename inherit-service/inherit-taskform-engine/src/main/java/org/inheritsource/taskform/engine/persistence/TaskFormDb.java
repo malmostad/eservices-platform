@@ -354,9 +354,8 @@ public class TaskFormDb {
 	
 	/**
 	 * Returns 
-	 * 1) Special form depending on activityDefinitionUuid and startFormDefinitionId
-	 * 2) General form for activityDefinitionUuid
-	 * 3) No form defined (return null) Probably is best fall back to use the bonita form 
+	 * 1) General form for activityDefinitionUuid
+	 * 2) No form defined (return null).  
 	 * @return 
 	 */
 	public ActivityFormDefinition getActivityFormDefinition(String activityDefinitionUuid, Long startFormDefinitionId) {
@@ -412,39 +411,17 @@ public class TaskFormDb {
 		
     private ActivityFormDefinition filterUniqueActivityDefinitionFromList(List<ActivityFormDefinition> list, Long startFormDefinitionId) {
     	ActivityFormDefinition result = null;
-    	
-    	ActivityFormDefinition specialForm = null;
-		ActivityFormDefinition defaultForm = null;
-		
+    			
 		if (list != null) {
-			for (ActivityFormDefinition afDef : list) {
-				if (afDef.getStartFormDefinition() == null) {
-					if (defaultForm != null) {
-						log.severe("Unique defaultForm is expected for a specific activity. ActivityDefinitionUuid=[" + 
-									defaultForm.getActivityDefinitionUuid() + "]");
-					}
-					defaultForm = afDef;
-				}
-				else {
-					if (afDef.getStartFormDefinition().getStartFormDefinitionId().equals(startFormDefinitionId)) {
-						if (defaultForm != null) {
-							log.severe("Unique specialForm is expected for a specific activity and startFormDefinitionId. ActivityDefinitionUuid=[" + 
-										defaultForm.getActivityDefinitionUuid() + "] startFormDefinitionId=[" + startFormDefinitionId + "]");
-						}
-						specialForm = afDef;
-					}
+			if (list.size() > 0 ) {
+				result = list.get(0);
+			}
+			if (list.size() > 1) {
+				log.severe("Unique value is expected");
+				for (ActivityFormDefinition o : list) {
+					log.severe(" value: " + o);
 				}
 			}
-		}
-		
-		log.severe("====> specialForm=" + specialForm);
-		log.severe("====> defaultForm=" + defaultForm);
-		
-		if (specialForm == null) {
-			result = defaultForm;
-		}
-		else {
-			result = specialForm;
 		}
 		 
 		return result;
@@ -798,62 +775,50 @@ public class TaskFormDb {
 		ActivityFormDefinition granskaAnsokan = new ActivityFormDefinition();
 		granskaAnsokan.setFormPath("Demo/Granska_ansokan");
 		granskaAnsokan.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Granska_ansokan");
-		granskaAnsokan.setStartFormDefinition(null);
 
 		ActivityFormDefinition remissA = new ActivityFormDefinition();
 		remissA.setFormPath("Demo/Remissyttrande");
 		remissA.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Remissyttrande_A");
-		remissA.setStartFormDefinition(null);
 		
 		ActivityFormDefinition remissB = new ActivityFormDefinition();
 		remissB.setFormPath("Demo/Remissyttrande");
 		remissB.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Remissyttrande_B");
-		remissB.setStartFormDefinition(null);
 
 		ActivityFormDefinition decision = new ActivityFormDefinition();
 		decision.setFormPath("Demo/Beslut");
 		decision.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Beslut");
-		decision.setStartFormDefinition(null);
 //===		
 		ActivityFormDefinition registrering = new ActivityFormDefinition();
 		registrering.setFormPath("basprocess/registrera");
 		registrering.setActivityDefinitionUuid("Arendeprocess--1.0--Registrering");
-		registrering.setStartFormDefinition(null);
 
 		ActivityFormDefinition handlaggning = new ActivityFormDefinition();
 		handlaggning.setFormPath("basprocess/handlagga");
 		handlaggning.setActivityDefinitionUuid("Arendeprocess--1.0--Handlaggning");
-		handlaggning.setStartFormDefinition(null);
 		
 		ActivityFormDefinition beslut = new ActivityFormDefinition();
 		beslut.setFormPath("basprocess/beslut");
 		beslut.setActivityDefinitionUuid("Arendeprocess--1.0--Beslut");
-		beslut.setStartFormDefinition(null);
 //===
 		ActivityFormDefinition hk_registrering = new ActivityFormDefinition();
 		hk_registrering.setFormPath("miljoforvaltningen/registrering");
 		hk_registrering.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Registrering");
-		hk_registrering.setStartFormDefinition(null);
 
 		ActivityFormDefinition hk_handlaggning = new ActivityFormDefinition();
 		hk_handlaggning.setFormPath("miljoforvaltningen/handlaggning");
 		hk_handlaggning.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Handlaggning");
-		hk_handlaggning.setStartFormDefinition(null);
 
 		ActivityFormDefinition hk_beslut = new ActivityFormDefinition();
 		hk_beslut.setFormPath("miljoforvaltningen/beslut");
 		hk_beslut.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Beslut");
-		hk_beslut.setStartFormDefinition(null);
 
 		ActivityFormDefinition hk_expediering = new ActivityFormDefinition();
 		hk_expediering.setFormPath("miljoforvaltningen/expediering");
 		hk_expediering.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Expediering");
-		hk_expediering.setStartFormDefinition(null);
 
 		ActivityFormDefinition hk_delgivning = new ActivityFormDefinition();
 		hk_delgivning.setFormPath("miljoforvaltningen/delgivning");
 		hk_delgivning.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Delgivning");
-		hk_delgivning.setStartFormDefinition(null);
 //===
 		TagType diaryTagType = new TagType();
 		diaryTagType.setTagTypeId(TagType.TAG_TYPE_DIARY_NO);

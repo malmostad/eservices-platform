@@ -49,19 +49,7 @@ public class ActivityFormDefinition {
 	@Id
 	@GeneratedValue
 	Long activityFormDefinitionId;
-	
-	/**
-	 * If null - default form for activity
-	 * If assigned id, special form depending on process start form 
-	 * 
-	 * In general each activityDefinitionUuid should have a default 
-	 * form defined.
-	 */
-	@ManyToOne
-    @JoinColumn(name="startFormDefinitionId", nullable=true)
-	StartFormDefinition startFormDefinition;
-	
-	
+		
 	/**
 	 * Activity defintion uuid 
 	 */
@@ -85,16 +73,6 @@ public class ActivityFormDefinition {
 
 	public void setActivityFormDefinitionId(Long activityFormDefinitionId) {
 		this.activityFormDefinitionId = activityFormDefinitionId;
-	}
-
-
-	public StartFormDefinition getStartFormDefinition() {
-		return startFormDefinition;
-	}
-
-
-	public void setStartFormDefinition(StartFormDefinition startFormDefinition) {
-		this.startFormDefinition = startFormDefinition;
 	}
 
 
@@ -132,10 +110,6 @@ public class ActivityFormDefinition {
 						: activityFormDefinitionId.hashCode());
 		result = prime * result
 				+ ((formPath == null) ? 0 : formPath.hashCode());
-		result = prime
-				* result
-				+ ((startFormDefinition == null) ? 0 : startFormDefinition
-						.hashCode());
 		return result;
 	}
 
@@ -165,11 +139,6 @@ public class ActivityFormDefinition {
 				return false;
 		} else if (!formPath.equals(other.formPath))
 			return false;
-		if (startFormDefinition == null) {
-			if (other.startFormDefinition != null)
-				return false;
-		} else if (!startFormDefinition.equals(other.startFormDefinition))
-			return false;
 		return true;
 	}
 
@@ -177,8 +146,7 @@ public class ActivityFormDefinition {
 	@Override
 	public String toString() {
 		return "ActivityFormDefinition [activityFormDefinitionId="
-				+ activityFormDefinitionId + ", startFormDefinition="
-				+ startFormDefinition + ", activityDefinitionUuid="
+				+ activityFormDefinitionId + ", activityDefinitionUuid="
 				+ activityDefinitionUuid + ", formPath=" + formPath + "]";
 	}
 	
