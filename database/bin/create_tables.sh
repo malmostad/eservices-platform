@@ -17,6 +17,7 @@ fi
 
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.hibernate.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.box.sql"'
+su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.crd.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.mtf.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.pxd.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/activiti.postgres.create.engine.sql"'
