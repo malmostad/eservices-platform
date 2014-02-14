@@ -12,19 +12,28 @@
 // }
 
 // Custom logic to control config file from command line or environment
-def ENV_VAR = 'DOCBOX_CONFIG'
-def FILENAME = '/usr/local/etc/docbox/docbox-config.properties'
-def CONFPROP = System.getProperty(ENV_VAR)
-def CONFENV = System.getenv(ENV_VAR)
+def ENV_VAR1 = 'DOCBOX_CONF'
+def ENV_VAR2 = 'MOTRICE_CONF'
+def FILENAME = '/usr/local/etc/motrice/motrice.properties'
+def CONFPROP1 = System.getProperty(ENV_VAR1)
+def CONFENV1 = System.getenv(ENV_VAR1)
+def CONFPROP2 = System.getProperty(ENV_VAR2)
+def CONFENV2 = System.getenv(ENV_VAR2)
 
 if (!grails.config.locations || !(grails.config.locations instanceof List)) grails.config.locations = []
 
-if (CONFPROP) {
-  println "--- CONFIG: Command line specified ${CONFPROP}"
-  FILENAME = CONFPROP
-} else if (CONFENV) {
-  println "--- CONFIG: Environment specified ${CONFENV}"
-  FILENAME = CONFENV
+if (CONFPROP1) {
+  println "--- CONFIG: Command line specified ${CONFPROP1}"
+  FILENAME = CONFPROP1
+} else if (CONFENV1) {
+  println "--- CONFIG: Environment specified ${CONFENV1}"
+  FILENAME = CONFENV1
+} else if (CONFPROP2) {
+  println "--- CONFIG: Command line specified ${CONFPROP2}"
+  FILENAME = CONFPROP2
+} else if (CONFENV2) {
+  println "--- CONFIG: Environment specified ${CONFENV2}"
+  FILENAME = CONFENV2
 } else {
   println "--- CONFIG: Default ${FILENAME}"
 }
@@ -109,7 +118,7 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-	   //debug 'org.motrice.docbox.doc', 'grails.app.controllers', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService'
+	   error 'org.motrice.docbox.doc', 'grails.app.controllers', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService'
 
 }
 
