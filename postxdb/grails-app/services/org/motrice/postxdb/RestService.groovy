@@ -57,6 +57,7 @@ class RestService {
     }
 
     // Create a new FormdefVer, attach to Formdef
+    // path contains the version assigned to Formdef.currentDraft
     def formdefVer = PxdFormdefVer.createInstance(path)
     formdefVer.assignMeta(meta)
     formdef.addToForms(formdefVer)
@@ -158,78 +159,136 @@ class RestService {
    * So the published version cannot be used as the first draft of the next version.
    * It has to be copied from the latest draft, the draft from which the published
    * version is derived.
+   * You may not publish a form unless there is a previous draft, i.e. there must
+   * be a current draft.
+   * Throws PostxdbException if there is no previous version.
    */
   PxdItem createPublishedItem(String resource, String xml) {
     // The version number, if present, is included in the form name
     // as extracted by the meta extractor
     def meta = MetaExtractor.extract(xml)
-    // This will be the path of the incoming version (including version and draft)
-    def path = new FormdefPath("${meta.app}/${meta.form}")
-    if (log.debugEnabled) log.debug "createPublishedItem initial path: ${path}"
+    def formdef = doCheckFormdef(meta)
+    String initialCurrentDraft = formdef.currentDraft
 
-    // There should already be a Formdef
-    def formdef = PxdFormdef.findByPath(path.unversioned)
-    if (log.debugEnabled) log.debug "createPublishedItem findByPath(${path?.unversioned}) returned ${formdef}"
-    assert formdef != null
-
-    // Update the version number, update xml with new metadata
-    path.publish()
-    if (log.debugEnabled) log.debug "createPublishedItem published path: ${path}"
+    // The version number must not be taken from the incoming XML.
+    // It must be derived from the current path and imposed on the incoming item.
+    FormdefPath publishedPath = doPublishedPath(initialCurrentDraft)
     // Modify the XML to contain the new version number
     MetaEditor editor = new MetaEditor(xml)
-    editor.opAssignVersion(path.version, path.draft)
+    editor.opAssignVersion(publishedPath.version, publishedPath.draft)
     // Set language Swedish in the published version
     editor.opLangEdit('sv')
     editor.edit()
     // Previous meta is replaced by meta of the published form
     meta = editor.metadata
 
-    // Create a form definition version
-    def formdefVer = PxdFormdefVer.createInstance(path)
-    formdefVer.assignMeta(meta)
-    formdef.addToForms(formdefVer)
-    if (!formdefVer.save()) log.error "FormdefVer save: ${formdefVer.errors.allErrors.join(',')}"
+    // Create a form definition version for the new item
+    doCreateFormdefVer(formdef, publishedPath, meta)
 
-    // Create the item
-    def item = new PxdItem(path: "${path}/form.xhtml", uuid: formdef.uuid,
-    formDef: path.toString(), instance: false, format: 'xml')
-    item.assignText(editor.formdefOut)
-    if (!item.save()) log.error "Item save: ${item.errors.allErrors.join(',')}"
-    if (log.debugEnabled) log.debug "createPublishedItem will return ${item}"
-    def publishedItem = item
+    // Create the published item
+    def publishedItem = doCreatePublishedItem(formdef, publishedPath, editor)
 
     //----- From here: Create a new current draft for the next version -----
     // We cannot use the incoming version because the user may have saved several times
     // making the incoming version number out of synch.
     // Instead, use the current draft, called "latest draft" here because we also
     // update the current draft.
-    def latestDraft = formdef.currentDraft
-    path = new FormdefPath(latestDraft)
-    if (log.debugEnabled) log.debug "createPublishedItem copy next draft from ${path}"
-    formdef.currentDraft = path.nextVersion().toString()
-    if (!formdef.save()) log.error "Formdef next draft save: ${formdef.errors.allErrors.join(',')}"
+    String latestDraftItemPath = doXmlPath(new FormdefPath(initialCurrentDraft))
+    def currentDraftVersion = new FormdefPath(initialCurrentDraft).nextVersion()
+    String currentDraftPath = currentDraftVersion.toString()
+    String currentDraftItemPath = doXmlPath(currentDraftVersion)
+    if (log.debugEnabled) {
+      log.debug "createPublishedItem copy draft from ${latestDraftItemPath} to ${currentDraftItemPath}"
+    }
+    formdef.currentDraft = currentDraftPath
+    doSave(formdef)
       
     // We must retrieve the PxdItem containing the latest draft to create the new current
-    String latestDraftPath = "${latestDraft}/form.xml"
-    String currentDraftPath = "${path}/form.xml"
-    def latestDraftItem = PxdItem.findByPath(latestDraftPath)
-    if (log.debugEnabled) log.debug "createPublishedItem latest draft ${latestDraftItem}"
-    def currentDraftItem = PxdItem.almostCopy(latestDraftItem, currentDraftPath, path.toString())
+    def latestDraftItem = PxdItem.findByPath(latestDraftItemPath)
+    if (log.debugEnabled) log.debug "createPublishedItem copy draft ${latestDraftItem}"
+    def currentDraftItem = PxdItem.almostCopy(latestDraftItem, currentDraftItemPath, currentDraftPath)
     editor = new MetaEditor(latestDraftItem.text)
-    editor.opAssignVersion(path.version, path.draft)
+    editor.opAssignVersion(currentDraftVersion.version, currentDraftVersion.draft)
     editor.edit()
     meta = editor.metadata
     currentDraftItem.assignText(editor.formdefOut)
-    if (!currentDraftItem.save()) log.error "Item save: ${item.errors.allErrors.join(',')}"
+    doSave(currentDraftItem)
     if (log.debugEnabled) log.debug "createPublishedItem new current draft ${currentDraftItem}"
 
     // Create a new form definition version for the new current draft
-    formdefVer = PxdFormdefVer.createInstance(path)
-    formdefVer.assignMeta(meta)
-    formdef.addToForms(formdefVer)
-    if (!formdefVer.save()) log.error "FormdefVer save: ${formdefVer.errors.allErrors.join(',')}"
+    doCreateFormdefVer(formdef, currentDraftVersion, meta)
 
     return publishedItem
+  }
+
+  /**
+   * Check that a formdef exists with given metadata.
+   * Throws PostxdbException otherwise.
+   */
+  private PxdFormdef doCheckFormdef(FormdefMeta meta) {
+    def appForm = new FormdefPath("${meta.app}/${meta.form}").unversioned.toString()
+    // There must already be a Formdef
+    def formdef = PxdFormdef.findByPath(appForm)
+    if (log.debugEnabled) log.debug "createPublishedItem findByPath(${appForm}) returned ${formdef}"
+    if (formdef == null) {
+      def msg = "Cannot publish '${appForm}', no previous draft exists"
+      log.error msg
+      throw new PostxdbException('pxdFormdef.required.but.missing', msg)
+    }
+
+    return formdef
+  }
+
+  /**
+   * Derive a published path from a current draft path
+   */
+  private FormdefPath doPublishedPath(String currentDraft) {
+    def publishedPath = new FormdefPath(currentDraft)
+    publishedPath.publish()
+    if (log.debugEnabled) log.debug "createPublishedItem initial: ${currentDraft}, published: ${publishedPath}"
+    return publishedPath
+  }
+
+  /**
+   * Create and save a form definition version for a new version
+   */
+  private PxdFormdefVer doCreateFormdefVer(PxdFormdef formdef, FormdefPath path,
+					   FormdefMeta meta)
+  {
+    def formdefVer = PxdFormdefVer.createInstance(path)
+    formdefVer.assignMeta(meta)
+    formdef.addToForms(formdefVer)
+    doSave(formdefVer)
+    return formdefVer
+  }
+
+  /**
+   * Create and save an item for a new version.
+   * The editor must contain new metadata and new XML
+   */
+  private PxdItem doCreatePublishedItem(PxdFormdef formdef, FormdefPath path,
+					MetaEditor editor)
+  {
+    def item = new PxdItem(path: "${path}/form.xhtml", uuid: formdef.uuid,
+    formDef: path.toString(), instance: false, format: 'xml')
+    item.assignText(editor.formdefOut)
+    doSave(item)
+    if (log.debugEnabled) log.debug "createPublishedItem will return ${item}"
+    return item
+  }
+
+  /**
+   * Save a domain object, log errors if any
+   */
+  private doSave(obj) {
+    if (!obj.save()) log.error "${obj.class.name} save ${obj.errors.allErrors.join(',')}"
+  }
+
+  /**
+   * The full path of an item, given a version
+   */
+  private String doXmlPath(FormdefPath path) {
+    path.toString() + "/form.xml"
   }
 
   /**
