@@ -27,6 +27,6 @@ class UrlMappings {
     }
 
     "/"(controller: 'BoxDoc', action: '/index')
-    "500"(view:'/error')
+    "500"(controller: 'errors', action: 'internalServerError')
   }
 }

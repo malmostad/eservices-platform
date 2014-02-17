@@ -64,6 +64,12 @@
 	      <g:formatDate date="${pxdItemObj?.lastUpdated}"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${pxdItemObj?.sha1}">
+	  <li class="fieldcontain">
+	    <span id="sha1-label" class="property-label"><g:message code="pxdItem.sha1.label" default="Sha1" /></span>
+	    <span class="property-value" aria-labelledby="sha1-label"><g:fieldValue bean="${pxdItemObj}" field="sha1"/></span>
+	  </li>
+	</g:if>
 	<g:if test="${pxdItemObj?.text}">
 	  <li class="fieldcontain">
 	    <span id="text-label" class="property-label"><g:message code="pxdItem.text.label" default="Text" /></span>

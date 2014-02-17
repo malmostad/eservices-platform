@@ -113,23 +113,28 @@ class RestFormdefController {
     def sessionId = g.cookie(name: 'JSESSIONID')
     if (log.debugEnabled) log.debug "PUTOP: ${Util.clean(params)}, ${request.forwardURI}, session ${sessionId}"
     def itemObj = null
+    def msg = null
     // Two distinct flows depending on the input
-    if (request.format == 'xml') {
-      if (log.debugEnabled) log.debug "putop XML >> createPublishedItem"
-      itemObj = restService.createPublishedItem(params.resource, request.reader.text)
-      if (log.debugEnabled) log.debug "putop XML << ${itemObj}"
-    } else {
-      // Happens only in Orbeon 4
-      if (log.debugEnabled) log.debug "putop BIN >> createPublishedResource"
-      itemObj = restService.createPublishedResource(params.app, params.form, params.resource, request)
-      if (log.debugEnabled) log.debug "putop BIN << ${itemObj}"
+    try {
+      if (request.format == 'xml') {
+	if (log.debugEnabled) log.debug "putop XML >> createPublishedItem"
+	itemObj = restService.createPublishedItem(params.resource, request.reader.text)
+	if (log.debugEnabled) log.debug "putop XML << ${itemObj}"
+      } else {
+	// Happens only in Orbeon 4
+	if (log.debugEnabled) log.debug "putop BIN >> createPublishedResource"
+	itemObj = restService.createPublishedResource(params.app, params.form, params.resource, request)
+	if (log.debugEnabled) log.debug "putop BIN << ${itemObj}"
+      }
+    } catch (PostxdbException exc) {
+      msg = message(code: exc.code)
     }
 
     if (itemObj) {
       // The response must be empty, or Orbeon chokes
       render(status: 201)
     } else {
-      def msg = 'CONFLICT PxdItem not found'
+      if (!msg) msg = 'CONFLICT PxdItem not found'
       log.warn "putop ${msg}"
       render(status: 409, text: msg, contentType: 'text/plain')
     }
