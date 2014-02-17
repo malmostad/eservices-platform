@@ -53,261 +53,40 @@ INSERT INTO mtf_start_form_definition(
 --
 
 INSERT INTO mtf_activity_form_definition(
+            processdefinitionuuid,
             activityformdefinitionid, 
             activitydefinitionuuid, 
             formpath
             )
        VALUES (
-            nextval('hibernate_sequence'), 
-            'Spridning_bekampningsmedel--5.0--Granska_ansokan', 
-            'Demo/Granska_ansokan--v002'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Spridning_bekampningsmedel--5.0--Remissyttrande_A', 
-            'Demo/Remissyttrande--v002'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Spridning_bekampningsmedel--5.0--Remissyttrande_B', 
-            'Demo/Remissyttrande--v002'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Spridning_bekampningsmedel--5.0--Beslut', 
-            'Demo/Beslut--v002'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
+            'Arendeprocess:1:4',
             nextval('hibernate_sequence'), 
             'sid-DE05B2D6-1F3B-425A-9D98-7513096A910F', 
             'basprocess/registrera--v002'
 );
 INSERT INTO mtf_activity_form_definition(
+            processdefinitionuuid,
             activityformdefinitionid, 
             activitydefinitionuuid, 
             formpath
             )
        VALUES (
+            'Arendeprocess:1:4',
             nextval('hibernate_sequence'), 
             'sid-3BA63215-750B-4E88-95F4-7567FF8FF769', 
             'basprocess/handlagga--v002'
 );
 INSERT INTO mtf_activity_form_definition(
+            processdefinitionuuid,
             activityformdefinitionid, 
             activitydefinitionuuid, 
             formpath
             )
        VALUES (
+            'Arendeprocess:1:4',
             nextval('hibernate_sequence'), 
             'sid-22F22FC8-281E-4155-BE3D-AF4BEC1D0C2D', 
             'basprocess/beslut--v002'
-);
-
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Arendeprocess--1.0--Registrering', 
-            'basprocess/registrera--v002'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Arendeprocess--1.0--Handlaggning', 
-            'basprocess/handlagga--v002'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Arendeprocess--1.0--Beslut', 
-            'basprocess/beslut--v002'
-);
-
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'ArendeprocessSignStartForm--1.0--Registrering', 
-            'none'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'ArendeprocessSignStartForm--1.0--SignStartForm', 
-            'signstartform'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'ArendeprocessSignStartForm--1.0--Handlaggning', 
-            'none'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'ArendeprocessSignStartForm--1.0--Beslut', 
-            'basprocess/beslut--v002'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'ArendeprocessSignStartForm--1.0--SignBeslut', 
-            'signactivity/Beslut'
-);
-
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--3.0--Registrering', 
-            'none'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--3.0--Handlaggning', 
-            'miljoforvaltningen/handlaggning--v003'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--3.0--Beslut', 
-            'none'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--3.0--Expediering', 
-            'none'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Miljoforv_hemkompostering_matavfall_forenklad_delgivning--3.0--Delgivning', 
-            'none'
-);
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            'Forenklad_delgivning_till_inkorg--3.0--Ta_del_av_beslut', 
-            'miljoforvaltningen/fdelgivning-ta-del-beslut--v002'
-);
-
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            '_7', 
-            'none'
-);
-
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            '_11', 
-            'none'
-);
-
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            '_13', 
-            'none'
-);
-
-INSERT INTO mtf_activity_form_definition(
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formpath
-            )
-       VALUES (
-            nextval('hibernate_sequence'), 
-            '_27', 
-            'none'
 );
 
 
