@@ -63,5 +63,5 @@
   <bean name="/getMyProfile/{userid}" class="org.inheritsource.service.rest.server.GetMyProfileByUserId" scope="singleton" autowire="byName" />
   <bean name="/getProcessDefinitionDetails/{processDefinitionUUID}" class="org.inheritsource.service.rest.server.GetProcessDefinitionDetails" scope="singleton" autowire="byName" />
   <bean name="/getProcessDefinitions" class="org.inheritsource.service.rest.server.GetProcessDefinitions" scope="singleton" autowire="byName" />
-  <bean name="/setActivityForm/{activityDefinitionUuid}/{formPath}" class="org.inheritsource.service.rest.server.SetActivityForm" scope="singleton" autowire="byName" />
+  <bean name="/setActivityForm/{processdefinitionuuid}/{activityDefinitionUuid}/{formPath}" class="org.inheritsource.service.rest.server.SetActivityForm" scope="singleton" autowire="byName" />
 </beans>

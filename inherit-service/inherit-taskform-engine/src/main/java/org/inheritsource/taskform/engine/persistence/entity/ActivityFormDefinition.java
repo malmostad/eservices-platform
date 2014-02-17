@@ -51,6 +51,11 @@ public class ActivityFormDefinition {
 	Long activityFormDefinitionId;
 		
 	/**
+	 * Process defintion uuid 
+	 */
+	String processdefinitionuuid;
+	
+	/**
 	 * Activity defintion uuid 
 	 */
 	String activityDefinitionUuid;
@@ -73,6 +78,15 @@ public class ActivityFormDefinition {
 
 	public void setActivityFormDefinitionId(Long activityFormDefinitionId) {
 		this.activityFormDefinitionId = activityFormDefinitionId;
+	}
+
+	public String getProcessdefinitionuuid() {
+		return processdefinitionuuid;
+	}
+
+
+	public void setProcessdefinitionuuid(String processdefinitionuuid) {
+		this.processdefinitionuuid = processdefinitionuuid;
 	}
 
 
@@ -110,6 +124,10 @@ public class ActivityFormDefinition {
 						: activityFormDefinitionId.hashCode());
 		result = prime * result
 				+ ((formPath == null) ? 0 : formPath.hashCode());
+		result = prime
+				* result
+				+ ((processdefinitionuuid == null) ? 0 : processdefinitionuuid
+						.hashCode());
 		return result;
 	}
 
@@ -139,18 +157,20 @@ public class ActivityFormDefinition {
 				return false;
 		} else if (!formPath.equals(other.formPath))
 			return false;
+		if (processdefinitionuuid == null) {
+			if (other.processdefinitionuuid != null)
+				return false;
+		} else if (!processdefinitionuuid.equals(other.processdefinitionuuid))
+			return false;
 		return true;
 	}
-
 
 	@Override
 	public String toString() {
 		return "ActivityFormDefinition [activityFormDefinitionId="
-				+ activityFormDefinitionId + ", activityDefinitionUuid="
+				+ activityFormDefinitionId + ", processdefinitionuuid="
+				+ processdefinitionuuid + ", activityDefinitionUuid="
 				+ activityDefinitionUuid + ", formPath=" + formPath + "]";
 	}
-	
-	
-
 	
 }

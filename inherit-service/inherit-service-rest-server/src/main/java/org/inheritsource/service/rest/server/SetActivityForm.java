@@ -30,7 +30,6 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class SetActivityForm extends ServerResource {
@@ -41,10 +40,11 @@ public class SetActivityForm extends ServerResource {
 	@Get
 	@Post
 	public void setActivityForm() {
+		String processdefinitionuuid = ParameterEncoder.decode((String)getRequestAttributes().get("processdefinitionuuid"));
 		String activityDefinitionUuid = ParameterEncoder.decode((String)getRequestAttributes().get("activityDefinitionUuid"));
 		String formPath = ParameterEncoder.decode((String)getRequestAttributes().get("formPath"));
 	
-		if (!engine.setActivityForm(activityDefinitionUuid, formPath)) {
+		if (!engine.setActivityForm(processdefinitionuuid, activityDefinitionUuid, formPath)) {
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN);
 		}
 	}

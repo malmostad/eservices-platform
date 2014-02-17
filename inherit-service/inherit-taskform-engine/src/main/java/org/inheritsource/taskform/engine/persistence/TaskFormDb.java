@@ -358,17 +358,17 @@ public class TaskFormDb {
 	 * 2) No form defined (return null).  
 	 * @return 
 	 */
-	public ActivityFormDefinition getActivityFormDefinition(String activityDefinitionUuid, Long startFormDefinitionId) {
+	public ActivityFormDefinition getActivityFormDefinition( String processdefinitionuuid, String activityDefinitionUuid) {
 		ActivityFormDefinition result = null;
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
-		log.severe("==> activityDefinitionUuid=" + activityDefinitionUuid + ", startFormDefinitionId=" + startFormDefinitionId);
+		log.severe("==> activityDefinitionUuid=" + activityDefinitionUuid + ", processdefinitionuuid=" + processdefinitionuuid);
 		try {
-			result = getActivityFormDefinition(session, activityDefinitionUuid, startFormDefinitionId);
+			result = getActivityFormDefinition(session, processdefinitionuuid, activityDefinitionUuid);
 		}
 		catch (Exception e) {
-			log.severe("activityDefinitionUuid=[" + activityDefinitionUuid + "] startFormDefinitionId=[" + startFormDefinitionId + "] Exception: " + e);
+			log.severe("activityDefinitionUuid=[" + activityDefinitionUuid + "] processdefinitionuuid=[" + processdefinitionuuid + "] Exception: " + e);
 		}
 		finally {
 			session.close();
@@ -377,39 +377,19 @@ public class TaskFormDb {
 	}
 		
 	@SuppressWarnings("unchecked")
-	public ActivityFormDefinition getActivityFormDefinition(Session session, String activityDefinitionUuid, Long startFormDefinitionId) {
+	public ActivityFormDefinition getActivityFormDefinition(Session session, String processdefinitionuuid, String activityDefinitionUuid) {
 		List<ActivityFormDefinition> result = null;
 				
 		//result = (List<ProcessDefinition>)session.createQuery(hql).list();
 		result = (List<ActivityFormDefinition>) session.createCriteria(ActivityFormDefinition.class)
+			    .add( Restrictions.eq("processdefinitionuuid", processdefinitionuuid) )
 			    .add( Restrictions.eq("activityDefinitionUuid", activityDefinitionUuid) )
 			    .list();
 
-		return filterUniqueActivityDefinitionFromList(result, startFormDefinitionId);
+		return filterUniqueActivityDefinitionFromList(result);
 	}
-	
-	public ActivityFormDefinition getActivityFormDefinitionByFormPath(Session session, String formPath) {
-		ActivityFormDefinition result = null;
-		result = (ActivityFormDefinition) session.createCriteria(ActivityFormDefinition.class).add(Restrictions.eq("formPath", formPath)).uniqueResult();
-		return result;
-	}
-	
-	public ActivityFormDefinition getActivityFormDefinitionByFormPath(String formPath) {
-		ActivityFormDefinition result = null;
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		try {
-			result = getActivityFormDefinitionByFormPath(session, formPath);
-		}
-		catch (Exception e) {
-			log.severe("formPath=[" + formPath + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return result;
-	}	
 		
-    private ActivityFormDefinition filterUniqueActivityDefinitionFromList(List<ActivityFormDefinition> list, Long startFormDefinitionId) {
+    private ActivityFormDefinition filterUniqueActivityDefinitionFromList(List<ActivityFormDefinition> list) {
     	ActivityFormDefinition result = null;
     			
 		if (list != null) {

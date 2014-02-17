@@ -96,7 +96,7 @@ public class TaskFormService {
 	public ProcessDefinitionDetails getProcessDefinitionDetails(String processDefinitionUUIDStr) {
 		ProcessDefinitionDetails details = activitiEngineService.getProcessDefinitionDetailsByUuid(processDefinitionUUIDStr);
 		for (ActivityDefinitionInfo adi :details.getActivities()) {
-			ActivityFormDefinition def = taskFormDb.getActivityFormDefinition(adi.getUuid(), null);
+			ActivityFormDefinition def = taskFormDb.getActivityFormDefinition(details.getProcess().getUuid(), adi.getUuid());
 			if (def != null) {
 				adi.setFormPath(def.getFormPath());
 			}
@@ -104,10 +104,17 @@ public class TaskFormService {
 		return details;
 	}	
 	
-	public boolean setActivityForm(String activityDefinitionUuid, String formPath) {
+	/**
+	 * Upadte formPath in db for activity definition identified by processdefinitionuuid and activityDefinitionUuid.
+	 * @param processdefinitionuuid
+	 * @param activityDefinitionUuid
+	 * @param formPath
+	 * @return
+	 */
+	public boolean setActivityForm(String processdefinitionuuid, String activityDefinitionUuid, String formPath) {
 		boolean result = true;
 		try {
-		ActivityFormDefinition def = taskFormDb.getActivityFormDefinition(activityDefinitionUuid, null);
+		ActivityFormDefinition def = taskFormDb.getActivityFormDefinition(processdefinitionuuid, activityDefinitionUuid);
 		def.setFormPath(formPath);
 		taskFormDb.save(def);
 		}
@@ -365,7 +372,7 @@ public class TaskFormService {
 			result = true; 
 		} else {
 			// analyze activity form
-			ActivityFormDefinition activity = taskFormDb.getActivityFormDefinition(item.getActivityDefinitionUuid(), startedByForm == null ? null : startedByForm.getStartFormDefinition().getStartFormDefinitionId());
+			ActivityFormDefinition activity = taskFormDb.getActivityFormDefinition(item.getProcessDefinitionUuid(), item.getActivityDefinitionUuid());
 			if (activity == null) {
 				// activity form is not defined
 				item.setExternalUrl(calcExternalUrl("none", null, item.getTaskUuid()));
@@ -812,7 +819,8 @@ public class TaskFormService {
 		log.severe("===> activityInstanceUuid=" + activityInstanceUuid
 				+ ", startFormId=" + startFormId + ", userId=" + userId);
 		activityFormDefinition = taskFormDb.getActivityFormDefinition(
-				activity.getActivityDefinitionUuid(), startFormId);
+				activity.getProcessDefinitionUuid(),
+				activity.getActivityDefinitionUuid());
 
 		// generate a type 4 UUID
 		String docId = java.util.UUID.randomUUID().toString();
