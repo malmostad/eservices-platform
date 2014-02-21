@@ -52,8 +52,10 @@ import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
+import org.inheritsource.service.common.domain.CandidateInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
+import org.inheritsource.service.common.domain.GroupInfo;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
@@ -1469,16 +1471,18 @@ public class ActivitiEngineService {
 		System.exit(0);
 	}
 	
-	private HashSet<UserInfo> getCandidatesByTaskId(String taskId) {
-		HashSet<UserInfo> candidates = new HashSet<UserInfo>();
+	private HashSet<CandidateInfo> getCandidatesByTaskId(String taskId) {
+		HashSet<CandidateInfo> candidates = new HashSet<CandidateInfo>();
 		List<IdentityLink> identityLinks = 
 				engine.getTaskService().getIdentityLinksForTask(taskId);
-		UserInfo candidate = null;
+		CandidateInfo candidate = null;
 		String userId = null;
+		String groupId = null;
 		
 		if(identityLinks != null) {
 			for(IdentityLink iL : identityLinks) {
 				if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
+
 					userId = iL.getUserId();
 					
 					if(userId != null) {
@@ -1486,6 +1490,16 @@ public class ActivitiEngineService {
 						candidate.setUuid(userId);
 						candidate.setLabel(userId);
 						candidate.setLabelShort(userId);
+						candidates.add(candidate);
+					}
+					
+					groupId = iL.getGroupId();
+					
+					if(groupId != null) {
+						candidate = new GroupInfo();
+						candidate.setUuid(groupId);
+						candidate.setLabel(groupId);
+						candidate.setLabelShort(groupId);
 						candidates.add(candidate);
 					}
 				}
