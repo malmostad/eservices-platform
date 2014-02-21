@@ -38,6 +38,7 @@ import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
+import org.inheritsource.service.common.domain.CandidateInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.InboxTaskItem;
@@ -433,7 +434,7 @@ public class TaskFormService {
 				}
 				appendCandidateUserInfo(pendingItem);
 				pendingItem
-						.setAssignedUser(appendTaskFormServiceUserData(pendingItem
+						.setAssignedUser((UserInfo) appendTaskFormServiceUserData(pendingItem
 								.getAssignedUser()));
 			}
 
@@ -522,7 +523,7 @@ public class TaskFormService {
 	private void appendTaskFormServiceData(
 			ActivityWorkflowInfo activityWorkflowInfo) {
 		activityWorkflowInfo
-				.setAssignedUser(appendTaskFormServiceUserData(activityWorkflowInfo
+				.setAssignedUser((UserInfo) appendTaskFormServiceUserData(activityWorkflowInfo
 						.getAssignedUser()));
 	}
 
@@ -624,8 +625,8 @@ public class TaskFormService {
 		return result;
 	}
 
-	private UserInfo appendTaskFormServiceUserData(UserInfo ui) {
-		UserInfo dbUi = null;
+	private CandidateInfo appendTaskFormServiceUserData(CandidateInfo ui) {
+		CandidateInfo dbUi = null;
 
 		if (ui != null) {
 			dbUi = taskFormDb.getUserByUuid(ui.getUuid());
@@ -644,10 +645,14 @@ public class TaskFormService {
 			ActivityInstancePendingItem activityInstancePendingItem) {
 		log.severe("UserInfo appending UserEntity data...");
 		if (activityInstancePendingItem.getCandidates() != null) {
-			Set<UserInfo> candidates = new TreeSet<UserInfo>();
-			for (UserInfo ui : activityInstancePendingItem.getCandidates()) {
-				if (ui != null) {
-					candidates.add(appendTaskFormServiceUserData(ui));
+			Set<CandidateInfo> candidates = new TreeSet<CandidateInfo>();
+			for (CandidateInfo ci : activityInstancePendingItem.getCandidates()) {
+				if (ci != null) {
+					if(ci instanceof UserInfo) {
+						candidates.add(appendTaskFormServiceUserData(ci));
+					} else {
+						candidates.add(ci);
+					}
 				}
 			}
 			activityInstancePendingItem.setCandidates(candidates);
