@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name="userInfo")
 @XmlType(namespace="http://www.motrice.org/namespace")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserInfo implements Serializable, Comparable {
+public class UserInfo implements CandidateInfo, Serializable, Comparable {
 
 	private static final long serialVersionUID = -4478283095497351127L;
 
