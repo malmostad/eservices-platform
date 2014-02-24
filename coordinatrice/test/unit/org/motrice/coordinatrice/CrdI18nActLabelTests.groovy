@@ -12,6 +12,6 @@ import org.junit.*
 class CrdI18nActLabelTests {
 
     void testSomething() {
-       fail "Implement me"
+
     }
 }
