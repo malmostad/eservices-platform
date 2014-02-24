@@ -64,7 +64,13 @@
       <artifactId>activiti-ldap</artifactId>
       <version>5.14</version>
     </dependency>            
-
+	
+	<dependency>
+	   <groupId>org.activiti</groupId>
+	   <artifactId>activiti-spring</artifactId>
+	   <version>5.14</version>
+    </dependency> 
+  
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>

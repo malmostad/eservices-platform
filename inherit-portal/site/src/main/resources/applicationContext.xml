@@ -1,13 +1,63 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
 	http://www.springframework.org/schema/context
 	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
- <context:annotation-config /> 
+	<context:annotation-config />
 
- <bean id="engine" class="org.inheritsource.taskform.engine.TaskFormService" scope="singleton"/>
+
+	<bean id="motriceConfig"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="locations">
+			<list>
+				<!--  at first look at default config file, if it exist -->
+				<value>file:/usr/local/etc/motrice/motrice.properties</value>
+				<!--  override with properties in MOTRICE_CONF, if it exist -->
+				<value>file:${MOTRICE_CONF}</value>
+				<!--  override with properties in MOTRICE_HOME/conf/motrice.properties, if it exist  -->
+				<value>file:${MOTRICE_HOME}/conf/motrice.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="engine" class="org.inheritsource.taskform.engine.TaskFormService"
+		scope="singleton">
+		<property name="activitiEngineService" ref="activitiEngineService" />
+	</bean>
+
+	<bean id="activitiEngineService"
+		class="org.inheritsource.service.processengine.ActivitiEngineService"
+		scope="singleton">
+		<property name="engine" ref="processEngine" />
+	</bean>
+
+	<bean id="processEngineConfiguration"
+		class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration">
+
+		<property name="jdbcUrl" value="${dataSource.url}" />
+		<property name="jdbcDriver" value="${dataSource.driverClassName}" />
+		<property name="jdbcUsername" value="${dataSource.username}" />
+		<property name="jdbcPassword" value="${dataSource.password}" />
+
+		<property name="databaseSchemaUpdate" value="true" />
+
+		<property name="jobExecutorActivate" value="true" />
+
+		<property name="mailServerHost" value="${mail.smtp.host}" />
+		<property name="mailServerPort" value="${mail.smtp.port}" />
+
+		<property name="beans">
+			<map>
+				<entry key="motriceEngine" value-ref="engine" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
+	</bean>
 
 </beans>
