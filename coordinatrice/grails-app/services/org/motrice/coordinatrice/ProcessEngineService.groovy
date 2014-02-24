@@ -15,7 +15,8 @@ import org.activiti.engine.repository.ProcessDefinition
 import org.apache.commons.logging.LogFactory
 
 /**
- * All interaction with the process engine
+ * All interaction with the process engine except keeping a tab on
+ * process definitions.
  */
 class ProcessEngineService {
   // We don't manage these transactions

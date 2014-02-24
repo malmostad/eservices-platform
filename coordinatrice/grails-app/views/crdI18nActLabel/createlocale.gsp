@@ -15,7 +15,7 @@
       </ul>
     </div>
     <div id="create-crdI18nActLabel" class="content scaffold-create" role="main">
-      <h1><g:message code="default.create.label" args="[entityName]" /></h1>
+      <h1><g:message code="crdI18nActLabel.create.header" /></h1>
       <g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
@@ -29,16 +29,25 @@
       <ol class="property-list crdI18nActLabel">
 	<li class="fieldcontain">
 	  <span id="procdefKey-label" class="property-label"><g:message code="crdI18nActLabel.procdefKey.label" default="Procdef Key" /></span>
-	  <span class="property-value" aria-labelledby="procdefKey-label"><g:fieldValue bean="${actLabelInst}" field="procdefKey"/></span>
+	  <span class="property-value" aria-labelledby="procdefKey-label">${procdefKey?.encodeAsHTML()}</span>
 	</li>
       </ol>
       <g:form action="savelocale" >
+	<g:hiddenField name="key" value="${procdefKey}" />
 	<fieldset class="form">
 	  <div class="fieldcontain ${hasErrors(bean: actLabelInst, field: 'locale', 'error')} ">
 	    <label for="locale">
 	      <g:message code="crdI18nActLabel.locale.label" default="Locale" />
 	    </label>
 	    <g:textField name="locale" maxlength="24" value="${actLabelInst?.locale}"/>
+	  </div>
+	  <div class="fieldcontain">
+	    <label></label>
+	    <g:message code="crdI18nActLabel.create.help1" default="Help 1"/>
+	  </div>
+	  <div class="fieldcontain">
+	    <label></label>
+	    <g:message code="crdI18nActLabel.create.help2" default="Help 2"/>
 	  </div>
 	</fieldset>
 	<fieldset class="buttons">
