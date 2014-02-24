@@ -13,7 +13,7 @@ import org.activiti.engine.repository.ProcessDefinition;
 
 public class ActivitiEngineUtil {
 
-	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
+	public static final Logger log = Logger.getLogger(ActivitiEngineUtil.class.getName());
 	
 	public static ProcessEngineConfiguration loadConfigFromFile(String fileName) {
 		ProcessEngineConfiguration engineConfig = null;
