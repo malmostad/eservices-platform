@@ -34,7 +34,7 @@ public class ActivityWorkflowInfo implements Serializable {
 	private static final long serialVersionUID = 8813710157742764480L;
 	
 	UserInfo assignedUser;
-	Set<UserInfo> candidates;
+	Set<CandidateInfo> candidates;
 	int priority;
 	
 	public ActivityWorkflowInfo() {
@@ -49,11 +49,11 @@ public class ActivityWorkflowInfo implements Serializable {
 		this.assignedUser = assignedUser;
 	}
 
-	public Set<UserInfo> getCandidates() {
+	public Set<CandidateInfo> getCandidates() {
 		return candidates;
 	}
 
-	public void setCandidates(Set<UserInfo> candidates) {
+	public void setCandidates(Set<CandidateInfo> candidates) {
 		this.candidates = candidates;
 	}
 

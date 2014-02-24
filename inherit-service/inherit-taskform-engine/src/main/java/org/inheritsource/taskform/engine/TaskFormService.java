@@ -38,6 +38,7 @@ import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
+import org.inheritsource.service.common.domain.CandidateInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.InboxTaskItem;
@@ -81,12 +82,20 @@ public class TaskFormService {
 		log.severe("Creating TaskFormService");
 		taskFormDb = new TaskFormDb();
 		orbeonService = new OrbeonService();
-		activitiEngineService = new ActivitiEngineService();
+		//activitiEngineService = new ActivitiEngineService();
 		
 		// TODO hostname,port and base DN should be resolved from configuration
 		aSelectorDirUtils = new ActorSelectorDirUtils("localhost", "1389",
 				"ou=IDMGroups,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"); // Base
 																				// DN
+	}
+	
+	public ActivitiEngineService getActivitiEngineService() {
+		return activitiEngineService;
+	}
+
+	public void setActivitiEngineService(ActivitiEngineService activitiEngineService) {
+		this.activitiEngineService = activitiEngineService;
 	}
 
 	public Set<ProcessDefinitionInfo> getProcessDefinitions() {
@@ -433,7 +442,7 @@ public class TaskFormService {
 				}
 				appendCandidateUserInfo(pendingItem);
 				pendingItem
-						.setAssignedUser(appendTaskFormServiceUserData(pendingItem
+						.setAssignedUser((UserInfo) appendTaskFormServiceUserData(pendingItem
 								.getAssignedUser()));
 			}
 
@@ -522,7 +531,7 @@ public class TaskFormService {
 	private void appendTaskFormServiceData(
 			ActivityWorkflowInfo activityWorkflowInfo) {
 		activityWorkflowInfo
-				.setAssignedUser(appendTaskFormServiceUserData(activityWorkflowInfo
+				.setAssignedUser((UserInfo) appendTaskFormServiceUserData(activityWorkflowInfo
 						.getAssignedUser()));
 	}
 
@@ -624,8 +633,8 @@ public class TaskFormService {
 		return result;
 	}
 
-	private UserInfo appendTaskFormServiceUserData(UserInfo ui) {
-		UserInfo dbUi = null;
+	private CandidateInfo appendTaskFormServiceUserData(CandidateInfo ui) {
+		CandidateInfo dbUi = null;
 
 		if (ui != null) {
 			dbUi = taskFormDb.getUserByUuid(ui.getUuid());
@@ -644,10 +653,14 @@ public class TaskFormService {
 			ActivityInstancePendingItem activityInstancePendingItem) {
 		log.severe("UserInfo appending UserEntity data...");
 		if (activityInstancePendingItem.getCandidates() != null) {
-			Set<UserInfo> candidates = new TreeSet<UserInfo>();
-			for (UserInfo ui : activityInstancePendingItem.getCandidates()) {
-				if (ui != null) {
-					candidates.add(appendTaskFormServiceUserData(ui));
+			Set<CandidateInfo> candidates = new TreeSet<CandidateInfo>();
+			for (CandidateInfo ci : activityInstancePendingItem.getCandidates()) {
+				if (ci != null) {
+					if(ci instanceof UserInfo) {
+						candidates.add(appendTaskFormServiceUserData(ci));
+					} else {
+						candidates.add(ci);
+					}
 				}
 			}
 			activityInstancePendingItem.setCandidates(candidates);
@@ -1273,6 +1286,16 @@ public class TaskFormService {
 		}
 
 		return userInfo;
+	}
+	
+	public boolean isTok() {
+		log.severe("TOKEN WAS HERE");
+		return true;
+	}
+	
+	public String executeSomething(String taskId, String param) {
+		log.severe("TOKEN loggar " + taskId + " och " + param);
+		return taskId + ":" +  param;
 	}
 
 }

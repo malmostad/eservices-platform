@@ -26,15 +26,12 @@ package org.inheritsource.service.common.domain;
 import java.io.Serializable;
 import javax.xml.bind.annotation.*;
 
-@XmlRootElement(name="userInfo")
+@XmlRootElement(name="groupInfo")
 @XmlType(namespace="http://www.motrice.org/namespace")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserInfo implements CandidateInfo, Serializable, Comparable {
+public class GroupInfo implements CandidateInfo, Serializable, Comparable {
 
 	private static final long serialVersionUID = -4478283095497351127L;
-
-	public static final int CATEGORY_INTERNAL = 1;
-	public static final int CATEGORY_EXTERNAL = 2;
 
 	public static final String ANONYMOUS_UUID = "anonymous";
 	
@@ -48,9 +45,9 @@ public class UserInfo implements CandidateInfo, Serializable, Comparable {
 	String label;
 	
 	@XmlElement(required=false)
-	int category;
-
-	public UserInfo() {
+	String type;
+	
+	public GroupInfo() {
 		
 	}
 
@@ -77,31 +74,25 @@ public class UserInfo implements CandidateInfo, Serializable, Comparable {
 	public void setLabel(String label) {
 		this.label = label;
 	}
-
-	/**
-	 * CATEGORY_INTERNAL or CATEGORY_EXTERNAL
-	 * @return
-	 */
-	public int getCategory() {
-		return category;
+	
+	public String getType() {
+		return label;
 	}
 
-	/**								
-	 * @param category CATEGORY_INTERNAL or CATEGORY_EXTERNAL
-	 */
-	public void setCategory(int category) {
-		this.category = category;
+	public void setType(String type) {
+		this.type = type;
 	}
 
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + category;
 		result = prime * result + ((label == null) ? 0 : label.hashCode());
 		result = prime * result
 				+ ((labelShort == null) ? 0 : labelShort.hashCode());
 		result = prime * result + ((uuid == null) ? 0 : uuid.hashCode());
+		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		return result;
 	}
 
@@ -113,9 +104,7 @@ public class UserInfo implements CandidateInfo, Serializable, Comparable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		UserInfo other = (UserInfo) obj;
-		if (category != other.category)
-			return false;
+		GroupInfo other = (GroupInfo) obj;
 		if (label == null) {
 			if (other.label != null)
 				return false;
@@ -131,6 +120,11 @@ public class UserInfo implements CandidateInfo, Serializable, Comparable {
 				return false;
 		} else if (!uuid.equals(other.uuid))
 			return false;
+		if (type == null) {
+			if (other.type != null)
+				return false;
+		} else if (!type.equals(other.type))
+			return false;
 		return true;
 	}
 
@@ -144,6 +138,5 @@ public class UserInfo implements CandidateInfo, Serializable, Comparable {
 		String ostr = (o==null ? "null" : o.toString());
 		return this.toString().compareTo(ostr);
 	}
-	
 	
 }

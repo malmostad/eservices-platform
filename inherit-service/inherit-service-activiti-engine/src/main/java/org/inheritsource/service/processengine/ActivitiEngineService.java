@@ -1,15 +1,12 @@
 package org.inheritsource.service.processengine;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.nio.file.Paths;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Formatter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -18,18 +15,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Logger;
-
-import javax.security.auth.login.LoginContext;
-
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
-import org.activiti.bpmn.model.Pool;
 import org.activiti.bpmn.model.Process;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
-import org.activiti.engine.ProcessEngines;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricActivityInstance;
@@ -39,9 +31,7 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.activiti.engine.repository.Deployment;
-import org.activiti.engine.repository.DeploymentBuilder;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.IdentityLink;
@@ -52,8 +42,10 @@ import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
+import org.inheritsource.service.common.domain.CandidateInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
+import org.inheritsource.service.common.domain.GroupInfo;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
@@ -67,13 +59,22 @@ import org.inheritsource.service.common.domain.UserInfo;
 
 public class ActivitiEngineService {
 
-	private static ProcessEngine engine = null; 
+	private ProcessEngine engine = null; 
+	
 	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
 	
 	public ActivitiEngineService() {
 		initEngine();		
 	}
 	
+	public ProcessEngine getEngine() {
+		return engine;
+	}
+
+	public void setEngine(ProcessEngine engine) {
+		this.engine = engine;
+	}
+
 	public void close() {
 		if(engine != null) {
 			engine.close();
@@ -1459,26 +1460,32 @@ public class ActivitiEngineService {
 		// run 
 		// mvn exec:java
 		// in inherit-service/inherit-service-activiti-engine directory
+		Deployment deployment;
 		
-		Deployment deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
 		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
 		
 		deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
 		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
 		
+		deployment = activitiEngineService.deployBpmn("../../bpm-processes/MyProcessExpression.bpmn");
+		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
+
 		System.exit(0);
 	}
 	
-	private HashSet<UserInfo> getCandidatesByTaskId(String taskId) {
-		HashSet<UserInfo> candidates = new HashSet<UserInfo>();
+	private HashSet<CandidateInfo> getCandidatesByTaskId(String taskId) {
+		HashSet<CandidateInfo> candidates = new HashSet<CandidateInfo>();
 		List<IdentityLink> identityLinks = 
 				engine.getTaskService().getIdentityLinksForTask(taskId);
-		UserInfo candidate = null;
+		CandidateInfo candidate = null;
 		String userId = null;
+		String groupId = null;
 		
 		if(identityLinks != null) {
 			for(IdentityLink iL : identityLinks) {
 				if(iL.getType().equals(IdentityLinkType.CANDIDATE)) {
+
 					userId = iL.getUserId();
 					
 					if(userId != null) {
@@ -1486,6 +1493,16 @@ public class ActivitiEngineService {
 						candidate.setUuid(userId);
 						candidate.setLabel(userId);
 						candidate.setLabelShort(userId);
+						candidates.add(candidate);
+					}
+					
+					groupId = iL.getGroupId();
+					
+					if(groupId != null) {
+						candidate = new GroupInfo();
+						candidate.setUuid(groupId);
+						candidate.setLabel(groupId);
+						candidate.setLabelShort(groupId);
 						candidates.add(candidate);
 					}
 				}

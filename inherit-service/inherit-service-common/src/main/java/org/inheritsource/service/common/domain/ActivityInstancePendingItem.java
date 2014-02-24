@@ -33,18 +33,18 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 
 	private static final long serialVersionUID = 6551923994738613262L;
 
-	Set<UserInfo> candidates;
+	Set<CandidateInfo> candidates;
 	UserInfo assignedUser;
 	
 	public ActivityInstancePendingItem() {
 		
 	}
 
-	public Set<UserInfo> getCandidates() {
+	public Set<CandidateInfo> getCandidates() {
 		return candidates;
 	}
 
-	public void setCandidates(Set<UserInfo> candidates) {
+	public void setCandidates(Set<CandidateInfo> candidates) {
 		this.candidates = candidates;
 	}
 
