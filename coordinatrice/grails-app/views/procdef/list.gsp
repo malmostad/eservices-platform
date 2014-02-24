@@ -27,6 +27,7 @@
 	  <tr>
 	    <g:sortableColumn property="name" title="${message(code: 'procdef.name.label', default: 'Name')}" />
 	    <g:sortableColumn property="versions" title="${message(code: 'procdef.versions.label', default: 'Versions')}" />
+	    <th><g:message code="procdef.i18n.labels.title" default="Intl"/></th>
 	  </tr>
 	</thead>
 	<tbody>
@@ -34,6 +35,9 @@
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 	      <td><g:link action="listname" id="${procdefInfo.key}">${procdefInfo.name}</g:link></td>
 	      <td>${procdefInfo.versions}</td>
+	      <td><g:link controller="crdI18nActLabel" action="listkey" id="${procdefInfo.key}">
+		  <g:message code="procdef.i18n.labels.label" default="See labels"/>
+	      </g:link></td>
 	    </tr>
 	  </g:each>
 	</tbody>

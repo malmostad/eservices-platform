@@ -2,6 +2,9 @@ package org.motrice.coordinatrice
 
 import org.motrice.coordinatrice.pxd.PxdFormdefVer
 
+/**
+ * Actions related to form selection.
+ */
 class FormService {
 
   /**

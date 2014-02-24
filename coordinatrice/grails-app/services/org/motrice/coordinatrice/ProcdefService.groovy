@@ -345,7 +345,7 @@ class ProcdefService {
   /**
    * Find all process definitions from a process key (the version-independent
    * part of the id) and populate their activities.
-   * Returns a list of process definitions ordered by descending version.
+   * Returns a list of full process definitions ordered by descending version.
    */
   List findProcessDefinitionsFromKey(String key) {
     if (log.debugEnabled) log.debug "findProcdefFromKey << ${key}"
