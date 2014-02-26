@@ -2,19 +2,38 @@
 -- Initialize a motrice database with some demo data 
 --
 
+INSERT INTO mtf_form_type(
+            formtypeid, label, formhandlerbean)
+    VALUES (1, 'Orbeon', 'motriceOrbeonFormHandler');
+INSERT INTO mtf_form_type(
+            formtypeid, label, formhandlerbean)
+    VALUES (2, 'SignStartForm', 'motriceSignStartFormHandler');
+INSERT INTO mtf_form_type(
+            formtypeid, label, formhandlerbean)
+    VALUES (3, 'SignTaskForm', 'motriceSignTaskFormHandler');
+INSERT INTO mtf_form_type(
+            formtypeid, label, formhandlerbean)
+    VALUES (4, 'PayTask', 'motricePaymentFormHandler');
+INSERT INTO mtf_form_type(
+            formtypeid, label, formhandlerbean)
+    VALUES (5, 'NotifyAct', 'motriceNotifyActFormHandler');
+
+
 --
 -- mtf_start_form_definition
 --
 INSERT INTO mtf_start_form_definition(
             startformdefinitionid, 
 	    authtypereq, 
-	    formpath, 
+	    formTypeId,
+	    formDefinitionKey,
 	    processdefinitionuuid,             
 	    userdataxpath
 	    )
        VALUES (
             nextval('hibernate_sequence'), 
             'USERSESSION',
+	    1,
             'start/demo-ansokan--v002',
             'TestFunctionProcess1:1:9',
             ''
@@ -22,13 +41,15 @@ INSERT INTO mtf_start_form_definition(
 INSERT INTO mtf_start_form_definition(
             startformdefinitionid, 
 	    authtypereq, 
-	    formpath, 
+	    formTypeId,
+	    formDefinitionKey, 
 	    processdefinitionuuid,             
 	    userdataxpath
 	    )
        VALUES (
             nextval('hibernate_sequence'), 
             'USERSESSION',
+	    1,
             'miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor--v002',
             'Arendeprocess:1:4',
             ''
@@ -36,13 +57,15 @@ INSERT INTO mtf_start_form_definition(
 INSERT INTO mtf_start_form_definition(
             startformdefinitionid, 
 	    authtypereq, 
-	    formpath, 
+	    formTypeId,
+	    formDefinitionKey, 
 	    processdefinitionuuid,             
 	    userdataxpath
 	    )
        VALUES (
             nextval('hibernate_sequence'), 
             'USERSESSION',
+	    1,
             'miljoforvaltningen/anmalan-hemkompostering--v002',
             'Arendeprocess:1:4',
             ''
@@ -56,36 +79,42 @@ INSERT INTO mtf_activity_form_definition(
             processdefinitionuuid,
             activityformdefinitionid, 
             activitydefinitionuuid, 
-            formpath
+            formTypeId,
+	    formDefinitionKey
             )
        VALUES (
             'Arendeprocess:1:4',
             nextval('hibernate_sequence'), 
             'sid-DE05B2D6-1F3B-425A-9D98-7513096A910F', 
+	    1,
             'basprocess/registrera--v002'
 );
 INSERT INTO mtf_activity_form_definition(
             processdefinitionuuid,
             activityformdefinitionid, 
             activitydefinitionuuid, 
-            formpath
+            formTypeId,
+	    formDefinitionKey
             )
        VALUES (
             'Arendeprocess:1:4',
             nextval('hibernate_sequence'), 
             'sid-3BA63215-750B-4E88-95F4-7567FF8FF769', 
+	    1,
             'basprocess/handlagga--v002'
 );
 INSERT INTO mtf_activity_form_definition(
             processdefinitionuuid,
             activityformdefinitionid, 
             activitydefinitionuuid, 
-            formpath
+            formTypeId,
+	    formDefinitionKey
             )
        VALUES (
             'Arendeprocess:1:4',
             nextval('hibernate_sequence'), 
             'sid-22F22FC8-281E-4155-BE3D-AF4BEC1D0C2D', 
+	    1,
             'basprocess/beslut--v002'
 );
 

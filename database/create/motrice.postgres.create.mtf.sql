@@ -15,12 +15,18 @@ ALTER TABLE ONLY motrice_user
 ALTER TABLE ONLY motrice_user
     ADD CONSTRAINT motrice_user_uuid_key UNIQUE (uuid);
 
+CREATE TABLE mtf_form_type (
+    formTypeId bigint PRIMARY KEY,
+    label character varying(255),
+    formHandlerBean   character varying(255) -- spring bean id
+);
 
 CREATE TABLE mtf_activity_form_definition (
     activityformdefinitionid bigint NOT NULL,
     processdefinitionuuid character varying(255),
     activitydefinitionuuid character varying(255),
-    formpath character varying(255)
+    formTypeId		bigint NOT NULL REFERENCES mtf_form_type (formTypeId),
+    formDefinitionKey   character varying(255)
 );
 
 ALTER TABLE ONLY mtf_activity_form_definition
@@ -31,7 +37,8 @@ CREATE TABLE mtf_process_activity_form_instance (
     processactivityforminstanceid bigint NOT NULL,
     activityinstanceuuid character varying(255),
     formdocid character varying(255) NOT NULL,
-    formpath character varying(255) NOT NULL,
+    formTypeId		bigint NOT NULL REFERENCES mtf_form_type (formTypeId),
+    formDefinitionKey   character varying(255),
     processinstanceuuid character varying(255),
     submitted timestamp without time zone,
     userid character varying(255) NOT NULL,
@@ -61,7 +68,8 @@ ALTER TABLE ONLY mtf_process_activity_tag
 CREATE TABLE mtf_start_form_definition (
     startformdefinitionid bigint NOT NULL,
     authtypereq character varying(255) NOT NULL,
-    formpath character varying(255) NOT NULL,
+    formTypeId		bigint NOT NULL REFERENCES mtf_form_type (formTypeId),
+    formDefinitionKey   character varying(255),
     processdefinitionuuid character varying(255),
     userdataxpath character varying(255)
 );
@@ -70,7 +78,7 @@ ALTER TABLE ONLY mtf_start_form_definition
     ADD CONSTRAINT mtf_start_form_definition_pkey PRIMARY KEY (startformdefinitionid);
 
 ALTER TABLE ONLY mtf_start_form_definition
-    ADD CONSTRAINT mtf_start_form_definition_formpath_key UNIQUE (formpath);
+    ADD CONSTRAINT mtf_start_form_definition_formpath_key UNIQUE (formTypeId, formDefinitionKey);
 
 
 CREATE TABLE mtf_tag_type (
