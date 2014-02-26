@@ -17,6 +17,9 @@ INSERT INTO mtf_form_type(
 INSERT INTO mtf_form_type(
             formtypeid, label, formhandlerbean)
     VALUES (5, 'NotifyAct', 'motriceNotifyActFormHandler');
+INSERT INTO mtf_form_type(
+            formtypeid, label, formhandlerbean)
+    VALUES (5, 'No form', 'motriceNoFormHandler');
 
 
 --
