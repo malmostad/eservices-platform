@@ -127,6 +127,20 @@ class CrdProcdefState {
     return result
   }
 
+  String startableToString() {
+    def result = 'NotStartable'
+    switch (startable) {
+    case STARTABLE_TEST:
+    result = 'TestOnly'
+    break;
+    case STARTABLE_PRODUCTION:
+    result = 'Production'
+    break;
+    }
+
+    return result
+  }
+
   String toString() {
     defaultMessage
   }
