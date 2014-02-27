@@ -120,6 +120,53 @@ class ActivityLabelService {
     return result
   }
 
+  static final SINGLE_ACT_Q = 'from CrdI18nActLabel l where l.procdefKey=? and ' +
+    'l.locale=? and l.actdefName=? and l.procdefVer < ? ' +
+    'order by l.procdefKey asc, l.actdefName asc, l.procdefVer desc'
+  static final ALL_ACT_Q = 'from CrdI18nActLabel l where procdefKey=? and ' +
+    'locale=? and procdefVer <= ? ' +
+    'order by l.procdefKey asc, l.actdefName asc, l.procdefVer desc'
+
+  /**
+   * Find activity labels
+   */
+  List findLabels(String procdefkey, String locale, String activityname, String version) {
+    if (log.debugEnabled) log.debug "findLabels << ${procdefkey}, ${locale}, ${activityname}, ${version}"
+    Integer versionInt = 1
+    try {
+      if (version) versionInt = version as Integer
+    } catch (NumberFormatException exc) {
+      // Ignore
+    }
+    // DEBUG
+    println "findLabels versionInt: ${versionInt}"
+    def list = null
+    if (activityname) {
+      list = CrdI18nActLabel.findAll(SINGLE_ACT_Q,
+				     [procdefkey, locale, activityname, versionInt])
+    } else {
+      list = CrdI18nActLabel.findAll(ALL_ACT_Q, [procdefkey, locale, versionInt])
+    }
+
+    // Process the list: remove null labels and duplicates.
+    // Duplicate removal depends on the query result being ordered the right way.
+    // Convert to list of maps.
+    def keySet = new TreeSet()
+    def resultList = []
+    list.each {label ->
+      String key = "${label.procdefKey}:${label.procdefVer}:${label.actdefName}"
+      if (!keySet.contains(key) && label.label != null) {
+	keySet << key
+	def entry = [procdefKey: label.procdefKey, procdefVer: label.procdefVer,
+	actdefName: label.actdefName, locale: label.locale, label: label.label]
+	resultList << entry
+      }
+    }
+
+    if (log.debugEnabled) log.debug "findLabels >> ${resultList?.size()}"
+    return resultList
+  }
+
   /**
    * Update edited activity labels.
    * Return the number of updated activity labels.
