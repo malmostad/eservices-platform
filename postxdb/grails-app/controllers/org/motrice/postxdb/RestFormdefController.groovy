@@ -79,8 +79,12 @@ class RestFormdefController {
     def path = new FormdefPath("${params?.app}/${params?.form}")
     def itemObj = null
     if (params?.resource == 'form.xhtml') {
-      String itemPath = "${path}/form.xhtml"
-      itemObj = PxdItem.findByPath(itemPath)
+      if (path.library) {
+	itemObj = restService.findLibraryForm(path)
+      } else {
+	String itemPath = "${path}/form.xhtml"
+	itemObj = PxdItem.findByPath(itemPath)
+      }
     } else {
       itemObj = PxdItem.findByPath(params?.resource)
     }
@@ -98,7 +102,7 @@ class RestFormdefController {
 	}
       }
     } else {
-      if (log.debugEnabled) log.debug "getop item NOT FOUND: ${params?.app}/${params?.form}"
+      if (log.infoEnabled) log.info "getop item 404 (NOT FOUND): ${params?.app}/${params?.form}"
       render(status: 404, text: 'Item was not found', contentType: 'text/plain')
     }
   }

@@ -136,6 +136,32 @@ class RestService {
       log.debug "findEditableForms: total(${count}), list(${list.size()})"
     return result
   }
+
+  static final LIB_Q = 'from PxdFormdefVer v where v.appName=? and v.formName=? ' +
+    'and draft=? order by fvno desc limit 1'
+
+  /**
+   * Find a library form, i.e. the form name is the magic "library".
+   * In this case find and return the latest version.
+   * Return null in case there is no library.
+   */
+  PxdItem findLibraryForm(FormdefPath path) {
+    if (log.debugEnabled) log.debug "findLibraryForm << ${path}"
+    def result = null
+    // Find the latest version
+    def versionList = PxdFormdefVer.
+    findAll(LIB_Q, [path.appName, FormdefPath.LIBRARY_NAME, FormdefPath.PUBLISHED])
+    if (!versionList.isEmpty()) {
+      def latestVersion = versionList[0]
+      def latestPath = new FormdefPath(path.appName, FormdefPath.LIBRARY_NAME,
+				       latestVersion.fvno, FormdefPath.PUBLISHED)
+      String itemPath = "${latestPath}/form.xhtml"
+      result = PxdItem.findByPath(itemPath)
+    }
+
+    if (log.debugEnabled) log.debug "findLibraryForm >> ${result}"
+    return result
+  }
   
   /**
    * Search among editable forms
