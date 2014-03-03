@@ -50,6 +50,7 @@ import org.inheritsource.service.common.domain.ProcessInstanceListItem;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.TimelineItem;
+import org.inheritsource.service.common.domain.UserDirectoryEntry;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.orbeon.OrbeonService;
@@ -77,12 +78,14 @@ public class TaskFormService {
 	ActivitiEngineService activitiEngineService;
 	ActorSelectorDirUtils aSelectorDirUtils;
     OrbeonService orbeonService;
-
+    UserDirectoryService userDirectoryService;
+    
 	public TaskFormService() {
 		log.severe("Creating TaskFormService");
 		taskFormDb = new TaskFormDb();
 		orbeonService = new OrbeonService();
 		activitiEngineService = new ActivitiEngineService();
+		userDirectoryService = new UserDirectoryService();
 		
 		// TODO hostname,port and base DN should be resolved from configuration
 		aSelectorDirUtils = new ActorSelectorDirUtils("localhost", "1389",
@@ -1279,5 +1282,19 @@ public class TaskFormService {
 
 		return userInfo;
 	}
+
+	public List<UserDirectoryEntry> dirSearchUserEntries(String[] filterParams) {
+		List<UserDirectoryEntry> result = null;
+		try {
+			System.out.println("TaskFormService.dirSearchEntries: " + (userDirectoryService==null ? "null" : "nonull"));
+			result = userDirectoryService.searchForUserEntries(filterParams);
+		} catch (Exception e) {
+			log.severe(e.toString());
+			//TODO remove
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 
 }

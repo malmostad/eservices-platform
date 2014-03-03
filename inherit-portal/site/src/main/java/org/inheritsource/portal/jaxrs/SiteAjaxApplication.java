@@ -42,6 +42,7 @@ import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.Tag;
+import org.inheritsource.service.common.domain.UserDirectoryEntry;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.taskform.engine.TaskFormService;
 import org.slf4j.Logger;
@@ -236,7 +237,62 @@ public class SiteAjaxApplication extends AbstractResource {
 		return result; 
 	}
 		
-	
+	@POST
+	@Consumes("application/x-www-form-urlencoded")
+	@Produces("application/json")
+	@Path("/dirSearchUserEntries") 
+	public List<UserDirectoryEntry> dirSearchUserEntries(
+			@Context HttpServletRequest servletRequest,
+			@Context HttpServletResponse servletResponse,
+			@FormParam("cn") String cn,
+			@FormParam("sn") String sn,
+			@FormParam("mail") String mail,
+			@FormParam("givenName") String givenName,
+			@FormParam("department") String department,
+			@FormParam("company") String company) {
+		
+		List<UserDirectoryEntry> result = new ArrayList<UserDirectoryEntry>();
+		
+		String userId = getUserUuid(servletRequest);
+		
+		//log.debug("userId: " + userId);
+		log.debug("cn: " + (cn==null ? "null" : cn.trim()));
+		log.debug("sn: " + (sn==null ? "null" : sn.trim()));
+		log.debug("mail: " + (mail==null ? "null" : mail.trim()));
+		log.debug("givenName: " + (givenName==null ? "null" : givenName.trim()));
+		log.debug("department: " + (department==null ? "null" : department.trim()));
+		log.debug("company: " + (company==null ? "null" : company.trim()));
+		
+//		if (userId != null) {
+			// user is authenticated
+/*
+		String[] fParams = {(cn==null ? "" : cn.trim()),
+				            (sn==null ? "" : sn.trim()),
+				            (mail==null ? "" : mail.trim()),
+				            (givenName==null ? "" : givenName.trim()),
+				            (department==null ? "" : department.trim()),
+				            (company==null ? "" : company.trim())};
+
+		String[] fParams = {(cn==null ? "" : cn.trim()),
+	            (sn==null ? "" : sn.trim()),
+	            (mail==null ? "" : mail.trim())};
+*/	    
+		String[] fParams = 	{(cn==null ? null : cn.trim()),
+							 (sn==null ? null : sn.trim()),
+							 (mail==null ? null : mail.trim()),
+							 (givenName==null ? null : givenName.trim()),
+							 (department==null ? null : department.trim()),
+							 (company==null ? null : company.trim())
+							};
+		result = engine.dirSearchUserEntries(fParams);
+/*		}
+		else {
+			// TODO response http error
+		}
+*/		
+		return result; 
+	}
+		
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
 	@Produces("application/json")

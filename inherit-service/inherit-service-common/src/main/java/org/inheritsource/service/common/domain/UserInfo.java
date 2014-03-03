@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement(name="userInfo")
 @XmlType(namespace="http://www.motrice.org/namespace")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class UserInfo implements CandidateInfo, Serializable, Comparable {
+public class UserInfo implements CandidateInfo, Serializable, Comparable<UserInfo> {
 
 	private static final long serialVersionUID = -4478283095497351127L;
 
@@ -140,8 +140,8 @@ public class UserInfo implements CandidateInfo, Serializable, Comparable {
 	}
 
 	@Override
-	public int compareTo(Object o) {
-		String ostr = (o==null ? "null" : o.toString());
+	public int compareTo(UserInfo other) {
+		String ostr = (other==null ? "null" : other.toString());
 		return this.toString().compareTo(ostr);
 	}
 	

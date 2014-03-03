@@ -293,7 +293,7 @@
                   </configfile>
                 </configfiles>
                 <properties>
-                	<cargo.jvmargs>-Xmx1024m -Xms512m -XX:PermSize=256m</cargo.jvmargs>
+                	<cargo.jvmargs>-Xmx1024m -Xms512m -XX:PermSize=512m -XX:MaxPermSize=512m</cargo.jvmargs>
                 </properties>
               </configuration>
               <container>
