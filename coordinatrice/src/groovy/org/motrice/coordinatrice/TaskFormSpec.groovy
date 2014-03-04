@@ -44,10 +44,13 @@ class TaskFormSpec {
   // State of this connection, one of the STATE constants
   Integer state
 
-  // The path of this connection, or null.
-  // The following states have a path:
+  // The key defining this connection
+  // The following states have a connection key:
   // FORM, SIGN_ACTIVITY, PAY_ACTIVITY, NOTIFY_ACTIVITY
-  String path
+  String connectionKey
+
+  // Text to render in the gui
+  String connectionLabel
 
   // The ActDef instance to which this connection belongs
   ActDef activity
@@ -58,17 +61,23 @@ class TaskFormSpec {
    */
   TaskFormSpec(ActDef activity, MtfActivityFormDefinition connection) {
     this.activity = activity
-    if (!connection?.formType) {
+    if (!connection?.formHandlerType) {
       state = UNCONNECTED_STATE
-      path = null
+      connectionKey = null
+      connectionLabel = null
     } else {
-      state = connection.formType.id
+      state = connection.formHandlerType.id
       switch (state) {
       case FORM_STATE:
+      connectionKey = connection.formConnectionKey
+      connectionLabel = connectionKey
+      break
       case SIGN_ACTIVITY_STATE:
       case PAY_ACTIVITY_STATE:
       case NOTIFY_ACTIVITY_STATE:
-      path = connection.formdefKey
+      connectionKey = connection.formConnectionKey
+      def otherActivity = activity.findSibling(connectionKey)
+      connectionLabel = otherActivity?.name
       break
       }
     }
@@ -80,6 +89,8 @@ class TaskFormSpec {
    */
   TaskFormSpec(ActivityConnectionCommand command, ActDef activity) {
     this.activity = activity
+    def otherActivity = null
+    if (command.otherActivityId) otherActivity = activity.findSibling(command.otherActivityId)
     // This happens if no radio button is selected
     if (command.form && command.connectionState == null) {
       command.connectionState = TaskFormSpec.FORM_STATE
@@ -88,16 +99,18 @@ class TaskFormSpec {
     
     switch (state) {
     case FORM_STATE:
-    path = command?.form?.path
+    connectionKey = command?.form?.path
+    connectionLabel = connectionKey
     break
     case SIGN_ACTIVITY_STATE:
     case PAY_ACTIVITY_STATE:
     case NOTIFY_ACTIVITY_STATE:
-    path = activity?.uuid
+    connectionKey = otherActivity?.uuid
+    connectionLabel = otherActivity?.name
     break
     default:
     // No connection specified
-    path = null
+    connectionKey = null
     }
   }
 
@@ -110,8 +123,8 @@ class TaskFormSpec {
    */
   PxdFormdefVer findFormdef() {
     def result = null
-    if (formState && path) {
-      result = PxdFormdefVer.findByPath(path)
+    if (formState && connectionKey) {
+      result = PxdFormdefVer.findByPath(connectionKey)
     }
 
     return result
@@ -130,6 +143,10 @@ class TaskFormSpec {
     map.values = [FORM_STATE, NO_FORM_STATE, SIGN_START_FORM_STATE, SIGN_ACTIVITY_STATE,
 		  NOTIFY_ACTIVITY_STATE]
     return map
+  }
+
+  boolean isUnconnectedState() {
+    state == UNCONNECTED_STATE
   }
 
   boolean isFormState() {
@@ -191,46 +208,11 @@ class TaskFormSpec {
    * Convert to a display string
    */
   String toDisplay() {
-    switch (state) {
-    case FORM_STATE:
-    path
-    break
-    case SIGN_ACTIVITY_STATE:
-    case PAY_ACTIVITY_STATE:
-    case NOTIFY_ACTIVITY_STATE:
-    path
-    break
-    default:
-    ''
-    }
+    connectionLabel ?: ''
   }
 
-  /**
-   * Convert to a string suitable as formpath value
-   * FIXIT
-   */
   String toString() {
-    switch (state) {
-    case UNCONNECTED_STATE:
-    ''
-    break
-    case FORM_STATE:
-    path
-    break
-    case NO_FORM_STATE:
-    NO_FORM_KEY
-    break
-    case SIGN_START_FORM_STATE:
-    SIGN_START_FORM_KEY
-    break
-    case SIGN_ACTIVITY_STATE:
-    "${SIGN_ACTIVITY_KEY}/${path}"
-    break
-    case PAY_ACTIVITY_STATE:
-    "${PAY_ACTIVITY_KEY}/${path}"
-    default:
-    '***UNKNOWN***'
-    }
+    "[TaskFormSpec(${state}) owner=${activity} connection: ${connectionKey}/${connectionLabel}]"
   }
 
 }

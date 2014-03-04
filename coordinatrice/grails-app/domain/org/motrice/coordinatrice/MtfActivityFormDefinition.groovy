@@ -8,11 +8,15 @@ class MtfActivityFormDefinition {
 
   String formPath
 
-  MtfFormType formType
+  MtfFormType formHandlerType
 
-  String formdefKey
+  String formConnectionKey
 
-  Long formdefDbid
+  // If the connection involves an activity, store the activity name here
+  String formConnectionLabel
+
+  // If the connection is a form (PxdFormdefVer), store its id here
+  Long formdefId
 
   static mapping = {
     id column: 'activityformdefinitionid'
@@ -20,15 +24,18 @@ class MtfActivityFormDefinition {
     processDefinitionId column: 'processdefinitionuuid'
     activityDefinitionId column: 'activitydefinitionuuid'
     formPath column: 'formpath'
-    formType column: 'formtypeid'
-    formdefKey column: 'formdefinitionkey'
+    formHandlerType column: 'formtypeid'
+    formConnectionKey column: 'formdefinitionkey'
+    formdefId column: 'formconnectiondbid'
+    formConnectionLabel column: 'formconnectionlabel'
   }
   static constraints = {
     processDefinitionId nullable: true, maxSize: 255
     activityDefinitionId nullable: true, maxSize: 255
     formPath nullable: true, maxSize: 255
-    formdefKey nullable: true, maxSize: 400
-    formdefDbid nullable: true, min: 0L
+    formConnectionKey nullable: true, maxSize: 400
+    formdefId nullable: true, min: 0L
+    formConnectionLabel nullable: true
   }
 
   static MtfActivityFormDefinition createFromActDef(ActDef actDefInst) {
@@ -39,10 +46,11 @@ class MtfActivityFormDefinition {
   }
 
   def assign(TaskFormSpec taskFormSpec) {
-    formType = MtfFormType.get(taskFormSpec.state)
-    formdefKey = taskFormSpec.path
+    formHandlerType = MtfFormType.get(taskFormSpec.state)
+    formConnectionKey = taskFormSpec.connectionKey
     def formdef = taskFormSpec.findFormdef()
-    if (formdef) formdefDbid = formdef.id
+    if (formdef) formdefId = formdef.id
+    formConnectionLabel = taskFormSpec.connectionLabel
   }
 
   String toString() {

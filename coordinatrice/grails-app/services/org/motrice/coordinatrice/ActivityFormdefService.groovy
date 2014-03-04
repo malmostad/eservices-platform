@@ -81,7 +81,7 @@ class ActivityFormdefService {
       log.error "updateActivityConnection: ${activityFormdef.errors.allErrors.join(',')}"
     }
 
-    if (log.debugEnabled) log.debug "updateActivityConnection >> ${activityFormdef}, (${activityConnection})"
+    if (log.debugEnabled) log.debug "updateActivityConnection >> ${activityFormdef}, cnx: ${activityConnection}"
   }
 
 }

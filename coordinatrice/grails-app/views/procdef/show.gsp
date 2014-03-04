@@ -112,7 +112,7 @@
 	      <g:set var="cnx" value="${new org.motrice.coordinatrice.TaskFormSpec(a, formdef)}"/>
 	      <span class="property-value" aria-labelledby="activities-label"><tr>
 		  <td><g:link controller="actDef" action="show" id="${a?.fullId}">${a?.encodeAsHTML()}</g:link></td>
-		  <g:render template="/activityConnection" model="[connection:cnx, actDefInst:a, editable:isEditable]"/>
+		  <g:render template="/activityConnection" model="[connection:cnx, actDefInst:a, formdef:formdef, editable:isEditable]"/>
 	      </tr></span>
 	    </g:each>
 	    </table>

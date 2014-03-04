@@ -38,7 +38,7 @@
       <hr class="property-value-sep"/>
       <g:radio name="connectionState" value="${TaskFormSpec.SIGN_ACTIVITY_STATE}" checked="${activityConnection?.signActivityState}"/>
       <g:message code="activity.connection.state.signactivity"/>
-      <g:select id="activity" name="activity.id" from="${activityList}" optionKey="uuid" required="" class="many-to-one"/>
+      <g:select id="signactivity" name="sign.id" from="${activityList}" optionKey="uuid" required="" class="many-to-one"/>
     </div>
   </g:if>
   <g:if test="${!activityList.isEmpty()}">
@@ -46,7 +46,7 @@
       <hr class="property-value-sep"/>
       <g:radio name="connectionState" value="${TaskFormSpec.NOTIFY_ACTIVITY_STATE}" checked="${activityConnection?.notifyState}"/>
       <g:message code="activity.connection.state.notifyactivity"/>
-      <g:select id="activity" name="activity.id" from="${activityList}" optionKey="uuid" required="" class="many-to-one"/>
+      <g:select id="notifyactivity" name="notify.id" from="${activityList}" optionKey="uuid" required="" class="many-to-one"/>
     </div>
   </g:if>
 </div>

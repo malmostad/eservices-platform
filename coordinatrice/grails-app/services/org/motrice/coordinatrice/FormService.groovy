@@ -20,7 +20,7 @@ class FormService {
     def selectedFormdefVer = null
 
     if (actCnx?.formState) {
-      selectedFormdefVer = formList.find {it.path == actCnx.path}
+      selectedFormdefVer = formList.find {it.path == actCnx.connectionKey}
     }
 
     return [formList: formList, selectedFormId: selectedFormdefVer?.id]
