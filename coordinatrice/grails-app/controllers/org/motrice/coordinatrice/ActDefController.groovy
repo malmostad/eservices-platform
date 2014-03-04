@@ -53,8 +53,7 @@ class ActDefController {
     }
 
     // Note that activityFormdef may be null, no error
-    def activityConnection = new ActivityConnection(actDefInst,
-						    actDefInst?.activityFormdef?.formPath)
+    def activityConnection = new TaskFormSpec(actDefInst, actDefInst?.activityFormdef)
     def formMap = formService.activityFormSelection(activityConnection)
     
     [actDefInst: actDefInst, activityList: activityList,

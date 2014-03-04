@@ -74,8 +74,8 @@ class ActivityFormdefService {
     if (!activityFormdef) activityFormdef = MtfActivityFormDefinition.createFromActDef(actDefInst)
 
     // Create formpath
-    def activityConnection = new ActivityConnection(acc, actDefInst)
-    activityFormdef.formPath = activityConnection.toString()
+    def activityConnection = new TaskFormSpec(acc, actDefInst)
+    activityFormdef.assign(activityConnection)
 
     if (!activityFormdef.save()) {
       log.error "updateActivityConnection: ${activityFormdef.errors.allErrors.join(',')}"

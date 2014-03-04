@@ -15,7 +15,7 @@ class FormService {
    * formList: list of published forms (List of PxdFormdefVer)
    * selectedFormId: id of the form currently select in actCnx (Integer)
    */
-  Map activityFormSelection(ActivityConnection actCnx) {
+  Map activityFormSelection(TaskFormSpec actCnx) {
     def formList = PxdFormdefVer.allPublishedForms()
     def selectedFormdefVer = null
 

@@ -3,7 +3,7 @@
   <g:set var="statetitle"><g:message code="activity.connection.disabled"/></g:set>
   <td><g:img uri="/images/silk/lock.png" title="${statetitle}"/></td><td></td>
 </g:if>
-<g:elseif test="${connection==null || connection?.state == org.motrice.coordinatrice.ActivityConnection.UNCONNECTED_STATE}">
+<g:elseif test="${connection==null || connection?.state == org.motrice.coordinatrice.TaskFormSpec.UNCONNECTED_STATE}">
   <g:set var="statetitle"><g:message code="activity.connection.undefined"/></g:set>
   <td><g:img uri="/images/silk/exclamation.png" title="${statetitle}"/></td><td></td>
 </g:elseif>
