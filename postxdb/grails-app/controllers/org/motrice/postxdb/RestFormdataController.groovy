@@ -38,6 +38,7 @@ class RestFormdataController {
 	}
       }
     } else {
+      if (log.infoEnabled) log.info "getop >> 404"
       render(status: 404, text: 'Item was not found', contentType: 'text/plain')
     }
   }

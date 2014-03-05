@@ -13,6 +13,7 @@ public class FormdefPath {
     public static final char APP_FORM_SEP = '/';
     public static final String VERSION_SEP = "--v";
     public static final char DRAFT_SEP = '_';
+    public static final String LIBRARY_NAME = "library";
     public static final int VERSION_SEP_LEN = VERSION_SEP.length();
     // Use Matcher.matches to match the entire path
     public static final Pattern VERSION_PAT = Pattern.compile("(\\d+)(?:_(X|\\d+))?");
@@ -159,6 +160,10 @@ public class FormdefPath {
 	int idx1 = path.indexOf(APP_FORM_SEP) + 1;
 	int idx2 = path.lastIndexOf(VERSION_SEP);
 	return (idx2 < 0)? path.substring(idx1) : path.substring(idx1, idx2);
+    }
+
+    public boolean isLibrary() {
+	return LIBRARY_NAME.equals(formName);
     }
 
     /**
