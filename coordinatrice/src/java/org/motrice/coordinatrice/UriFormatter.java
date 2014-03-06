@@ -3,6 +3,8 @@ package org.motrice.coordinatrice;
 /**
  * Support for guide uri, a simple string substitution.
  * Given a string and arguments, substitute the following placeholders.
+ * 
+ * %H root URL as defined in the Coordinatrice config
  * %P BPMN process definition key (i.e. without version number).
  * %V process definition version (an Activiti concept).
  * Formatted as two digits, padded with leading zeros if necessary.
@@ -17,6 +19,9 @@ public class UriFormatter {
 
     // Process definition version format (String.format)
     private final static String INTEGER_FMT = "%02d";
+
+    // URL-encoded per cent character
+    private final static String URL_PERCENT = encode(Character.toString('%'));
 
     // A pattern containing placeholders
     private final String pattern;
@@ -33,7 +38,7 @@ public class UriFormatter {
      * The name parameters are URL-encoded before being inserted.
      * RETURN the formatted string.
      */
-    public String format(String procdefKey, Integer procdefVer,
+    public String format(String baseUri, String procdefKey, Integer procdefVer,
 			 String actdefName, String locale) {
 	if (procdefKey == null || locale == null)
 	    throw new IllegalArgumentException("Process definition key and locale may not be null.");
@@ -48,8 +53,17 @@ public class UriFormatter {
 		if (state == INIT_STATE) {
 		    state = REPL_STATE;
 		} else if (state == REPL_STATE) {
-		    sb.append(encode("%"));
+		    sb.append(URL_PERCENT);
 		    state = INIT_STATE;
+		}
+		break;
+	    case 'H':
+		if (state == REPL_STATE) {
+		    // Do not URL-encode
+		    if (baseUri != null) sb.append(baseUri);
+		    state = INIT_STATE;
+		} else {
+		    sb.append(ch);
 		}
 		break;
 	    case 'P':
@@ -85,6 +99,11 @@ public class UriFormatter {
 		}
 		break;
 	    default:
+		if (state == REPL_STATE) {
+		    sb.append(URL_PERCENT);
+		    state = INIT_STATE;
+		}
+
 		sb.append(ch);
 	    }
 	}
@@ -97,15 +116,15 @@ public class UriFormatter {
     /**
      * Convenience without process definition version and activity name
      */
-    public String format(String procdefKey, String locale) {
-	return format(procdefKey, null, null, locale);
+    public String format(String baseUri, String procdefKey, String locale) {
+	return format(baseUri, procdefKey, null, null, locale);
     }
 
     /**
      * Convenience without process definition version
      */
-    public String format(String procdefKey, String actdefName, String locale) {
-	return format(procdefKey, null, actdefName, locale);
+    public String format(String baseUri, String procdefKey, String actdefName, String locale) {
+	return format(baseUri, procdefKey, null, actdefName, locale);
     }
 
     /**
@@ -126,7 +145,7 @@ public class UriFormatter {
     /**
      * URL-encode a string to be part of the formatted uri
      */
-    private String encode(String text) {
+    private static String encode(String text) {
 	String result = null;
 	try {
 	    result = java.net.URLEncoder.encode(text, "UTF-8");
@@ -136,4 +155,9 @@ public class UriFormatter {
 
 	return result;
     }
+
+    private static String encode(char ch) {
+	return encode(Character.toString(ch));
+    }
+	
 }

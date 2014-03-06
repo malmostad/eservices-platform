@@ -121,7 +121,7 @@ class ActivityLabelService {
   }
 
   static final SINGLE_ACT_Q = 'from CrdI18nActLabel l where l.procdefKey=? and ' +
-    'l.locale=? and l.actdefName=? and l.procdefVer < ? ' +
+    'l.locale=? and l.actdefName=? and l.procdefVer <= ? ' +
     'order by l.procdefKey asc, l.actdefName asc, l.procdefVer desc'
   static final ALL_ACT_Q = 'from CrdI18nActLabel l where procdefKey=? and ' +
     'locale=? and procdefVer <= ? ' +

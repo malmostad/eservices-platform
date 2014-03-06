@@ -3,7 +3,7 @@
   <label for="procdefKey">
     <g:message code="crdI18nGuideUrl.procdefKey.label" default="Procdef Key" />
   </label>
-  <g:textArea name="procdefKey" cols="40" rows="5" maxlength="255" value="${crdI18nGuideUrlInst?.procdefKey}"/>
+  <g:textField name="procdefKey" size="32" maxlength="255" value="${crdI18nGuideUrlInst?.procdefKey}" readonly="true"/>
 </div>
 <div class="fieldcontain ${hasErrors(bean: crdI18nGuideUrlInst, field: 'procdefVer', 'error')} required">
   <label for="procdefVer">
@@ -16,5 +16,5 @@
   <label for="pattern">
     <g:message code="crdI18nGuideUrl.pattern.label" default="Pattern" />
   </label>
-  <g:textArea name="pattern" cols="40" rows="5" maxlength="400" value="${crdI18nGuideUrlInst?.pattern}"/>
+  <g:textField name="pattern" size="48" maxlength="400" value="${crdI18nGuideUrlInst?.pattern}"/>
 </div>

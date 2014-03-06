@@ -12,6 +12,9 @@ class UrlMappings {
     "/rest/activitylabel/$procdefkey/$locale/$activityname?"(controller: 'RestActivity') {
       action = [GET: 'activityLabelGet']
     }
+    "/rest/guideurl/$procdefkey/$locale/$activityname?"(controller: 'RestGuideUrl') {
+      action = [GET: 'guideUrlGet']
+    }
 
     "/"(controller: 'Procdef', action:'/index')
     "500"(controller: 'errors', action: 'internalServerError')
