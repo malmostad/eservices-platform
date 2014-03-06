@@ -104,7 +104,7 @@ public class UriFormatter {
 		    state = INIT_STATE;
 		}
 
-		sb.append(ch);
+		appendNoDoubleSlash(sb, ch);
 	    }
 	}
 
@@ -140,6 +140,19 @@ public class UriFormatter {
      */
     private void condAppend(StringBuilder sb, Integer value) {
 	if (value != null) sb.append(String.format(INTEGER_FMT, value));
+    }
+
+    /**
+     * Append a character, but do not append a slash if the
+     * previous character was a slash.
+     * No URL-encoding.
+     */
+    private void appendNoDoubleSlash(StringBuilder sb, char ch) {
+	if (ch == '/' && sb.length() > 0) {
+	    if (sb.charAt(sb.length() - 1) != '/') sb.append(ch);
+	} else {
+	    sb.append(ch);
+	}
     }
 
     /**

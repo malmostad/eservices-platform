@@ -55,6 +55,13 @@ class UriFormatterTests {
     shouldFail(IllegalArgumentException) {
       f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, null)
     }
+    // Check for no double slashes
+    f = new UriFormatter('%H/%P/%A/%L.html')
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) ==
+      'http://localhost:8080/site/ForenkladDelgivning/Handl%C3%A4ggning/sv.html'
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, null, LOCALE) ==
+      'http://localhost:8080/site/ForenkladDelgivning/sv.html'
+      // Double slashes are 
   }
 
 }
