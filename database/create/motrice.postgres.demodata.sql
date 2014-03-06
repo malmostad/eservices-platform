@@ -3,35 +3,35 @@
 --
 
 INSERT INTO mtf_form_type(
-            formtypeid, label, formhandlerbean)
+            form_type_id, label, form_handler_bean)
     VALUES (1, 'Orbeon', 'motriceOrbeonFormHandler');
 INSERT INTO mtf_form_type(
-            formtypeid, label, formhandlerbean)
+            form_type_id, label, form_handler_bean)
     VALUES (2, 'SignStartForm', 'motriceSignStartFormHandler');
 INSERT INTO mtf_form_type(
-            formtypeid, label, formhandlerbean)
+            form_type_id, label, form_handler_bean)
     VALUES (3, 'SignTaskForm', 'motriceSignTaskFormHandler');
 INSERT INTO mtf_form_type(
-            formtypeid, label, formhandlerbean)
+            form_type_id, label, form_handler_bean)
     VALUES (4, 'PayTask', 'motricePaymentFormHandler');
 INSERT INTO mtf_form_type(
-            formtypeid, label, formhandlerbean)
+            form_type_id, label, form_handler_bean)
     VALUES (5, 'NotifyAct', 'motriceNotifyActFormHandler');
 INSERT INTO mtf_form_type(
-            formtypeid, label, formhandlerbean)
-    VALUES (5, 'No form', 'motriceNoFormHandler');
+            form_type_id, label, form_handler_bean)
+    VALUES (6, 'No form', 'motriceNoFormHandler');
 
 
 --
 -- mtf_start_form_definition
 --
 INSERT INTO mtf_start_form_definition(
-            startformdefinitionid, 
-	    authtypereq, 
-	    formTypeId,
-	    formDefinitionKey,
-	    processdefinitionuuid,             
-	    userdataxpath
+            start_form_definition_id, 
+	    auth_type_req, 
+	    form_type_id,
+	    form_connection_key,
+	    procdef_id,             
+	    user_data_xpath
 	    )
        VALUES (
             nextval('hibernate_sequence'), 
@@ -41,13 +41,14 @@ INSERT INTO mtf_start_form_definition(
             'TestFunctionProcess1:1:9',
             ''
 );
-INSERT INTO mtf_start_form_definition(
-            startformdefinitionid, 
-	    authtypereq, 
-	    formTypeId,
-	    formDefinitionKey, 
-	    processdefinitionuuid,             
-	    userdataxpath
+INSERT INTO mtf_start_form_definition
+(
+            start_form_definition_id, 
+	    auth_type_req, 
+	    form_type_id,
+	    form_connection_key,
+	    procdef_id,             
+	    user_data_xpath
 	    )
        VALUES (
             nextval('hibernate_sequence'), 
@@ -57,13 +58,13 @@ INSERT INTO mtf_start_form_definition(
             'Arendeprocess:1:4',
             ''
 );
-INSERT INTO mtf_start_form_definition(
-            startformdefinitionid, 
-	    authtypereq, 
-	    formTypeId,
-	    formDefinitionKey, 
-	    processdefinitionuuid,             
-	    userdataxpath
+INSERT INTO mtf_start_form_definition (
+            start_form_definition_id, 
+	    auth_type_req, 
+	    form_type_id,
+	    form_connection_key,
+	    procdef_id,             
+	    user_data_xpath
 	    )
        VALUES (
             nextval('hibernate_sequence'), 
@@ -79,11 +80,11 @@ INSERT INTO mtf_start_form_definition(
 --
 
 INSERT INTO mtf_activity_form_definition(
-            processdefinitionuuid,
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formTypeId,
-	    formDefinitionKey
+            procdef_id,
+            activity_form_definition_id, 
+            actdef_id, 
+            form_type_id,
+	    form_connection_key
             )
        VALUES (
             'Arendeprocess:1:4',
@@ -93,11 +94,11 @@ INSERT INTO mtf_activity_form_definition(
             'basprocess/registrera--v002'
 );
 INSERT INTO mtf_activity_form_definition(
-            processdefinitionuuid,
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formTypeId,
-	    formDefinitionKey
+            procdef_id,
+            activity_form_definition_id, 
+            actdef_id, 
+            form_type_id,
+	    form_connection_key
             )
        VALUES (
             'Arendeprocess:1:4',
@@ -107,11 +108,11 @@ INSERT INTO mtf_activity_form_definition(
             'basprocess/handlagga--v002'
 );
 INSERT INTO mtf_activity_form_definition(
-            processdefinitionuuid,
-            activityformdefinitionid, 
-            activitydefinitionuuid, 
-            formTypeId,
-	    formDefinitionKey
+            procdef_id,
+            activity_form_definition_id, 
+            actdef_id, 
+            form_type_id,
+	    form_connection_key
             )
        VALUES (
             'Arendeprocess:1:4',
