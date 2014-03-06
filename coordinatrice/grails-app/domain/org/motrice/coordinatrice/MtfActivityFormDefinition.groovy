@@ -25,9 +25,9 @@ class MtfActivityFormDefinition {
     activityDefinitionId column: 'activitydefinitionuuid'
     formPath column: 'formpath'
     formHandlerType column: 'formtypeid'
-    formConnectionKey column: 'formdefinitionkey'
-    formdefId column: 'formconnectiondbid'
-    formConnectionLabel column: 'formconnectionlabel'
+    formConnectionKey column: 'form_connection_key'
+    formdefId column: 'form_connection_dbid'
+    formConnectionLabel column: 'form_connection_label'
   }
   static constraints = {
     processDefinitionId nullable: true, maxSize: 255

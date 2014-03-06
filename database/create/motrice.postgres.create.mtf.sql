@@ -26,7 +26,9 @@ CREATE TABLE mtf_activity_form_definition (
     procdef_id character varying(255),
     actdef_id character varying(255),
     form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
-    form_connection_key   character varying(511)
+    form_connection_key   character varying(511),
+    form_connection_label character varying(255),
+    form_connection_dbid bigint
 );
 
 ALTER TABLE ONLY mtf_activity_form_definition
