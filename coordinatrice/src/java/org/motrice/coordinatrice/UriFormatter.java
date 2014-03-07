@@ -52,7 +52,7 @@ public class UriFormatter {
 	for (int idx = 0; idx < pattern.length(); idx++) {
 	    char ch = pattern.charAt(idx);
 	    // DEBUG
-	    System.out.println("'" + ch + "': pos=" + idx + "|state=" + state + "|cond=" + condition);
+	    //System.out.println("'" + ch + "': pos=" + idx + "|state=" + state + "|cond=" + condition);
 
 	    switch (ch) {
 	    case '%':
