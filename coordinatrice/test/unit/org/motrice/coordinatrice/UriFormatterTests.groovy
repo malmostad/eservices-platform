@@ -47,21 +47,51 @@ class UriFormatterTests {
     f = new UriFormatter('Hej%%%PProcess%VVersion%AActivity%LLocale')
     assert f.format(BASEURI, PROCESS_KEY, LOCALE) ==
       'Hej%25ForenkladDelgivningProcessVersionActivitysvLocale'
-    f = new UriFormatter('Hej%%%PProcess%VVersion%AActivity%LLocale')
-    shouldFail(IllegalArgumentException) {
-      f.format(BASEURI, null, PROCESS_VER, ACTIVITY_NAME, LOCALE)
-    }
-    f = new UriFormatter('Hej%%%PProcess%VVersion%AActivity%LLocale')
-    shouldFail(IllegalArgumentException) {
-      f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, null)
-    }
-    // Check for no double slashes
     f = new UriFormatter('%H/%P/%A/%L.html')
     assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) ==
       'http://localhost:8080/site/ForenkladDelgivning/Handl%C3%A4ggning/sv.html'
     assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, null, LOCALE) ==
+      'http://localhost:8080/site/ForenkladDelgivning//sv.html'
+  }
+
+  void testConditionals() {
+    def f = null
+    f = new UriFormatter('%H/%P%?A{/}%A/%L.html')
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, null, LOCALE) ==
       'http://localhost:8080/site/ForenkladDelgivning/sv.html'
-      // Double slashes are 
+    f = new UriFormatter('%H/%P%?A{/|-generic}%A/%L.html')
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, null, LOCALE) ==
+      'http://localhost:8080/site/ForenkladDelgivning-generic/sv.html'
+    f = new UriFormatter('%H/%?P{|process}%P%?P{-descr}%?A{/|-generic}%A/doco.html%?L{?locale=|?locale=ru}%L')
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) ==
+      'http://localhost:8080/site/ForenkladDelgivning-descr/Handl%C3%A4ggning/doco.html?locale=sv'
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, null, LOCALE) ==
+      'http://localhost:8080/site/ForenkladDelgivning-descr-generic/doco.html?locale=sv'
+    assert f.format(BASEURI, null, PROCESS_VER, ACTIVITY_NAME, LOCALE) ==
+      'http://localhost:8080/site/process/Handl%C3%A4ggning/doco.html?locale=sv'
+    assert f.format(BASEURI, null, PROCESS_VER, null, LOCALE) ==
+      'http://localhost:8080/site/process-generic/doco.html?locale=sv'
+    assert f.format(BASEURI, null, PROCESS_VER, null, null) ==
+      'http://localhost:8080/site/process-generic/doco.html?locale=ru'
+  }
+
+  void testMoreConditionals() {
+    def f = null
+    f = new UriFormatter('%?H{!"#¤%&/()=?+|<>;.-:_{|}')
+    assert f.format(null, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) == '<>;.-:_{|'
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) == '!\"#¤&/()=?+'
+    f = new UriFormatter('%?P{<>;.-:_{|!"#¤%&/()=?+}')
+    assert f.format(BASEURI, null, PROCESS_VER, ACTIVITY_NAME, LOCALE) == '!\"#¤&/()=?+'
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) == '<>;.-:_{'
+    f = new UriFormatter('wow-%?V{hejsan|hoppsan}')
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) == 'wow-hejsan'
+    assert f.format(BASEURI, PROCESS_KEY, null, ACTIVITY_NAME, LOCALE) == 'wow-hoppsan'
+    f = new UriFormatter('wow-%?H{|}%?P{|}%?V{|}%?A{|}%?L{|}-how')
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) == 'wow--how'
+    assert f.format(null, null, null, null, null) == 'wow--how'
+    f = new UriFormatter('wow-%?Hextra{|}%?P#¤%/()={|}%?V?><,.-{|}%?A_:;{|}%?L{|}-how')
+    assert f.format(BASEURI, PROCESS_KEY, PROCESS_VER, ACTIVITY_NAME, LOCALE) == 'wow--how'
+    assert f.format(null, null, null, null, null) == 'wow--how'
   }
 
 }

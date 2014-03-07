@@ -18,6 +18,10 @@ public class UriFormatter {
     // Formatting states
     private final static int INIT_STATE = 1;
     private final static int REPL_STATE = 2;
+    private final static int COND_STATE = 3;
+    private final static int PREP_STATE = 4;
+    private final static int EXPR_TRUE_STATE = 5;
+    private final static int EXPR_FALSE_STATE = 6;
 
     // Process definition version format (String.format)
     private final static String INTEGER_FMT = "%02d";
@@ -42,13 +46,13 @@ public class UriFormatter {
      */
     public String format(String baseUri, String procdefKey, Integer procdefVer,
 			 String actdefName, String locale) {
-	if (procdefKey == null || locale == null)
-	    throw new IllegalArgumentException("Process definition key and locale may not be null.");
-
 	StringBuilder sb = new StringBuilder();
 	int state = INIT_STATE;
+	Boolean condition = null;
 	for (int idx = 0; idx < pattern.length(); idx++) {
 	    char ch = pattern.charAt(idx);
+	    // DEBUG
+	    System.out.println("'" + ch + "': pos=" + idx + "|state=" + state + "|cond=" + condition);
 
 	    switch (ch) {
 	    case '%':
@@ -59,59 +63,83 @@ public class UriFormatter {
 		    state = INIT_STATE;
 		}
 		break;
+	    case '?':
+		if (state == REPL_STATE) {
+		    state = COND_STATE;
+		} else {
+		    append(sb, ch, state, condition);
+		}
+		break;
+	    case '{':
+		if (state == PREP_STATE) {
+		    state = EXPR_TRUE_STATE;
+		} else {
+		    append(sb, ch, state, condition);
+		}
+		break;
+	    case '|':
+		if (state == EXPR_TRUE_STATE) {
+		    state = EXPR_FALSE_STATE;
+		} else {
+		    append(sb, ch, state, condition);
+		}
+		break;
+	    case '}':
+		if (state == EXPR_TRUE_STATE || state == EXPR_FALSE_STATE) {
+		    condition = null;
+		    state = INIT_STATE;
+		} else {
+		    append(sb, ch, state, condition);
+		}
+		break;
 	    case 'H':
-		if (state == REPL_STATE) {
-		    // Do not URL-encode
-		    if (baseUri != null) sb.append(baseUri);
-		    state = INIT_STATE;
-		} else {
-		    sb.append(ch);
-		}
-		break;
 	    case 'P':
-		if (state == REPL_STATE) {
-		    condAppend(sb, procdefKey);
-		    state = INIT_STATE;
-		} else {
-		    sb.append(ch);
-		}
-		break;
 	    case 'V':
-		if (state == REPL_STATE) {
-		    condAppend(sb, procdefVer);
-		    state = INIT_STATE;
-		} else {
-		    sb.append(ch);
-		}
-		break;
 	    case 'A':
-		if (state == REPL_STATE) {
-		    condAppend(sb, actdefName);
-		    state = INIT_STATE;
-		} else {
-		    sb.append(ch);
-		}
-		break;
 	    case 'L':
-		if (state == REPL_STATE) {
-		    condAppend(sb, locale);
+		if (state == COND_STATE) {
+		    switch (ch) {
+		    case 'H': condition = baseUri != null;
+			break;
+		    case 'P': condition = procdefKey != null;
+			break;
+		    case 'V': condition = procdefVer != null;
+			break;
+		    case 'A': condition = actdefName != null;
+			break;
+		    case 'L': condition = locale != null;
+			break;
+		    }
+
+		    state = PREP_STATE;
+		} else if (state == REPL_STATE) {
+		    switch (ch) {
+		    case 'H': if (baseUri != null) sb.append(baseUri);
+			// Do not URL-encode the %H placeholder
+			break;
+		    case 'P': condAppend(sb, procdefKey);
+			break;
+		    case 'V': condAppend(sb, procdefVer);
+			break;
+		    case 'A': condAppend(sb, actdefName);
+			break;
+		    case 'L': condAppend(sb, locale);
+			break;
+		    }
+
 		    state = INIT_STATE;
 		} else {
-		    sb.append(ch);
+		    append(sb, ch, state, condition);
 		}
 		break;
 	    default:
-		if (state == REPL_STATE) {
-		    sb.append(URL_PERCENT);
-		    state = INIT_STATE;
-		}
-
-		appendNoDoubleSlash(sb, ch);
+		append(sb, ch, state, condition);
+		if (state == REPL_STATE) sb.append(URL_PERCENT);
 	    }
 	}
 
 	// A lone percent sign at the end is taken as itself.
-	if (state == REPL_STATE) sb.append(encode("%"));
+	if (state == REPL_STATE) sb.append(URL_PERCENT);
 	return sb.toString();
     }
 
@@ -130,6 +158,19 @@ public class UriFormatter {
     }
 
     /**
+     * Default case of appending a character while honoring the formatter states.
+     */
+    private void append(StringBuilder sb, char ch, int state, Boolean condition) {
+	if (state == EXPR_TRUE_STATE) {
+	    if (Boolean.TRUE.equals(condition)) sb.append(ch);
+	} else if (state == EXPR_FALSE_STATE) {
+	    if (Boolean.FALSE.equals(condition)) sb.append(ch);
+	} else if (state != PREP_STATE) {
+	    sb.append(ch);
+	}
+    }
+
+    /**
      * Conditional append.
      * The text is URL-encoded before being appended.
      */
@@ -142,19 +183,6 @@ public class UriFormatter {
      */
     private void condAppend(StringBuilder sb, Integer value) {
 	if (value != null) sb.append(String.format(INTEGER_FMT, value));
-    }
-
-    /**
-     * Append a character, but do not append a slash if the
-     * previous character was a slash.
-     * No URL-encoding.
-     */
-    private void appendNoDoubleSlash(StringBuilder sb, char ch) {
-	if (ch == '/' && sb.length() > 0) {
-	    if (sb.charAt(sb.length() - 1) != '/') sb.append(ch);
-	} else {
-	    sb.append(ch);
-	}
     }
 
     /**
