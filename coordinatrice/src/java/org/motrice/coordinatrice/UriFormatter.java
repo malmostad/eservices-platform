@@ -11,8 +11,8 @@ package org.motrice.coordinatrice;
  * %A activity name as defined in the BPMN process.
  * The name defined in the deployment is used, not locale-dependent.
  * %L locale.
- * KNOWN ISSUE: The initial http:// must be supplied through the %H
- * placeholder, otherwise the double slashes are reduced to one.
+ * Characters supplied through placeholders, except %H, are URL-encoded.
+ * Characters from the pattern are not URL-encoded.
  */
 public class UriFormatter {
     // Formatting states
