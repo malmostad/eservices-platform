@@ -16,7 +16,7 @@ class RestGuideUrlController {
    */
   def guideUrlGet(String procdefkey, String locale, String activityname) {
     if (log.debugEnabled) log.debug "GUIDEURL GET: ${params}"
-    def guideMap = guideUrlService.generateUrl(procdefkey, locale, activityname, params.version)
+    def guideMap = guideUrlService.generateUrlData(procdefkey, locale, activityname, params.version)
 
     if (guideMap.url) {
       response.status = 200

@@ -61,7 +61,7 @@ class Procdef implements Comparable {
   static belongsTo = [persisted: CrdProcdef]
   static hasMany = [activities: ActDef]
   static transients = ['deletable', 'deployedTime', 'deployedTimeStr', 'deploymentId',
-		       'display', 'userActivities', 'startForms']
+		       'display', 'guideUrl', 'userActivities', 'startForms']
   static constraints = {
     uuid maxSize: 64
     key nullable: false, maxSize: 255

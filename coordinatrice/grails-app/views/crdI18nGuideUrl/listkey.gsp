@@ -31,7 +31,7 @@
 	<tbody>
 	  <g:each in="${guideUrlInstList}" status="i" var="guideUrlInst">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-	      <td><g:link action="show" id="${guideUrlInst.id}">${fieldValue(bean: guideUrlInst, field: "procdefKey")}</g:link></td>
+	      <td><g:link controller="procdef" action="listname" id="${guideUrlInst?.procdefKey}">${fieldValue(bean: guideUrlInst, field: "procdefKey")}</g:link></td>
 	      <td>${fieldValue(bean: guideUrlInst, field: "procdefVer")}</td>
 	      <td><g:link action="createduplicate" id="${guideUrlInst?.id}">
 		  <g:img uri="/images/silk/page_copy.png" title="${message(code: 'crdI18nGuideUrl.duplicate.label', default: 'Duplicate')}"/>

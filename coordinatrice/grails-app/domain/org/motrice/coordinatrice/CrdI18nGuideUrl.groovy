@@ -2,9 +2,9 @@ package org.motrice.coordinatrice
 
 /**
  * A BPMN process may have associated guides in several locales.
- * Given a process definition key, define an URL pattern for those guides.
- * It is possible to define that a pattern is valid beginning from a
- * specific process definition version.
+ * The URL to those guides is defined as a pattern with placeholders.
+ * It is possible to specify that a pattern is valid beginning from a
+ * given process definition version.
  * An URL pattern has placeholders.
  */
 class CrdI18nGuideUrl implements Comparable {
@@ -13,8 +13,8 @@ class CrdI18nGuideUrl implements Comparable {
   String procdefKey
 
   // Process version number.
-  // Makes it possible to have more than one label for a given activity.
-  // The version number indicates the first version for which a new definition
+  // Makes it possible to have more than one pattern for a process definition.
+  // The version number indicates the first version for which this definition
   // should be used.
   // For instance, if procdefVer is 4 it means that the definition is valid for
   // process definitions version 4 and higher.

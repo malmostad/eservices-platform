@@ -4,3 +4,6 @@
 
 processdefinitionuuid i mtf_start_form_definition saknar version, ingen exakt matchning
 ska authtypereq alltid vara USERSESSION?
+
+jQuery dialog:
+http://cluever.mavomi.com/?p=4

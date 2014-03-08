@@ -38,14 +38,35 @@ class GuideUrlService {
     'u.procdefVer <= ? order by u.procdefVer desc'
 
   /**
-   * Generate a URL from a set of parameters.
+   * Generate a URL (String) from a set of parameters.
    * Find a pattern and use it for formatting.
    * Return a map containing the input parameters and the crucial entry
    * "url".
    * If no matching pattern was found the "url" entry will be null.
    */
   @Transactional
-  Map generateUrl(String procdefkey, String locale, String activityname, String version) {
+  Map generateUrlData(String procdefkey, String locale, String activityname, String version) {
+    if (log.debugEnabled) log.debug "generateUrlData << ${procdefkey}, ${locale}, ${activityname}, ${version}"
+    Integer versionInt = 1
+    try {
+      if (version) versionInt = version as Integer
+    } catch (NumberFormatException exc) {
+      // Ignore
+    }
+
+    def result = [procdefKey: procdefkey, procdefVer: versionInt, actdefName: activityname,
+    locale: locale, url: generateUrl(procdefkey, locale, activityname, version)]
+    if (log.debugEnabled) log.debug "generateUrlData >> ${result}"
+    return result
+  }
+
+  /**
+   * Generate a URL (String) from a set of parameters.
+   * Find a pattern and use it for formatting.
+   * Return a URL String.
+   */
+  @Transactional
+  String generateUrl(String procdefkey, String locale, String activityname, String version) {
     if (log.debugEnabled) log.debug "generateUrl << ${procdefkey}, ${locale}, ${activityname}, ${version}"
     Integer versionInt = 1
     try {
@@ -58,14 +79,28 @@ class GuideUrlService {
     println "generateUrl versionInt: ${versionInt}"
     def list = CrdI18nGuideUrl.findAll(SINGLE_PAT_Q, [procdefkey, versionInt])
     def guideUrlInst = list? list[0] : null
-    def result = [procdefKey: procdefkey, procdefVer: versionInt,
-	actdefName: activityname, locale: locale]
+    def result = null
     if (guideUrlInst) {
-      result.url = format(guideUrlInst, procdefkey, versionInt, activityname, locale)
+      result = format(guideUrlInst, procdefkey, versionInt, activityname, locale)
     }
 
     if (log.debugEnabled) log.debug "generateUrl >> ${result}"
     return result
+  }
+
+  /**
+   * Assign a guide URL (transient) to a list of process definitions.
+   * procdefList must be List of Prodef.
+   */
+  @Transactional
+  List assignGuideUrls(List procdefList, String locale, String activityName) {
+    if (log.debugEnabled) log.debug
+    procdefList.each {procdef ->
+      procdef.guideUrl = generateUrl(procdef.procdefKey, locale, activityName,
+				     procdef.procdefVer)
+    }
+
+    return procdefList
   }
 
   String format(CrdI18nGuideUrl guideUrl, String procdefKey, Integer procdefVer,
