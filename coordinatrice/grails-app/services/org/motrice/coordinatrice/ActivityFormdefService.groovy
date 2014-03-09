@@ -4,7 +4,7 @@ import org.apache.commons.logging.LogFactory
 
 /**
  * Actions related to MtfActivityFormDefinition, especially the connections
- * to forms etc (formpath).
+ * to forms etc
  */
 class ActivityFormdefService { 
   // Transaction support mainly for MtfActivityFormDefinition
@@ -53,8 +53,8 @@ class ActivityFormdefService {
    */
   private doConnectActivityForms(ActDef tgtAct, MtfActivityFormDefinition srcActFormdef) {
     def tgtActivityFormdef = MtfActivityFormDefinition.createFromActDef(tgtAct)
-    // Copy formpath
-    tgtActivityFormdef.formPath = srcActFormdef.formPath
+    // Copy the form connection
+    tgtActivityFormdef.copyConnection(srcActFormdef)
     if (log.debugEnabled) log.debug "doConnectActivityForms: ${tgtActivityFormdef}"
     if (!tgtActivityFormdef.save()) {
       log.error "doConnectActivityForms: ${tgtActivityFormdef.errors.allErrors.join(',')}"
@@ -73,7 +73,7 @@ class ActivityFormdefService {
     def activityFormdef = MtfActivityFormDefinition.get(actDefInst?.activityFormdef?.id)
     if (!activityFormdef) activityFormdef = MtfActivityFormDefinition.createFromActDef(actDefInst)
 
-    // Create formpath
+    // Create a form connection
     def activityConnection = new TaskFormSpec(acc, actDefInst)
     activityFormdef.assign(activityConnection)
 

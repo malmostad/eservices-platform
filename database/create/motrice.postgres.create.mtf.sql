@@ -72,6 +72,7 @@ CREATE TABLE mtf_start_form_definition (
     auth_type_req character varying(255) NOT NULL,
     form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
     form_connection_key   character varying(255),
+    form_connection_dbid bigint,
     procdef_id character varying(255),
     user_data_xpath character varying(255)
 );

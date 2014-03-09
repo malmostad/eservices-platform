@@ -2,11 +2,9 @@ package org.motrice.coordinatrice
 
 class MtfActivityFormDefinition {
 
-  String processDefinitionId
+  String procdefId
 
-  String activityDefinitionId
-
-  String formPath
+  String actdefId
 
   MtfFormType formHandlerType
 
@@ -19,29 +17,27 @@ class MtfActivityFormDefinition {
   Long formdefId
 
   static mapping = {
-    id column: 'activityformdefinitionid'
+    id column: 'activity_form_definition_id'
     version false
-    processDefinitionId column: 'processdefinitionuuid'
-    activityDefinitionId column: 'activitydefinitionuuid'
-    formPath column: 'formpath'
-    formHandlerType column: 'formtypeid'
+    procdefId column: 'procdef_id'
+    actdefId column: 'actdef_id'
+    formHandlerType column: 'form_type_id'
     formConnectionKey column: 'form_connection_key'
     formdefId column: 'form_connection_dbid'
     formConnectionLabel column: 'form_connection_label'
   }
   static constraints = {
-    processDefinitionId nullable: true, maxSize: 255
-    activityDefinitionId nullable: true, maxSize: 255
-    formPath nullable: true, maxSize: 255
-    formConnectionKey nullable: true, maxSize: 400
+    procdefId nullable: true, maxSize: 255
+    actdefId nullable: true, maxSize: 255
+    formConnectionKey nullable: true, maxSize: 511
     formdefId nullable: true, min: 0L
     formConnectionLabel nullable: true
   }
 
   static MtfActivityFormDefinition createFromActDef(ActDef actDefInst) {
     def afd = new MtfActivityFormDefinition()
-    afd.processDefinitionId = actDefInst.process.uuid
-    afd.activityDefinitionId = actDefInst.uuid
+    afd.procdefId = actDefInst.process.uuid
+    afd.actdefId = actDefInst.uuid
     return afd
   }
 
@@ -53,7 +49,17 @@ class MtfActivityFormDefinition {
     formConnectionLabel = taskFormSpec.connectionLabel
   }
 
+  /**
+   * Copy connection data from another activity form definition.
+   */
+  def copyConnection(MtfActivityFormDefinition other) {
+    formHandlerType = other.formHandlerType
+    formConnectionKey = other.formConnectionKey
+    formdefId = other.formdefId
+    formConnectionLabel = other.formConnectionLabel
+  }
+
   String toString() {
-    "[ActFormDef(${id}): ${processDefinitionId}/${activityDefinitionId} formpath=${formPath}]"
+    "[ActFormDef(${id}): ${procdefId}/${actdefId} cnx=${formConnectionLabel}]"
   }
 }

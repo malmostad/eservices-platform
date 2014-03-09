@@ -130,11 +130,11 @@ class Procdef implements Comparable {
 
   /**
    * Get all start forms.
-   * Return SortedSet of MtfStartFormDefinition.
+   * Return SortedSet of a MtfStartFormDefinition view.
+   * Big UNEXPLAINED problems with Hibernate here, this is not normal.
    */
-  SortedSet getStartForms() {
-    def formList = MtfStartFormDefinition.findAllByProcessDefinitionId(uuid)
-    return new TreeSet(formList)
+  List getStartForms() {
+    MtfStartFormDefinition.startFormList(uuid)
   }
 
   String toDump() {

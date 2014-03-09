@@ -30,10 +30,10 @@ class FormService {
     def selection = []
     def formsInUse = new TreeSet()
     MtfStartFormDefinition.list().each {
-      formsInUse.add(it.formPath)
+      formsInUse.add(it.formdefId)
     }
     PxdFormdefVer.allPublishedForms().each {
-      if (!formsInUse.contains(it.path)) selection.add(it)
+      if (!formsInUse.contains(it.id)) selection.add(it)
     }
 
     return selection
@@ -42,8 +42,8 @@ class FormService {
   /**
    * Check if a form definition is used as a start form
    */
-  Boolean checkStartFormInUse(PxdFormdefVer pfv) {
-    MtfStartFormDefinition.findByFormPath(pfv.path)
+  MtfStartFormDefinition findAsStartForm(PxdFormdefVer pfv) {
+    MtfStartFormDefinition.findByFormdefId(pfv.id)
   }
 
 }
