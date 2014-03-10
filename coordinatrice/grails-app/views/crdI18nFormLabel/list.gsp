@@ -30,6 +30,8 @@
 					
 						<g:sortableColumn property="label" title="${message(code: 'crdI18nFormLabel.label.label', default: 'Label')}" />
 					
+						<g:sortableColumn property="locale" title="${message(code: 'crdI18nFormLabel.locale.label', default: 'Locale')}" />
+					
 					</tr>
 				</thead>
 				<tbody>
@@ -41,6 +43,8 @@
 						<td>${fieldValue(bean: crdI18nFormLabelInst, field: "formdefVer")}</td>
 					
 						<td>${fieldValue(bean: crdI18nFormLabelInst, field: "label")}</td>
+					
+						<td>${fieldValue(bean: crdI18nFormLabelInst, field: "locale")}</td>
 					
 					</tr>
 				</g:each>

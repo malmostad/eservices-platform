@@ -50,6 +50,15 @@
 				</li>
 				</g:if>
 			
+				<g:if test="${crdI18nFormLabelInst?.locale}">
+				<li class="fieldcontain">
+					<span id="locale-label" class="property-label"><g:message code="crdI18nFormLabel.locale.label" default="Locale" /></span>
+					
+						<span class="property-value" aria-labelledby="locale-label"><g:fieldValue bean="${crdI18nFormLabelInst}" field="locale"/></span>
+					
+				</li>
+				</g:if>
+			
 			</ol>
 			<g:form>
 				<fieldset class="buttons">

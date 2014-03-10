@@ -26,3 +26,11 @@
 	<g:textArea name="label" cols="40" rows="5" maxlength="255" value="${crdI18nFormLabelInst?.label}"/>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: crdI18nFormLabelInst, field: 'locale', 'error')} ">
+	<label for="locale">
+		<g:message code="crdI18nFormLabel.locale.label" default="Locale" />
+		
+	</label>
+	<g:textField name="locale" value="${crdI18nFormLabelInst?.locale}"/>
+</div>
+

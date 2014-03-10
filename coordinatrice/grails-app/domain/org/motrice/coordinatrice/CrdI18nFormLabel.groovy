@@ -17,6 +17,9 @@ class CrdI18nFormLabel implements Comparable {
   // The first process version is 1 but the default value here is 0.
   Integer formdefVer
 
+  // Locale string
+  String locale
+
   // The form definition label
   String label
 
