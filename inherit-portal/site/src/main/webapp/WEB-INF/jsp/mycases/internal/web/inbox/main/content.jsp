@@ -62,7 +62,7 @@
 								<!-- href="form?taskUuid={task.taskUuid}&activityDefinitionUUID={task.activityDefinitionUUID}">{task.activityLabel} -->
 								<td><fmt:formatDate value="${task.expectedEndDate}"
 										type="Date" dateStyle="short" timeStyle="short"/></td>
-								<td><a href="${task.editFormUrl}">${task.activityLabel}</a></td>
+								<td><a href="${task.relativePageLink}">${task.activityLabel}</a></td>
 							</tr>
 						</c:forEach>
 					</c:when>

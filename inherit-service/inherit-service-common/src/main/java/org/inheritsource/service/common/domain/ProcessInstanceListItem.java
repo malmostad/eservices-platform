@@ -50,11 +50,6 @@ public class ProcessInstanceListItem implements Serializable {
     private String startedBy;
     private Date endDate;
     private String processInstanceUuid;
-    
-	/** 
-	 * The FORM_PATH that identifies the StartFormDefinition that started the case 
-	 */
-	String startedByFormPath;
 
    // private List<CommentFeedItem> commentFeed;
     
@@ -136,14 +131,6 @@ public class ProcessInstanceListItem implements Serializable {
 		this.processInstanceUuid = processInstanceUuid;
 	}
 	
-	public String getStartedByFormPath() {
-		return startedByFormPath;
-	}
-
-	public void setStartedByFormPath(String startedByFormPath) {
-		this.startedByFormPath = startedByFormPath;
-	}
-
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
@@ -169,10 +156,6 @@ public class ProcessInstanceListItem implements Serializable {
 				+ ((startDate == null) ? 0 : startDate.hashCode());
 		result = prime * result
 				+ ((startedBy == null) ? 0 : startedBy.hashCode());
-		result = prime
-				* result
-				+ ((startedByFormPath == null) ? 0 : startedByFormPath
-						.hashCode());
 		result = prime * result + status;
 		return result;
 	}
@@ -221,11 +204,6 @@ public class ProcessInstanceListItem implements Serializable {
 				return false;
 		} else if (!startedBy.equals(other.startedBy))
 			return false;
-		if (startedByFormPath == null) {
-			if (other.startedByFormPath != null)
-				return false;
-		} else if (!startedByFormPath.equals(other.startedByFormPath))
-			return false;
 		if (status != other.status)
 			return false;
 		return true;
@@ -239,7 +217,6 @@ public class ProcessInstanceListItem implements Serializable {
 				+ activities + "\n    startDate : " + startDate
 				+ "\n    startedBy : " + startedBy + "\n    endDate : "
 				+ endDate + "\n    processInstanceUuid : "
-				+ processInstanceUuid + "\n    startedByFormPath : "
-				+ startedByFormPath + "\n}";
+				+ processInstanceUuid + "\n}";
 	}
 }

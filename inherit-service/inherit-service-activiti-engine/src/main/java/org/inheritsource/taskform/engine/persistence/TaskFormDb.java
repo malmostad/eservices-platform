@@ -28,11 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.AnnotationConfiguration;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
-import org.inheritsource.service.common.domain.ProcessInstanceListItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
@@ -70,9 +66,9 @@ public class TaskFormDb {
 	}
 	
 	public StartFormDefinition getStartFormDefinitionByFormPath(Session session, String formPath) {
-		StartFormDefinition result = null;
-		result = (StartFormDefinition) session.createCriteria(StartFormDefinition.class).add(Restrictions.eq("formPath", formPath)).uniqueResult();
-		return result;
+		List<StartFormDefinition> result =  (List<StartFormDefinition>)session.createCriteria(StartFormDefinition.class).add(Restrictions.eq("formConnectionKey", formPath)).add(Restrictions.eq("formTypeId", new Long(1))).list();
+		
+		return this.filterUniqueStartFormDefinitionFromList(result);
 	}
 	
 	public StartFormDefinition getStartFormDefinitionByFormPath(String formPath) throws Exception {
@@ -119,7 +115,8 @@ public class TaskFormDb {
 		
 		try {
 			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-				    .add( Restrictions.eq("formPath", formPath) ) // identifies the start form
+					.add(Restrictions.eq("formConnectionKey", formPath))// identifies the start form
+					.add(Restrictions.eq("formTypeId", new Long(1))) // orbeon
 				    .add( Restrictions.isNull("activityInstanceUuid")) // only start forms
 				    .add( Restrictions.isNull("submitted")) // only not submitted forms
 				    .add( Restrictions.eq("userId", userId) ) // only forms that belongs to user
@@ -262,7 +259,6 @@ public class TaskFormDb {
 		try {
 			result = (ProcessActivityFormInstance) session.createCriteria(ProcessActivityFormInstance.class)
 				    .add( Restrictions.eq("formDocId", formDocId) ).uniqueResult();
-				   
 		}
 		catch (Exception e) {
 			log.severe("formDocId=[" + formDocId + "] Exception: " + e);
@@ -270,6 +266,23 @@ public class TaskFormDb {
 		finally {		
 			session.close();
 		}
+		return result;
+	}
+
+	private StartFormDefinition filterUniqueStartFormDefinitionFromList(List<StartFormDefinition> list) {
+		StartFormDefinition result = null;
+		if (list != null) {
+			if (list.size() > 0 ) {
+				result = list.get(0);
+			}
+			if (list.size() > 1) {
+				log.severe("Unique value is expected");
+				for (StartFormDefinition o : list) {
+					log.severe(" value: " + o);
+				}
+			}
+		}
+		log.severe("===> result=" + result);
 		return result;
 	}
 
@@ -314,6 +327,30 @@ public class TaskFormDb {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public List<ProcessActivityFormInstance> getPendingStartformFormInstances(String userId) {
+		List<ProcessActivityFormInstance> result = null;
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		try {
+			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
+			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
+					.add( Restrictions.isNull("processInstanceUuid") ) // is not started start form
+					.add( Restrictions.eq("userId", userId) )  // this user is last writer
+					.add(Restrictions.isNull("submitted"))     // not submitted
+				    .list();
+		}
+		catch (Exception e) {
+			log.severe("Exception in getPendingStartformFormInstances: userId="  + userId + " exception: " + e);
+		}
+		finally {
+			session.close();
+		}
+		return result;
+	}
+
+	
+	@SuppressWarnings("unchecked")
 	public List<ProcessActivityFormInstance> getPendingProcessActivityFormInstances(String userId) {
 		List<ProcessActivityFormInstance> result = null;
 		
@@ -342,7 +379,7 @@ public class TaskFormDb {
 		ProcessActivityFormInstance startForm = getProcessStartFormInstanceById(session, processInstanceUuid);
 		log.severe("startForm=" + startForm);
 		if (startForm != null) {
-			String startFormPath = startForm.getFormPath();
+			String startFormPath = startForm.getFormConnectionKey();
 			log.severe("startFormPath=" + startFormPath);
 			result = getStartFormDefinitionByFormPath(session, startFormPath);
 		}
@@ -354,21 +391,21 @@ public class TaskFormDb {
 	
 	/**
 	 * Returns 
-	 * 1) General form for activityDefinitionUuid
+	 * 1) General form for actdefId
 	 * 2) No form defined (return null).  
 	 * @return 
 	 */
-	public ActivityFormDefinition getActivityFormDefinition( String processdefinitionuuid, String activityDefinitionUuid) {
+	public ActivityFormDefinition getActivityFormDefinition( String procdefId, String actdefId) {
 		ActivityFormDefinition result = null;
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
-		log.severe("==> activityDefinitionUuid=" + activityDefinitionUuid + ", processdefinitionuuid=" + processdefinitionuuid);
+		log.severe("==> actdefId=" + actdefId + ", procdefId=" + procdefId);
 		try {
-			result = getActivityFormDefinition(session, processdefinitionuuid, activityDefinitionUuid);
+			result = getActivityFormDefinition(session, procdefId, actdefId);
 		}
 		catch (Exception e) {
-			log.severe("activityDefinitionUuid=[" + activityDefinitionUuid + "] processdefinitionuuid=[" + processdefinitionuuid + "] Exception: " + e);
+			log.severe("actdefId=[" + actdefId + "] procdefId=[" + procdefId + "] Exception: " + e);
 		}
 		finally {
 			session.close();
@@ -377,13 +414,13 @@ public class TaskFormDb {
 	}
 		
 	@SuppressWarnings("unchecked")
-	public ActivityFormDefinition getActivityFormDefinition(Session session, String processdefinitionuuid, String activityDefinitionUuid) {
+	public ActivityFormDefinition getActivityFormDefinition(Session session, String procdefId, String actdefId) {
 		List<ActivityFormDefinition> result = null;
 				
 		//result = (List<ProcessDefinition>)session.createQuery(hql).list();
 		result = (List<ActivityFormDefinition>) session.createCriteria(ActivityFormDefinition.class)
-			    .add( Restrictions.eq("processdefinitionuuid", processdefinitionuuid) )
-			    .add( Restrictions.eq("activityDefinitionUuid", activityDefinitionUuid) )
+			    .add( Restrictions.eq("procdefId", procdefId) )
+			    .add( Restrictions.eq("actdefId", actdefId) )
 			    .list();
 
 		return filterUniqueActivityDefinitionFromList(result);
@@ -707,150 +744,11 @@ public class TaskFormDb {
 				
 		System.out.println("start main load initial data to InheritPlatform database");
 		
-		Configuration cfg = new AnnotationConfiguration()
-	    .addAnnotatedClass(org.inheritsource.taskform.engine.persistence.entity.StartFormDefinition.class)
-	    .addAnnotatedClass(org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition.class)
-	    .addAnnotatedClass(org.inheritsource.taskform.engine.persistence.entity.ProcessActivityFormInstance.class)
-	    .addAnnotatedClass(org.inheritsource.taskform.engine.persistence.entity.TagType.class)
-	    .addAnnotatedClass(org.inheritsource.taskform.engine.persistence.entity.ProcessActivityTag.class)
-	    .addAnnotatedClass(org.inheritsource.taskform.engine.persistence.entity.UserEntity.class)
-	    .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
-	    .setProperty("hibernate.connection.driver_class", "org.postgresql.Driver")
-	    .setProperty("hibernate.connection.url", " jdbc:postgresql://localhost/InheritPlatform")
-	    .setProperty("hibernate.hbm2ddl.auto", "create")
-//	    .setProperty("hibernate.hbm2ddl.auto", "update")
-	    .setProperty("show_sql", "true");
-
-		HibernateUtil.overrideProperties(cfg);
-		
-	    SessionFactory sessionFactory = cfg.buildSessionFactory();
-	    Session session = sessionFactory.openSession();
-	    log.fine("Init hibernate finished");
-		// initialize db with demo data
-		
-		StartFormDefinition spridning = new StartFormDefinition();
-		spridning.setFormPath("start/demo-ansokan");
-		spridning.setProcessDefinitionUuid("Spridning_bekampningsmedel");
-		spridning.setAuthTypeReq(StartFormDefinition.AuthTypes.USERSESSION);
-		spridning.setUserDataXPath("");
-		
-		StartFormDefinition pcb_arende = new StartFormDefinition();
-		pcb_arende.setFormPath("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor");
-		pcb_arende.setProcessDefinitionUuid("Arendeprocess");
-		pcb_arende.setAuthTypeReq(StartFormDefinition.AuthTypes.USERSESSION);
-		pcb_arende.setUserDataXPath("");
-		
-		StartFormDefinition hk_arende = new StartFormDefinition();
-		hk_arende.setFormPath("miljoforvaltningen/anmalan-hemkompostering");
-		hk_arende.setProcessDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall");
-		hk_arende.setAuthTypeReq(StartFormDefinition.AuthTypes.USERSESSION);
-		hk_arende.setUserDataXPath("");
-
-		StartFormDefinition orbeon_demo_arende = new StartFormDefinition();
-		orbeon_demo_arende.setFormPath("orbeon/controls");
-		orbeon_demo_arende.setProcessDefinitionUuid("Arendeprocess");
-		orbeon_demo_arende.setAuthTypeReq(StartFormDefinition.AuthTypes.USERSESSION);
-		orbeon_demo_arende.setUserDataXPath("");
-
-		ActivityFormDefinition granskaAnsokan = new ActivityFormDefinition();
-		granskaAnsokan.setFormPath("Demo/Granska_ansokan");
-		granskaAnsokan.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Granska_ansokan");
-
-		ActivityFormDefinition remissA = new ActivityFormDefinition();
-		remissA.setFormPath("Demo/Remissyttrande");
-		remissA.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Remissyttrande_A");
-		
-		ActivityFormDefinition remissB = new ActivityFormDefinition();
-		remissB.setFormPath("Demo/Remissyttrande");
-		remissB.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Remissyttrande_B");
-
-		ActivityFormDefinition decision = new ActivityFormDefinition();
-		decision.setFormPath("Demo/Beslut");
-		decision.setActivityDefinitionUuid("Spridning_bekampningsmedel--5.0--Beslut");
-//===		
-		ActivityFormDefinition registrering = new ActivityFormDefinition();
-		registrering.setFormPath("basprocess/registrera");
-		registrering.setActivityDefinitionUuid("Arendeprocess--1.0--Registrering");
-
-		ActivityFormDefinition handlaggning = new ActivityFormDefinition();
-		handlaggning.setFormPath("basprocess/handlagga");
-		handlaggning.setActivityDefinitionUuid("Arendeprocess--1.0--Handlaggning");
-		
-		ActivityFormDefinition beslut = new ActivityFormDefinition();
-		beslut.setFormPath("basprocess/beslut");
-		beslut.setActivityDefinitionUuid("Arendeprocess--1.0--Beslut");
-//===
-		ActivityFormDefinition hk_registrering = new ActivityFormDefinition();
-		hk_registrering.setFormPath("miljoforvaltningen/registrering");
-		hk_registrering.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Registrering");
-
-		ActivityFormDefinition hk_handlaggning = new ActivityFormDefinition();
-		hk_handlaggning.setFormPath("miljoforvaltningen/handlaggning");
-		hk_handlaggning.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Handlaggning");
-
-		ActivityFormDefinition hk_beslut = new ActivityFormDefinition();
-		hk_beslut.setFormPath("miljoforvaltningen/beslut");
-		hk_beslut.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Beslut");
-
-		ActivityFormDefinition hk_expediering = new ActivityFormDefinition();
-		hk_expediering.setFormPath("miljoforvaltningen/expediering");
-		hk_expediering.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Expediering");
-
-		ActivityFormDefinition hk_delgivning = new ActivityFormDefinition();
-		hk_delgivning.setFormPath("miljoforvaltningen/delgivning");
-		hk_delgivning.setActivityDefinitionUuid("Miljoforvaltningen_hemkompostering_matavfall--1.0--Delgivning");
-//===
-		TagType diaryTagType = new TagType();
-		diaryTagType.setTagTypeId(TagType.TAG_TYPE_DIARY_NO);
-		diaryTagType.setName("diary_no");
-		diaryTagType.setLabel("Diarienr");
-
-		TagType applicationByTagType = new TagType();
-		applicationByTagType.setTagTypeId(TagType.TAG_APPLICATION_BY);
-		applicationByTagType.setName("application_by");
-		applicationByTagType.setLabel("Ansökan av");
-		
-		TagType otherTagType = new TagType();
-		otherTagType.setTagTypeId(TagType.TAG_OTHER);
-		otherTagType.setName("other");
-		otherTagType.setLabel("Annan");
-
-		session.beginTransaction();
-		session.save(spridning);
-		session.save(pcb_arende);
-		session.save(orbeon_demo_arende);
-		session.save(granskaAnsokan);
-		session.save(remissA);
-		session.save(remissB);
-		session.save(decision);
-		session.save(registrering);
-		session.save(handlaggning);
-		session.save(beslut);
-
-		session.save(hk_arende);
-		session.save(hk_registrering);
-		session.save(hk_handlaggning);
-		session.save(hk_beslut);
-		session.save(hk_expediering);
-		session.save(hk_delgivning);
-		
-		session.save(diaryTagType);
-		session.save(applicationByTagType);
-		session.save(otherTagType);
-		
-		session.getTransaction().commit();
-		session.close();
-		
-		/*
 		TaskFormDb db = new TaskFormDb();
+		//db.getStartProcessActivityFormInstanceByFormPathAndUser("miljoforvaltningen/inventeringsprotokoll_pcb_fogmassor--v002", "bjmo");
+	    
+		System.out.println("2: " + db.getProcessActivityFormInstanceByFormDocId("dba3e535-a5a3-4b02-806c-6a26ef51d4c0").getFormDocId());
 		
-		User user = new User();
-		user.setCategory(User.CATEGORY_UNKNOWN);
-		user.setDn("testdn");
-		user.setCn("test cn");
-		user.setUuid("uuid");
-		db.createUser(user);
-		*/
 		System.out.println("end main");
 		
 	}

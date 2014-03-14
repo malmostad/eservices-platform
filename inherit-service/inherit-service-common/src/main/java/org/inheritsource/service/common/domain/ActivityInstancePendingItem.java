@@ -107,6 +107,6 @@ public class ActivityInstancePendingItem extends ActivityInstanceItem {
 				+ "\n    formDocId : " + formDocId + "\n    activityType : "
 				+ activityType + "\n    priority : " + priority
 				+ "\n    processActivityFormInstanceId : "
-				+ processActivityFormInstanceId + "\n}";
+				+ processActivityFormInstanceId + super.toString() + "\n}";
 	}
 }

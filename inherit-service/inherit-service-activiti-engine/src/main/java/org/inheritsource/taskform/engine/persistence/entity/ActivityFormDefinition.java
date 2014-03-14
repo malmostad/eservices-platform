@@ -23,11 +23,10 @@
  
 package org.inheritsource.taskform.engine.persistence.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -48,89 +47,98 @@ public class ActivityFormDefinition {
 	
 	@Id
 	@GeneratedValue
+	@Column(name="activity_form_definition_id")
 	Long activityFormDefinitionId;
 		
 	/**
-	 * Process defintion uuid 
+	 * Process definition id (Activiti TaskDefinitionKey) 
 	 */
-	String processdefinitionuuid;
+	@Column(name="procdef_id")
+	String procdefId;
 	
 	/**
-	 * Activity defintion uuid 
+	 * Activity definition id (Activiti TaskDefinitionKey) 
 	 */
-	String activityDefinitionUuid;
+	@Column(name="actdef_id")
+	String actdefId;
 	
 	/**
-	 * Path to activity form
+	 * form type identifies a Motrice form handler i.e. Orbeon, sign, noform etc
 	 */
-	String formPath;
+	@Column(name="form_type_id")
+	Long formTypeId;
 
+	/**
+	 * identifies a specific form in a Motrice form handler engine. The form handler engine 
+	 * is responsibly to know how to interpret the formDefinitionKey
+	 */
+	@Column(name="form_connection_key")
+	String formConnectionKey;
 	
 	public ActivityFormDefinition() {
 		
 	}
 
-
 	public Long getActivityFormDefinitionId() {
 		return activityFormDefinitionId;
 	}
-
 
 	public void setActivityFormDefinitionId(Long activityFormDefinitionId) {
 		this.activityFormDefinitionId = activityFormDefinitionId;
 	}
 
-	public String getProcessdefinitionuuid() {
-		return processdefinitionuuid;
+	public String getProcdefId() {
+		return procdefId;
 	}
 
-
-	public void setProcessdefinitionuuid(String processdefinitionuuid) {
-		this.processdefinitionuuid = processdefinitionuuid;
+	public void setProcdefId(String procdefId) {
+		this.procdefId = procdefId;
 	}
 
-
-	public String getActivityDefinitionUuid() {
-		return activityDefinitionUuid;
+	public String getActdefId() {
+		return actdefId;
 	}
 
-
-	public void setActivityDefinitionUuid(String activityDefinitionUuid) {
-		this.activityDefinitionUuid = activityDefinitionUuid;
+	public void setActdefId(String actdefId) {
+		this.actdefId = actdefId;
 	}
 
-
-	public String getFormPath() {
-		return formPath;
+	public Long getFormTypeId() {
+		return formTypeId;
 	}
 
-
-	public void setFormPath(String formPath) {
-		this.formPath = formPath;
+	public void setFormTypeId(Long formTypeId) {
+		this.formTypeId = formTypeId;
 	}
 
+	public String getFormConnectionKey() {
+		return formConnectionKey;
+	}
+
+	public void setFormConnectionKey(String formConnectionKey) {
+		this.formConnectionKey = formConnectionKey;
+	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((activityDefinitionUuid == null) ? 0
-						: activityDefinitionUuid.hashCode());
+		result = prime * result
+				+ ((actdefId == null) ? 0 : actdefId.hashCode());
 		result = prime
 				* result
 				+ ((activityFormDefinitionId == null) ? 0
 						: activityFormDefinitionId.hashCode());
-		result = prime * result
-				+ ((formPath == null) ? 0 : formPath.hashCode());
 		result = prime
 				* result
-				+ ((processdefinitionuuid == null) ? 0 : processdefinitionuuid
+				+ ((formConnectionKey == null) ? 0 : formConnectionKey
 						.hashCode());
+		result = prime * result
+				+ ((formTypeId == null) ? 0 : formTypeId.hashCode());
+		result = prime * result
+				+ ((procdefId == null) ? 0 : procdefId.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {
@@ -141,10 +149,10 @@ public class ActivityFormDefinition {
 		if (getClass() != obj.getClass())
 			return false;
 		ActivityFormDefinition other = (ActivityFormDefinition) obj;
-		if (activityDefinitionUuid == null) {
-			if (other.activityDefinitionUuid != null)
+		if (actdefId == null) {
+			if (other.actdefId != null)
 				return false;
-		} else if (!activityDefinitionUuid.equals(other.activityDefinitionUuid))
+		} else if (!actdefId.equals(other.actdefId))
 			return false;
 		if (activityFormDefinitionId == null) {
 			if (other.activityFormDefinitionId != null)
@@ -152,15 +160,20 @@ public class ActivityFormDefinition {
 		} else if (!activityFormDefinitionId
 				.equals(other.activityFormDefinitionId))
 			return false;
-		if (formPath == null) {
-			if (other.formPath != null)
+		if (formConnectionKey == null) {
+			if (other.formConnectionKey != null)
 				return false;
-		} else if (!formPath.equals(other.formPath))
+		} else if (!formConnectionKey.equals(other.formConnectionKey))
 			return false;
-		if (processdefinitionuuid == null) {
-			if (other.processdefinitionuuid != null)
+		if (formTypeId == null) {
+			if (other.formTypeId != null)
 				return false;
-		} else if (!processdefinitionuuid.equals(other.processdefinitionuuid))
+		} else if (!formTypeId.equals(other.formTypeId))
+			return false;
+		if (procdefId == null) {
+			if (other.procdefId != null)
+				return false;
+		} else if (!procdefId.equals(other.procdefId))
 			return false;
 		return true;
 	}
@@ -168,9 +181,9 @@ public class ActivityFormDefinition {
 	@Override
 	public String toString() {
 		return "ActivityFormDefinition [activityFormDefinitionId="
-				+ activityFormDefinitionId + ", processdefinitionuuid="
-				+ processdefinitionuuid + ", activityDefinitionUuid="
-				+ activityDefinitionUuid + ", formPath=" + formPath + "]";
+				+ activityFormDefinitionId + ", procdefId=" + procdefId
+				+ ", actdefId=" + actdefId + ", formTypeId=" + formTypeId
+				+ ", formConnectionKey=" + formConnectionKey + "]";
 	}
 	
 }

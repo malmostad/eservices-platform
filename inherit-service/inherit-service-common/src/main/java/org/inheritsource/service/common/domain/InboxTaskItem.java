@@ -28,8 +28,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *  phone: +46 8 641 64 14
  */
 
-@XStreamAlias("InboxTaskItem")
-public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
+public class InboxTaskItem extends FormInstance implements Serializable, Comparable<InboxTaskItem> {
 	
 	private static final long serialVersionUID = -5668377849020426352L;
 		
@@ -38,22 +37,11 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 	Date activityCreated;
 	Date expectedEndDate;
 	
-	// internal taskform-engine id, do not store, use in session communication 
-	Long processActivityFormInstanceId;
-
 	String rootProcessInstanceUuid;
 	String processInstanceUuid;
-	String taskUuid;
 	String rootProcessDefinitionUuid;
 	String processDefinitionUuid;
 	String activityDefinitionUuid;
-	
-	String externalUrl = null;
-	
-	/** 
-	 * The FORM_PATH that identifies the StartFormDefinition that started the case 
-	 */
-	String startedByFormPath;
 	
 	public InboxTaskItem() {
 		
@@ -90,14 +78,6 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 	public void setExpectedEndDate(Date expectedEndDate) {
 		this.expectedEndDate = expectedEndDate;
 	}
-
-	public Long getProcessActivityFormInstanceId() {
-		return processActivityFormInstanceId;
-	}
-
-	public void setProcessActivityFormInstanceId(Long processActivityFormInstanceId) {
-		this.processActivityFormInstanceId = processActivityFormInstanceId;
-	}
 	
 	public String getRootProcessInstanceUuid() {
 		return rootProcessInstanceUuid;
@@ -114,14 +94,6 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 	public void setProcessInstanceUuid(String processInstanceUuid) {
 		this.processInstanceUuid = processInstanceUuid;
 	}
-
-	public String getTaskUuid() {
-		return taskUuid;
-	}
-
-	public void setTaskUuid(String taskUuid) {
-		this.taskUuid = taskUuid;
-	}
 	
 	public String getActivityDefinitionUuid() {
 		return activityDefinitionUuid;
@@ -130,7 +102,9 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 	public void setActivityDefinitionUuid(String activityDefinitionUuid) {
 		this.activityDefinitionUuid = activityDefinitionUuid;
 	}
+
 	
+	/*
 	public String getEditFormUrl() {
 		String result = null;
 		if (externalUrl != null) {
@@ -144,6 +118,7 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 		}
 		return result;
 	}
+	*/
 	
 	public String getRootProcessDefinitionUuid() {
 		return rootProcessDefinitionUuid;
@@ -161,30 +136,54 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 		this.processDefinitionUuid = processDefinitionUuid;
 	}
 
-	public String getStartedByFormPath() {
-		return startedByFormPath;
+	/*
+	 * This url represent a 
+	 */
+	public String getRelativePageLink() {
+		String result = super.getRelativePageLink();
+		if (actinstId != null && actinstId.trim().length()>0) {
+			// task
+			result += "&actinstId=" + actinstId;
+			
+		}
+		else {
+			// it is implicit a start form if no actinstId
+			result = page + "?startforminstId=" + instanceId;
+		}
+		return result;
 	}
-
-	public void setStartedByFormPath(String startedByFormPath) {
-		this.startedByFormPath = startedByFormPath;
-	}
-
-	public String getExternalUrl() {
-		return externalUrl;
-	}
-
-	public void setExternalUrl(String externalUrl) {
-		this.externalUrl = externalUrl;
-	}
-
+	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+	
+	@Override
+	public int compareTo(InboxTaskItem other) {
+		int result = -1;
+		if (other == null) {
+			result = 1;
+		} else {
+			if (getActivityCreated() == null) {
+				if (other.getActivityCreated() == null) {
+					result = 0;
+				} 
+			}
+			else {
+				if (other.getActivityCreated() == null) {
+					result = 1;
+				}
+				else {
+					result = getActivityCreated().compareTo(other.getActivityCreated());
+				}
+			}
+		} 
+		return result;
 	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime * result
 				+ ((activityCreated == null) ? 0 : activityCreated.hashCode());
 		result = prime
@@ -195,12 +194,6 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 				+ ((activityLabel == null) ? 0 : activityLabel.hashCode());
 		result = prime * result
 				+ ((expectedEndDate == null) ? 0 : expectedEndDate.hashCode());
-		result = prime * result
-				+ ((externalUrl == null) ? 0 : externalUrl.hashCode());
-		result = prime
-				* result
-				+ ((processActivityFormInstanceId == null) ? 0
-						: processActivityFormInstanceId.hashCode());
 		result = prime
 				* result
 				+ ((processDefinitionUuid == null) ? 0 : processDefinitionUuid
@@ -219,12 +212,6 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 				* result
 				+ ((rootProcessInstanceUuid == null) ? 0
 						: rootProcessInstanceUuid.hashCode());
-		result = prime
-				* result
-				+ ((startedByFormPath == null) ? 0 : startedByFormPath
-						.hashCode());
-		result = prime * result
-				+ ((taskUuid == null) ? 0 : taskUuid.hashCode());
 		return result;
 	}
 
@@ -232,7 +219,7 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -256,17 +243,6 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 			if (other.expectedEndDate != null)
 				return false;
 		} else if (!expectedEndDate.equals(other.expectedEndDate))
-			return false;
-		if (externalUrl == null) {
-			if (other.externalUrl != null)
-				return false;
-		} else if (!externalUrl.equals(other.externalUrl))
-			return false;
-		if (processActivityFormInstanceId == null) {
-			if (other.processActivityFormInstanceId != null)
-				return false;
-		} else if (!processActivityFormInstanceId
-				.equals(other.processActivityFormInstanceId))
 			return false;
 		if (processDefinitionUuid == null) {
 			if (other.processDefinitionUuid != null)
@@ -295,57 +271,21 @@ public class InboxTaskItem implements Serializable, Comparable<InboxTaskItem> {
 		} else if (!rootProcessInstanceUuid
 				.equals(other.rootProcessInstanceUuid))
 			return false;
-		if (startedByFormPath == null) {
-			if (other.startedByFormPath != null)
-				return false;
-		} else if (!startedByFormPath.equals(other.startedByFormPath))
-			return false;
-		if (taskUuid == null) {
-			if (other.taskUuid != null)
-				return false;
-		} else if (!taskUuid.equals(other.taskUuid))
-			return false;
 		return true;
-	}
-	
-	@Override
-	public int compareTo(InboxTaskItem other) {
-		int result = -1;
-		if (other == null) {
-			result = 1;
-		} else {
-			if (getActivityCreated() == null) {
-				if (other.getActivityCreated() == null) {
-					result = 0;
-				} 
-			}
-			else {
-				if (other.getActivityCreated() == null) {
-					result = 1;
-				}
-				else {
-					result = getActivityCreated().compareTo(other.getActivityCreated());
-				}
-			}
-		} 
-		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "InboxTaskItem {\n    processLabel : " + processLabel
-				+ "\n    activityLabel : " + activityLabel
-				+ "\n    activityCreated : " + activityCreated
-				+ "\n    expectedEndDate : " + expectedEndDate
-				+ "\n    processActivityFormInstanceId : "
-				+ processActivityFormInstanceId
-				+ "\n    rootProcessInstanceUuid : " + rootProcessInstanceUuid
-				+ "\n    processInstanceUuid : " + processInstanceUuid
-				+ "\n    taskUuid : " + taskUuid
-				+ "\n    rootProcessDefinitionUuid : "
-				+ rootProcessDefinitionUuid + "\n    processDefinitionUuid : "
-				+ processDefinitionUuid + "\n    activityDefinitionUuid : "
-				+ activityDefinitionUuid + "\n    externalUrl : " + externalUrl
-				+ "\n    startedByFormPath : " + startedByFormPath + "\n}";
+		return "InboxTaskItem [processLabel=" + processLabel
+				+ ", activityLabel=" + activityLabel + ", activityCreated="
+				+ activityCreated + ", expectedEndDate=" + expectedEndDate
+				+ ", rootProcessInstanceUuid=" + rootProcessInstanceUuid
+				+ ", processInstanceUuid=" + processInstanceUuid
+				+ ", rootProcessDefinitionUuid=" + rootProcessDefinitionUuid
+				+ ", processDefinitionUuid=" + processDefinitionUuid
+				+ ", activityDefinitionUuid=" + activityDefinitionUuid
+			    + super.toString() + "]";
 	}
+
+
 }

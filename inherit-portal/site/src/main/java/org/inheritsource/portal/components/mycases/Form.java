@@ -53,8 +53,9 @@ public class Form extends MyCasesBaseComponent {
         
         log.debug("user: " + request.getUserPrincipal());
         
-        String processActivityFormInstanceId = getPublicRequestParameter(request, "processActivityFormInstanceId");
-        String taskUuid = getPublicRequestParameter(request, "taskUuid");
+        String instanceId = getPublicRequestParameter(request, "instanceId");
+        String actinstId = getPublicRequestParameter(request, "actinstId");
+        String startforminstId = getPublicRequestParameter(request, "startforminstId");
         
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
@@ -66,24 +67,16 @@ public class Form extends MyCasesBaseComponent {
         request.setAttribute("document",doc);
  
         ActivityInstanceItem activity = null;
-        if (taskUuid != null && taskUuid.trim().length()>0) {
-        	// specific BPMN engine activity instance is requested
-        	activity = engine.getActivityInstanceItem(taskUuid, user.getUuid());
-        } 
+        if (startforminstId != null && startforminstId.trim().length()>0) {
+        	// start form
+        	
+        }
         else {
-        	if (processActivityFormInstanceId != null && processActivityFormInstanceId.trim().length()>0) {
-        		// specific taskFormDb ProcessActivityFormInstance is requested
-        		Long id = null;
-        		try {
-        			id = Long.decode(processActivityFormInstanceId);
-        			activity = engine.getActivityInstanceItem(id);
-        		}
-        		catch (NumberFormatException nfe) {
-        			log.info("processActivityFormInstanceId=[" + processActivityFormInstanceId + "] is not a valid id");
-        		}		
-        		
-        	}
-        	else if (doc instanceof EServiceDocument) {
+        	// specific BPMN engine activity instance is requested
+        	activity = engine.getActivityInstanceItem(actinstId, instanceId, user.getUuid());
+        } 
+        
+        if (activity == null && doc instanceof EServiceDocument) {
 	        	// no activity is specified. Use content path to find a start form.
 	        	EServiceDocument eServiceDocument = (EServiceDocument)doc;
 	        	// look up existing form (docId) if partially saved form exist
@@ -96,10 +89,8 @@ public class Form extends MyCasesBaseComponent {
 				} catch (Exception e) {
 					log.info("formPath=[" + eServiceDocument.getFormPath() + "] userId=[" + userId + "] doeas not identify an activity");
         		}	
-	        }
+	        
         }
-        
-        appendChannelLabels(request, activity);
         
     	request.setAttribute("activity", activity);
     	

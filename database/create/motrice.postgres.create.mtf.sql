@@ -39,12 +39,12 @@ CREATE TABLE mtf_process_activity_form_instance (
     processactivityforminstanceid bigint NOT NULL,
     activityinstanceuuid character varying(255),
     formdocid character varying(255) NOT NULL,
-    formTypeId		bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
-    formDefinitionKey   character varying(255),
+    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
+    form_connection_key   character varying(511),
     processinstanceuuid character varying(255),
     submitted timestamp without time zone,
     userid character varying(255) NOT NULL,
-    startformdefinitionid bigint
+    start_form_definition_id bigint
 );
 
 ALTER TABLE ONLY mtf_process_activity_form_instance

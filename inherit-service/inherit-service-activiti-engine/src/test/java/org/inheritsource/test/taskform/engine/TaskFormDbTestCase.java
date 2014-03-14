@@ -108,14 +108,14 @@ public class TaskFormDbTestCase {
 		
 		ProcessActivityFormInstance pafi1 = new ProcessActivityFormInstance();
 		pafi1.setFormDocId("testDocId");
-		pafi1.setFormPath(formPath);
+		pafi1.setFormConnectionKey(formPath);
 		pafi1.setUserId(userId);
 		pafi1.setProcessInstanceUuid(processInstanceUuid1);		
 		taskFormDb.save(pafi1);
 
 		ProcessActivityFormInstance pafi2 = new ProcessActivityFormInstance();
 		pafi2.setFormDocId("testDocId2");
-		pafi2.setFormPath(formPath);
+		pafi2.setFormConnectionKey(formPath);
 		pafi2.setUserId(userId);
 		pafi2.setProcessInstanceUuid(processInstanceUuid2);		
 		taskFormDb.save(pafi2);

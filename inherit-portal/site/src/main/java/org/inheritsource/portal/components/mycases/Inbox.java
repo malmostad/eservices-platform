@@ -59,13 +59,9 @@ public class Inbox extends MyCasesBaseComponent {
 
         List<InboxTaskItem> tasks = engine.getInboxTaskItems(user.getUuid());
         
-        // Lookup process and activity labels from JCR channel if they exist
-        if (tasks != null) {
-        	for (InboxTaskItem task : tasks) { 
-        		appendChannelLabels(request, task);
-        	}
+        for (InboxTaskItem task : tasks) {
+        	log.error("XXXXX task: " + task);
         }
-        
         request.setAttribute("tasks", tasks);
         
     }
