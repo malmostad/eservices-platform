@@ -15,27 +15,36 @@ ALTER TABLE ONLY motrice_user
 ALTER TABLE ONLY motrice_user
     ADD CONSTRAINT motrice_user_uuid_key UNIQUE (uuid);
 
+CREATE TABLE mtf_form_type (
+    form_type_id bigint PRIMARY KEY,
+    label character varying(255),
+    form_handler_bean   character varying(255) -- spring bean id
+);
 
 CREATE TABLE mtf_activity_form_definition (
-    activityformdefinitionid bigint NOT NULL,
-    processdefinitionuuid character varying(255),
-    activitydefinitionuuid character varying(255),
-    formpath character varying(255)
+    activity_form_definition_id bigint NOT NULL,
+    procdef_id character varying(255),
+    actdef_id character varying(255),
+    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
+    form_connection_key   character varying(511),
+    form_connection_label character varying(255),
+    form_connection_dbid bigint
 );
 
 ALTER TABLE ONLY mtf_activity_form_definition
-    ADD CONSTRAINT mtf_activity_form_definition_pkey PRIMARY KEY (activityformdefinitionid);
+    ADD CONSTRAINT mtf_activity_form_definition_pkey PRIMARY KEY (activity_form_definition_id);
 
 
 CREATE TABLE mtf_process_activity_form_instance (
     processactivityforminstanceid bigint NOT NULL,
     activityinstanceuuid character varying(255),
     formdocid character varying(255) NOT NULL,
-    formpath character varying(255) NOT NULL,
+    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
+    form_connection_key   character varying(511),
     processinstanceuuid character varying(255),
     submitted timestamp without time zone,
     userid character varying(255) NOT NULL,
-    startformdefinitionid bigint
+    start_form_definition_id bigint
 );
 
 ALTER TABLE ONLY mtf_process_activity_form_instance
@@ -59,18 +68,17 @@ ALTER TABLE ONLY mtf_process_activity_tag
 
 
 CREATE TABLE mtf_start_form_definition (
-    startformdefinitionid bigint NOT NULL,
-    authtypereq character varying(255) NOT NULL,
-    formpath character varying(255) NOT NULL,
-    processdefinitionuuid character varying(255),
-    userdataxpath character varying(255)
+    start_form_definition_id bigint NOT NULL,
+    auth_type_req character varying(255) NOT NULL,
+    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
+    form_connection_key   character varying(255),
+    form_connection_dbid bigint,
+    procdef_id character varying(255),
+    user_data_xpath character varying(255)
 );
 
 ALTER TABLE ONLY mtf_start_form_definition
-    ADD CONSTRAINT mtf_start_form_definition_pkey PRIMARY KEY (startformdefinitionid);
-
-ALTER TABLE ONLY mtf_start_form_definition
-    ADD CONSTRAINT mtf_start_form_definition_formpath_key UNIQUE (formpath);
+    ADD CONSTRAINT mtf_start_form_definition_pkey PRIMARY KEY (start_form_definition_id);
 
 
 CREATE TABLE mtf_tag_type (
@@ -92,7 +100,7 @@ ALTER TABLE ONLY mtf_process_activity_tag
     ADD CONSTRAINT fk4146f6dad5e10f16 FOREIGN KEY (processactivityforminstanceid) REFERENCES mtf_process_activity_form_instance(processactivityforminstanceid);
 
 ALTER TABLE ONLY mtf_process_activity_form_instance
-    ADD CONSTRAINT fk606cfcf095f89dba FOREIGN KEY (startformdefinitionid) REFERENCES mtf_start_form_definition(startformdefinitionid);
+    ADD CONSTRAINT fk606cfcf095f89dba FOREIGN KEY (startformdefinitionid) REFERENCES mtf_start_form_definition(start_form_definition_id);
 
 
 --

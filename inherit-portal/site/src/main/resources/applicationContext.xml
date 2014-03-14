@@ -22,6 +22,28 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="motriceOrbeonFormHandler" class="org.inheritsource.service.form.OrbeonTaskFormHandler"/>
+	
+	<bean id="formEngine" class="org.inheritsource.service.form.FormEngine">
+		<property name="formTypeId2Handler">
+	        <map>
+	            <entry key="1" value-ref="motriceOrbeonFormHandler" />
+	            
+	        </map>
+	    </property>
+	    <property name="taskFormDb" ref="taskFormDb" />
+		<property name="identityService" ref="identityService" />
+	    <property name="activitiEngineService" ref="activitiEngineService" />
+	</bean>
+
+	<bean id="identityService" class="org.inheritsource.service.identity.IdentityServiceMalmoImpl">
+		<property name="taskFormDb" ref="taskFormDb" />
+	</bean>
+
+	
+	<bean id="taskFormDb" class="org.inheritsource.taskform.engine.persistence.TaskFormDb">
+	</bean>
 
 	<bean id="engine" class="org.inheritsource.taskform.engine.TaskFormService"
 		scope="singleton">
@@ -32,6 +54,8 @@
 		class="org.inheritsource.service.processengine.ActivitiEngineService"
 		scope="singleton">
 		<property name="engine" ref="processEngine" />
+		<property name="identityService" ref="identityService" />
+		<property name="formEngine" ref="formEngine" />
 	</bean>
 
 	<bean id="processEngineConfiguration"

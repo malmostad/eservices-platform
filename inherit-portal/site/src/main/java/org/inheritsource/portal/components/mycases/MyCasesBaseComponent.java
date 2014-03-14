@@ -135,10 +135,12 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 	 * @param task
 	 */
 	public void appendChannelLabels(final HstRequest request, InboxTaskItem task) {
+		/*
 		if (task!=null) {
 			task.setProcessLabel(getJcrProcessLabel(request, task.getStartedByFormPath(), task.getProcessLabel()));        	
 			task.setActivityLabel(getJcrActivityLabel(request, task.getProcessDefinitionUuid(), task.getActivityDefinitionUuid(), task.getActivityLabel()));
 		}
+		*/
 	}
 	
 	
@@ -149,9 +151,11 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 	 * @param pendingItem
 	 */
 	public void appendChannelLabels(final HstRequest request, ActivityInstanceItem pendingItem) {
+		/*
 		if (pendingItem!=null) {
 			pendingItem.setActivityLabel(getJcrActivityLabel(request, pendingItem.getProcessDefinitionUuid(), pendingItem.getActivityDefinitionUuid(), pendingItem.getActivityLabel()));
 		}
+		*/
 	}
 
 	/**
@@ -161,6 +165,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 	 * @param processInstanceListItem
 	 */
 	public void appendChannelLabels(final HstRequest request, ProcessInstanceListItem processInstanceListItem) {
+		/*
 		if (processInstanceListItem!=null) {
 			processInstanceListItem.setProcessLabel(getJcrProcessLabel(request, processInstanceListItem.getStartedByFormPath(), processInstanceListItem.getProcessLabel()));        	
 			if (processInstanceListItem.getActivities() != null) {
@@ -169,6 +174,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 				}
 			}
 		}
+		*/
 	}
 	
 	/**
@@ -178,6 +184,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 	 * @param timelineItem
 	 */
 	public void appendChannelLabels(final HstRequest request, TimelineItem timelineItem, String processLabel) {
+		/*
 		if (timelineItem!=null) {
 			if (timelineItem instanceof StartLogItem) {
 				StartLogItem startLogItem = (StartLogItem)timelineItem;
@@ -188,6 +195,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 				appendChannelLabels(request, activity);
 			}
 		}
+		*/
 	}
 
 	
@@ -199,11 +207,13 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 	 * @param searchResult
 	 */
 	public void appendChannelLabels(final HstRequest request,  PagedProcessInstanceSearchResult searchResult) {
+		/*
         if (searchResult != null && searchResult.getHits() != null) {
         	for (ProcessInstanceListItem piItem : searchResult.getHits()) {
         		appendChannelLabels(request, piItem);
 			}	
         }
+        */
 	}
 	
 	/**
@@ -213,6 +223,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 	 * @param processInstanceDetails
 	 */
 	public void appendChannelLabels(final HstRequest request, ProcessInstanceDetails processInstanceDetails) {
+		/* TODO 
 		if (processInstanceDetails != null) {
 			processInstanceDetails.setProcessLabel(getJcrProcessLabel(request, processInstanceDetails.getStartedByFormPath(), processInstanceDetails.getProcessLabel()));
 		
@@ -229,5 +240,6 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 				}
 			}
 		}
+		*/
 	}
 }

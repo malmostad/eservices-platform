@@ -71,16 +71,16 @@
 
 	<li class="fieldcontain">
 	  <span class="property-label"><g:message code="startform.selection.label"/></span>
-	  <g:if test="${procdefInst?.startForms}">
-	    <g:each in="${procdefInst.startForms}" var="msfd">
+	  <g:if test="${startForms}">
+	    <g:each in="${startForms}" var="startFormView">
 	      <span class="property-value">
-		<g:set var="pfv" value="${msfd.formdef}"/>
+		<g:set var="pfv" value="${startFormView.formdefId}"/>
 		<g:if test="${pfv}">
-		  <g:link controller="pxdFormdefVer" action="show" id="${pfv?.id}">${msfd?.encodeAsHTML()}</g:link>
+		  <g:link controller="pxdFormdefVer" action="show" id="${pfv}">${startFormView?.formConnectionKey?.encodeAsHTML()}</g:link>
 		</g:if>
 		<g:else>
 		  <g:set var="linktitle"><g:message code="startform.selection.invalid.link"/></g:set>
-		  <g:img uri="/images/silk/exclamation.png" title="${linktitle}"/> ${msfd?.encodeAsHTML()}
+		  <g:img uri="/images/silk/exclamation.png" title="${linktitle}"/> ${startFormView?.formConnectionKey?.encodeAsHTML()}
 		</g:else>
 		<g:if test="${editable}">
 		  <g:link class="edit" action="edit" id="${procdefInst?.uuid}">
@@ -109,10 +109,10 @@
 	    <g:each in="${procdefInst.activities}" var="a">
 	      <g:set var="formdef" value="${a?.activityFormdef}"/>
 	      <g:set var="actId" value="${a?.uuid}"/>
-	      <g:set var="cnx" value="${new org.motrice.coordinatrice.ActivityConnection(a, formdef?.formPath)}"/>
+	      <g:set var="cnx" value="${new org.motrice.coordinatrice.TaskFormSpec(a, formdef)}"/>
 	      <span class="property-value" aria-labelledby="activities-label"><tr>
 		  <td><g:link controller="actDef" action="show" id="${a?.fullId}">${a?.encodeAsHTML()}</g:link></td>
-		  <g:render template="/activityConnection" model="[connection:cnx, actDefInst:a, editable:isEditable]"/>
+		  <g:render template="/activityConnection" model="[connection:cnx, actDefInst:a, formdef:formdef, editable:isEditable]"/>
 	      </tr></span>
 	    </g:each>
 	    </table>

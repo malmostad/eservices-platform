@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("ActivityInstanceItem")
-public abstract class ActivityInstanceItem implements Serializable {
+public abstract class ActivityInstanceItem extends FormInstance implements Serializable {
 
 	private static final long serialVersionUID = 8069401830437496246L;
 	
@@ -58,7 +58,6 @@ public abstract class ActivityInstanceItem implements Serializable {
 	int activityType;
 	int priority;
 	long processActivityFormInstanceId;
-	
 	
 	public String getProcessDefinitionUuid() {
 		return processDefinitionUuid;
@@ -313,7 +312,7 @@ public abstract class ActivityInstanceItem implements Serializable {
 				+ expectedEndDate + ", formUrl=" + formUrl + ", formDocId="
 				+ formDocId + ", activityType=" + activityType + ", priority="
 				+ priority + ", processActivityFormInstanceId="
-				+ processActivityFormInstanceId + "]";
+				+ processActivityFormInstanceId + super.toString() + "]";
 	}
 	
 }

@@ -90,23 +90,33 @@ public class StartFormDefinition {
 	
 	@Id
 	@GeneratedValue
+	@Column(name="start_form_definition_id")
 	Long startFormDefinitionId;
 	
 	/**
 	 * Process definition uuid to start when this start form is submitted
 	 */
+	@Column(name="procdef_id")
 	String processDefinitionUuid;
 		
 	/**
-	 *  Path to start form
+	 * form type identifies a Motrice form handler i.e. Orbeon, sign, noform etc
 	 */
-	@Column(nullable = false, unique = true)
-	String formPath;
+	@Column(name="form_type_id")
+	Long formTypeId;
+
+	/**
+	 * identifies a specific form in a Motrice form handler engine. The form handler engine 
+	 * is responsibly to know how to interpret the formDefinitionKey
+	 */
+	@Column(name="form_connection_key")
+	String formConnectionKey;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, name="auth_type_req")
 	@Enumerated(EnumType.STRING)
 	AuthTypes authTypeReq;
 	
+	@Column(name="user_data_xpath")
 	String userDataXPath;
 
 	public StartFormDefinition() {
@@ -129,12 +139,20 @@ public class StartFormDefinition {
 		this.processDefinitionUuid = processDefinitionUuid;
 	}
 
-	public String getFormPath() {
-		return formPath;
+	public Long getFormTypeId() {
+		return formTypeId;
 	}
 
-	public void setFormPath(String formPath) {
-		this.formPath = formPath;
+	public void setFormTypeId(Long formTypeId) {
+		this.formTypeId = formTypeId;
+	}
+
+	public String getFormConnectionKey() {
+		return formConnectionKey;
+	}
+
+	public void setFormConnectionKey(String formConnectionKey) {
+		this.formConnectionKey = formConnectionKey;
 	}
 
 	public AuthTypes getAuthTypeReq() {
@@ -169,8 +187,12 @@ public class StartFormDefinition {
 		int result = 1;
 		result = prime * result
 				+ ((authTypeReq == null) ? 0 : authTypeReq.hashCode());
+		result = prime
+				* result
+				+ ((formConnectionKey == null) ? 0 : formConnectionKey
+						.hashCode());
 		result = prime * result
-				+ ((formPath == null) ? 0 : formPath.hashCode());
+				+ ((formTypeId == null) ? 0 : formTypeId.hashCode());
 		result = prime
 				* result
 				+ ((processDefinitionUuid == null) ? 0 : processDefinitionUuid
@@ -195,10 +217,15 @@ public class StartFormDefinition {
 		StartFormDefinition other = (StartFormDefinition) obj;
 		if (authTypeReq != other.authTypeReq)
 			return false;
-		if (formPath == null) {
-			if (other.formPath != null)
+		if (formConnectionKey == null) {
+			if (other.formConnectionKey != null)
 				return false;
-		} else if (!formPath.equals(other.formPath))
+		} else if (!formConnectionKey.equals(other.formConnectionKey))
+			return false;
+		if (formTypeId == null) {
+			if (other.formTypeId != null)
+				return false;
+		} else if (!formTypeId.equals(other.formTypeId))
 			return false;
 		if (processDefinitionUuid == null) {
 			if (other.processDefinitionUuid != null)
@@ -222,9 +249,10 @@ public class StartFormDefinition {
 	public String toString() {
 		return "StartFormDefinition [startFormDefinitionId="
 				+ startFormDefinitionId + ", processDefinitionUuid="
-				+ processDefinitionUuid + ", formPath=" + formPath
-				+ ", authTypeReq=" + authTypeReq + ", userDataXPath="
-				+ userDataXPath + "]";
+				+ processDefinitionUuid + ", formTypeId=" + formTypeId
+				+ ", formConnectionKey=" + formConnectionKey + ", authTypeReq="
+				+ authTypeReq + ", userDataXPath=" + userDataXPath + "]";
 	}
+
 
 }

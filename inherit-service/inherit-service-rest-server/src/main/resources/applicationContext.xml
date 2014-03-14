@@ -77,7 +77,6 @@
   
   <!-- Define all the routes in RESTlet-->
   
-  <bean name="/getActivityInstanceItemById/{processActivityFormInstanceId}" class="org.inheritsource.service.rest.server.ActivityInstanceItemById" scope="singleton" autowire="byName" />
   <bean name="/getDashOpenActivitiesByUserId/{userid}/{remainingDays}" class="org.inheritsource.service.rest.server.DashOpenActivitiesByUserId" scope="singleton" autowire="byName" />
   <bean name="/getStartActivityInstanceItem/{formPath}/{userId}" class="org.inheritsource.service.rest.server.StartActivityInstanceItemByFormPath" scope="singleton" autowire="byName" />
   <bean name="/processInstanceDetailsByActivityInstanceUuid/{activityInstanceUuid}" class="org.inheritsource.service.rest.server.ProcessInstanceDetailByActivityInstanceUuid" scope="singleton" autowire="byName" /> 
@@ -91,13 +90,8 @@
   <bean name="/addComment/{activityInstanceUuid}/{comment}/{userid}" class="org.inheritsource.service.rest.server.AddComment" scope="singleton" autowire="byName" /> 
   <bean name="/getCommentFeed/{activityInstanceUuid}/{userid}" class="org.inheritsource.service.rest.server.GetCommentFeed" scope="singleton" autowire="byName" /> 
   <bean name="/assignTask/{activityInstanceUuid}/{action}/{userid}" class="org.inheritsource.service.rest.server.AssignTask" scope="singleton" autowire="byName" /> 
-  <bean name="/getActivityInstanceItem/{activityInstanceUuid}/{userId}" class="org.inheritsource.service.rest.server.ActivityInstanceItemByActivityInstanceUuid" scope="singleton" autowire="byName" />
-  <bean name="/getNextActivityInstanceItemByDocId/{docId}/{userId}" class="org.inheritsource.service.rest.server.NextActivityInstanceItemByDocId" scope="singleton" autowire="byName" />		
   <bean name="/getActivityWorkflowInfo/{activityInstanceUuid}" class="org.inheritsource.service.rest.server.GetActivityWorkflowInfo" scope="singleton" autowire="byName" /> 
   <bean name="/inboxByUserId/{userid}" class="org.inheritsource.service.rest.server.InboxByUserId" scope="singleton" autowire="byName" />
-  <bean name="/submitForm/{docId}/{userId}/{newDocId}" class="org.inheritsource.service.rest.server.SubmitForm" scope="singleton" autowire="byName" />
-  <bean name="/submitForm/{docId}/{userId}" class="org.inheritsource.service.rest.server.SubmitForm" scope="singleton" autowire="byName" />
-  <bean name="/submitStartForm/{formPath}/{docId}/{userId}" class="org.inheritsource.service.rest.server.SubmitStartForm" scope="singleton" autowire="byName" />
   <bean name="/setActivityPriority/{activityInstanceUuid}/{priority}" class="org.inheritsource.service.rest.server.SetActivityPriority" scope="singleton" autowire="byName" /> 
   <bean name="/addTag/{processActivityFormInstanceId}/{tagTypeId}/{value}/{userid}" class="org.inheritsource.service.rest.server.AddTag" scope="singleton" autowire="byName" /> 
   <bean name="/deleteTag/{processInstanceUuid}/{value}/{userid}" class="org.inheritsource.service.rest.server.DeleteTagByValue" scope="singleton" autowire="byName" /> 
@@ -111,7 +105,4 @@
   <bean name="/emailToInitiator/{processInstanceUuid}/{activityInstanceUuid}/{mailSubject}/{mailBody}" class="org.inheritsource.service.rest.server.EmailToInitiator" scope="singleton" autowire="byName" />
   <bean name="/emailTo/{mailTo}/{mailFrom}/{mailSubject}/{mailBody}" class="org.inheritsource.service.rest.server.EmailTo" scope="singleton" autowire="byName" />
   <bean name="/getMyProfile/{userid}" class="org.inheritsource.service.rest.server.GetMyProfileByUserId" scope="singleton" autowire="byName" />
-  <bean name="/getProcessDefinitionDetails/{processDefinitionUUID}" class="org.inheritsource.service.rest.server.GetProcessDefinitionDetails" scope="singleton" autowire="byName" />
-  <bean name="/getProcessDefinitions" class="org.inheritsource.service.rest.server.GetProcessDefinitions" scope="singleton" autowire="byName" />
-  <bean name="/setActivityForm/{processdefinitionuuid}/{activityDefinitionUuid}/{formPath}" class="org.inheritsource.service.rest.server.SetActivityForm" scope="singleton" autowire="byName" />
 </beans>

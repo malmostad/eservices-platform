@@ -52,7 +52,7 @@ public class ProcessActivityFormInstance {
 	 * If not null, this is a start form instance
 	 */
 	@ManyToOne
-    @JoinColumn(name="startFormDefinitionId", nullable=true)
+    @JoinColumn(name="start_form_definition_id", nullable=true)
 	StartFormDefinition startFormDefinition;
 	
 	/**
@@ -67,10 +67,17 @@ public class ProcessActivityFormInstance {
 	String formDocId;
 	
 	/**
-	 * Form path to form definition
+	 * form type identifies a Motrice form handler i.e. Orbeon, sign, noform etc
 	 */
-	@Column(nullable=false)
-	String formPath;
+	@Column(name="form_type_id")
+	Long formTypeId;
+
+	/**
+	 * identifies a specific form in a Motrice form handler engine. The form handler engine 
+	 * is responsibly to know how to interpret the formDefinitionKey
+	 */
+	@Column(name="form_connection_key")
+	String formConnectionKey;
 	
 	/**
 	 * If null, this form is still not submitted, otherwise submission time stamp.
@@ -125,12 +132,20 @@ public class ProcessActivityFormInstance {
 		this.formDocId = formDocId;
 	}
 
-	public String getFormPath() {
-		return formPath;
+	public Long getFormTypeId() {
+		return formTypeId;
 	}
 
-	public void setFormPath(String formPath) {
-		this.formPath = formPath;
+	public void setFormTypeId(Long formTypeId) {
+		this.formTypeId = formTypeId;
+	}
+
+	public String getFormConnectionKey() {
+		return formConnectionKey;
+	}
+
+	public void setFormConnectionKey(String formConnectionKey) {
+		this.formConnectionKey = formConnectionKey;
 	}
 
 	public Date getSubmitted() {
@@ -158,7 +173,7 @@ public class ProcessActivityFormInstance {
 	}
 
 	public String calcEditUrl() {
-		return getFormPath() + "/edit/" + getFormDocId() + "?orbeon-embeddable=true&pawap-mode=load-deps";
+		return getFormConnectionKey() + "/edit/" + getFormDocId() + "?orbeon-embeddable=true&pawap-mode=load-deps";
 	}
 
 	public String calcViewUrl() {
@@ -167,16 +182,16 @@ public class ProcessActivityFormInstance {
 		//            in div tag
 		//            It is imortant to exclude orbeon-embeddable=true when rendering in 
 		//            IFRAME...
-		String viewUrl = getFormPath() + "/view/" + getFormDocId() + "?";
+		String viewUrl = getFormConnectionKey() + "/view/" + getFormDocId() + "?";
 		
-		if (formPath != null && (formPath.startsWith("signactivity/") || formPath.equals("signstartform"))) {
+		if (getFormConnectionKey() != null && (getFormConnectionKey().startsWith("signactivity/") || getFormConnectionKey().equals("signstartform"))) {
 			viewUrl = "/docbox/doc/ref/" + formDocId;
 	    }
 		return  viewUrl;
 	}
 
 	public String calcPdfUrl() {
-		return getFormPath() + "/pdf/" + getFormDocId();
+		return getFormConnectionKey() + "/pdf/" + getFormDocId();
 	}
 	
 	public boolean isStartForm() {
@@ -199,14 +214,22 @@ public class ProcessActivityFormInstance {
 				* result
 				+ ((activityInstanceUuid == null) ? 0 : activityInstanceUuid
 						.hashCode());
+		result = prime
+				* result
+				+ ((formConnectionKey == null) ? 0 : formConnectionKey
+						.hashCode());
 		result = prime * result
 				+ ((formDocId == null) ? 0 : formDocId.hashCode());
 		result = prime * result
-				+ ((formPath == null) ? 0 : formPath.hashCode());
+				+ ((formTypeId == null) ? 0 : formTypeId.hashCode());
 		result = prime
 				* result
 				+ ((processActivityFormInstanceId == null) ? 0
 						: processActivityFormInstanceId.hashCode());
+		result = prime
+				* result
+				+ ((processActivityTags == null) ? 0 : processActivityTags
+						.hashCode());
 		result = prime
 				* result
 				+ ((processInstanceUuid == null) ? 0 : processInstanceUuid
@@ -235,21 +258,31 @@ public class ProcessActivityFormInstance {
 				return false;
 		} else if (!activityInstanceUuid.equals(other.activityInstanceUuid))
 			return false;
+		if (formConnectionKey == null) {
+			if (other.formConnectionKey != null)
+				return false;
+		} else if (!formConnectionKey.equals(other.formConnectionKey))
+			return false;
 		if (formDocId == null) {
 			if (other.formDocId != null)
 				return false;
 		} else if (!formDocId.equals(other.formDocId))
 			return false;
-		if (formPath == null) {
-			if (other.formPath != null)
+		if (formTypeId == null) {
+			if (other.formTypeId != null)
 				return false;
-		} else if (!formPath.equals(other.formPath))
+		} else if (!formTypeId.equals(other.formTypeId))
 			return false;
 		if (processActivityFormInstanceId == null) {
 			if (other.processActivityFormInstanceId != null)
 				return false;
 		} else if (!processActivityFormInstanceId
 				.equals(other.processActivityFormInstanceId))
+			return false;
+		if (processActivityTags == null) {
+			if (other.processActivityTags != null)
+				return false;
+		} else if (!processActivityTags.equals(other.processActivityTags))
 			return false;
 		if (processInstanceUuid == null) {
 			if (other.processInstanceUuid != null)
@@ -281,8 +314,9 @@ public class ProcessActivityFormInstance {
 				+ processInstanceUuid + ", startFormDefinition="
 				+ startFormDefinition + ", activityInstanceUuid="
 				+ activityInstanceUuid + ", formDocId=" + formDocId
-				+ ", formPath=" + formPath + ", submitted=" + submitted
-				+ ", userId=" + userId + "]";
+				+ ", formTypeId=" + formTypeId + ", formConnectionKey="
+				+ formConnectionKey + ", submitted=" + submitted + ", userId="
+				+ userId + ", processActivityTags=" + processActivityTags + "]";
 	}
 
 	

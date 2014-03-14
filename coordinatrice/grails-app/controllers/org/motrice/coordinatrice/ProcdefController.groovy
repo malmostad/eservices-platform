@@ -102,7 +102,9 @@ class ProcdefController {
     }
 
     def state = procdefInst.state
-    [procdefInst: procdefInst, editable: state.editable]
+    def startForms = procdefInst.startForms
+    if (log.debugEnabled) log.debug "SHOW >> ${procdefInst}, ${startForms}"
+    [procdefInst: procdefInst, startForms: startForms, editable: state.editable]
   }
 
   def diagramDownload() {
@@ -189,7 +191,9 @@ class ProcdefController {
     }
 
     def selection = formService.startFormSelection()
-    [procdefInst: procdefInst, formList: selection]
+    def startForms = procdefInst.startForms
+    if (log.debugEnabled) log.debug "EDIT >> ${procdefInst}, ${startForms}"
+    [procdefInst: procdefInst, startForms: startForms, formList: selection]
   }
 
   /**
@@ -223,16 +227,14 @@ class ProcdefController {
 
     // We have taken precautions to remove existing start forms from the selection
     // If we add an existing one anyway there will be a DataIntegrityViolationException
-    def inUse = formService.checkStartFormInUse(sfsc.form)
+    def inUse = formService.findAsStartForm(sfsc.form)
     if (inUse) {
-      flash.message = message(code: 'startform.selection.form.in.use', args: [sfsc.formPath])
+      flash.message = message(code: 'startform.selection.form.in.use', args: [sfsc.formConnectionKey])
       redirect(action: "edit", id: procdefInst.uuid)
       return
     }
 
-    def startForm = new MtfStartFormDefinition(processDefinitionId: procdefInst.uuid,
-    authTypeReq: 'USERSESSION', formPath: sfsc.formPath)
-
+    def startForm = MtfStartFormDefinition.create(procdefInst, sfsc.form)
     if (log.debugEnabled) log.debug "update.startForm: ${startForm}"
 
     if (!startForm.save(flush: true)) {
@@ -398,10 +400,6 @@ class ProcdefController {
 class StartFormSelectionCommand {
   String id
   PxdFormdefVer form
-
-  String getFormPath() {
-    form.path
-  }
 
   String toString() {
     "[StartFormCmd(process ${id}): ${form}]"

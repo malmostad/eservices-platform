@@ -30,6 +30,7 @@ import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.portal.beans.EServiceDocument;
+import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.slf4j.Logger;
@@ -79,10 +80,10 @@ public class Confirm extends MyCasesBaseComponent {
 		request.setAttribute("document", doc);
 		
 
-		String viewUrl = null;
+		FormInstance  formInstance = null;
 //		viewUrl = isc.submitForm(docId, user.getUuid());
 		try {
-			viewUrl = engine.submitActivityForm(docId, userUuid);
+			formInstance = engine.submitActivityForm(docId, userUuid);
 		} catch (Exception re) {
 			try {
 				response.sendRedirect("/site/internal-error");
@@ -91,43 +92,12 @@ public class Confirm extends MyCasesBaseComponent {
 			}
 		}
 
-		request.setAttribute("formUrl", viewUrl + "orbeon-embeddable=true");
+		request.setAttribute("formUrl", formInstance.getViewUrl() + "orbeon-embeddable=true");
 
-		if (viewUrl == null) {
-			// render a fail url???
-
-			// TODO 20130506 teori: nedanstående är död kod...
-			
-			// this can be removed later on, only when start form not is
-			// initialized before....
-			if (doc instanceof EServiceDocument) {
-				EServiceDocument eServiceDocument = (EServiceDocument) doc;
-
-				// confirm page url
-				String formUrl = eServiceDocument.getFormPath() + "/view/"
-						+ docId + "?orbeon-embeddable=true";
-				request.setAttribute("formUrl", formUrl);
-
-				// TODO remove later
-				log.error("==============> orbeon confirm form url:" + formUrl);
-
-				try {
-					engine.submitStartForm(eServiceDocument.getFormPath(),
-							docId,
-							userUuid);
-				} catch (Exception re) {
-					try {
-						response.sendRedirect("/site/internal-error");
-					} catch (IOException ioe) {
-						log.error("==============> ioexception in catch block");
-					}
-				}
-			}
-		}
 		
 		InboxTaskItem nextTask = null;
 		if (!UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
-	        nextTask = engine.getNextActivityInstanceItemByDocId(docId, user.getUuid());
+	        nextTask = engine.getNextActivityInstanceItemByDocId(formInstance, user.getUuid());
 	        appendChannelLabels(request, nextTask);
 		}
 		request.setAttribute("nextTask", nextTask);

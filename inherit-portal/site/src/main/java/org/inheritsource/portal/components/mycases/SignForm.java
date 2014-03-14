@@ -101,7 +101,7 @@ public class SignForm extends Form  {
 						StartLogItem startItem = (StartLogItem)item;
 						startFormDocId = startItem.getFormDocId();
 						
-						signProcessLabel = getJcrProcessLabel(request, piDetails.getStartedByFormPath(), piDetails.getProcessLabel());
+						signProcessLabel = "TODO label"; //getJcrProcessLabel(request, piDetails.getStartedByFormPath(), piDetails.getProcessLabel());
 					}
 				}
 			}

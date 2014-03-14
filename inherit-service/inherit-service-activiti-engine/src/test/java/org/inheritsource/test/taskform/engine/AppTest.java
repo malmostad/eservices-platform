@@ -21,32 +21,43 @@
  *  phone: +46 8 641 64 14 
  */ 
  
-package org.inheritsource.service.rest.server;
+package org.inheritsource.test.taskform.engine;
 
-import org.inheritsource.service.common.domain.ProcessDefinitionDetails;
-import org.inheritsource.service.common.util.ParameterEncoder;
-import org.inheritsource.taskform.engine.TaskFormService;
-import org.restlet.resource.ServerResource;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-import org.springframework.beans.factory.annotation.Autowired;
+/**
+ * Unit test for simple App.
+ */
+public class AppTest 
+    extends TestCase
+{
+    /**
+     * Create the test case
+     *
+     * @param testName name of the test case
+     */
+    public AppTest( String testName )
+    {
+        super( testName );
+    }
 
+    /**
+     * @return the suite of tests being tested
+     */
+    public static Test suite()
+    {
+        return new TestSuite( AppTest.class );
+    }
 
-public class GetProcessDefinitionDetails extends ServerResource {
-	
-	@Autowired
-	TaskFormService engine;	
-	
-	@Get
-	@Post
-	public ProcessDefinitionDetails getProcessDefinitionDetails() {
-		ProcessDefinitionDetails result = null;
-		
-		String processDefinitionUUID = ParameterEncoder.decode((String)getRequestAttributes().get("processDefinitionUUID"));
-		
-		result = engine.getProcessDefinitionDetails(processDefinitionUUID);
-		
-		return result;
-	}
+    /**
+     * Rigourous Test :-)
+     */
+    public void testApp()
+    {
+        assertTrue( true );
+    }
+    
+    
 }

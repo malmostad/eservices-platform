@@ -294,9 +294,9 @@ class ProcdefService {
    * Delete form connections for a given process definition
    */
   private doDeleteFormConnections(Procdef procdef) {
-    def connections = MtfActivityFormDefinition.findAllByProcessDefinitionId(procdef.uuid)
+    def connections = MtfActivityFormDefinition.findAllByProcdefId(procdef.uuid)
     connections.each {it.delete()}
-    connections = MtfStartFormDefinition.findAllByProcessDefinitionId(procdef.uuid)
+    connections = MtfStartFormDefinition.findAllByProcdefId(procdef.uuid)
     connections.each {it.delete()}
   }
 

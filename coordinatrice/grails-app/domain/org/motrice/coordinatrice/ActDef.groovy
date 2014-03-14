@@ -32,10 +32,17 @@ class ActDef implements Comparable {
     documentation nullable: true
   }
 
+  /**
+   * Find another activity definition in the same process.
+   * otherId must be the uuid of the activity to find.
+   */
+  ActDef findSibling(String otherId) {
+    process.activities.find {it.uuid == otherId}
+  }
+
   MtfActivityFormDefinition getActivityFormdef() {
     def ref = fullId
-    MtfActivityFormDefinition.
-    findByProcessDefinitionIdAndActivityDefinitionId(ref.procId, ref.actId)
+    MtfActivityFormDefinition.findByProcdefIdAndActdefId(ref.procId, ref.actId)
   }
 
   /**
