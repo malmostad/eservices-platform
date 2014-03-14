@@ -4,7 +4,8 @@ import org.motrice.coordinatrice.MtfStartFormDefinition
 
 class PxdFormdefController {
   def grailsApplication
-  def processEngineService
+  def formService
+  def procdefService
 
   def index() {
     redirect(action: "list", params: params)
@@ -32,9 +33,9 @@ class PxdFormdefController {
       pxdFormdefInst.forms.each {fdv ->
 	// Check if this version is used as start form
 	def process = null
-	def startForm = MtfStartFormDefinition.findByFormPath(fdv.path)
+	def startForm = formService.findAsStartForm(fdv)
 	if (startForm) {
-	  process = processEngineService.findProcessDefinition(startForm.processDefinitionUuid)
+	  process = procdefService.findProcessDefinition(startForm.procdefId)
 	}
 
 	formdefVerList << [formdefVer: fdv, procdef: process]

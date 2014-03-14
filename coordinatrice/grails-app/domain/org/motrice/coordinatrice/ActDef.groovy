@@ -42,8 +42,7 @@ class ActDef implements Comparable {
 
   MtfActivityFormDefinition getActivityFormdef() {
     def ref = fullId
-    MtfActivityFormDefinition.
-    findByProcessDefinitionIdAndActivityDefinitionId(ref.procId, ref.actId)
+    MtfActivityFormDefinition.findByProcdefIdAndActdefId(ref.procId, ref.actId)
   }
 
   /**

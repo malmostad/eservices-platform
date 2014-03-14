@@ -3,6 +3,7 @@ package org.motrice.coordinatrice
 /**
  * Class for decoding and encoding formpath in MtfActivityFormDefinition, a string.
  * The value indicates one of several connection states.
+ * NOTE: DEPRECATED
  */
 class ActivityConnection {
 

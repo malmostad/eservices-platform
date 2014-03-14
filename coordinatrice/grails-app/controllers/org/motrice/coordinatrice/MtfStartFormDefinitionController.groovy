@@ -38,7 +38,7 @@ class MtfStartFormDefinitionController {
       return
     }
 
-    def formName = mtfStartFormDefinitionInst.formPath
+    def formName = mtfStartFormDefinitionInst.formConnectionKey
 
     try {
       mtfStartFormDefinitionInst.delete(flush: true)
