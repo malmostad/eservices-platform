@@ -41,6 +41,11 @@ class PxdFormdefVer implements Comparable {
     PxdFormdefVer.findAllByDraft(PUBLISHED, [sort: 'path'])
   }
 
+  static PxdFormdefVer latestPublished(PxdFormdef parent) {
+    def list = PxdFormdefVer.findAllByFormdefAndDraft(parent, PUBLISHED, [sort: 'fvno', order: 'desc'])
+    return list? list[0] : null
+  }
+
   String toString() {
     path
   }

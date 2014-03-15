@@ -23,22 +23,24 @@
 	<thead>
 	  <tr>
 	    <g:sortableColumn property="path" title="${message(code: 'pxdFormdef.path.label', default: 'Path')}" />
-	    <g:sortableColumn property="appName" title="${message(code: 'pxdFormdef.appName.label', default: 'App Name')}" />
-	    <g:sortableColumn property="formName" title="${message(code: 'pxdFormdef.formName.label', default: 'Form Name')}" />
+	    <th>${message(code: 'pxdFormdef.latest.published.title')}</th>
 	    <th></th>
 	    <g:sortableColumn property="uuid" title="${message(code: 'pxdFormdef.uuid.label', default: 'Uuid')}" />
+	    <th>${message(code: 'pxdFormdef.i18n.title')}</th>
 	  </tr>
 	</thead>
 	<tbody>
 	  <g:each in="${pxdFormdefInstList}" status="i" var="pxdFormdefInst">
+	    <g:set var="latestId" value="${pubMap[pxdFormdefInst.id]?.id}"/>
+	    <g:set var="latestLabel" value="${pubMap[pxdFormdefInst.id]?.version}"/>
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 	      <td><g:link action="show" id="${pxdFormdefInst.id}">${fieldValue(bean: pxdFormdefInst, field: "path")}</g:link></td>
-	      <td>${fieldValue(bean: pxdFormdefInst, field: "appName")}</td>
-	      <td>${fieldValue(bean: pxdFormdefInst, field: "formName")}</td>
+	      <td><g:link controller="pxdFormdefVer" action="show" id="${latestId}">${latestLabel}</g:link></td>
 	      <td><a class="create" href="${orbeonUri}/edit/${pxdFormdefInst?.uuid}" target="_">
 		  <g:img uri="/images/silk/application_form_edit.png" title="${message(code: 'pxdFormdef.link.edit.label', default: 'Edit')}"/>
 	      </a></td>
 	      <td><g:abbr text="${pxdFormdefInst?.uuid}"/></td>
+	      <td><g:link controller="crdI18nFormLabel" action="listkey" id="${pxdFormdefInst?.path?.encodeAsHTML()}">${message(code: 'pxdFormdef.i18n.label')}</td></g:link>
 	    </tr>
 	  </g:each>
 	</tbody>
