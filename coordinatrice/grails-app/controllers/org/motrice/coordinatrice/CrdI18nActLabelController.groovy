@@ -68,6 +68,23 @@ class CrdI18nActLabelController {
     redirect(action: 'listkey', id: key)
   }
 
+  /**
+   * Create a new activity label with a new process version
+   */
+  def createversion(Long id) {
+    if (log.debugEnabled) log.debug "CREATE VERSION ${params}"
+    def actLabelInstProto = CrdI18nActLabel.get(id)
+    if (!actLabelInstProto) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'crdI18nActLabel.label', default: 'CrdI18nActLabel'), id])
+      redirect(action: "list")
+      return
+    }
+
+    def actLabelInst = activityLabelService.createVersion(actLabelInstProto)
+    flash.message = message(code: 'default.created.message', args: [message(code: 'crdI18nActLabel.label', default: 'CrdI18nActLabel'), actLabelInst.id])
+    redirect(action: 'listkey', id: actLabelInst?.procdefKey)
+  }
+
   def show(Long id) {
     def actLabelInst = CrdI18nActLabel.get(id)
     if (!actLabelInst) {

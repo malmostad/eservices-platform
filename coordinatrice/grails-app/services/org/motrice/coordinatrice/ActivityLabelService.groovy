@@ -87,6 +87,24 @@ class ActivityLabelService {
     return result
   }
 
+  static final MAXV_Q = 'select max(a.procdefVer) from CrdI18nActLabel a where ' +
+    'a.procdefKey=? and a.actdefName=? and a.locale=?'
+
+  /**
+   * Create a new activity label, almost a copy of an existing one.
+   */
+  CrdI18nActLabel createVersion(CrdI18nActLabel orig) {
+    if (log.debugEnabled) log.debug "createVersion << ${orig}"
+    def list = CrdI18nActLabel.
+    executeQuery(MAXV_Q, [orig.procdefKey, orig.actdefName, orig.locale])
+    Integer nextVersion = list? list[0] + 1 : 1
+    def label = CrdI18nActLabel.copyLabel(orig)
+    label.procdefVer = nextVersion
+    if (!label.save()) log.error "CrdI18nActLabel insert: ${label.errors.allErrors.join(',')}"
+    if (log.debugEnabled) log.debug "createVersion >> ${label}"
+    return label
+  }
+
   /**
    * Delete activity labels shown for editing.
    */
