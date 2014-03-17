@@ -71,8 +71,6 @@ public class UserDirectoryService {
 		System.out.println("securityPrincipal: [" + securityPrincipal + "]" );
 		System.out.println("=========================================================================================================" );
 
-		// Get access to trusted cert store (for ldaps)
-		System.setProperty("javax.net.ssl.trustStorePassword", keystorePwd);
 
 		// Set up initial dirContext
 		env = new Hashtable<String, String>();
@@ -82,9 +80,18 @@ public class UserDirectoryService {
 		//env.put(Context.SECURITY_PROTOCOL, "ssl");
 		env.put(Context.SECURITY_PRINCIPAL,      securityPrincipal);
 		env.put(Context.SECURITY_CREDENTIALS,    pwd);
-		System.out.println("creating initital context");
 		try {
-			dirCtx = new InitialDirContext(env);
+			if (queryBaseDn != null && queryBaseDn.trim().length()>0 &&
+					baseDn != null && baseDn.trim().length()>0) {
+				// Get access to trusted cert store (for ldaps)
+				System.setProperty("javax.net.ssl.trustStorePassword", keystorePwd);
+
+				System.out.println("creating initital context");
+				dirCtx = new InitialDirContext(env);
+			}
+			else {
+				System.out.println("Missing baseDn or queryBaseDn. Skip creation of initial context.");
+			}
 		} catch (NamingException ne) {
 			ne.printStackTrace();
 		}
