@@ -75,8 +75,6 @@ class GuideUrlService {
       // Ignore
     }
 
-    // DEBUG
-    println "generateUrl versionInt: ${versionInt}"
     def list = CrdI18nGuideUrl.findAll(SINGLE_PAT_Q, [procdefkey, versionInt])
     def guideUrlInst = list? list[0] : null
     def result = null

@@ -2,6 +2,8 @@ package org.motrice.coordinatrice
 
 import org.apache.commons.logging.LogFactory
 
+import org.motrice.coordinatrice.pxd.PxdFormdef
+
 /**
  * Actions related to locale-dependent activity labels.
  * The domain is CrdI18nFormLabel.
@@ -82,7 +84,7 @@ class FormLabelService {
   CrdI18nFormLabel createVersion(CrdI18nFormLabel orig) {
     if (log.debugEnabled) log.debug "createVersion << ${orig}"
     def list = CrdI18nFormLabel.executeQuery(MAXV_Q, [orig.formdefId, orig.locale])
-    Integer nextVersion = list? list[0] + 1 : 1
+    Integer nextVersion = list? list[0] + 1 : 999
     def label = CrdI18nFormLabel.copyLabel(orig)
     label.formdefVer = nextVersion
     if (!label.save()) log.error "CrdI18nFormLabel insert: ${label.errors.allErrors.join(',')}"
@@ -90,36 +92,31 @@ class FormLabelService {
     return label
   }
 
+  static final LABEL_Q = 'from CrdI18nFormLabel f where f.formdefId=? and f.locale=? and ' +
+    'f.formdefVer <=? order by f.formdefVer desc'
+
   /**
-   * Delete activity labels shown for editing.
+   * Find the i18n label for a start form given the form definition name.
    */
-  Integer deleteEditedLabels(params) {
-    if (log.debugEnabled) log.debug "deleteEditedLabels << ${params}"
-    def labelList = findEditedLabels(params)
-    def deleteCount = 0
-    labelList.each {label ->
-      label.delete()
-      deleteCount++
+  CrdI18nFormLabel findLabel(String appname, String formname, String locale,
+			     String version)
+  {
+    if (log.debugEnabled) log.debug "findLabel << ${appname}/${formname}V${version} ${locale}"
+    Integer versionInt = 0
+    try {
+      if (version) versionInt = version as Integer
+    } catch (NumberFormatException exc) {
+      // Ignore
     }
-
-    if (log.debugEnabled) log.debug "deleteEditedLabels >> ${deleteCount}"
-    return deleteCount
-  }
-
-  /**
-   * Find all edited labels from parameters.
-   * The 'idList' parameter is expected to contain a list of label ids.
-   * Return a list of label instances retrieved from the database.
-   */
-  List findEditedLabels(params) {
-    if (log.debugEnabled) log.debug "findEditedLabels << ${params}"
-    def idStr = params.idList
-    if (!idStr) return []
-    def result = new String(idStr.decodeBase64()).split(/\|/).collect {it ->
-      CrdI18nFormLabel.get(it as Long)
+    // Find the form definition given the app and form names
+    def formdef = PxdFormdef.findByPath("${appname}/${formname}")
+    def result = null
+    if (formdef) {
+      def list = CrdI18nFormLabel.findAll(LABEL_Q, [formdef.id, locale, versionInt])
+      result = list[0]
     }
     
-    if (log.debugEnabled) log.debug "findEditedLabels >> ${result}"
+    if (log.debugEnabled) log.debug "findLabel >> ${result}"
     return result
   }
 
