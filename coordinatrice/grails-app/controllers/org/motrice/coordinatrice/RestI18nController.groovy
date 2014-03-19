@@ -20,7 +20,7 @@ class RestI18nController {
     if (log.debugEnabled) log.debug "ACTIVITY LABEL GET: ${params}"
     def list = activityLabelService.findLabels(procdefkey, locale, activityname, params.version)
 
-    if (list) {
+    if (list?.size() > 0) {
       response.status = 200
       render list as JSON
     } else {

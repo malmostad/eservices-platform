@@ -150,14 +150,14 @@ class ActivityLabelService {
    */
   List findLabels(String procdefkey, String locale, String activityname, String version) {
     if (log.debugEnabled) log.debug "findLabels << ${procdefkey}, ${locale}, ${activityname}, ${version}"
-    Integer versionInt = 1
+    Integer versionInt = 0
     try {
       if (version) versionInt = version as Integer
     } catch (NumberFormatException exc) {
       // Ignore
     }
-    // DEBUG
-    println "findLabels versionInt: ${versionInt}"
+
+    if (log.debugEnabled) log.debug "findLabels versionInt: ${versionInt}"
     def list = null
     if (activityname) {
       list = CrdI18nActLabel.findAll(SINGLE_ACT_Q,
@@ -166,6 +166,7 @@ class ActivityLabelService {
       list = CrdI18nActLabel.findAll(ALL_ACT_Q, [procdefkey, locale, versionInt])
     }
 
+    if (log.debugEnabled) log.debug "findLabels query: ${list}"
     // Process the list: remove null labels and duplicates.
     // Duplicate removal depends on the query result being ordered the right way.
     // Convert to list of maps.
