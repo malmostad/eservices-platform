@@ -165,6 +165,13 @@ class SigService {
   }
 
   /**
+   * Pick up the Motrice site name, or a default text.
+   */
+  private String localSiteName() {
+    grailsApplication.config.motrice.site.name ?: UNKNOWN_MOTRICE_SITE_NAME
+  }
+
+  /**
    * Generate a formatted timestamp
    */
   private String now() {
@@ -197,7 +204,7 @@ class SigService {
     table.addCell(new PdfPCell(phrase))
     phrase = new Phrase(docNo, fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
-    phrase = new Phrase('Kontrollsumma', fontMap[TEXT_FONT])
+    phrase = new Phrase('Fingeravtryck', fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
     phrase = new Phrase(checkSum, fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
@@ -208,6 +215,10 @@ class SigService {
     phrase = new Phrase('Underskrift av', fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
     phrase = new Phrase(signer(sig), fontMap[TEXT_FONT])
+    table.addCell(new PdfPCell(phrase))
+    phrase = new Phrase('IT-system', fontMap[TEXT_FONT])
+    table.addCell(new PdfPCell(phrase))
+    phrase = new Phrase(localSiteName(), fontMap[TEXT_FONT])
     table.addCell(new PdfPCell(phrase))
     return table
   }
