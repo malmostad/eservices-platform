@@ -16,16 +16,16 @@ ALTER TABLE ONLY motrice_user
     ADD CONSTRAINT motrice_user_uuid_key UNIQUE (uuid);
 
 CREATE TABLE mtf_form_type (
-    form_type_id bigint PRIMARY KEY,
+    formtypeid bigint PRIMARY KEY,
     label character varying(255),
-    form_handler_bean   character varying(255) -- spring bean id
+    formhandlerbean   character varying(255) -- spring bean id
 );
 
 CREATE TABLE mtf_activity_form_definition (
     activity_form_definition_id bigint NOT NULL,
     procdef_id character varying(255),
     actdef_id character varying(255),
-    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
+    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (formtypeid),
     form_connection_key   character varying(511),
     form_connection_label character varying(255),
     form_connection_dbid bigint
@@ -39,7 +39,7 @@ CREATE TABLE mtf_process_activity_form_instance (
     processactivityforminstanceid bigint NOT NULL,
     activityinstanceuuid character varying(255),
     formdocid character varying(255) NOT NULL,
-    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
+    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (formtypeid),
     form_connection_key   character varying(511),
     processinstanceuuid character varying(255),
     submitted timestamp without time zone,
@@ -70,7 +70,7 @@ ALTER TABLE ONLY mtf_process_activity_tag
 CREATE TABLE mtf_start_form_definition (
     start_form_definition_id bigint NOT NULL,
     auth_type_req character varying(255) NOT NULL,
-    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (form_type_id),
+    form_type_id	bigint NOT NULL REFERENCES mtf_form_type (formtypeid),
     form_connection_key   character varying(255),
     form_connection_dbid bigint,
     procdef_id character varying(255),
