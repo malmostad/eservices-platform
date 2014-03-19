@@ -33,21 +33,6 @@ class CrdI18nActLabelController {
     }
   }
 
-  def create() {
-    [actLabelInst: new CrdI18nActLabel(params)]
-  }
-
-  def save() {
-    def actLabelInst = new CrdI18nActLabel(params)
-    if (!actLabelInst.save(flush: true)) {
-      render(view: "create", model: [actLabelInst: actLabelInst])
-      return
-    }
-
-    flash.message = message(code: 'default.created.message', args: [message(code: 'crdI18nActLabel.label', default: 'CrdI18nActLabel'), actLabelInst.id])
-    redirect(action: "show", id: actLabelInst.id)
-  }
-
   // Create i18n labels for a locale.
   // The process definition key must be given as params.id.
   def createlocale(String id) {

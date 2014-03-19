@@ -37,21 +37,6 @@ class CrdI18nFormLabelController {
     }
   }
 
-  def create() {
-    [crdI18nFormLabelInst: new CrdI18nFormLabel(params)]
-  }
-
-  def save() {
-    def crdI18nFormLabelInst = new CrdI18nFormLabel(params)
-    if (!crdI18nFormLabelInst.save(flush: true)) {
-      render(view: "create", model: [crdI18nFormLabelInst: crdI18nFormLabelInst])
-      return
-    }
-
-    flash.message = message(code: 'default.created.message', args: [message(code: 'crdI18nFormLabel.label', default: 'CrdI18nFormLabel'), crdI18nFormLabelInst.id])
-    redirect(action: "show", id: crdI18nFormLabelInst.id)
-  }
-
   /**
    * Create a new form label with a new form definition version
    */
