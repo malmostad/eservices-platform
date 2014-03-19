@@ -52,7 +52,6 @@ public class UrlUtil {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//log.severe("loadFromUrl: " + urlStr + " => " + result);
 		return result;
 	}
 }

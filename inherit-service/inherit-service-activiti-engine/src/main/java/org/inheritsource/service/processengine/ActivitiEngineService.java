@@ -125,15 +125,12 @@ public class ActivitiEngineService {
 	
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
-		log.severe("XXXX" + userId);
 		List<Group> groups = engine.getIdentityService().createGroupQuery().groupMember(userId).list();
 		List<String> groupsStr = new ArrayList<String>();
 		for (Group group : groups) {
-			log.severe("Group with id: '" + group.getId()  + "' and name '" + group.getName() + "' added" );
 			groupsStr.add(group.getId());
 		}
 		
-		log.severe("XXXX groupsStr: " + groupsStr);
 		List<Task> groupCandidateTasks = null;
 		if (! groupsStr.isEmpty()) {
 			groupCandidateTasks = engine.getTaskService().createTaskQuery().taskCandidateGroupIn(groupsStr).list();
@@ -187,13 +184,10 @@ public class ActivitiEngineService {
 	}
 	
 	private InboxTaskItem task2InboxTaskItem(Task task, String userId) {
-		log.severe("XXXXXX START task: " + task.getId() + " name:" + task.getName());
 		InboxTaskItem item = new InboxTaskItem();
 		if (task != null) {
 			
 			item = (InboxTaskItem) formEngine.getFormInstance(task, userId, item);
-			
-			log.severe("XXXXXX START task A: " + task.getId() + " name:" + task.getName() + " => ITEM: " + item);
 			
 			item.setActivityCreated(task.getCreateTime());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
@@ -203,8 +197,6 @@ public class ActivitiEngineService {
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId(task.getProcessDefinitionId()));
 						
-			log.severe("XXXXXX START task B: " + task.getId() + " name:" + task.getName() + " => ITEM: " + item);
-
 			ProcessInstance pI = getMainProcessInstanceByProcessInstanceId
 				(task.getProcessInstanceId());
 			
@@ -215,9 +207,7 @@ public class ActivitiEngineService {
 		    	item.setRootProcessInstanceUuid(task.getProcessInstanceId());
 				item.setRootProcessDefinitionUuid(task.getProcessDefinitionId());
 		    }
-			log.severe("XXXXXX START task C: " + task.getId() + " name:" + task.getName() + " => ITEM: " + item);
 		}
-		log.severe("XXXXXX FINISHED task: " + task.getId() + " name:" + task.getName());
 		return item;
 	}
 	
@@ -401,13 +391,11 @@ public class ActivitiEngineService {
 	
 	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task) {
 		ActivityInstancePendingItem item = null;
-		log.severe("XXXXXX item A " + item);
 		if (task != null) {
 			
 			item = new ActivityInstancePendingItem();
 			
 			item = (ActivityInstancePendingItem) formEngine.getFormInstance(task, null, item);
-			log.severe("XXXXXX item B.0 " + item);
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
@@ -422,16 +410,12 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setFormUrl("");
 			item.setFormDocId("");
-			log.severe("XXXXXX item B.1 " + item);
 			item.setActivityType(getActivityTypeByExecutionIdTaskId(task.getExecutionId(), task.getId()));
-			log.severe("XXXXXX item B.2 " + item);
 			item.setPriority(task.getPriority());
 			item.setExpectedEndDate(task.getDueDate());
-			log.severe("XXXXXX item B.3 " + item);
 			// ActivityInstancePendingItem
 			item.setCandidates(getCandidatesByTaskId(task.getId()));
 			item.setAssignedUser(userId2UserInfo(task.getAssignee()));
-			log.severe("XXXXXX item C " + item);
 
 		}
 		return item;
@@ -546,7 +530,8 @@ public class ActivitiEngineService {
 		
 		} catch (Exception e) {
 			log.severe("Unable to getDashOpenActivitiesByUserId with userId: " + userId +
-					" and remaining days: " + remainingDays);
+					" and remaining days: " + remainingDays + 
+					" execption: " + e);
 			dashOpenActivities = null;
 		}
 		
@@ -651,7 +636,8 @@ public class ActivitiEngineService {
 				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId());
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with taskId: " + taskId);
+			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with taskId: " + taskId + 
+					" execption: " + e);
 			processInstanceDetails = null;	
 		}
 		return processInstanceDetails;
@@ -678,7 +664,8 @@ public class ActivitiEngineService {
 			}
 		} catch (Exception e) {
 			log.severe("Unable to addComment with taskId: " + taskId + 
-				" and userId: " + userId);
+				" and userId: " + userId + 
+				" execption: " + e);
 			retVal = -1;	
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
@@ -767,7 +754,8 @@ public class ActivitiEngineService {
 			activityWorkflowInfo.setAssignedUser(userId2UserInfo(task.getAssignee()));
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
-			log.severe("Unable to getActivityWorkflowInfo with taskId: " + taskId);
+			log.severe("Unable to getActivityWorkflowInfo with taskId: " + taskId + 
+					" execption: " + e);
 			activityWorkflowInfo = null;
 		}
 		
@@ -792,7 +780,8 @@ public class ActivitiEngineService {
 		try {
 			engine.getTaskService().setAssignee(taskId, null);
 		} catch (Exception e) {
-			log.severe("Unable to unassignTask with taskId: " + taskId);
+			log.severe("Unable to unassignTask with taskId: " + taskId + 
+					" execption: " + e);
 		}
 		
 		return getActivityWorkflowInfo(taskId);
@@ -804,7 +793,8 @@ public class ActivitiEngineService {
 			engine.getTaskService().addCandidateUser(taskId, userId);
 		} catch (Exception e) {
 			log.severe("Unable to addCandidate with taskId: " + taskId +
-					" and userId: " + userId);
+					" and userId: " + userId + 
+					" execption: " + e);
 		}
 		
 		return getActivityWorkflowInfo(taskId);
@@ -815,7 +805,8 @@ public class ActivitiEngineService {
 			engine.getTaskService().deleteCandidateUser(taskId, userId);
 		} catch (Exception e) {
 			log.severe("Unable to removeCandidate with taskId: " + taskId +
-					" and userId: " + userId);
+					" and userId: " + userId + 
+					" execption: " + e);
 		}
 		
 		return getActivityWorkflowInfo(taskId);
@@ -826,7 +817,8 @@ public class ActivitiEngineService {
 			engine.getTaskService().setPriority(taskId, priority);
 		} catch (Exception e) {
 			log.severe("Unable to setPriority with taskId: " + taskId +
-					" and priority: " + priority);
+					" and priority: " + priority + 
+					" execption: " + e);
 		}
 		
 		return getActivityWorkflowInfo(taskId);
@@ -837,15 +829,12 @@ public class ActivitiEngineService {
 		Task task = engine.getTaskService().createTaskQuery().taskVariableValueEquals(FormEngine.FORM_INSTANCEID, formInstanceId).singleResult();
 		
 		if (task != null) {
-			log.severe("submitForm TASK: id=" + task.getId() + " name=" + task.getName());
 			
 			Map<String, Object> variables = new HashMap<String, Object>();
 			variables.put(FormEngine.FORM_ACT_URI, actRefId);
 			if (executeTask(task.getId(), variables, userId)) {
-				log.severe("submitForm TASK execute success");
 				HistoricTaskInstance historicTask = getEngine().getHistoryService().createHistoricTaskInstanceQuery().taskId(task.getId()).includeTaskLocalVariables().singleResult();
 				
-				log.severe("submitForm historicTask: id=" + historicTask.getId() + " name=" + historicTask.getName());
 				ActivityInstanceLogItem initialInstance = new ActivityInstanceLogItem();	
 				result=formEngine.getHistoricFormInstance(historicTask, userId, initialInstance);
 			}
@@ -855,14 +844,14 @@ public class ActivitiEngineService {
 	
 	public String startProcess(String processDefinitionId, Map<String,Object> variables, String userId) {
 		String processInstanceId = null;
-		log.severe("XXXXXXXXXXXXXX startProcess processDefinitionId" + processDefinitionId);
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);
 			
 			processInstanceId = processInstance.getId();
 		} catch (Exception e) {
-			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId);
+			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId + 
+					" exeception: " + e);
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
 	    }
@@ -1013,7 +1002,8 @@ public class ActivitiEngineService {
 			
 		} catch (Exception e) {
 			log.severe("Unable to getPagedProcessInstanceSearchResult with startedByUserId: " + searchForUserId +
-					" by userId: " + userId);
+					" by userId: " + userId + 
+					" exeception: " + e);
 			pagedProcessInstanceSearchResult = null;	
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
@@ -1142,7 +1132,8 @@ public class ActivitiEngineService {
 			}
 		} catch (Exception e) {
 			log.severe("Unable to getHistoricPagedProcessInstanceSearchResult with searchForUserId: " + searchForUserId +
-					" by userId: " + userId);
+					" by userId: " + userId + 
+					" exeception: " + e);
 			pagedProcessInstanceSearchResult = null;	
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
@@ -1236,7 +1227,8 @@ public class ActivitiEngineService {
 			
 		} catch (Exception e) {
 			log.severe("Unable to getPagedProcessInstanceSearchResultByUuids with processInstanceIdList: " + processInstanceIdList.toString() +
-					" by userId: " + userId + e);
+					" by userId: " + userId  + 
+					" exeception: " + e);
 			pagedProcessInstanceSearchResult = null;	
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
@@ -1309,7 +1301,8 @@ public class ActivitiEngineService {
 			}
 		} catch (Exception e) {
 			log.severe("Unable to getHistoricPagedProcessInstanceSearchResultByUuids  processInstanceIdList: " + 
-					processInstanceIdList.toString() + " by userId: " + userId + e);
+					processInstanceIdList.toString() + " by userId: " + userId  + 
+					" exeception: " + e);
 			pagedProcessInstanceSearchResult = null;	
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
@@ -1343,7 +1336,8 @@ public class ActivitiEngineService {
 				 processDefinitions.add(new ProcessDefinitionInfo(pDItem.getId(), pDItem.getName(), pDItem.getName()));
 			 }
 		} catch (Exception e) {
-			log.severe("Unable to getProcessDefinitions" + e);
+			log.severe("Unable to getProcessDefinitions" + 
+					" exeception: " + e);
 			processDefinitions = null;
 		}
 		
@@ -1440,7 +1434,8 @@ public class ActivitiEngineService {
 			}
 		} catch (Exception e) {
 			log.severe("Unable to getParentProcessInstanceIdByProcessInstanceId with processInstanceId: " +
-				processInstanceId);
+				processInstanceId  + 
+				" exeception: " + e);
 		}
 		
 		return parentProcessInstanceId;
@@ -1474,7 +1469,8 @@ public class ActivitiEngineService {
 			}
 		} catch (Exception e) {
 			log.severe("Unable to getHistoricMainProcessInstanceByProcessInstanceId with processInstanceId: " +
-					processInstanceId);
+					processInstanceId + 
+					" exeception: " + e);
 		}
 		
 		return parentProcessInstanceId;
@@ -1671,7 +1667,8 @@ public class ActivitiEngineService {
 				addInputStream(resourceName, new FileInputStream(bpmnFile)).deploy();
 			
 		} catch (Exception e) {
-			log.severe("File '" + bpmnFile + "' not found: " + e.getMessage());
+			log.severe("File '" + bpmnFile + "' not found: " + e.getMessage() + 
+					" exeception: " + e);
 		}
 		return deployment;
 	}
@@ -1683,7 +1680,8 @@ public class ActivitiEngineService {
 		try {
 			processInstance = runtimeService.startProcessInstanceByKey(key, variables);
 		} catch (Exception e) {
-			log.severe("Unable to start process instance with key: " + key);
+			log.severe("Unable to start process instance with key: " + key + 
+					" exeception: " + e);
 		}
 		return processInstance;
 	}
@@ -1696,7 +1694,8 @@ public class ActivitiEngineService {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			processInstance = runtimeService.startProcessInstanceByKey(key, new HashMap<String, Object>());
 		} catch (Exception e) {
-			log.severe("Unable to start process instance with key: " + key);
+			log.severe("Unable to start process instance with key: " + key + 
+					" exeception: " + e);
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
 	    }
@@ -1717,7 +1716,8 @@ public class ActivitiEngineService {
 				name = "";
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceByProcessInstanceId with processDefinitionId: " + processDefinitionId);
+			log.severe("Unable to getProcessInstanceByProcessInstanceId with processDefinitionId: " + processDefinitionId + 
+					" exeception: " + e);
 		}
 		
 		return name;

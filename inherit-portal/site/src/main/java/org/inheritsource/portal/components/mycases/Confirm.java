@@ -92,8 +92,9 @@ public class Confirm extends MyCasesBaseComponent {
 			}
 		}
 
-		request.setAttribute("formUrl", formInstance.getViewUrl() + "orbeon-embeddable=true");
-
+		if (formInstance!=null) {
+			request.setAttribute("formUrl", formInstance.getViewUrl());
+		}
 		
 		InboxTaskItem nextTask = null;
 		if (!UserInfo.ANONYMOUS_UUID.equals(userUuid)) {

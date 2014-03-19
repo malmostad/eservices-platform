@@ -282,7 +282,6 @@ public class TaskFormDb {
 				}
 			}
 		}
-		log.severe("===> result=" + result);
 		return result;
 	}
 
@@ -300,7 +299,6 @@ public class TaskFormDb {
 				}
 			}
 		}
-		log.severe("===> result=" + result);
 		return result;
 	}
 
@@ -319,7 +317,7 @@ public class TaskFormDb {
 			session.getTransaction().commit();
 		}
 		catch (Exception e) {
-			log.severe("Exception in saveProcessActivityFormInstance: " + e);
+			log.severe("Exception in saveProcessActivityFormInstance: Exception " + e);
 		}
 		finally {
 			session.close();
@@ -377,14 +375,11 @@ public class TaskFormDb {
 		StartFormDefinition result = null;
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		ProcessActivityFormInstance startForm = getProcessStartFormInstanceById(session, processInstanceUuid);
-		log.severe("startForm=" + startForm);
 		if (startForm != null) {
 			String startFormPath = startForm.getFormConnectionKey();
-			log.severe("startFormPath=" + startFormPath);
 			result = getStartFormDefinitionByFormPath(session, startFormPath);
 		}
 		session.close();
-		log.severe("result=" + result);
 		return result;
 	}
 	
@@ -400,7 +395,6 @@ public class TaskFormDb {
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
-		log.severe("==> actdefId=" + actdefId + ", procdefId=" + procdefId);
 		try {
 			result = getActivityFormDefinition(session, procdefId, actdefId);
 		}

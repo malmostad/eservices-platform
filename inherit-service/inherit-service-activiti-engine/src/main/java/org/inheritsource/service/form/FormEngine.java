@@ -137,39 +137,30 @@ public class FormEngine {
 	 */ 
 	public FormInstance getFormInstance(Task task, String userId, FormInstance initialInstance) {
 		FormInstance formInstance = null;
-		log.severe("XXXXX getFormInstance " + task.getName());
+		
 		Map <String, Object> localVars = task.getTaskLocalVariables();
-		log.severe("XXXXX localVars size  " + localVars.size());
 		String typeId = (String)localVars.get(FORM_TYPEID);
 		if (typeId != null && typeId.trim().length()>0) {
 			// this form is already initialized
 			formInstance = getFormInstanceByCommonLocalVars(localVars, initialInstance);
-			log.severe("XXXXX formInstance A  " + formInstance);
 			TaskFormHandler handler = getTaskFormHandler(formInstance.getTypeId());
 			if (handler != null) {
 				handler.getPendingFormInstance(formInstance, task, userId);
 			}
-			log.severe("XXXXX formInstance B  " + formInstance);
-
 		}
 		else {
 			// initialize form instance
-			log.severe("XXXXX formInstance C  " + formInstance);
 			// find definition and form handler
 			ActivityFormDefinition actformdef = taskFormDb.getActivityFormDefinition(task.getProcessDefinitionId(), task.getTaskDefinitionKey());
 			TaskFormHandler handler = null;
 			if (actformdef != null) {
-				log.severe("XXXXX formInstance D  actformdef " + formInstance);
 				handler = getTaskFormHandler(actformdef.getFormTypeId());
 			}
 			else {
-				log.severe("XXXXX formInstance D fall back " + formInstance);
 				handler = getTaskFormHandler(new Long(6)); // no form handler		
 			}
 			
-			log.severe("XXXXX formInstance E  " + formInstance);
 			if (handler != null) {
-				log.severe("XXXXX there is a handler  " + formInstance);
 				// initialize form and store task local variables
 				formInstance = handler.initializeFormInstance(actformdef, task, userId, initialInstance);
 				
@@ -181,12 +172,10 @@ public class FormEngine {
 				
 				activitiEngineService.getEngine().getTaskService().setVariablesLocal(task.getId(), localVars);
 			}
-			log.severe("XXXXX formInstance F  " + formInstance);
 		}
 		if (formInstance != null && task!=null) {
 			formInstance.setActinstId(task.getId());
 		}
-		log.severe("XXXXX formInstance G  " + formInstance);
 		return formInstance;
 	}
 	
@@ -249,7 +238,6 @@ public class FormEngine {
 		FormInstance result = null;
 		
 		if (localVars != null) {
-			log.severe("XXXXXXXXXXXXXXXXXclassname: " + localVars.get(FORM_TYPEID).getClass().getName());
 			result = initialInstance;
 			result.setTypeId((Long)localVars.get(FORM_TYPEID));
 			result.setDefinitionKey((String)localVars.get(FORM_DEFINITIONKEY));

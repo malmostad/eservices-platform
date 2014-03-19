@@ -78,7 +78,6 @@ public class TaskFormService {
     UserDirectoryService userDirectoryService;
     
 	public TaskFormService() {
-		log.severe("Creating TaskFormService");
 		taskFormDb = new TaskFormDb();
 		orbeonService = new OrbeonService();
 		userDirectoryService = new UserDirectoryService();
@@ -252,8 +251,6 @@ public class TaskFormService {
 
 		Collections.sort(inbox);
 		
-		log.severe("=======> getInboxTaskItems " + userId + " size="
-				+ (inbox == null ? 0 : inbox.size()));
 		return inbox;
 	}
 	
@@ -449,7 +446,7 @@ public class TaskFormService {
 			if (currentFormInstance instanceof ActivityInstanceLogItem) {
 				ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)currentFormInstance;
 				for (InboxTaskItem item : items) {
-					if (logItem.getProcessInstanceUuid().equals(item.getProcessInstanceUuid())) {
+					if (logItem.getProcessInstanceUuid()!=null && logItem.getProcessInstanceUuid().equals(item.getProcessInstanceUuid())) {
 						result = item;
 					}
 				}
@@ -457,7 +454,7 @@ public class TaskFormService {
 			//result = activitiEngineService.getNextInboxTaskItem(currentProcessInstance, userId);
 		}
 		catch (Exception e) {
-			log.severe("Exception: " + e);
+			log.severe("getNextActivityInstanceItemByDocId currentFormInstance=" + currentFormInstance + " Exception: " + e);
 		}
 		
 		return result;
@@ -530,7 +527,6 @@ public class TaskFormService {
 	 */
 	private ActivityInstanceItem initializeStartForm(FormInstance startFormInstance,
 			String userId) throws Exception {
-		log.severe("formPath=[" + startFormInstance.getDefinitionKey() + "] userId=[" + userId + "]");
 
 		// lookup the process this start form is configured to start.
 
@@ -585,17 +581,14 @@ public class TaskFormService {
 		FormInstance formInstance;
 		
 		// TODO, när userId är null 1) kolla om det finns i formulärdata i xpath angiven av startformdef 2) anonymous om startformdef tillåter anonym
-		log.severe("XXXXXXXXXXXX submitActivityForm docId=" + docId + " userId=" + userId);
+		log.info("submitActivityForm docId=" + docId + " userId=" + userId + " newDocId=" + newDocId);
 		try {
 			formInstance = activitiEngineService.submitForm(docId, userId, newDocId);
-			log.severe("XXXXX submit activity formInstance=" + formInstance);
 			if (formInstance == null) {
-				log.severe("XXXXX submit activity maybe start form");
 
 				// maybe a start form
 				ProcessActivityFormInstance activity = taskFormDb.getProcessActivityFormInstanceByFormDocId(docId);
 				if (activity != null) {
-					log.severe("XXXXX submit activity=" + activity.getFormDocId());
 					Date tstamp = new Date();
 					activity.setSubmitted(tstamp);
 					activity.setUserId(userId);
@@ -660,11 +653,8 @@ public class TaskFormService {
 						variables.put(FormEngine.START_FORM_INSTANCEID, activity.getFormDocId());
 						variables.put(FormEngine.START_FORM_DATA_URI, "TODO");
 						
-						log.severe("XXXX start process " + pDefUuid );
-						
 						String processInstanceUuid = activitiEngineService.startProcess(pDefUuid, variables, userId);
 						activity.setProcessInstanceUuid(processInstanceUuid);
-						
 						
 						formInstance = activitiEngineService.getFormEngine().getStartLogItem(activitiEngineService.getEngine().getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstanceUuid).singleResult(), userId);
 
@@ -781,7 +771,9 @@ public class TaskFormService {
 			result = aSelectorDirUtils.getUsersByDepartmentAndRole(
 					"Miljöförvaltningen", roleName);
 		} catch (Exception e) {
-			log.severe(e.toString());
+			log.severe("getUsersByRoleAndActivity roleName=" + roleName + 
+					" activityInstanceUuid=" + activityInstanceUuid + 
+					" Exception: " + e.toString());
 		}
 
 		return result;
@@ -840,13 +832,6 @@ public class TaskFormService {
 			user.setUuid(uuid);
 			userInfo = taskFormDb.createUser(user);
 
-			// create user in BOS engine
-			// TODO tentatively removed
-			/*
-			if (!activitiEngineService.createUser(uuid)) {
-				log.severe("Failed to create user in engine");
-			}
-			 */
 		}
 
 		return userInfo;
@@ -900,35 +885,29 @@ public class TaskFormService {
 			user.setUuid(uuid);
 			userInfo = taskFormDb.createUser(user);
 
-			// create user in BOS engine
-			// TODO tentatively removed
-//			if (!activitiEngineService.createUser(uuid)) {
-//				log.severe("Failed to create user in engine");
-//			}
 		}
 
 		return userInfo;
 	}
 	
 	public boolean isTok() {
-		log.severe("TOKEN WAS HERE");
+		log.info("TOKEN WAS HERE");
 		return true;
 	}
 	
 	public String executeSomething(String taskId, String param) {
-		log.severe("TOKEN loggar " + taskId + " och " + param);
+		log.info("TOKEN loggar " + taskId + " och " + param);
 		return taskId + ":" +  param;
 	}
 
 	public List<UserDirectoryEntry> dirSearchUserEntries(String[] filterParams) {
 		List<UserDirectoryEntry> result = null;
 		try {
-			System.out.println("TaskFormService.dirSearchEntries: " + (userDirectoryService==null ? "null" : "nonull"));
+			log.info("TaskFormService.dirSearchEntries: " + (userDirectoryService==null ? "null" : "nonull"));
 			result = userDirectoryService.searchForUserEntries(filterParams);
 		} catch (Exception e) {
-			log.severe(e.toString());
-			//TODO remove
-			e.printStackTrace();
+			log.severe("TaskFormService.dirSearchEntries: " + (userDirectoryService==null ? "null" : "nonull") +
+					" Exception:" + e.toString());
 		}
 		return result;
 	}
