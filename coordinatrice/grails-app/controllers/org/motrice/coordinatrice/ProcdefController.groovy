@@ -225,8 +225,9 @@ class ProcdefController {
 
     if (log.debugEnabled) log.debug "update.procdefInst: ${procdefInst?.uuid}"
 
-    // We have taken precautions to remove existing start forms from the selection
-    // If we add an existing one anyway there will be a DataIntegrityViolationException
+    // We have taken precautions to remove existing start forms from the selection.
+    // It is not possible to define a database constraint that would preclude multiple
+    // use of a start form. So we have to check.
     def inUse = formService.findAsStartForm(sfsc.form)
     if (inUse) {
       flash.message = message(code: 'startform.selection.form.in.use', args: [sfsc.formConnectionKey])

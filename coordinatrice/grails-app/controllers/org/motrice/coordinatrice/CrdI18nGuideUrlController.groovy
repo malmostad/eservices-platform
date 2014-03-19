@@ -112,8 +112,9 @@ class CrdI18nGuideUrlController {
       return
     }
 
+    def procdefKey = crdI18nGuideUrlInst.procdefKey
     flash.message = message(code: 'default.updated.message', args: [message(code: 'crdI18nGuideUrl.label', default: 'CrdI18nGuideUrl'), crdI18nGuideUrlInst.id])
-    redirect(action: 'show', id: crdI18nGuideUrlInst.id)
+    redirect(action: 'listkey', id: procdefKey)
   }
 
   def delete(Long id) {

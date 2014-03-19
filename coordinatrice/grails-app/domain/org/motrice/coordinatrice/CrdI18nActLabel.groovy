@@ -52,6 +52,12 @@ class CrdI18nActLabel implements Comparable {
     label maxSize: 255, nullable: true, unique: ['procdefKey', 'procdefVer', 'actdefName', 'locale']
   }
 
+  static copyLabel(CrdI18nActLabel srcLabel) {
+    new CrdI18nActLabel(procdefKey: srcLabel.procdefKey, procdefVer: srcLabel.procdefVer,
+    actdefName: srcLabel.actdefName, actdefId: srcLabel.actdefId, locale: srcLabel.locale,
+    label: srcLabel.label)
+  }
+
   String toString() {
     "${procdefKey}|${procdefVer}|${actdefName}|${actdefId}|${locale} '${label}'"
   }

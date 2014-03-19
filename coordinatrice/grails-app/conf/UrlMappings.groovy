@@ -9,11 +9,14 @@ class UrlMappings {
     "/rest/procdef/state/$id"(controller: 'RestProcdef') {
       action = [GET: 'procdefStateGet']
     }
-    "/rest/activitylabel/$procdefkey/$locale/$activityname?"(controller: 'RestActivity') {
+    "/rest/activitylabel/$procdefkey/$locale/$activityname?"(controller: 'RestI18n') {
       action = [GET: 'activityLabelGet']
     }
-    "/rest/guideurl/$procdefkey/$locale/$activityname?"(controller: 'RestGuideUrl') {
+    "/rest/guideurl/$procdefkey/$locale/$activityname?"(controller: 'RestI18n') {
       action = [GET: 'guideUrlGet']
+    }
+    "/rest/startformlabel/$appname/$formname/$locale"(controller: 'RestI18n') {
+      action = [GET: 'startFormLabelGet']
     }
 
     "/"(controller: 'Procdef', action:'/index')
