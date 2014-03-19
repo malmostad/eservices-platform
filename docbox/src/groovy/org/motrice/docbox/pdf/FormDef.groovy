@@ -34,15 +34,19 @@ class FormDef {
   // Form metadata
   FormMeta meta
 
+  // The name of this Motrice site
+  String motriceSiteName
+
   // All form definition text
   String text
 
-  FormDef(File inputFile) {
-    text = inputFile.text
+  FormDef(File inputFile, String motriceSiteName) {
+    this(inputFile.text, motriceSiteName)
   }
 
-  FormDef(String text) {
+  FormDef(String text, String motriceSiteName) {
     this.text = text
+    this.motriceSiteName = motriceSiteName
   }
 
   /**
@@ -321,6 +325,10 @@ class FormDef {
 	      row() {
 		entry('Ursprungskod') {}
 		entry(meta.instanceUuid) {}
+	      }
+	      row() {
+		entry('IT-system') {}
+		entry(motriceSiteName) {}
 	      }
 	    }
 	  }
