@@ -449,7 +449,7 @@ public class TaskFormService {
 			if (currentFormInstance instanceof ActivityInstanceLogItem) {
 				ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)currentFormInstance;
 				for (InboxTaskItem item : items) {
-					if (logItem.getProcessInstanceUuid().equals(item.getProcessInstanceUuid())) {
+					if (logItem.getProcessInstanceUuid()!=null && logItem.getProcessInstanceUuid().equals(item.getProcessInstanceUuid())) {
 						result = item;
 					}
 				}
