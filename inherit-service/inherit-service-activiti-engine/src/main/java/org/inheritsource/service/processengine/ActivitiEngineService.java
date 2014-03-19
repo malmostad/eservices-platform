@@ -125,7 +125,6 @@ public class ActivitiEngineService {
 	
 	public List<InboxTaskItem> getUserInbox(String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
-		log.severe("XXXX" + userId);
 		List<Group> groups = engine.getIdentityService().createGroupQuery().groupMember(userId).list();
 		List<String> groupsStr = new ArrayList<String>();
 		for (Group group : groups) {
@@ -133,7 +132,6 @@ public class ActivitiEngineService {
 			groupsStr.add(group.getId());
 		}
 		
-		log.severe("XXXX groupsStr: " + groupsStr);
 		List<Task> groupCandidateTasks = null;
 		if (! groupsStr.isEmpty()) {
 			groupCandidateTasks = engine.getTaskService().createTaskQuery().taskCandidateGroupIn(groupsStr).list();
@@ -187,13 +185,10 @@ public class ActivitiEngineService {
 	}
 	
 	private InboxTaskItem task2InboxTaskItem(Task task, String userId) {
-		log.severe("XXXXXX START task: " + task.getId() + " name:" + task.getName());
 		InboxTaskItem item = new InboxTaskItem();
 		if (task != null) {
 			
 			item = (InboxTaskItem) formEngine.getFormInstance(task, userId, item);
-			
-			log.severe("XXXXXX START task A: " + task.getId() + " name:" + task.getName() + " => ITEM: " + item);
 			
 			item.setActivityCreated(task.getCreateTime());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
@@ -203,8 +198,6 @@ public class ActivitiEngineService {
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId(task.getProcessDefinitionId()));
 						
-			log.severe("XXXXXX START task B: " + task.getId() + " name:" + task.getName() + " => ITEM: " + item);
-
 			ProcessInstance pI = getMainProcessInstanceByProcessInstanceId
 				(task.getProcessInstanceId());
 			
@@ -215,9 +208,7 @@ public class ActivitiEngineService {
 		    	item.setRootProcessInstanceUuid(task.getProcessInstanceId());
 				item.setRootProcessDefinitionUuid(task.getProcessDefinitionId());
 		    }
-			log.severe("XXXXXX START task C: " + task.getId() + " name:" + task.getName() + " => ITEM: " + item);
 		}
-		log.severe("XXXXXX FINISHED task: " + task.getId() + " name:" + task.getName());
 		return item;
 	}
 	
@@ -401,13 +392,11 @@ public class ActivitiEngineService {
 	
 	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task) {
 		ActivityInstancePendingItem item = null;
-		log.severe("XXXXXX item A " + item);
 		if (task != null) {
 			
 			item = new ActivityInstancePendingItem();
 			
 			item = (ActivityInstancePendingItem) formEngine.getFormInstance(task, null, item);
-			log.severe("XXXXXX item B.0 " + item);
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
@@ -422,16 +411,12 @@ public class ActivitiEngineService {
 			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setFormUrl("");
 			item.setFormDocId("");
-			log.severe("XXXXXX item B.1 " + item);
 			item.setActivityType(getActivityTypeByExecutionIdTaskId(task.getExecutionId(), task.getId()));
-			log.severe("XXXXXX item B.2 " + item);
 			item.setPriority(task.getPriority());
 			item.setExpectedEndDate(task.getDueDate());
-			log.severe("XXXXXX item B.3 " + item);
 			// ActivityInstancePendingItem
 			item.setCandidates(getCandidatesByTaskId(task.getId()));
 			item.setAssignedUser(userId2UserInfo(task.getAssignee()));
-			log.severe("XXXXXX item C " + item);
 
 		}
 		return item;
@@ -855,7 +840,6 @@ public class ActivitiEngineService {
 	
 	public String startProcess(String processDefinitionId, Map<String,Object> variables, String userId) {
 		String processInstanceId = null;
-		log.severe("XXXXXXXXXXXXXX startProcess processDefinitionId" + processDefinitionId);
 		try {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId);

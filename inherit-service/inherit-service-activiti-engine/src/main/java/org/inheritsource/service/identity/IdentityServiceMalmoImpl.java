@@ -47,7 +47,9 @@ public class IdentityServiceMalmoImpl implements IdentityService {
 			result = aSelectorDirUtils.getUsersByDepartmentAndRole(
 					"Miljöförvaltningen", roleName);
 		} catch (Exception e) {
-			log.severe(e.toString());
+			log.severe("getUsersByRoleAndActivity roleName" + 	roleName + 
+					" activityInstanceUuid=" + activityInstanceUuid + 
+					"Exception: " + e.toString());
 		}
 
 		return result;
@@ -113,14 +115,6 @@ public class IdentityServiceMalmoImpl implements IdentityService {
 			user.setDn(dn);
 			user.setUuid(uuid);
 			userInfo = taskFormDb.createUser(user);
-
-			// create user in BOS engine
-			// TODO tentatively removed
-			/*
-			if (!activitiEngineService.createUser(uuid)) {
-				log.severe("Failed to create user in engine");
-			}
-			 */
 		}
 
 		return userInfo;
@@ -178,11 +172,7 @@ public class IdentityServiceMalmoImpl implements IdentityService {
 			user.setUuid(uuid);
 			userInfo = taskFormDb.createUser(user);
 
-			// create user in BOS engine
-			// TODO tentatively removed
-//			if (!activitiEngineService.createUser(uuid)) {
-//				log.severe("Failed to create user in engine");
-//			}
+
 		}
 
 		return userInfo;
