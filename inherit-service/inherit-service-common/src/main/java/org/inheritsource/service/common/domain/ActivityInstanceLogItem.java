@@ -99,8 +99,6 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 		return endDate;
 	}
 	
-	
-	
 	@Override
 	public String toString() {
 		return "ActivityInstanceLogItem [endDate=" + endDate
