@@ -22,7 +22,8 @@ public class ActivitiEngineUtil {
 				createProcessEngineConfigurationFromInputStream(new FileInputStream(fileName));
 		}
 		catch (Exception e) {
-			log.severe("Could not find config file: " + fileName + e);
+			log.severe("Could not find config file: " + fileName + 
+					" exeception: " + e);
 		}
 		return engineConfig;
 	}
@@ -35,7 +36,8 @@ public class ActivitiEngineUtil {
 					  .setJobExecutorActivate(true);
 		}
 		catch (Exception e) {
-			log.severe("Could not find config resource: " + resource);
+			log.severe("Could not find config resource: " + resource + 
+					" exeception: " + e);
 		}
 		return engineConfig;
 	}
@@ -43,16 +45,16 @@ public class ActivitiEngineUtil {
 	public static void listDeployedProcesses(ProcessEngine engine) {
 		List<ProcessDefinition> processes = engine.getRepositoryService().createProcessDefinitionQuery().list();
 		for (ProcessDefinition process : processes) {
-			log.severe("Process: " + process.getId() + ": " + process + "START");
-			log.severe("getDeploymentId: " + process.getDeploymentId());
-			log.severe("getDescription: " + process.getDescription());
-			log.severe("getDiagramResourceName: " + process.getDiagramResourceName());
-			log.severe("getId: " + process.getId());
-			log.severe("getKey: " + process.getKey());
-			log.severe("getName: " + process.getName());
-			log.severe("getResourceName: " + process.getResourceName());
-			log.severe("version: " + process.getVersion());
-			log.severe("END");
+			log.info("Process: " + process.getId() + ": " + process + "START");
+			log.info("getDeploymentId: " + process.getDeploymentId());
+			log.info("getDescription: " + process.getDescription());
+			log.info("getDiagramResourceName: " + process.getDiagramResourceName());
+			log.info("getId: " + process.getId());
+			log.info("getKey: " + process.getKey());
+			log.info("getName: " + process.getName());
+			log.info("getResourceName: " + process.getResourceName());
+			log.info("version: " + process.getVersion());
+			log.info("END");
 		}
 	}
 	

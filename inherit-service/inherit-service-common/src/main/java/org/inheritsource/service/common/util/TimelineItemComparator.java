@@ -35,7 +35,6 @@ public class TimelineItemComparator<T> implements Comparator<T> {
 	
 	@Override
 	public int compare(T o1, T o2) {
-		//log.severe("======> o1=" + o1 + " cmp with o2=" + o2);
 		int result = 0;
 	
 		Date t1 = null;
