@@ -18,12 +18,12 @@
 		<r:layoutResources />
 	</head>
 	<body>
-		<div id="grailsLogo"
-		role="banner"><a href="http://motrice.org"><img src="${resource(dir:
-		'images', file: 'migratrice37.png')}" alt="Migratrice,
-		part of Motrice"/></a><span class="meta">
-		    migratrice <g:meta name="app.version"/> <g:message code="at.site.banner"/>: ${grailsApplication.config.migratrice.local.site.name}
-		</span></div>
+	        <g:set var="site" bean="siteService"/>
+		<div id="grailsLogo" role="banner"><a href="http://motrice.org">
+		    <img src="${resource(dir: 'images', file: 'migratrice37.png')}" alt="Migratrice, part of Motrice"/>
+		  </a>
+		  <span class="meta"> migratrice <g:meta name="app.version"/> <g:message code="at.site.banner"/>: ${site.localSiteName()}</span>
+		</div>
 		<g:layoutBody/>
 		<div class="footer" role="contentinfo"></div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
