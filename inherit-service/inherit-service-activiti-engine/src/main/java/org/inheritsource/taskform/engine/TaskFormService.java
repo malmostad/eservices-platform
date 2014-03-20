@@ -361,37 +361,9 @@ public class TaskFormService {
 		return result;
 	}
 
-	public StartLogItem getStartFormActivityInstanceLogItem(String processInstanceUuid) {
-		StartLogItem result = null;
-
-		if (processInstanceUuid != null) {
-
-			ProcessActivityFormInstance startActivity = taskFormDb
-					.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
-			result = processActivityFormInstanc2StartLogItem(startActivity);
-		}
-
-		return result;
+	public StartLogItem getStartFormActivityInstanceLogItem(String processInstanceId) {
+		return this.activitiEngineService.getStartLogItem(processInstanceId);
 	}
-
-    private StartLogItem processActivityFormInstanc2StartLogItem(ProcessActivityFormInstance startActivity) {
-	StartLogItem result = null;
-	if (startActivity != null && startActivity.getSubmitted() != null) {
-	    result = new StartLogItem();
-	    result.setViewUrl(startActivity.calcViewUrl());
-	    result.setFormUrl(startActivity.calcViewUrl());
-	    result.setEndDate(startActivity.getSubmitted());
-	    result.setActivityLabel("TODO LABEL");
-	    result.setPerformedByUser(taskFormDb
-				      .getUserByUuid(startActivity.getUserId()));
-	    result.setFormDocId(startActivity.getFormDocId());
-	    
-	    if (startActivity.getProcessActivityFormInstanceId() != null) {
-		result.setProcessActivityFormInstanceId(startActivity.getProcessActivityFormInstanceId().longValue());
-	    }
-	}
-	return result;
-    }
 
     /*
 	public String submitStartForm(String formPath, String docId, String userId)
@@ -503,8 +475,8 @@ public class TaskFormService {
 			dst.setStartedBy("");
 			dst.setAssignedUser(taskFormDb.getUserByUuid(src.getUserId()));
 			dst.setExpectedEndDate(null);
-			dst.setFormUrl(src.calcEditUrl());
-
+			dst.setEditUrl(src.calcEditUrl());
+			
 			dst.setProcessInstanceUuid(null);
 			dst.setActivityInstanceUuid(null);
 			dst.setActivityDefinitionUuid(null);
@@ -561,7 +533,7 @@ public class TaskFormService {
 	 * @param docId
 	 * @param userId 
 	 * @param newDocId Replace docId with a new one on submit. 
-	 * @return confirmation form viewUrl. null if submission fails.
+	 * @return confirmation form instance. null if submission fails.
 	 */
 	public FormInstance submitActivityForm(String docId, String userId) throws Exception {
 		return submitActivityForm(docId, userId, null);
@@ -574,7 +546,7 @@ public class TaskFormService {
 	 * @param docId
 	 * @param userId 
 	 * @param newDocId Replace docId with a new one on submit. 
-	 * @return confirmation form viewUrl. null if submission fails.
+	 * @return confirmation form instance. null if submission fails.
 	 */
 	public FormInstance submitActivityForm(String docId, String userId, String newDocId)
 			throws Exception {
@@ -656,7 +628,7 @@ public class TaskFormService {
 						String processInstanceUuid = activitiEngineService.startProcess(pDefUuid, variables, userId);
 						activity.setProcessInstanceUuid(processInstanceUuid);
 						
-						formInstance = activitiEngineService.getFormEngine().getStartLogItem(activitiEngineService.getEngine().getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstanceUuid).singleResult(), userId);
+						formInstance = activitiEngineService.getFormEngine().getStartLogItem(activitiEngineService.getEngine().getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstanceUuid).includeProcessVariables().singleResult(), userId);
 
 					}
 				}

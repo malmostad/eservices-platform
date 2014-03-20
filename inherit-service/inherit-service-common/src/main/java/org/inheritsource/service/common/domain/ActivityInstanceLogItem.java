@@ -102,8 +102,8 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 	@Override
 	public String toString() {
 		return "ActivityInstanceLogItem [endDate=" + endDate
-				+ ", performedByUser=" + performedByUser + ", viewUrl="
-				+ viewUrl + ", processDefinitionUuid=" + processDefinitionUuid
+				+ ", performedByUser=" + performedByUser
+				+ ", processDefinitionUuid=" + processDefinitionUuid
 				+ ", processInstanceUuid=" + processInstanceUuid
 				+ ", activityDefinitionUuid=" + activityDefinitionUuid
 				+ ", activityInstanceUuid=" + activityInstanceUuid
@@ -112,20 +112,18 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 				+ ", currentState=" + currentState + ", lastStateUpdate="
 				+ lastStateUpdate + ", lastStateUpdateByUserId="
 				+ lastStateUpdateByUserId + ", startedBy=" + startedBy
-				+ ", expectedEndDate=" + expectedEndDate + ", formUrl="
-				+ formUrl + ", formDocId=" + formDocId + ", activityType="
+				+ ", expectedEndDate=" + expectedEndDate + ", activityType="
 				+ activityType + ", priority=" + priority
 				+ ", processActivityFormInstanceId="
 				+ processActivityFormInstanceId + ", page=" + page
-				+ ", viewUrlExternal=" + viewUrlExternal + ", editUrl="
-				+ editUrl + ", editUrlExternal=" + editUrlExternal
-				+ ", dataUri=" + dataUri + ", definitionKey=" + definitionKey
-				+ ", typeId=" + typeId + ", instanceId=" + instanceId
-				+ ", actUri=" + actUri + ", actinstId=" + actinstId
-				+ ", submitted=" + submitted + ", submittedBy=" + submittedBy
-				+ "]";
+				+ ", viewUrl=" + viewUrl + ", viewUrlExternal="
+				+ viewUrlExternal + ", editUrl=" + editUrl
+				+ ", editUrlExternal=" + editUrlExternal + ", dataUri="
+				+ dataUri + ", definitionKey=" + definitionKey + ", typeId="
+				+ typeId + ", instanceId=" + instanceId + ", actUri=" + actUri
+				+ ", actinstId=" + actinstId + ", submitted=" + submitted
+				+ ", submittedBy=" + submittedBy + "]";
 	}
-	
 	@Override
 	public int getType() {
 		return TimelineItem.TYPE_FINISHED;

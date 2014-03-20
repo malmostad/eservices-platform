@@ -139,8 +139,8 @@ public class FormEngine {
 		FormInstance formInstance = null;
 		
 		Map <String, Object> localVars = task.getTaskLocalVariables();
-		String typeId = (String)localVars.get(FORM_TYPEID);
-		if (typeId != null && typeId.trim().length()>0) {
+		Long typeId = (Long)localVars.get(FORM_TYPEID);
+		if (typeId != null) {
 			// this form is already initialized
 			formInstance = getFormInstanceByCommonLocalVars(localVars, initialInstance);
 			TaskFormHandler handler = getTaskFormHandler(formInstance.getTypeId());

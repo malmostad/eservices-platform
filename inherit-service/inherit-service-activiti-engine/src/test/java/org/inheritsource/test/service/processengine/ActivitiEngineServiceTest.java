@@ -23,21 +23,12 @@
  
 package org.inheritsource.test.service.processengine;
 
-import java.util.List;
-import java.util.Set;
-
-import org.activiti.engine.history.HistoricActivityInstance;
-import org.activiti.engine.repository.Deployment;
-import org.inheritsource.service.common.domain.ActivityInstanceItem;
-import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
-import org.inheritsource.service.common.domain.DashOpenActivities;
-import org.inheritsource.service.common.domain.InboxTaskItem;
-import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ActivitiEngineServiceTest {
 
@@ -45,12 +36,22 @@ public class ActivitiEngineServiceTest {
 	
 	@Before
 	public void before() {
-		activitiEngineService = new ActivitiEngineService();
+		
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/applicationContext.xml");
+        
+        
+		
+		activitiEngineService = (ActivitiEngineService)applicationContext.getBean("activitiEngineService");
 	}
 	
 	@After
 	public void after() {
 		activitiEngineService.close();
+	}
+	
+	@Test
+	public void testProcessInstanceDetails() {
+		System.out.println(activitiEngineService.getProcessInstanceDetails("212"));
 	}
 
 /*

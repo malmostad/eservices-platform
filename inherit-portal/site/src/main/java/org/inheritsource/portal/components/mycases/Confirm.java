@@ -92,6 +92,9 @@ public class Confirm extends MyCasesBaseComponent {
 			}
 		}
 
+		
+		log.error("XXX Confirm " + formInstance);
+		
 		if (formInstance!=null) {
 			request.setAttribute("formUrl", formInstance.getViewUrl());
 		}
@@ -102,5 +105,7 @@ public class Confirm extends MyCasesBaseComponent {
 	        appendChannelLabels(request, nextTask);
 		}
 		request.setAttribute("nextTask", nextTask);
+		
+		log.error("XXX Confirm " + nextTask);
 	}
 }

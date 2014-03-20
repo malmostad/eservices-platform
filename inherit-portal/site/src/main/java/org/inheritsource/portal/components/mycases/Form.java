@@ -93,6 +93,7 @@ public class Form extends MyCasesBaseComponent {
         }
         
     	request.setAttribute("activity", activity);
+    	log.error("XXX Form activity" + activity);
     	
     	HippoBean guide = null;
     	if (activity != null && doc != null) {

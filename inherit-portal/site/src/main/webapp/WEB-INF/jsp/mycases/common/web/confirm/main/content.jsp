@@ -37,6 +37,7 @@
     </c:if>
 
 
+<c:if test="${not empty formUrl}">
 	<script type="text/javascript" charset="utf-8">
 		        jQuery.noConflict();
 		        var $j = jQuery;
@@ -54,7 +55,7 @@
 				
 				
 				</script>
-	
+</c:if>
 	
 	<div class="row-fluid">
 		<div class="span12">
@@ -77,7 +78,7 @@
     		
     		<c:if test="${not empty nextTask}">
 	    		<p>
-	    			<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.editFormUrl}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
+	    			<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.relativePageLink}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
 	    		</p>
     		</c:if>
     		
