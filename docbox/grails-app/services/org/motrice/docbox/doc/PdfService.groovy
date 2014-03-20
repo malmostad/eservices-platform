@@ -28,6 +28,8 @@ class PdfService {
   def docService
   def sigService
 
+  private static final UNKNOWN_MOTRICE_SITE_NAME = '***Okänd***'
+
   /**
    * Retrieve all database objects relevant for a form instance.
    * @param uuid must be the uuid of the form instance.
@@ -61,13 +63,20 @@ class PdfService {
    */
   BoxContents generatePdfa(DocData docData, BoxDocStep docStep, boolean debug) {
     def formData = new FormData(docData.dataItem.text)
-    def formDef = new FormDef(docData.formDef.text)
+    def formDef = new FormDef(docData.formDef.text, localSiteName())
     def formatSpec = sigService.pdfFormatName()
     formDef.build(docData, docStep, formatSpec, log)
     if (log.debugEnabled) log.debug formDef.dump()
     createPreview(docStep, formDef, formData)
     def docContents = createDocBook(docStep, formDef, formData)
     return docbookXmlToPdf(docStep, docData, docContents, debug)
+  }
+
+  /**
+   * Pick up the Motrice site name, or a default text.
+   */
+  private String localSiteName() {
+    grailsApplication.config.motrice.site.name ?: UNKNOWN_MOTRICE_SITE_NAME
   }
 
   /**

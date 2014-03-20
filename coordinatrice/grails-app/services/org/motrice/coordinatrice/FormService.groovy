@@ -7,6 +7,8 @@ import org.motrice.coordinatrice.pxd.PxdFormdefVer
  */
 class FormService {
 
+  static transactional = true
+
   /**
    * Create a list of forms that may be associated with an activity.
    * The list contains the latest published version of all forms.
