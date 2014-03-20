@@ -1518,7 +1518,7 @@ public class ActivitiEngineService {
 	
 	public static void main(String[] args) {
 		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
-		/*
+		
 		// run 
 		// mvn exec:java
 		// in inherit-service/inherit-service-activiti-engine directory
@@ -1532,7 +1532,7 @@ public class ActivitiEngineService {
 		
 		deployment = activitiEngineService.deployBpmn("../../bpm-processes/MyProcessExpression.bpmn");
 		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
-*/
+
 		
 		System.exit(0);
 	}
