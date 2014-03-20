@@ -137,7 +137,7 @@ class PackageService {
    */
   MigPackage createExportPackage(String packageName, params) {
     if (log.debugEnabled) log.debug "createExportPackage << ${packageName} ..."
-    def siteName = grailsApplication.config.migratrice.local.site.name
+    def siteName = localSiteName()
     def pack = new MigPackage(siteName: siteName, packageName: packageName,
     packageFormat: packageFormat(), siteTstamp: new Date(), originLocal: true)
     if (!pack.save(insert: true)) log.error "MigPackage save: ${pack.errors.allErrors.join(',')}"
@@ -186,6 +186,13 @@ class PackageService {
 
     if (log.debugEnabled) log.debug "createExportPackage >> ${formdefList.size()} formdefs"
     return pack
+  }
+
+  /**
+   * The name of this Motrice site/instance.
+   */
+  private localSiteName() {
+    grailsApplication.config.motrice.site.name ?: '***UNDEFINED***'
   }
 
   /**
