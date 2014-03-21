@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -227,8 +228,9 @@ public class TaskFormService {
 	 * Get inbox task items a) partially filled start forms, not started
 	 * processes b) started process with tasks associated to userId, check if
 	 * partially filled form exist
-	 * 
+	 * @param locale TODO
 	 * @param userId
+	 * 
 	 * @return
 	 */
 	
@@ -237,7 +239,7 @@ public class TaskFormService {
 	 * TODO: The field item.setProcessLabel("TODO"); in ActivitiEngineService 
 	 * shall be handled here! FIXME
 	 */
-	public List<InboxTaskItem> getInboxTaskItems(String userId) {
+	public List<InboxTaskItem> getInboxTaskItems(Locale locale, String userId) {
 
 		// Find partially filled not submitted start forms
 		// TODO FIX THIS
@@ -245,7 +247,7 @@ public class TaskFormService {
 		//unsubmittedStartForms = taskFormDb.getPendingStartformFormInstances(userId);
 
 		// find inbox tasks from activiti engine
-		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox(userId);
+		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox(locale, userId);
 
 		//inbox.addAll(unsubmittedStartForms);
 
@@ -275,16 +277,16 @@ public class TaskFormService {
 	}
 
 	public ProcessInstanceDetails getProcessInstanceDetails(
-			String processInstanceUuid) {
+			String processInstanceUuid, Locale locale) {
 		ProcessInstanceDetails details = activitiEngineService
-				.getProcessInstanceDetails(processInstanceUuid);
+				.getProcessInstanceDetails(processInstanceUuid, locale);
 		return details;
 	}
 
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(
-			String activityInstanceUuid) {
+			String activityInstanceUuid, Locale locale) {
 		ProcessInstanceDetails details = activitiEngineService
-				.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid);
+				.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid, locale);
 		return details;
 	}
 
@@ -413,7 +415,7 @@ public class TaskFormService {
 		InboxTaskItem result = null;
 		
 		try {
-			List<InboxTaskItem> items = activitiEngineService.getUserInbox(userId);
+			List<InboxTaskItem> items = activitiEngineService.getUserInbox(null, userId);
 			
 			if (currentFormInstance instanceof ActivityInstanceLogItem) {
 				ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)currentFormInstance;
@@ -674,8 +676,8 @@ public class TaskFormService {
      * @param userId The user that is actually performing the search, make it possibly to exclude hits because of privacy reasons for instance
      * @return
      */
-    public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
-            PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesStartedBy(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+    public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId) { 
+            PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesStartedBy(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
             appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
             return result;
     }
@@ -692,8 +694,8 @@ public class TaskFormService {
     * @param userId The user that is actually performing the search, make it possibly to exclude hits because of privacy reasons for instance
     * @return
     */
-   public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
-           PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesWithInvolvedUser(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+   public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId) { 
+           PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesWithInvolvedUser(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
            appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
            return result;
    }
@@ -706,9 +708,9 @@ public class TaskFormService {
 
     * @return
     */
-       public PagedProcessInstanceSearchResult searchProcessInstancesListByTag(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId) { 
+       public PagedProcessInstanceSearchResult searchProcessInstancesListByTag(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId) { 
                 List<String> uuids = taskFormDb.getProcessInstancesByTag(tagValue);
-               PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesByUuids(uuids, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+               PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesByUuids(uuids, fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
                appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
                return result;
         }

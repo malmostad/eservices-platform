@@ -23,6 +23,8 @@
  
 package org.inheritsource.portal.components.mycases.search;
 
+import java.util.Locale;
+
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +36,8 @@ public class SearchCasesByTagValue extends BaseSearchCasesComponent {
 	@Override
 	public PagedProcessInstanceSearchResult executeSearch(
 			String searchStr, int fromIndex, int pageSize, String sortBy,
-			String sortOrder, String filter, String userId) {
-        PagedProcessInstanceSearchResult searchResult = engine.searchProcessInstancesListByTag(searchStr, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+			String sortOrder, String filter, Locale locale, String userId) {
+        PagedProcessInstanceSearchResult searchResult = engine.searchProcessInstancesListByTag(searchStr, fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
 
 		return searchResult;
 	}

@@ -23,6 +23,8 @@
  
 package org.inheritsource.test.service.processengine;
 
+import java.util.Locale;
+
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.junit.After;
 import org.junit.Before;
@@ -51,7 +53,7 @@ public class ActivitiEngineServiceTest {
 	
 	@Test
 	public void testProcessInstanceDetails() {
-		System.out.println(activitiEngineService.getProcessInstanceDetails("212"));
+		System.out.println(activitiEngineService.getProcessInstanceDetails("212", new Locale("sv", "SE")));
 	}
 
 /*

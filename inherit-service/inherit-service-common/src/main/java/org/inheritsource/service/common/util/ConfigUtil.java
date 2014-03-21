@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 public class ConfigUtil {
 	public static final Logger log;
 
+	public static final String MOTRICE_CONF_ENV = "MOTRICE_CONF";
 	public static final String MOTRICE_HOME_ENV = "MOTRICE_HOME";
 	public static final String MOTRICE_CONFIG_FILE = "/conf/motrice.properties";
 
@@ -40,19 +41,28 @@ public class ConfigUtil {
 	}
 	
 	private static Properties loadProperties() throws IOException {
+		String confFilePath = null;
+		String homeFilePath = null;
 		String filePath = null;
 
 		try {
-			filePath = System.getenv(MOTRICE_HOME_ENV);
+			confFilePath = System.getenv(MOTRICE_CONF_ENV);
+			homeFilePath = System.getenv(MOTRICE_HOME_ENV);
 		} catch (NullPointerException exc) {
 			// Ignore
 		}
 
-		if (filePath != null) {
-			filePath = filePath + MOTRICE_CONFIG_FILE;
+		if (confFilePath != null) {
+			filePath = confFilePath;
+			log.info("Motrice configuration -- using env var " + MOTRICE_CONF_ENV
+					+ " => config file: '" + filePath + "'");
+		}
+		else if (homeFilePath != null) {
+			filePath = homeFilePath + MOTRICE_CONFIG_FILE;
 			log.info("Motrice configuration -- using env var " + MOTRICE_HOME_ENV
 					+ " => config file: '" + filePath + "'");
-		} else {
+		} 
+		else {
 			log.info("Motrice configuration -- no path from env variable, use dafault config file "
 					+ MOTRICE_CONF_DEFAULT_PATH);
 			File file = new File(MOTRICE_CONF_DEFAULT_PATH);

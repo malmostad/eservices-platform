@@ -51,11 +51,11 @@ public class FormWithDetails extends Form  {
 		
 		ProcessInstanceDetails piDetails = null;
 		if (activityInstanceUuid != null && activityInstanceUuid.trim().length() > 0) {
-			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid);
+			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid, request.getLocale());
 		} else {
 			ActivityInstanceItem activity = (ActivityInstanceItem)request.getAttribute("activity");
 			if (activity != null && activity.getActivityInstanceUuid()!=null) {
-				piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid());
+				piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid(), request.getLocale());
 			}
 		}
 		

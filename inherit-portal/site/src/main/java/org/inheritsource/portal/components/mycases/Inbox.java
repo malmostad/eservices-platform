@@ -56,12 +56,9 @@ public class Inbox extends MyCasesBaseComponent {
             return;
         }
         request.setAttribute("document",doc);
-
-        List<InboxTaskItem> tasks = engine.getInboxTaskItems(user.getUuid());
         
-        for (InboxTaskItem task : tasks) {
-        	log.error("XXXXX task: " + task);
-        }
+        List<InboxTaskItem> tasks = engine.getInboxTaskItems(request.getLocale(), user.getUuid());
+        
         request.setAttribute("tasks", tasks);
         
     }

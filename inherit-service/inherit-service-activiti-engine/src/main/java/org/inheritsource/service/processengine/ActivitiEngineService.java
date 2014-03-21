@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -58,20 +59,24 @@ import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Timeline;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
+import org.inheritsource.service.coordinatrice.CoordinatriceDao;
 import org.inheritsource.service.form.FormEngine;
 import org.inheritsource.service.identity.IdentityService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public class ActivitiEngineService {
 
+	private CoordinatriceDao coordinatriceDao = null;
+	
 	private ProcessEngine engine = null; 
 	private FormEngine formEngine = null;
 	private IdentityService identityService = null;
 	
 	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
 	
-	public ActivitiEngineService() {
-		initEngine();		
+	public ActivitiEngineService() {		
 	}
 	
 	public ProcessEngine getEngine() {
@@ -81,8 +86,14 @@ public class ActivitiEngineService {
 	public void setEngine(ProcessEngine engine) {
 		this.engine = engine;
 	}
-	
-	
+
+	public CoordinatriceDao getCoordinatriceDao() {
+		return coordinatriceDao;
+	}
+
+	public void setCoordinatriceDao(CoordinatriceDao coordinatriceDao) {
+		this.coordinatriceDao = coordinatriceDao;
+	}
 
 	public FormEngine getFormEngine() {
 		return formEngine;
@@ -108,22 +119,7 @@ public class ActivitiEngineService {
 		}
 	}
 	
-	private void initEngine() {
-		
-		if(engine == null) {
-			final String ACTIVITI_ENGINE_CONFIG_FILEPATH = "/usr/local/etc/motrice/activiti.cfg.xml";
-			ProcessEngineConfiguration engineConfig = ActivitiEngineUtil.loadConfigFromFile(ACTIVITI_ENGINE_CONFIG_FILEPATH);
-
-			if (engineConfig == null) {
-				log.severe("The process engine will not be working!");
-			}
-			else {
-				engine =  engineConfig.buildProcessEngine();
-			}	
-		}
-	}
-	
-	public List<InboxTaskItem> getUserInbox(String userId) {
+	public List<InboxTaskItem> getUserInbox(Locale locale, String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
 		List<Group> groups = engine.getIdentityService().createGroupQuery().groupMember(userId).list();
 		List<String> groupsStr = new ArrayList<String>();
@@ -148,19 +144,19 @@ public class ActivitiEngineService {
 			}
 		}
 	
-		result = taskList2InboxTaskItemList(tasks, userId);
+		result = taskList2InboxTaskItemList(tasks, locale, userId);
 		Collections.sort(result);
 		
 		return result;
 	}
 	
-	public Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId) {
+	public Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId, Locale locale) {
 		Set<InboxTaskItem> result = new LinkedHashSet<InboxTaskItem>();
 		
 		List<Task> tasks = engine.getTaskService().createTaskQuery().
 			processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
 		
-		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks, null);
+		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks, locale, null);
 		
 		if(inboxTaskItemList != null) {
 			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
@@ -172,18 +168,19 @@ public class ActivitiEngineService {
 	}
 	
 
-	private List<InboxTaskItem> taskList2InboxTaskItemList(List<Task> tasks, String userId) {
+	private List<InboxTaskItem> taskList2InboxTaskItemList(List<Task> tasks, Locale locale, String userId) {
 		List<InboxTaskItem> result = null;
 		if (tasks != null) {
 			result = new ArrayList<InboxTaskItem>();
 			for (Task task : tasks) {
-				result.add(task2InboxTaskItem(task, userId));
+				result.add(task2InboxTaskItem(task, locale, userId));
 			}
 	    }
 		return result;
 	}
 	
-	private InboxTaskItem task2InboxTaskItem(Task task, String userId) {
+	
+	private InboxTaskItem task2InboxTaskItem(Task task, Locale locale, String userId) {
 		InboxTaskItem item = new InboxTaskItem();
 		if (task != null) {
 			
@@ -191,7 +188,7 @@ public class ActivitiEngineService {
 			
 			item.setActivityCreated(task.getCreateTime());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
-			item.setActivityLabel(task.getName()); 
+			item.setActivityLabel(coordinatriceDao.getLabel(task.getProcessDefinitionId(), task.getName(), locale)); 
 			item.setExpectedEndDate(task.getDueDate());
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
@@ -493,7 +490,7 @@ public class ActivitiEngineService {
 		int atRisk = 0;
 		
 		try {
-			List<InboxTaskItem> inboxTaskItems = getUserInbox(userId);
+			List<InboxTaskItem> inboxTaskItems = getUserInbox(null, userId);
 			
 			if(inboxTaskItems != null) {
 				// Create dates needed in calculation
@@ -541,7 +538,7 @@ public class ActivitiEngineService {
 		return formEngine.getStartLogItem(processInstance, null);
 	}
 	
-	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceId) {
+	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceId, Locale locale) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
 		try {
@@ -578,7 +575,7 @@ public class ActivitiEngineService {
 						activityInstancePendingItems.add(task2ActivityInstancePendingItem(task));
 					}
 					processInstanceDetails.setPending(activityInstancePendingItems);	
-					processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks, null)));
+					processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks, locale, null)));
 				}	
 			} else {
 				// Check if process is found among the historic ones 
@@ -617,7 +614,7 @@ public class ActivitiEngineService {
 		return processInstanceDetails;
 	}
 
-	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(String taskId) {
+	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance(String taskId, Locale locale) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
 		// Note: Both tasks and historic tasks are represented in the history service. 
@@ -626,7 +623,7 @@ public class ActivitiEngineService {
 			HistoricTaskInstance task = engine.getHistoryService().createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
 
 			if(task != null) {
-				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId());
+				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId(), locale);
 			}
 		} catch (Exception e) {
 			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with taskId: " + taskId + 
@@ -881,16 +878,16 @@ public class ActivitiEngineService {
 	
 	public PagedProcessInstanceSearchResult getProcessInstancesWithInvolvedUser(
 			String involvedUserId, int fromIndex, int pageSize,
-			String sortBy, String sortOrder, String filter, String userId) {
+			String sortBy, String sortOrder, String filter, Locale locale, String userId) {
 		
 		if(filter != null) {	
 			if(filter.equals("STARTED")) {
 				return(getPagedProcessInstanceSearchResult("", involvedUserId, fromIndex, pageSize,
-						sortBy, sortOrder, userId));
+						sortBy, sortOrder, locale, userId));
 			}
 			else if (filter.equals("FINISHED")){
 				return(getHistoricPagedProcessInstanceSearchResult("", involvedUserId, fromIndex, pageSize,
-						sortBy, sortOrder, userId));
+						sortBy, sortOrder, locale, userId));
 			}	
 		} 	
 		
@@ -900,16 +897,16 @@ public class ActivitiEngineService {
 	
 	public PagedProcessInstanceSearchResult getProcessInstancesStartedBy(
 			String startedByUserId, int fromIndex, int pageSize,
-			String sortBy, String sortOrder, String filter, String userId) {
+			String sortBy, String sortOrder, String filter, Locale locale, String userId) {
 		
 		if(filter != null) {	
 			if(filter.equals("STARTED")) {
 				return(getPagedProcessInstanceSearchResult(IdentityLinkType.STARTER, startedByUserId, fromIndex, pageSize,
-						sortBy, sortOrder, userId));
+						sortBy, sortOrder, locale, userId));
 			}
 			else if (filter.equals("FINISHED")){
 				return(getHistoricPagedProcessInstanceSearchResult(IdentityLinkType.STARTER, startedByUserId, fromIndex, pageSize,
-						sortBy, sortOrder, userId));
+						sortBy, sortOrder, locale, userId));
 			}	
 		} 	
 		
@@ -918,7 +915,7 @@ public class ActivitiEngineService {
 		
 	private PagedProcessInstanceSearchResult getPagedProcessInstanceSearchResult(String userSearchCriteria,
 			String searchForUserId, int fromIndex, int pageSize,
-			String sortBy, String sortOrder, String userId) {
+			String sortBy, String sortOrder, Locale locale, String userId) {
 		List<ProcessInstance> processInstances = null;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 		
@@ -985,7 +982,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId
 						(processInstance.getProcessDefinitionId()));
 					processInstanceListItem.setActivities(getUserInboxByProcessInstanceId
-						(processInstance.getProcessInstanceId()));
+						(processInstance.getProcessInstanceId(), locale));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -1051,7 +1048,7 @@ public class ActivitiEngineService {
 	
 	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResult(String userSearchCriteria,
 			String searchForUserId, int fromIndex, int pageSize,
-			String sortBy, String sortOrder, String userId) {
+			String sortBy, String sortOrder, Locale locale, String userId) {
 		List<HistoricProcessInstance> processInstances = null;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 		
@@ -1136,16 +1133,16 @@ public class ActivitiEngineService {
 		
 	public PagedProcessInstanceSearchResult getProcessInstancesByUuids(
 			List<String> processInstanceIds, int fromIndex, int pageSize, String sortBy,
-			String sortOrder, String filter, String userId) {
+			String sortOrder, String filter, Locale locale, String userId) {
 		
 		if(filter != null) {	
 			if(filter.equals("STARTED")) {
 				return(getPagedProcessInstanceSearchResultByUuids(processInstanceIds, fromIndex, pageSize,
-						sortBy, sortOrder, userId));
+						sortBy, sortOrder, locale, userId));
 			}
 			else if (filter.equals("FINISHED")){
 				return(getHistoricPagedProcessInstanceSearchResultByUuids(processInstanceIds, fromIndex, pageSize,
-						sortBy, sortOrder, userId));
+						sortBy, sortOrder, locale, userId));
 			}	
 		} 	
 		
@@ -1153,7 +1150,7 @@ public class ActivitiEngineService {
 	}
 	
 	private PagedProcessInstanceSearchResult getPagedProcessInstanceSearchResultByUuids(List<String> processInstanceIdList,
-			int fromIndex, int pageSize, String sortBy, String sortOrder, String userId) {
+			int fromIndex, int pageSize, String sortBy, String sortOrder, Locale locale, String userId) {
 		List<ProcessInstance> processInstances = null;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 			
@@ -1210,7 +1207,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setProcessLabel(getProcessDefinitionNameByProcessDefinitionId
 						(processInstance.getProcessDefinitionId()));
 					processInstanceListItem.setActivities(getUserInboxByProcessInstanceId
-						(processInstance.getProcessInstanceId()));
+						(processInstance.getProcessInstanceId(), locale));
 					processInstanceListItems.add(processInstanceListItem);
 				}
 
@@ -1230,7 +1227,7 @@ public class ActivitiEngineService {
 	}
 	
 	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResultByUuids(List<String> processInstanceIdList,
-			int fromIndex, int pageSize, String sortBy, String sortOrder, String userId) {
+			int fromIndex, int pageSize, String sortBy, String sortOrder, Locale locale, String userId) {
 		List<HistoricProcessInstance> processInstances = null;
 		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
 		
@@ -1476,7 +1473,7 @@ public class ActivitiEngineService {
 		}
 		
 		try {
-			List<InboxTaskItem> inboxTaskItems = getUserInbox(userId);
+			List<InboxTaskItem> inboxTaskItems = getUserInbox(null, userId);
 			
 			if(inboxTaskItems == null) {
 				return null;
@@ -1517,7 +1514,9 @@ public class ActivitiEngineService {
 	}
 	
 	public static void main(String[] args) {
-		ActivitiEngineService activitiEngineService = new ActivitiEngineService();
+		
+		ApplicationContext applicationContext = new ClassPathXmlApplicationContext("/applicationContext.xml");
+		ActivitiEngineService activitiEngineService = (ActivitiEngineService)applicationContext.getBean("activitiEngineService");
 		
 		// run 
 		// mvn exec:java
@@ -1553,7 +1552,9 @@ public class ActivitiEngineService {
 					
 					if(userId != null) {
 						candidate = identityService.getUserByUuid(userId);
-						candidates.add(candidate);
+						if (candidate!=null) {
+							candidates.add(candidate);
+						}
 					}
 					
 					groupId = iL.getGroupId();
