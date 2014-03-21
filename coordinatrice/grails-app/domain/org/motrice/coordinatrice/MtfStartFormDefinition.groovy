@@ -56,7 +56,7 @@ class MtfStartFormDefinition implements Comparable {
   }
 
   PxdFormdefVer getFormdef() {
-    def result = PxdFormdefVer.get(procdefId)
+    def result = PxdFormdefVer.get(formdefId)
     if (log.debugEnabled) log.debug "getFormdef >> ${result}"
     return result
   }
@@ -66,7 +66,7 @@ class MtfStartFormDefinition implements Comparable {
   }
 
   String toString() {
-    
+    formdef?.path
   }
 
   //-------------------- Comparable --------------------
