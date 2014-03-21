@@ -72,7 +72,7 @@ CREATE TABLE crd_i18n_form_label
 (
   id bigint NOT NULL,
   version bigint NOT NULL,
-  formdef_path character varying(255) NOT NULL,
+  formdef_id bigint NOT NULL,
   formdef_ver integer NOT NULL,
   label character varying(255),
   locale character varying(255) NOT NULL,
