@@ -247,6 +247,35 @@ class ProcdefController {
     redirect(action: "edit", id: procdefInst.uuid)
   }
 
+  def editstate(String id) {
+    if (log.debugEnabled) log.debug "EDIT STATE: ${params}"
+    def procdefInst = procdefService.findProcessDefinition(id)
+    if (!procdefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), id])
+      redirect(action: 'list')
+      return
+    }
+
+    def stateList = procdefInst.state.nextStates().collect {CrdProcdefState.get(it)}
+    [procdefInst: procdefInst, stateList: stateList]
+  }
+
+  def updatestate(String id) {
+    if (log.debugEnabled) log.debug "UPDATE STATE: ${params}"
+    def procdefInst = procdefService.findProcessDefinition(id)
+    def updatedState = CrdProcdefState.get(params.state.id)
+    if (!(procdefInst && updatedState)) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), id])
+      redirect(action: 'list')
+      return
+    }
+
+    procdefService.updateProcdefState(procdefInst, updatedState)
+    def procdefKey = procdefInst.key
+    flash.message = message(code: 'default.updated.message', args: [message(code: 'procdef.label', default: 'Procdef'), procdefInst.id])
+    redirect(action: 'listname', id: procdefKey)
+  }
+
   /**
    * Edit the start form connection (nothing else may be changed)
    */

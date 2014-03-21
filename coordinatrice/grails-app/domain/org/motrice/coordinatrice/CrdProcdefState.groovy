@@ -29,6 +29,7 @@ class CrdProcdefState {
     id generator: 'assigned'
     cache usage: 'read-only'
   }
+  static transients = ['stateChangeAllowed']
   static constraints = {
     res blank: false, maxSize: 80
     defaultMessage blank: false, maxSize: 80
@@ -122,6 +123,39 @@ class CrdProcdefState {
     break
     default:
     result = STARTABLE_FALSE
+    }
+
+    return result
+  }
+
+  boolean isStateChangeAllowed() {
+    id >= STATE_EDIT_ID
+  }
+
+  /**
+   * Compute the possible next states.
+   * Usually just a pair: promote, demote.
+   * Return a list of state ids.
+   */
+  List nextStates() {
+    def result = []
+
+    switch (id) {
+    case STATE_EDIT_ID:
+    result = [STATE_TRIAL_ID]
+    break
+    case STATE_TRIAL_ID:
+    result = [STATE_EDIT_ID, STATE_APPROVED_ID]
+    break
+    case STATE_APPROVED_ID:
+    result = [STATE_EDIT_ID, STATE_PUBLISHED_ID]
+    break
+    case STATE_PUBLISHED_ID:
+    result = [STATE_RETIRED_ID]
+    break
+    case STATE_RETIRED_ID:
+    result = [STATE_PUBLISHED_ID]
+    break
     }
 
     return result
