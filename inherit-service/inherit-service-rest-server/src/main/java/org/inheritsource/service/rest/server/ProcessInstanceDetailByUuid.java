@@ -47,6 +47,6 @@ public class ProcessInstanceDetailByUuid extends ServerResource {
 		
 		log.fine("REST getProcessInstanceDetails with parameter processInstanceUuid=[" + processInstanceUuid + "]" );
 		
-		return engine.getProcessInstanceDetails(processInstanceUuid);
+		return engine.getProcessInstanceDetails(processInstanceUuid, null);
 	}
 }

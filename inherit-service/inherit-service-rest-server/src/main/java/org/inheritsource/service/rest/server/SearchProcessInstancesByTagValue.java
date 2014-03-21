@@ -56,6 +56,6 @@ public class SearchProcessInstancesByTagValue extends ServerResource {
 		
 		log.fine("REST SearchProcessInstancesByTagValue with parameter tagValue=[" + tagValue + "] fromIndex=[" + fromIndex + "] pageSize=[" + pageSize + "] sortBy=["  + sortBy + "] sortOrder=[" + sortOrder + "] filter=[" + filter + "] userId=[" + userId + "]");
 		
-		return engine.searchProcessInstancesListByTag(tagValue, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+		return engine.searchProcessInstancesListByTag(tagValue, fromIndex, pageSize, sortBy, sortOrder, filter, null, userId);
 	}
 }

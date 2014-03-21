@@ -56,7 +56,7 @@ public class SearchProcessInstancesStartedByUser extends ServerResource {
 		
 		log.fine("REST searchProcessInstancesStartedByUser with parameter searchForUserId=[" + searchForUserId + "] fromIndex=[" + fromIndex + "] pageSize=[" + pageSize + "] sortBy=["  + sortBy + "] sortOrder=[" + sortOrder + "] filter=[" + filter + "] userId=[" + userId + "]");
 		
-		return engine.searchProcessInstancesStartedByUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+		return engine.searchProcessInstancesStartedByUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, null, userId);
 
 	}
 }

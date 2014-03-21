@@ -42,12 +42,16 @@
 	</bean>
 
 	
-	<bean id="taskFormDb" class="org.inheritsource.taskform.engine.persistence.TaskFormDb">
+	<bean id="taskFormDb" class="org.inheritsource.taskform.engine.persistence.TaskFormDb" scope="singleton">
 	</bean>
 
 	<bean id="engine" class="org.inheritsource.taskform.engine.TaskFormService"
 		scope="singleton">
 		<property name="activitiEngineService" ref="activitiEngineService" />
+	</bean>
+	
+	<bean id="coordinatriceDao" class="org.inheritsource.service.coordinatrice.CoordinatriceDao" scope="singleton">
+		<property name="engine" ref="processEngine"/>
 	</bean>
 
 	<bean id="activitiEngineService"
@@ -56,6 +60,7 @@
 		<property name="engine" ref="processEngine" />
 		<property name="identityService" ref="identityService" />
 		<property name="formEngine" ref="formEngine" />
+		<property name="coordinatriceDao" ref="coordinatriceDao"/>
 	</bean>
 
 	<bean id="processEngineConfiguration"
@@ -84,4 +89,5 @@
 		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
 	</bean>
 
+	
 </beans>

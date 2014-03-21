@@ -23,6 +23,8 @@
  
 package org.inheritsource.portal.components.mycases.search;
 
+import java.util.Locale;
+
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +37,10 @@ public class SearchArchivedCasesWithMe extends BaseSearchCasesComponent {
 	@Override
 	public PagedProcessInstanceSearchResult executeSearch(
 			String searchStr, int fromIndex, int pageSize, String sortBy,
-			String sortOrder, String filter, String userId) {
+			String sortOrder, String filter, Locale locale, String userId) {
 		
         // search cases with me => throw away searchStr and search for logged on user's userId instead
-        PagedProcessInstanceSearchResult searchResult = engine.searchProcessInstancesWithInvolvedUser(userId, fromIndex, pageSize, sortBy, sortOrder,  "FINISHED",  userId);
+        PagedProcessInstanceSearchResult searchResult = engine.searchProcessInstancesWithInvolvedUser(userId, fromIndex, pageSize, sortBy, sortOrder,  "FINISHED",  locale, userId);
 
 		return searchResult;
 	}

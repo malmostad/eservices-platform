@@ -56,6 +56,6 @@ public class SearchProcessInstancesWithInvolvedUser extends ServerResource {
 		
 		log.fine("REST searchProcessInstancesWithInvolvedUser with parameter searchForUserId=[" + searchForUserId + "] fromIndex=[" + fromIndex + "] pageSize=[" + pageSize + "] sortBy=["  + sortBy + "] sortOrder=[" + sortOrder + "] filter=[" + filter + "] userId=[" + userId + "]");
 		
-		return engine.searchProcessInstancesWithInvolvedUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, userId);
+		return engine.searchProcessInstancesWithInvolvedUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, null, userId);
 	}
 }

@@ -48,6 +48,6 @@ public class InboxByUserId extends ServerResource{
 		
 		log.fine("REST getUserInstancesList with parameter userid=[" + userId + "]" );
 		
-		return engine.getInboxTaskItems(userId);
+		return engine.getInboxTaskItems(null, userId);
 	}
 }

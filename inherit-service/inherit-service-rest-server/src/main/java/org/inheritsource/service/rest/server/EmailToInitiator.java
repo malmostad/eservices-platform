@@ -92,7 +92,7 @@ public class EmailToInitiator extends Emailer {
 		}
 */
 		if (processInstanceUuid != null && ( processInstanceUuid.trim().length() > 0 )){
-			ProcessInstanceDetails processInstanceDetails = engine.getProcessInstanceDetails(processInstanceUuid);
+			ProcessInstanceDetails processInstanceDetails = engine.getProcessInstanceDetails(processInstanceUuid, null);
 			if (processInstanceDetails != null) {
 				myProfile = engine.getMyProfile(processInstanceDetails.getStartedBy());
 				to = myProfile.getEmail();
