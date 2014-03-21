@@ -27,8 +27,7 @@ CREATE TABLE crd_procdef_state
 );
 
 CREATE TABLE crd_procdef
-(
-  actid character varying(64) NOT NULL,
+( actid character varying(64) NOT NULL,
   version bigint NOT NULL,
   actdepl character varying(64) NOT NULL,
   actver integer NOT NULL,
@@ -77,8 +76,8 @@ CREATE TABLE crd_i18n_form_label
   label character varying(255),
   locale character varying(255) NOT NULL,
   CONSTRAINT crd_i18n_form_label_pkey PRIMARY KEY (id),
-  CONSTRAINT crd_i18n_form_label_formdef_path_formdef_ver_key UNIQUE (formdef_path, formdef_ver),
-  CONSTRAINT crd_i18n_form_label_formdef_ver_formdef_path_label_key UNIQUE (formdef_ver, formdef_path, label)
+  CONSTRAINT crd_i18n_form_label_formdef_path_formdef_ver_key UNIQUE (formdef_id, formdef_ver),
+  CONSTRAINT crd_i18n_form_label_formdef_ver_formdef_path_label_key UNIQUE (formdef_ver, formdef_id, label)
 )
 WITH (
   OIDS=FALSE
