@@ -54,8 +54,13 @@ public class FormInstance implements Serializable {
 		result.append("?");
 		if (actinstId == null || actinstId.trim().length()==0) {
 			// it is implicit a start form if no actinstId
-			result.append("startforminstId=");
-			result.append(instanceId);
+			if (instanceId != null && instanceId.trim().length()>0) {
+				result.append("startforminstId=");
+				result.append(instanceId);
+				result.append("&");
+			}
+			result.append("startformkey=");
+			result.append(definitionKey);
 			result.append("&");
 		}
 		else {

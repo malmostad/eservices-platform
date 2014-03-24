@@ -56,6 +56,7 @@ public class Form extends MyCasesBaseComponent {
         String instanceId = getPublicRequestParameter(request, "instanceId");
         String actinstId = getPublicRequestParameter(request, "actinstId");
         String startforminstId = getPublicRequestParameter(request, "startforminstId");
+        String startformkey = getPublicRequestParameter(request, "startformkey");
         
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
@@ -67,30 +68,20 @@ public class Form extends MyCasesBaseComponent {
         request.setAttribute("document",doc);
  
         ActivityInstanceItem activity = null;
-        if (startforminstId != null && startforminstId.trim().length()>0) {
+        if (startformkey != null && startformkey.trim().length()>0) {
         	// start form
+        	String userId = (user == null ? getTransientUserId(request) : user.getUuid());
         	
+        	try {
+				activity = engine.getStartActivityInstanceItem(startformkey, userId);
+			} catch (Exception e) {
+				log.info("startformkey=[" + startformkey + "] userId=[" + userId + "] doeas not identify an activity");
+    		}	
         }
         else {
         	// specific BPMN engine activity instance is requested
         	activity = engine.getActivityInstanceItem(actinstId, instanceId, user.getUuid());
         } 
-        
-        if (activity == null && doc instanceof EServiceDocument) {
-	        	// no activity is specified. Use content path to find a start form.
-	        	EServiceDocument eServiceDocument = (EServiceDocument)doc;
-	        	// look up existing form (docId) if partially saved form exist
-	        	// otherwise create new form
-	        	
-	        	String userId = (user == null ? getTransientUserId(request) : user.getUuid());
-	        	
-	        	try {
-					activity = engine.getStartActivityInstanceItem(eServiceDocument.getFormPath(), userId);
-				} catch (Exception e) {
-					log.info("formPath=[" + eServiceDocument.getFormPath() + "] userId=[" + userId + "] doeas not identify an activity");
-        		}	
-	        
-        }
         
     	request.setAttribute("activity", activity);
     	log.error("XXX Form activity" + activity);

@@ -1,6 +1,8 @@
 package org.inheritsource.service.form;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -9,11 +11,15 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.inheritsource.service.common.domain.FormInstance;
+import org.inheritsource.service.common.domain.StartForm;
 import org.inheritsource.service.common.domain.StartLogItem;
+import org.inheritsource.service.coordinatrice.CoordinatriceDao;
+import org.inheritsource.service.coordinatrice.ProcessDefinitionState;
 import org.inheritsource.service.identity.IdentityService;
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
+import org.inheritsource.taskform.engine.persistence.entity.StartFormDefinition;
 
 public class FormEngine {
 	
@@ -247,4 +253,34 @@ public class FormEngine {
 		
 		return result;
 	}
+	
+	public List<StartForm> getStartForms(Locale locale){
+		List<StartForm> forms = taskFormDb.getStartForms();
+		if (forms != null) {
+			for (StartForm form : forms) {
+				form.setPage("form");
+				String label = getActivitiEngineService().getCoordinatriceDao().getStartFormLabelByStartFormDefinitionKey(form.getDefinitionKey(), locale, form.getDefinitionKey());
+				form.setLabel(label);
+				
+				StartFormDefinition startFormDef;
+				try {
+					startFormDef = taskFormDb.getStartFormDefinitionByFormPath(form.getDefinitionKey());
+					if (startFormDef != null) {
+						 ProcessDefinitionState state = getActivitiEngineService().getCoordinatriceDao().getProcessDefinitionState(startFormDef.getProcessDefinitionUuid());
+						 if (state != null) {
+							 if (state.getStartableCode()!=3) {
+								 forms.remove(form);
+							 }
+						 }
+					}
+				} catch (Exception e) {
+					log.severe("Could not load StartFormDefinition by formConnectionKey: " + form.getDefinitionKey());
+				}
+
+				
+			}
+		}
+		return forms;
+	}
+
 }

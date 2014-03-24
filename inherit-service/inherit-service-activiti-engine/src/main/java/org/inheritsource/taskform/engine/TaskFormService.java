@@ -44,6 +44,7 @@ import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.ProcessInstanceListItem;
+import org.inheritsource.service.common.domain.StartForm;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.TimelineItem;
@@ -97,6 +98,7 @@ public class TaskFormService {
 	public void setActivitiEngineService(ActivitiEngineService activitiEngineService) {
 		this.activitiEngineService = activitiEngineService;
 	}	
+	
 		
 	public String getPreviousActivitiesData(String currentActivityFormDocId) {
 		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
@@ -298,9 +300,9 @@ public class TaskFormService {
 	}
 
 	public List<CommentFeedItem> getCommentFeed(String activityInstanceUuid,
-			String userId) {
+			String userId, Locale locale) {
 		List<CommentFeedItem> result = activitiEngineService
-				.getProcessInstanceCommentFeedByActivity(activityInstanceUuid);
+				.getProcessInstanceCommentFeedByActivity(activityInstanceUuid, locale);
 		return result;
 	}
 
@@ -811,6 +813,10 @@ public class TaskFormService {
 		return userInfo;
 	}
 
+	public List<StartForm> getStartForms(String mode, Locale locale) { 
+		return activitiEngineService.getFormEngine().getStartForms(locale);
+	}
+	
 	public UserInfo getUserBySerial(String serial, String certificateSubject) {
 		UserInfo userInfo = taskFormDb.getUserBySerial(serial);
 

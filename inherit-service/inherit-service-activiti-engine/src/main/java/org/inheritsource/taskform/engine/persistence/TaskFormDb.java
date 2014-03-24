@@ -27,8 +27,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
+
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
+import org.inheritsource.service.common.domain.FormInstance;
+import org.inheritsource.service.common.domain.StartForm;
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
@@ -64,6 +67,32 @@ public class TaskFormDb {
 		}
 		return result;
 	}
+
+	public List<StartForm> getStartForms() {
+		List<StartForm> result = new ArrayList<StartForm>();
+		
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		
+		try {
+			List<StartFormDefinition> startForms = (List<StartFormDefinition>) session.createCriteria(StartFormDefinition.class)
+				    .list();
+			
+			for (StartFormDefinition startFormDef : startForms) {
+				StartForm form = new StartForm();
+				form.setTypeId(startFormDef.getFormTypeId());
+				form.setDefinitionKey(startFormDef.getFormConnectionKey());
+				result.add(form);
+			}
+		}
+		catch (Exception e) {
+			log.severe("Exception: " + e);
+		}
+		finally {		
+			session.close();
+		}
+		return result;
+	}
+
 	
 	public StartFormDefinition getStartFormDefinitionByFormPath(Session session, String formPath) {
 		List<StartFormDefinition> result =  (List<StartFormDefinition>)session.createCriteria(StartFormDefinition.class).add(Restrictions.eq("formConnectionKey", formPath)).add(Restrictions.eq("formTypeId", new Long(1))).list();
