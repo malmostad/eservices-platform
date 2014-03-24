@@ -1,5 +1,6 @@
 package org.inheritsource.service.form;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -255,6 +256,7 @@ public class FormEngine {
 	}
 	
 	public List<StartForm> getStartForms(Locale locale){
+		List<StartForm> result = new ArrayList<StartForm>();
 		List<StartForm> forms = taskFormDb.getStartForms();
 		if (forms != null) {
 			for (StartForm form : forms) {
@@ -268,8 +270,8 @@ public class FormEngine {
 					if (startFormDef != null) {
 						 ProcessDefinitionState state = getActivitiEngineService().getCoordinatriceDao().getProcessDefinitionState(startFormDef.getProcessDefinitionUuid());
 						 if (state != null) {
-							 if (state.getStartableCode()!=3) {
-								 forms.remove(form);
+							 if (state.getStartableCode()==3) {
+								 result.add(form);
 							 }
 						 }
 					}
@@ -280,7 +282,7 @@ public class FormEngine {
 				
 			}
 		}
-		return forms;
+		return result;
 	}
 
 }
