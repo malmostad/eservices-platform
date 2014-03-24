@@ -50,6 +50,6 @@ public class GetCommentFeed extends ServerResource {
 		
 		log.fine("REST getCommentFeed with parameter activityInstanceUuid=[" + activityInstanceUuid + "] userid=[" + userid + "]" );
 		
-		return engine.getCommentFeed(activityInstanceUuid, userid); 
+		return engine.getCommentFeed(activityInstanceUuid, userid, null); 
 	}
 }
