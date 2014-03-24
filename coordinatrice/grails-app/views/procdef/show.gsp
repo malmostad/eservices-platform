@@ -123,6 +123,9 @@
 	<fieldset class="buttons">
 	  <g:hiddenField name="uuid" value="${procdefInst?.uuid}" />
 	  <g:link class="edit" action="newversion" id="${procdefInst?.uuid}"><g:message code="procdef.edit.label" default="Edit" /></g:link>
+	  <g:if test="${procdefInst?.state?.stateChangeAllowed}">
+	    <g:link class="edit" action="editstate" id="${procdefInst?.uuid}"><g:message code="procdef.edit.state.label" default="Edit" /></g:link>
+	  </g:if>
 	</fieldset>
       </g:form>
     </div>
