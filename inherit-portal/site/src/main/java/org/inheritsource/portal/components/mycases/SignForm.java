@@ -85,7 +85,7 @@ public class SignForm extends Form  {
 						ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)item;
 						if (logItem.getActivityName() != null && logItem.getActivityName().equals(signActivityName)) {
 							// signActivityName match => Alternative 2a
-							formDocId = logItem.getFormDocId();
+							formDocId = logItem.getInstanceId();
 					    	
 							
 				    		String pdUuid = logItem.getProcessDefinitionUuid();
@@ -99,9 +99,9 @@ public class SignForm extends Form  {
 					if (item instanceof StartLogItem) {
 						// keep startFormDocId in memory in case of Alternative 2b
 						StartLogItem startItem = (StartLogItem)item;
-						startFormDocId = startItem.getFormDocId();
+						startFormDocId = startItem.getInstanceId();
 						
-						signProcessLabel = getJcrProcessLabel(request, piDetails.getStartedByFormPath(), piDetails.getProcessLabel());
+						signProcessLabel = "TODO label"; //getJcrProcessLabel(request, piDetails.getStartedByFormPath(), piDetails.getProcessLabel());
 					}
 				}
 			}
@@ -130,7 +130,7 @@ public class SignForm extends Form  {
 		responseUrl.append("&docNo=");
 		responseUrl.append(docNo);
 		responseUrl.append("&formDocId=");
-		responseUrl.append(activity.getFormDocId());  // the BPM activity formDocId, important not the form to be signed... 
+		responseUrl.append(activity.getInstanceId());  // the BPM activity formDocId, important not the form to be signed... 
 		
 		
 		String signText = "Härmed undertecknar jag " + signAssetLabel + " med dokumentnummer [" + docNo + "] och kontrollsumman [" + pdfChecksum + "].";

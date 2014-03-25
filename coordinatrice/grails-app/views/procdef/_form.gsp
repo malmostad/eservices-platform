@@ -13,19 +13,19 @@
   </div>
 </div>
 <div class="fieldcontain">
-  <g:if test="${procdefInst?.startForms}">
+  <g:if test="${startForms}">
     <g:set var="procdefId" value="${procdefInst?.uuid}"/>
-    <g:each in="${procdefInst.startForms}" var="msfd">
+    <g:each in="${startForms}" var="startFormView">
       <span class="property-value">
-	<g:set var="pfv" value="${msfd.formdef}"/>
+	<g:set var="pfv" value="${startFormView.formdefId}"/>
 	<g:if test="${pfv}">
-	  <g:link controller="pxdFormdefVer" action="show" id="${pfv?.id}">${msfd?.encodeAsHTML()}</g:link>
+	  <g:link controller="pxdFormdefVer" action="show" id="${pfv}">${startFormView?.formConnectionKey?.encodeAsHTML()}</g:link>
 	</g:if>
 	<g:else>
 	  <g:set var="linktitle"><g:message code="startform.selection.invalid.link"/></g:set>
-	  <g:img uri="/images/silk/exclamation.png" title="${linktitle}"/> ${msfd?.encodeAsHTML()}
+	  <g:img uri="/images/silk/exclamation.png" title="${linktitle}"/> ${startFormView?.formConnectionKey?.encodeAsHTML()}
 	</g:else>
-	<g:link class="delete" controller="mtfStartFormDefinition" action="delete" id="${msfd?.id}" params="[procdefId: procdefId]">
+	<g:link class="delete" controller="mtfStartFormDefinition" action="delete" id="${startFormView?.id}" params="[procdefId: procdefId]">
 	  <g:img uri="/images/silk/delete.png" title="${message(code: 'default.button.delete.label', default: 'Delete')}"/>
 	</g:link>
       </span>

@@ -53,8 +53,10 @@ public class Form extends MyCasesBaseComponent {
         
         log.debug("user: " + request.getUserPrincipal());
         
-        String processActivityFormInstanceId = getPublicRequestParameter(request, "processActivityFormInstanceId");
-        String taskUuid = getPublicRequestParameter(request, "taskUuid");
+        String instanceId = getPublicRequestParameter(request, "instanceId");
+        String actinstId = getPublicRequestParameter(request, "actinstId");
+        String startforminstId = getPublicRequestParameter(request, "startforminstId");
+        String startformkey = getPublicRequestParameter(request, "startformkey");
         
         if (doc == null) {
             log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
@@ -66,42 +68,23 @@ public class Form extends MyCasesBaseComponent {
         request.setAttribute("document",doc);
  
         ActivityInstanceItem activity = null;
-        if (taskUuid != null && taskUuid.trim().length()>0) {
-        	// specific BPMN engine activity instance is requested
-        	activity = engine.getActivityInstanceItem(taskUuid, user.getUuid());
-        } 
-        else {
-        	if (processActivityFormInstanceId != null && processActivityFormInstanceId.trim().length()>0) {
-        		// specific taskFormDb ProcessActivityFormInstance is requested
-        		Long id = null;
-        		try {
-        			id = Long.decode(processActivityFormInstanceId);
-        			activity = engine.getActivityInstanceItem(id);
-        		}
-        		catch (NumberFormatException nfe) {
-        			log.info("processActivityFormInstanceId=[" + processActivityFormInstanceId + "] is not a valid id");
-        		}		
-        		
-        	}
-        	else if (doc instanceof EServiceDocument) {
-	        	// no activity is specified. Use content path to find a start form.
-	        	EServiceDocument eServiceDocument = (EServiceDocument)doc;
-	        	// look up existing form (docId) if partially saved form exist
-	        	// otherwise create new form
-	        	
-	        	String userId = (user == null ? getTransientUserId(request) : user.getUuid());
-	        	
-	        	try {
-					activity = engine.getStartActivityInstanceItem(eServiceDocument.getFormPath(), userId);
-				} catch (Exception e) {
-					log.info("formPath=[" + eServiceDocument.getFormPath() + "] userId=[" + userId + "] doeas not identify an activity");
-        		}	
-	        }
+        if (startformkey != null && startformkey.trim().length()>0) {
+        	// start form
+        	String userId = (user == null ? getTransientUserId(request) : user.getUuid());
+        	
+        	try {
+				activity = engine.getStartActivityInstanceItem(startformkey, userId);
+			} catch (Exception e) {
+				log.info("startformkey=[" + startformkey + "] userId=[" + userId + "] doeas not identify an activity");
+    		}	
         }
-        
-        appendChannelLabels(request, activity);
+        else {
+        	// specific BPMN engine activity instance is requested
+        	activity = engine.getActivityInstanceItem(actinstId, instanceId, user.getUuid());
+        } 
         
     	request.setAttribute("activity", activity);
+    	log.error("XXX Form activity" + activity);
     	
     	HippoBean guide = null;
     	if (activity != null && doc != null) {

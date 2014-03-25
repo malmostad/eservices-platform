@@ -64,7 +64,7 @@ public class PaymentForm extends Form  {
 		ProcessInstanceDetails piDetails = null;
 		
 		if (activity != null && activity.getActivityInstanceUuid()!=null) {
-			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid());
+			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid(), request.getLocale());
 			
 			// pay process instance start form is the default behaviour
 			
@@ -74,7 +74,7 @@ public class PaymentForm extends Form  {
 					ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)item;
 					if (logItem.getActivityName() != null && logItem.getActivityName().equals(payActivityName)) {
 						// payActivityName match => Alternative a
-						formDocId = logItem.getFormDocId();
+						formDocId = logItem.getInstanceId();
 						
 					}
 				}
@@ -82,7 +82,7 @@ public class PaymentForm extends Form  {
 				if (item instanceof StartLogItem) {
 					// keep startFormDocId in memory in case of Alternative b
 					StartLogItem startItem = (StartLogItem)item;
-					startFormDocId = startItem.getFormDocId();
+					startFormDocId = startItem.getInstanceId();
 				}
 			}
 		}
@@ -109,7 +109,7 @@ public class PaymentForm extends Form  {
 		responseUrl.append("&docNo=");
 		responseUrl.append(docNo);
 		responseUrl.append("&formDocId=");
-		responseUrl.append(activity.getFormDocId());  // the BPM activity formDocId, important to not, the payment activity 
+		responseUrl.append(activity.getInstanceId());  // the BPM activity formDocId, important to not, the payment activity 
 		
 		
 		

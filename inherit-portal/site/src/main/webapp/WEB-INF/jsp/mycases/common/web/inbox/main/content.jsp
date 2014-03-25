@@ -58,8 +58,7 @@
 								<td>${task.processLabel}</td>
 								<td><fmt:formatDate value="${task.activityCreated}"
 										type="Date" dateStyle="short" timeStyle="short"/></td>
-								<!-- href="form?taskUuid={task.taskUuid}&activityDefinitionUUID={task.activityDefinitionUUID}">{task.activityLabel} -->
-								<td><a href="${task.editFormUrl}">${task.activityLabel}</a></td>
+								<td><a href="${task.relativePageLink}">${task.activityLabel}</a></td>
 							</tr>
 						</c:forEach>
 					</c:when>

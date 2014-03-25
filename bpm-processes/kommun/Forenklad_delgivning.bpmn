@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <collaboration id="Collaboration">
+    <participant id="poolForenkladDelgivning" name="Förenklad delgivning" processRef="process_pool1"></participant>
+  </collaboration>
+  <process id="process_pool1" name="process_pool1" isExecutable="true">
+    <laneSet id="laneSet_process_pool1">
+      <lane id="laneSystem" name="System">
+        <flowNodeRef>startevent1</flowNodeRef>
+        <flowNodeRef>parallelgateway1</flowNodeRef>
+        <flowNodeRef>servicetaskMeddelandeOmBeslut</flowNodeRef>
+        <flowNodeRef>servicetaskKontrollmeddelande</flowNodeRef>
+        <flowNodeRef>parallelgateway2</flowNodeRef>
+        <flowNodeRef>endEventDelgivenLast</flowNodeRef>
+        <flowNodeRef>timerDelayKontrollmeddelande</flowNodeRef>
+        <flowNodeRef>timerDelayDelgiven</flowNodeRef>
+      </lane>
+      <lane id="laneMottagare" name="Mottagare">
+        <flowNodeRef>usertaskTaDelAvBeslut</flowNodeRef>
+        <flowNodeRef>boundarytimer1</flowNodeRef>
+        <flowNodeRef>endevent1</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <serviceTask id="servicetaskMeddelandeOmBeslut" name="Meddelande om beslut"></serviceTask>
+    <intermediateCatchEvent id="timerDelayKontrollmeddelande" name="Vänteläge innan kontrollmeddelande skickas">
+      <timerEventDefinition>
+        <timeDuration>PT1M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <parallelGateway id="parallelgateway1" name="Exclusive Gateway"></parallelGateway>
+    <serviceTask id="servicetaskKontrollmeddelande" name="Skicka kontrollmeddelande"></serviceTask>
+    <intermediateCatchEvent id="timerDelayDelgiven" name="Vänteläge till delgiven">
+      <timerEventDefinition>
+        <timeDuration>PT1M</timeDuration>
+      </timerEventDefinition>
+    </intermediateCatchEvent>
+    <parallelGateway id="parallelgateway2" name="Exclusive Gateway"></parallelGateway>
+    <userTask id="usertaskTaDelAvBeslut" name="Ta del av beslut" activiti:assignee="${recipientUserId}"></userTask>
+    <boundaryEvent id="boundarytimer1" name="Timer" attachedToRef="usertaskTaDelAvBeslut" cancelActivity="true">
+      <timerEventDefinition>
+        <timeDuration>PT2M</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="flow8" sourceRef="usertaskTaDelAvBeslut" targetRef="parallelgateway2"></sequenceFlow>
+    <endEvent id="endEventDelgivenLast" name="Delgiven, bekräftat läst beslut"></endEvent>
+    <sequenceFlow id="flow9" sourceRef="parallelgateway2" targetRef="endEventDelgivenLast"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow10" sourceRef="boundarytimer1" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow11" sourceRef="startevent1" targetRef="servicetaskMeddelandeOmBeslut"></sequenceFlow>
+    <sequenceFlow id="flow12" sourceRef="servicetaskMeddelandeOmBeslut" targetRef="parallelgateway1"></sequenceFlow>
+    <sequenceFlow id="flow13" sourceRef="parallelgateway1" targetRef="timerDelayKontrollmeddelande"></sequenceFlow>
+    <sequenceFlow id="flow14" sourceRef="parallelgateway1" targetRef="usertaskTaDelAvBeslut"></sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="timerDelayKontrollmeddelande" targetRef="servicetaskKontrollmeddelande"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="servicetaskKontrollmeddelande" targetRef="timerDelayDelgiven"></sequenceFlow>
+    <sequenceFlow id="flow17" sourceRef="timerDelayDelgiven" targetRef="parallelgateway2"></sequenceFlow>
+    <textAnnotation id="textannotation1">
+      <text>http://www.domstol.se/Delgivning/Forenklad-delgivning/
+
+Förenklad delgivning innebär att myndigheten först skickar den handling som ska delges och nästa arbetsdag skickar ett kontrollmeddelande om att handlingen har skickats.
+
+Vid förenklad delgivning behöver mottagaren inte skicka in något bevis på att handlingen har mottagits.
+
+Delgivningsmottagaren anses delgiven när två veckor har förflutit från det att handlingen skickades.</text>
+    </textAnnotation>
+    <textAnnotation id="textannotation2">
+      <text>Detta är en subprocess som förväntar sig följande variabler vid start:
+* recipientUserId, användar id till delgivningens mottagare 
+* serviceDocUri, URI till dokument som skall delges</text>
+    </textAnnotation>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="poolForenkladDelgivning" id="BPMNShape_poolForenkladDelgivning">
+        <omgdc:Bounds height="451.0" width="1281.0" x="20.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneSystem" id="BPMNShape_laneSystem">
+        <omgdc:Bounds height="251.0" width="1261.0" x="40.0" y="80.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneMottagare" id="BPMNShape_laneMottagare">
+        <omgdc:Bounds height="200.0" width="1261.0" x="40.0" y="331.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="90.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetaskMeddelandeOmBeslut" id="BPMNShape_servicetaskMeddelandeOmBeslut">
+        <omgdc:Bounds height="55.0" width="161.0" x="170.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="timerDelayKontrollmeddelande" id="BPMNShape_timerDelayKontrollmeddelande">
+        <omgdc:Bounds height="35.0" width="35.0" x="530.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="380.0" y="168.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="servicetaskKontrollmeddelande" id="BPMNShape_servicetaskKontrollmeddelande">
+        <omgdc:Bounds height="55.0" width="151.0" x="610.0" y="160.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="timerDelayDelgiven" id="BPMNShape_timerDelayDelgiven">
+        <omgdc:Bounds height="35.0" width="35.0" x="800.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="880.0" y="168.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertaskTaDelAvBeslut" id="BPMNShape_usertaskTaDelAvBeslut">
+        <omgdc:Bounds height="55.0" width="105.0" x="490.0" y="381.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
+        <omgdc:Bounds height="30.0" width="30.0" x="550.0" y="422.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endEventDelgivenLast" id="BPMNShape_endEventDelgivenLast">
+        <omgdc:Bounds height="35.0" width="35.0" x="1030.0" y="171.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1030.0" y="451.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
+        <omgdc:Bounds height="231.0" width="211.0" x="1080.0" y="90.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="textannotation2" id="BPMNShape_textannotation2">
+        <omgdc:Bounds height="101.0" width="260.0" x="71.0" y="220.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="595.0" y="408.0"></omgdi:waypoint>
+        <omgdi:waypoint x="899.0" y="408.0"></omgdi:waypoint>
+        <omgdi:waypoint x="900.0" y="208.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="920.0" y="188.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1030.0" y="188.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="565.0" y="452.0"></omgdi:waypoint>
+        <omgdi:waypoint x="564.0" y="468.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1030.0" y="468.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="125.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="170.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="331.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="188.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="420.0" y="188.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="400.0" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="400.0" y="408.0"></omgdi:waypoint>
+        <omgdi:waypoint x="490.0" y="408.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="565.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="761.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="800.0" y="187.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="835.0" y="187.0"></omgdi:waypoint>
+        <omgdi:waypoint x="880.0" y="188.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -6,7 +6,7 @@
   <groupId>org.motrice</groupId>
   <artifactId>migratrice</artifactId>
   <packaging>grails-app</packaging>
-  <version>0.2.0</version>
+  <version>0.2.1</version>
   <name>migratrice</name>
   <description>migratrice</description>
 

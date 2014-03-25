@@ -28,6 +28,7 @@
 	    <th></th>
 	    <g:sortableColumn property="locale" title="${message(code: 'crdI18nActLabel.locale.label', default: 'Locale')}" />
 	    <g:sortableColumn property="label" title="${message(code: 'crdI18nActLabel.label.label', default: 'Label')}" />
+	    <th></th>
 	  </tr>
 	</thead>
 	<tbody>
@@ -44,6 +45,9 @@
 	      </g:link></td>
 	      <td>${fieldValue(bean: actLabelInst, field: "locale")}</td>
 	      <td>${fieldValue(bean: actLabelInst, field: "label")}</td>
+	      <td><g:link action="createversion" id="${actLabelInst.id}">
+		  <g:img uri="/images/silk/page_copy.png" title="${message(code: 'crdI18nActLabel.add.version.label')}"/>
+	      </g:link></td>
 	    </tr>
 	  </g:each>
 	</tbody>

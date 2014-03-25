@@ -23,6 +23,8 @@
  
 package org.inheritsource.portal.components.mycases.search;
 
+import java.util.Locale;
+
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
@@ -99,7 +101,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
         request.setAttribute("document",doc);
         
         
-        PagedProcessInstanceSearchResult searchResult = executeSearch(searchStr, fromIndex, pageSize, sortBy, sortOrder, filter, user.getUuid());
+        PagedProcessInstanceSearchResult searchResult = executeSearch(searchStr, fromIndex, pageSize, sortBy, sortOrder, filter, request.getLocale(), user.getUuid());
 
         // append hippo jcr labels on processes and activities in the serach result
         appendChannelLabels(request, searchResult);
@@ -125,6 +127,6 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
         
     }
     
-    public abstract PagedProcessInstanceSearchResult executeSearch(String searchStr, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, String userId);
+    public abstract PagedProcessInstanceSearchResult executeSearch(String searchStr, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId);
 
 }

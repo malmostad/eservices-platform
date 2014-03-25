@@ -39,7 +39,6 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 	
 	Date endDate;
 	UserInfo performedByUser;
-	String viewUrl;
 	
 	public Date getEndDate() {
 		return endDate;
@@ -52,14 +51,6 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 	}
 	public void setPerformedByUser(UserInfo performedByUser) {
 		this.performedByUser = performedByUser;
-	}
-	
-	public String getViewUrl() {
-		return viewUrl;
-	}
-	
-	public void setViewUrl(String viewUrl) {
-		this.viewUrl = viewUrl;
 	}
 	
 	@Override
@@ -110,24 +101,28 @@ public class ActivityInstanceLogItem extends ActivityInstanceItem implements Tim
 	
 	@Override
 	public String toString() {
-		return "ActivityInstanceLogItem {\n    endDate : " + endDate
-				+ "\n    performedByUser : " + performedByUser
-				+ "\n    viewUrl : " + viewUrl
-				+ "\n    processDefinitionUuid : " + processDefinitionUuid
-				+ "\n    processInstanceUuid : " + processInstanceUuid
-				+ "\n    activityDefinitionUuid : " + activityDefinitionUuid
-				+ "\n    activityInstanceUuid : " + activityInstanceUuid
-				+ "\n    activityName : " + activityName
-				+ "\n    activityLabel : " + activityLabel
-				+ "\n    startDate : " + startDate + "\n    currentState : "
-				+ currentState + "\n    lastStateUpdate : " + lastStateUpdate
-				+ "\n    lastStateUpdateByUserId : " + lastStateUpdateByUserId
-				+ "\n    startedBy : " + startedBy + "\n    expectedEndDate : "
-				+ expectedEndDate + "\n    formUrl : " + formUrl
-				+ "\n    formDocId : " + formDocId + "\n    activityType : "
-				+ activityType + "\n    priority : " + priority
-				+ "\n    processActivityFormInstanceId : "
-				+ processActivityFormInstanceId + "\n}";
+		return "ActivityInstanceLogItem [endDate=" + endDate
+				+ ", performedByUser=" + performedByUser
+				+ ", processDefinitionUuid=" + processDefinitionUuid
+				+ ", processInstanceUuid=" + processInstanceUuid
+				+ ", activityDefinitionUuid=" + activityDefinitionUuid
+				+ ", activityInstanceUuid=" + activityInstanceUuid
+				+ ", activityName=" + activityName + ", activityLabel="
+				+ activityLabel + ", startDate=" + startDate
+				+ ", currentState=" + currentState + ", lastStateUpdate="
+				+ lastStateUpdate + ", lastStateUpdateByUserId="
+				+ lastStateUpdateByUserId + ", startedBy=" + startedBy
+				+ ", expectedEndDate=" + expectedEndDate + ", activityType="
+				+ activityType + ", priority=" + priority
+				+ ", processActivityFormInstanceId="
+				+ processActivityFormInstanceId + ", page=" + page
+				+ ", viewUrl=" + viewUrl + ", viewUrlExternal="
+				+ viewUrlExternal + ", editUrl=" + editUrl
+				+ ", editUrlExternal=" + editUrlExternal + ", dataUri="
+				+ dataUri + ", definitionKey=" + definitionKey + ", typeId="
+				+ typeId + ", instanceId=" + instanceId + ", actUri=" + actUri
+				+ ", actinstId=" + actinstId + ", submitted=" + submitted
+				+ ", submittedBy=" + submittedBy + "]";
 	}
 	@Override
 	public int getType() {

@@ -42,7 +42,7 @@
 		        jQuery.noConflict();
 		        var $j = jQuery;
 		        $j(document).ready(function () {
-		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${activity.formUrl}", function(data) {
+		             $j("#xform").load("${activity.editUrl}", function(data) {
 		                if (typeof ORBEON != "undefined") { 
 		                    if (!document.all) {
 		                        ORBEON.xforms.Init.document(); 

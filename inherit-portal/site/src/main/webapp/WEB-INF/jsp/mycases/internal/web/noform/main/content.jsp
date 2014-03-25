@@ -44,9 +44,9 @@
 	<div class="row-fluid">
 		<div class="span12">
 			    <c:choose>
-		         <c:when test="${fn:startsWith(activity.formUrl, 'none/')}">
+		         <c:when test="${activity.typeId eq 6}">
 		    		<form method="post" action="noform/confirm">
-							<input type="hidden" name="document" value="${activity.formDocId}" />
+							<input type="hidden" name="document" value="${activity.instanceId}" />
 							<input type="submit" value="Klart! Skicka vidare"/>
 					</form>
 				</c:when>
@@ -118,41 +118,7 @@
   	    
   	 <h2><fmt:message key="mycases.timeline.lbl"/></h2>
   	 <p></p>
-  	 <c:if test="${not empty timelineByDay}">
-		<c:forEach var="dayEntry" items="${timelineByDay}">
-			<h3><fmt:formatDate value="${dayEntry.key}" type="Date" dateStyle="long" timeStyle="short"/></h3>
-			
-			<ul class="toggle-view timeline">
-				<c:forEach var="logItem" items="${dayEntry.value}">
-					<li>
-					  <h4><fmt:formatDate value="${logItem.timestamp}" type="Both" dateStyle="short" timeStyle="short"/>&nbsp;${logItem.briefDescription}&nbsp;(${logItem.user})</h4>
-					  <span class="exp">+ visa mer...</span>
-					  <div class="panel komin-xform">
-						<c:choose>
-							<c:when test="${not empty logItem.description}">
-								<p>${logItem.description}</p>
-							</c:when>
-							<c:when test="${not empty logItem.viewUrl and fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
-							    <p> <fmt:message key="mycases.signeddocument"/>&nbsp;
-								  <a href="${logItem.viewUrl}"><fmt:message key="mycases.signeddocumentlink"/></a>
-								</p>
-							</c:when>
-							<c:when test="${not empty logItem.viewUrl and not fn:startsWith(logItem.viewUrl, 'none/') and not fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
-								<iframe class="iframe-orbeon-panel" scrolling="no" frameborder="0" width="100%" height="100"></iframe>
-							</c:when>
-							<c:otherwise>
-								<p><fmt:message key="mycases.nomoredetails"/></p>
-							</c:otherwise>
-						</c:choose>
-					  </div>
-					  <c:if test="${not empty logItem.viewUrl and not fn:startsWith(logItem.viewUrl, 'none/') and not fn:startsWith(logItem.viewUrl, '/docbox/doc/ref')}">
-					  	<a class="view-url" href="<fmt:message key="orbeonbase.portal.url"/>${logItem.viewUrl}"></a>
-					  </c:if>
-					</li>
-				</c:forEach>
-			</ul>
-		</c:forEach>
-	 </c:if>
+  	 <tag:timelinebyday timelineByDay="${timelineByDay}" viewMode="full"/>
     
   </c:otherwise>
  </c:choose>

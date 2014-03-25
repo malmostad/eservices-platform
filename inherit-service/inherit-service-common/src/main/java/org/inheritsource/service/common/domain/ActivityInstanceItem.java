@@ -34,7 +34,7 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
  *
  */
 @XStreamAlias("ActivityInstanceItem")
-public abstract class ActivityInstanceItem implements Serializable {
+public abstract class ActivityInstanceItem extends FormInstance implements Serializable {
 
 	private static final long serialVersionUID = 8069401830437496246L;
 	
@@ -53,12 +53,9 @@ public abstract class ActivityInstanceItem implements Serializable {
 	String lastStateUpdateByUserId;
 	String startedBy;
 	Date expectedEndDate;
-	String formUrl;
-	String formDocId;
 	int activityType;
 	int priority;
 	long processActivityFormInstanceId;
-	
 	
 	public String getProcessDefinitionUuid() {
 		return processDefinitionUuid;
@@ -132,18 +129,6 @@ public abstract class ActivityInstanceItem implements Serializable {
 	public void setExpectedEndDate(Date expectedEndDate) {
 		this.expectedEndDate = expectedEndDate;
 	}
-	public String getFormUrl() {
-		return formUrl;
-	}
-	public void setFormUrl(String formUrl) {
-		this.formUrl = formUrl;
-	}
-	public String getFormDocId() {
-		return formDocId;
-	}
-	public void setFormDocId(String formDocId) {
-		this.formDocId = formDocId;
-	}
 	public int getActivityType() {
 		return activityType;
 	}
@@ -183,9 +168,6 @@ public abstract class ActivityInstanceItem implements Serializable {
 				+ ((currentState == null) ? 0 : currentState.hashCode());
 		result = prime * result
 				+ ((expectedEndDate == null) ? 0 : expectedEndDate.hashCode());
-		result = prime * result
-				+ ((formDocId == null) ? 0 : formDocId.hashCode());
-		result = prime * result + ((formUrl == null) ? 0 : formUrl.hashCode());
 		result = prime * result
 				+ ((lastStateUpdate == null) ? 0 : lastStateUpdate.hashCode());
 		result = prime
@@ -251,16 +233,6 @@ public abstract class ActivityInstanceItem implements Serializable {
 				return false;
 		} else if (!expectedEndDate.equals(other.expectedEndDate))
 			return false;
-		if (formDocId == null) {
-			if (other.formDocId != null)
-				return false;
-		} else if (!formDocId.equals(other.formDocId))
-			return false;
-		if (formUrl == null) {
-			if (other.formUrl != null)
-				return false;
-		} else if (!formUrl.equals(other.formUrl))
-			return false;
 		if (lastStateUpdate == null) {
 			if (other.lastStateUpdate != null)
 				return false;
@@ -310,10 +282,9 @@ public abstract class ActivityInstanceItem implements Serializable {
 				+ ", lastStateUpdate=" + lastStateUpdate
 				+ ", lastStateUpdateByUserId=" + lastStateUpdateByUserId
 				+ ", startedBy=" + startedBy + ", expectedEndDate="
-				+ expectedEndDate + ", formUrl=" + formUrl + ", formDocId="
-				+ formDocId + ", activityType=" + activityType + ", priority="
+				+ expectedEndDate + ", activityType=" + activityType + ", priority="
 				+ priority + ", processActivityFormInstanceId="
-				+ processActivityFormInstanceId + "]";
+				+ processActivityFormInstanceId + super.toString() + "]";
 	}
 	
 }

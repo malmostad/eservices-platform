@@ -51,26 +51,31 @@ public class FormWithDetails extends Form  {
 		
 		ProcessInstanceDetails piDetails = null;
 		if (activityInstanceUuid != null && activityInstanceUuid.trim().length() > 0) {
-			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid);
+			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid, request.getLocale());
 		} else {
 			ActivityInstanceItem activity = (ActivityInstanceItem)request.getAttribute("activity");
 			if (activity != null && activity.getActivityInstanceUuid()!=null) {
-				piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid());
+				piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid(), request.getLocale());
 			}
 		}
 		
 		appendChannelLabels(request, piDetails);
 		
 		request.setAttribute("processInstanceDetails", piDetails);
+		log.error("XXX FormWithDetails details:" + piDetails);
 		
 		if (piDetails != null && piDetails.getProcessInstanceUuid() != null) {
 			List<Tag> tags = engine.getTagsByProcessInstance(piDetails.getProcessInstanceUuid());
 			request.setAttribute("tags", tags);
+			
+			log.error("XXX FormWithDetails tags:" + tags);
 		}
 		
 		if (piDetails != null && piDetails.getTimeline() != null) {
 			request.setAttribute("timelineByDay", piDetails.getTimeline().getTimelineByDay());
 			log.debug("timeline=" + piDetails.getTimeline().getTimelineByDay());
+			
+			log.error("XXX FormWithDetails timeline:" + piDetails.getTimeline().getTimelineByDay());
 		}
     }
 	

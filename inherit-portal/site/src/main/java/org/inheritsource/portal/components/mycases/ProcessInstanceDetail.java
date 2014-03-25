@@ -49,9 +49,9 @@ public class ProcessInstanceDetail extends MyCasesBaseComponent {
 		
 		ProcessInstanceDetails piDetails = null;
 		if (processInstanceUuid != null && processInstanceUuid.trim().length() > 0) {
-			piDetails = engine.getProcessInstanceDetails(processInstanceUuid);
+			piDetails = engine.getProcessInstanceDetails(processInstanceUuid, request.getLocale());
 		} else if (activityInstanceUuid != null && activityInstanceUuid.trim().length() > 0) {
-			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid);
+			piDetails = engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid, request.getLocale());
 		}
 		
 		appendChannelLabels(request, piDetails);

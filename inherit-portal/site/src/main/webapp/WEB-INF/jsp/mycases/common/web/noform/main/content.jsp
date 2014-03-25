@@ -52,9 +52,9 @@
 
 		    <c:if test="${not empty activity}">
 		       <c:choose>
-		         <c:when test="${fn:startsWith(activity.formUrl, 'none/')}">
+		         <c:when test="${activity.typeId eq 6}">
 	    		<form method="post" action="noform/confirm">
-						<input type="hidden" name="document" value="${activity.formDocId}" />
+						<input type="hidden" name="document" value="${activity.instanceId}" />
 						<input type="submit" value="Klart! Skicka vidare"/>
 				</form>
 				</c:when>

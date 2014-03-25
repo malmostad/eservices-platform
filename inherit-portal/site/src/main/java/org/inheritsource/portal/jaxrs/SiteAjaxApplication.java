@@ -228,7 +228,7 @@ public class SiteAjaxApplication extends AbstractResource {
 //		if (userId != null) {
 			// user is authenticated
 			
-			result = engine.getCommentFeed(activityInstanceUuid, userId);
+			result = engine.getCommentFeed(activityInstanceUuid, userId, null);
 /*		}
 		else {
 			// TODO respone http error

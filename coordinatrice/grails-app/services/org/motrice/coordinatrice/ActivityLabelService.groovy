@@ -87,6 +87,24 @@ class ActivityLabelService {
     return result
   }
 
+  static final MAXV_Q = 'select max(a.procdefVer) from CrdI18nActLabel a where ' +
+    'a.procdefKey=? and a.actdefName=? and a.locale=?'
+
+  /**
+   * Create a new activity label, almost a copy of an existing one.
+   */
+  CrdI18nActLabel createVersion(CrdI18nActLabel orig) {
+    if (log.debugEnabled) log.debug "createVersion << ${orig}"
+    def list = CrdI18nActLabel.
+    executeQuery(MAXV_Q, [orig.procdefKey, orig.actdefName, orig.locale])
+    Integer nextVersion = list? list[0] + 1 : 1
+    def label = CrdI18nActLabel.copyLabel(orig)
+    label.procdefVer = nextVersion
+    if (!label.save()) log.error "CrdI18nActLabel insert: ${label.errors.allErrors.join(',')}"
+    if (log.debugEnabled) log.debug "createVersion >> ${label}"
+    return label
+  }
+
   /**
    * Delete activity labels shown for editing.
    */
@@ -121,7 +139,7 @@ class ActivityLabelService {
   }
 
   static final SINGLE_ACT_Q = 'from CrdI18nActLabel l where l.procdefKey=? and ' +
-    'l.locale=? and l.actdefName=? and l.procdefVer < ? ' +
+    'l.locale=? and l.actdefName=? and l.procdefVer <= ? ' +
     'order by l.procdefKey asc, l.actdefName asc, l.procdefVer desc'
   static final ALL_ACT_Q = 'from CrdI18nActLabel l where procdefKey=? and ' +
     'locale=? and procdefVer <= ? ' +
@@ -132,14 +150,14 @@ class ActivityLabelService {
    */
   List findLabels(String procdefkey, String locale, String activityname, String version) {
     if (log.debugEnabled) log.debug "findLabels << ${procdefkey}, ${locale}, ${activityname}, ${version}"
-    Integer versionInt = 1
+    Integer versionInt = 0
     try {
       if (version) versionInt = version as Integer
     } catch (NumberFormatException exc) {
       // Ignore
     }
-    // DEBUG
-    println "findLabels versionInt: ${versionInt}"
+
+    if (log.debugEnabled) log.debug "findLabels versionInt: ${versionInt}"
     def list = null
     if (activityname) {
       list = CrdI18nActLabel.findAll(SINGLE_ACT_Q,
@@ -148,6 +166,7 @@ class ActivityLabelService {
       list = CrdI18nActLabel.findAll(ALL_ACT_Q, [procdefkey, locale, versionInt])
     }
 
+    if (log.debugEnabled) log.debug "findLabels query: ${list}"
     // Process the list: remove null labels and duplicates.
     // Duplicate removal depends on the query result being ordered the right way.
     // Convert to list of maps.

@@ -33,21 +33,6 @@ class CrdI18nActLabelController {
     }
   }
 
-  def create() {
-    [actLabelInst: new CrdI18nActLabel(params)]
-  }
-
-  def save() {
-    def actLabelInst = new CrdI18nActLabel(params)
-    if (!actLabelInst.save(flush: true)) {
-      render(view: "create", model: [actLabelInst: actLabelInst])
-      return
-    }
-
-    flash.message = message(code: 'default.created.message', args: [message(code: 'crdI18nActLabel.label', default: 'CrdI18nActLabel'), actLabelInst.id])
-    redirect(action: "show", id: actLabelInst.id)
-  }
-
   // Create i18n labels for a locale.
   // The process definition key must be given as params.id.
   def createlocale(String id) {
@@ -66,6 +51,23 @@ class CrdI18nActLabelController {
     def labelCount = activityLabelService.createLabels(key, localeStr)
     flash.message = message(code: 'crdI18nActLabel.generated.count', args: [labelCount])
     redirect(action: 'listkey', id: key)
+  }
+
+  /**
+   * Create a new activity label with a new process version
+   */
+  def createversion(Long id) {
+    if (log.debugEnabled) log.debug "CREATE VERSION ${params}"
+    def actLabelInstProto = CrdI18nActLabel.get(id)
+    if (!actLabelInstProto) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'crdI18nActLabel.label', default: 'CrdI18nActLabel'), id])
+      redirect(action: "list")
+      return
+    }
+
+    def actLabelInst = activityLabelService.createVersion(actLabelInstProto)
+    flash.message = message(code: 'default.created.message', args: [message(code: 'crdI18nActLabel.label', default: 'CrdI18nActLabel'), actLabelInst.id])
+    redirect(action: 'listkey', id: actLabelInst?.procdefKey)
   }
 
   def show(Long id) {

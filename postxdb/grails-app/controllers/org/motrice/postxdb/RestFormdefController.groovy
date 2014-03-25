@@ -44,7 +44,7 @@ class RestFormdefController {
     }
     def list = formInfo.list
     def total = formInfo.total
-    render(status: 200, contentType: 'text/xml;charset=UTF-8') {
+    render(status: 200, contentType: 'application/xml;charset=UTF-8') {
       "exist:result"("xmlns:exist": "http://exist.sourceforge.net/NS/exist", "exist:hits": "1",
       "exist:start": "1", "exist:count": "1") {
 	documents(total: total, 'search-total': total, 'page-size': max, 'page-number': page, query: "")

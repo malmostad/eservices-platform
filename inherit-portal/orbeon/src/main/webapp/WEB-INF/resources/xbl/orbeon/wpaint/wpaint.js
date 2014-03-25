@@ -9,7 +9,7 @@
   YAHOO.xbl.fr.WPaint.prototype = {
     init: function() {
       var testCanvasEl;
-      this.annotationEl = $(this.container).find('.fr-wpaint-annotation');
+      this.annotationEl = $(this.container).find('.fr-wpaint-annotation img');
       this.imageEl = $(this.container).find('.fr-wpaint-image img');
       this.wpaintElA = $(this.container).find('.fr-wpaint-container-a');
       this.wpaintElB = $(this.container).find('.fr-wpaint-container-b');

@@ -53,8 +53,7 @@ class ActDefController {
     }
 
     // Note that activityFormdef may be null, no error
-    def activityConnection = new ActivityConnection(actDefInst,
-						    actDefInst?.activityFormdef?.formPath)
+    def activityConnection = new TaskFormSpec(actDefInst, actDefInst?.activityFormdef)
     def formMap = formService.activityFormSelection(activityConnection)
     
     [actDefInst: actDefInst, activityList: activityList,
@@ -68,10 +67,7 @@ class ActDefController {
    * The activity definition id comes as "procdef@actdef" in params.id.
    */
   def update(ActivityConnectionCommand acc) {
-    if (log.debugEnabled) {
-      log.debug "UPDATE ${params}"
-      log.debug "ACC ${acc}"
-    }
+    if (log.debugEnabled) log.debug "UPDATE ${params}"
     
     def actDefInst = processEngineService.findActivityDefinition(acc.id)
     if (!actDefInst) {
@@ -84,6 +80,8 @@ class ActDefController {
       return
     }
 
+    acc.assignOtherActivity(params?.sign?.id, params?.notify?.id)
+    if (log.debugEnabled) log.debug "ACC ${acc}"
     activityFormdefService.updateActivityConnection(actDefInst, acc)
     redirect(controller: 'procdef', action: "show", id: actDefInst.process.uuid)
   }
@@ -92,12 +90,24 @@ class ActDefController {
 
 class ActivityConnectionCommand { 
   // Data binding will construct an ActDefId from the process@activity string.
+  // This is the activity that owns a connection.
   ActDefId id
+  // Id of the activity to connect to, or null
+  String otherActivityId
   Integer connectionState
   PxdFormdefVer form
 
+  // Pick up the right "other" activity id from form input.
+  def assignOtherActivity(String signActId, String notifyActId) {
+    if (connectionState == TaskFormSpec.SIGN_ACTIVITY_STATE) {
+      otherActivityId = signActId
+    } else if (connectionState == TaskFormSpec.NOTIFY_ACTIVITY_STATE) {
+      otherActivityId = notifyActId
+    }
+  }
+
   String toString() {
-    "[ACC: id=${id} cst=${connectionState} form=${form}]"
+    "[ACC: id=${id} cst=${connectionState} other=${otherActivityId} form=${form}]"
   }
 
 }

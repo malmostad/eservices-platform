@@ -4,7 +4,8 @@ import org.motrice.coordinatrice.MtfStartFormDefinition
 
 class PxdFormdefController {
   def grailsApplication
-  def processEngineService
+  def formService
+  def procdefService
 
   def index() {
     redirect(action: "list", params: params)
@@ -14,8 +15,17 @@ class PxdFormdefController {
     params.max = Math.min(max ?: 10, 100)
     if (!params.sort) params.sort = 'path'
     String orbeonBaseUri = grailsApplication.config.coordinatrice.orbeon.builder.base.uri
-    [pxdFormdefInstList: PxdFormdef.list(params), pxdFormdefInstTotal: PxdFormdef.count(),
-    orbeonUri: orbeonBaseUri]
+    def formdefList = PxdFormdef.list(params)
+    // Find the latest published version of each form definition in the list
+    def pubMap = [:]
+    formdefList.each {formdef ->
+      def latest = PxdFormdefVer.latestPublished(formdef)
+      if (latest) {
+	pubMap[formdef.id] = [id: latest.id, version: String.format('v%03d', latest.fvno)]
+      }
+    }
+    [pxdFormdefInstList: formdefList, pxdFormdefInstTotal: PxdFormdef.count(),
+    pubMap: pubMap, orbeonUri: orbeonBaseUri]
   }
 
   def show(Long id) {
@@ -32,9 +42,9 @@ class PxdFormdefController {
       pxdFormdefInst.forms.each {fdv ->
 	// Check if this version is used as start form
 	def process = null
-	def startForm = MtfStartFormDefinition.findByFormPath(fdv.path)
+	def startForm = formService.findAsStartForm(fdv)
 	if (startForm) {
-	  process = processEngineService.findProcessDefinition(startForm.processDefinitionUuid)
+	  process = procdefService.findProcessDefinition(startForm.procdefId)
 	}
 
 	formdefVerList << [formdefVer: fdv, procdef: process]

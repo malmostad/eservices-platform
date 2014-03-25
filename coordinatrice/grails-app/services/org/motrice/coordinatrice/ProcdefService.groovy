@@ -294,9 +294,9 @@ class ProcdefService {
    * Delete form connections for a given process definition
    */
   private doDeleteFormConnections(Procdef procdef) {
-    def connections = MtfActivityFormDefinition.findAllByProcessDefinitionId(procdef.uuid)
+    def connections = MtfActivityFormDefinition.findAllByProcdefId(procdef.uuid)
     connections.each {it.delete()}
-    connections = MtfStartFormDefinition.findAllByProcessDefinitionId(procdef.uuid)
+    connections = MtfStartFormDefinition.findAllByProcdefId(procdef.uuid)
     connections.each {it.delete()}
   }
 
@@ -400,6 +400,28 @@ class ProcdefService {
     }
 
     return TaskType.get(id) ?: null
+  }
+
+  /**
+   * Update process definition state
+   */
+  def updateProcdefState(Procdef procdef, CrdProcdefState updatedState) {
+    if (log.debugEnabled) log.debug "updateProcdefState << ${procdef}, ${updatedState}"
+    def motProcdef = CrdProcdef.get(procdef.uuid)
+    motProcdef.state = updatedState
+    if (!motProcdef.save()) log.error "CrdProcdef update: ${motProcdef.errors.allErrors.join(',')}"
+    def actState = motProcdef.state.activitiState
+    // Get the Activiti state
+    def actProcdef = activitiRepositoryService.createProcessDefinitionQuery().
+    processDefinitionId(procdef.uuid).singleResult()
+    if (log.debugEnabled) log.debug "actProcdef ${actProcdef}"
+    if (actState == CrdProcdefState.STATE_ACTIVE_ID && actProcdef.suspended) {
+      activitiRepositoryService.activateProcessDefinitionById(actProcdef.id)
+    } else if (actState == CrdProcdefState.STATE_SUSPENDED_ID && !actProcdef.suspended) {
+      activitiRepositoryService.suspendProcessDefinitionById(actProcdef.id)
+    }
+
+    if (log.debugEnabled) log.debug "updateProcdefState >> ${motProcdef}"
   }
   
 }

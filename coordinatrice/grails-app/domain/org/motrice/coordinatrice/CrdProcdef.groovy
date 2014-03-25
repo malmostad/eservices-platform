@@ -21,7 +21,7 @@ class CrdProcdef {
     cache usage: 'read-write'
   }
   static constraints = {
-    actid blank: false, maxSize: 64, unique: true
+    actid blank: false, maxSize: 64
     actver min: 1
     actdepl blank: false, maxSize: 64
   }

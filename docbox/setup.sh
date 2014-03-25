@@ -2,4 +2,4 @@
 # Set up a development environment
 #
 export JAVA_HOME=/usr/lib/jvm/java-7-oracle
-export DOCBOX_CONF=/usr/local/etc/docbox/docbox-dev-config.properties
+export MOTRICE_CONF=/usr/local/etc/motrice/motrice-test-config.properties

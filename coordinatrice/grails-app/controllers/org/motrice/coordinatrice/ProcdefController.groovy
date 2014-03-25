@@ -102,7 +102,9 @@ class ProcdefController {
     }
 
     def state = procdefInst.state
-    [procdefInst: procdefInst, editable: state.editable]
+    def startForms = procdefInst.startForms
+    if (log.debugEnabled) log.debug "SHOW >> ${procdefInst}, ${startForms}"
+    [procdefInst: procdefInst, startForms: startForms, editable: state.editable]
   }
 
   def diagramDownload() {
@@ -189,7 +191,9 @@ class ProcdefController {
     }
 
     def selection = formService.startFormSelection()
-    [procdefInst: procdefInst, formList: selection]
+    def startForms = procdefInst.startForms
+    if (log.debugEnabled) log.debug "EDIT >> ${procdefInst}, ${startForms}"
+    [procdefInst: procdefInst, startForms: startForms, formList: selection]
   }
 
   /**
@@ -221,18 +225,17 @@ class ProcdefController {
 
     if (log.debugEnabled) log.debug "update.procdefInst: ${procdefInst?.uuid}"
 
-    // We have taken precautions to remove existing start forms from the selection
-    // If we add an existing one anyway there will be a DataIntegrityViolationException
-    def inUse = formService.checkStartFormInUse(sfsc.form)
+    // We have taken precautions to remove existing start forms from the selection.
+    // It is not possible to define a database constraint that would preclude multiple
+    // use of a start form. So we have to check.
+    def inUse = formService.findAsStartForm(sfsc.form)
     if (inUse) {
-      flash.message = message(code: 'startform.selection.form.in.use', args: [sfsc.formPath])
+      flash.message = message(code: 'startform.selection.form.in.use', args: [sfsc.formConnectionKey])
       redirect(action: "edit", id: procdefInst.uuid)
       return
     }
 
-    def startForm = new MtfStartFormDefinition(processDefinitionId: procdefInst.uuid,
-    authTypeReq: 'USERSESSION', formPath: sfsc.formPath)
-
+    def startForm = MtfStartFormDefinition.create(procdefInst, sfsc.form)
     if (log.debugEnabled) log.debug "update.startForm: ${startForm}"
 
     if (!startForm.save(flush: true)) {
@@ -242,6 +245,35 @@ class ProcdefController {
 
     flash.message = message(code: 'startform.updated.label', args: [startForm])
     redirect(action: "edit", id: procdefInst.uuid)
+  }
+
+  def editstate(String id) {
+    if (log.debugEnabled) log.debug "EDIT STATE: ${params}"
+    def procdefInst = procdefService.findProcessDefinition(id)
+    if (!procdefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), id])
+      redirect(action: 'list')
+      return
+    }
+
+    def stateList = procdefInst.state.nextStates().collect {CrdProcdefState.get(it)}
+    [procdefInst: procdefInst, stateList: stateList]
+  }
+
+  def updatestate(String id) {
+    if (log.debugEnabled) log.debug "UPDATE STATE: ${params}"
+    def procdefInst = procdefService.findProcessDefinition(id)
+    def updatedState = CrdProcdefState.get(params.state.id)
+    if (!(procdefInst && updatedState)) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), id])
+      redirect(action: 'list')
+      return
+    }
+
+    procdefService.updateProcdefState(procdefInst, updatedState)
+    def procdefKey = procdefInst.key
+    flash.message = message(code: 'default.updated.message', args: [message(code: 'procdef.label', default: 'Procdef'), procdefInst.id])
+    redirect(action: 'listname', id: procdefKey)
   }
 
   /**
@@ -398,10 +430,6 @@ class ProcdefController {
 class StartFormSelectionCommand {
   String id
   PxdFormdefVer form
-
-  String getFormPath() {
-    form.path
-  }
 
   String toString() {
     "[StartFormCmd(process ${id}): ${form}]"
