@@ -240,6 +240,35 @@ public class SiteAjaxApplication extends AbstractResource {
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
 	@Produces("application/json")
+	@Path("/dirLookupUserEntries") 
+	public List<UserDirectoryEntry> dirLookupUserEntries(
+			@Context HttpServletRequest servletRequest,
+			@Context HttpServletResponse servletResponse,
+			@FormParam ("cnList") List<String> cnList ) {
+		List<UserDirectoryEntry> result = new ArrayList<UserDirectoryEntry>();
+		
+		String userId = getUserUuid(servletRequest);
+		
+		//log.debug("userId: " + userId);
+		//log.debug("cn: " + (cn==null ? "null" : cn.trim()));
+		
+//		if (userId != null) {
+			// user is authenticated
+		//log.setLevel(org.apache.log4j.Level.ALL);
+		
+		String [] cnArray = cnList.toArray(new String[cnList.size()]);
+		result = engine.dirLookupUserEntries(cnArray);
+/*		}
+		else {
+			// TODO response http error
+		}
+*/		
+		return result; 
+	}
+
+	@POST
+	@Consumes("application/x-www-form-urlencoded")
+	@Produces("application/json")
 	@Path("/dirSearchUserEntries") 
 	public List<UserDirectoryEntry> dirSearchUserEntries(
 			@Context HttpServletRequest servletRequest,
