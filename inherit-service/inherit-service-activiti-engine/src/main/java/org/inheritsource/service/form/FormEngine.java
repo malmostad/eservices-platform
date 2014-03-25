@@ -14,7 +14,6 @@ import org.activiti.engine.task.Task;
 import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.StartForm;
 import org.inheritsource.service.common.domain.StartLogItem;
-import org.inheritsource.service.coordinatrice.CoordinatriceDao;
 import org.inheritsource.service.coordinatrice.ProcessDefinitionState;
 import org.inheritsource.service.identity.IdentityService;
 import org.inheritsource.service.processengine.ActivitiEngineService;
@@ -27,21 +26,21 @@ public class FormEngine {
 	public static final Logger log = Logger.getLogger(FormEngine.class.getName());
 	
 	// motrice start process instance variables by convention
-	public static final String START_FORM_TYPEID = "motrice.start.form.typeId";
+	public static final String START_FORM_TYPEID        = "motrice.start.form.typeId";
 	public static final String START_FORM_DEFINITIONKEY = "motrice.start.form.definitionKey";
-	public static final String START_FORM_INSTANCEID = "motrice.start.form.instanceId";
-	public static final String START_FORM_ASSIGNEE = "motrice.start.form.assignee";
-	public static final String START_FORM_DATA_URI = "motrice.start.form.actUri";
-	public static final String START_FORM_ACT_URI = "motrice.start.form.actUri";
-	public static final String START_FORM_DOCBOXREF = "motrice.start.form.preservation.docBoxRef";
+	public static final String START_FORM_INSTANCEID    = "motrice.start.form.instanceId";
+	public static final String START_FORM_ASSIGNEE      = "motrice.start.form.assignee";
+	public static final String START_FORM_DATA_URI      = "motrice.start.form.dataUri";
+	public static final String START_FORM_ACT_URI       = "motrice.start.form.preservation.actUri";
+	public static final String START_FORM_DOCBOXREF     = "motrice.start.form.preservation.docBoxRef";
 	
 	// motrice task local instance variables by convention
-	public static final String FORM_TYPEID = "motrice.form.typeId";
-	public static final String FORM_DEFINITIONKEY = "motrice.form.definitionKey";
-	public static final String FORM_INSTANCEID = "motrice.form.instanceId";
-	public static final String FORM_DATA_URI = "motrice.form.dataUri";
-	public static final String FORM_ACT_URI = "motrice.form.actUri";
-	public static final String FORM_DOCBOXREF = "motrice.form.preservation.docBoxRef";
+	public static final String FORM_TYPEID              = "motrice.form.typeId";
+	public static final String FORM_DEFINITIONKEY       = "motrice.form.definitionKey";
+	public static final String FORM_INSTANCEID          = "motrice.form.instanceId";
+	public static final String FORM_DATA_URI            = "motrice.form.dataUri";
+	public static final String FORM_ACT_URI             = "motrice.form.preservation.actUri";
+	public static final String FORM_DOCBOXREF           = "motrice.form.preservation.docBoxRef";
 	
 	ActivitiEngineService activitiEngineService;
 	TaskFormDb taskFormDb; 
