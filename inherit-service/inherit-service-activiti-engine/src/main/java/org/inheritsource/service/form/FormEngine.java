@@ -31,17 +31,18 @@ public class FormEngine {
 	public static final String START_FORM_INSTANCEID    = "motrice.start.form.instanceId";
 	public static final String START_FORM_ASSIGNEE      = "motrice.start.form.assignee";
 	public static final String START_FORM_DATA_URI      = "motrice.start.form.dataUri";
-	public static final String START_FORM_ACT_URI       = "motrice.start.form.preservation.actUri";
-	public static final String START_FORM_DOCBOXREF     = "motrice.start.form.preservation.docBoxRef";
+	public static final String START_FORM_DOCBOXREF		= "motrice.start.form.preservation.docbox.ref";
+	public static final String START_FORM_ACT_URI       = "motrice.start.form.preservation.act.uri";
 	
 	// motrice task local instance variables by convention
 	public static final String FORM_TYPEID              = "motrice.form.typeId";
 	public static final String FORM_DEFINITIONKEY       = "motrice.form.definitionKey";
 	public static final String FORM_INSTANCEID          = "motrice.form.instanceId";
 	public static final String FORM_DATA_URI            = "motrice.form.dataUri";
-	public static final String FORM_ACT_URI             = "motrice.form.preservation.actUri";
-	public static final String FORM_DOCBOXREF           = "motrice.form.preservation.docBoxRef";
+	public static final String FORM_DOCBOXREF			= "motrice.form.preservation.docbox.ref";
+	public static final String FORM_ACT_URI             = "motrice.form.preservation.act.uri";
 	
+
 	ActivitiEngineService activitiEngineService;
 	TaskFormDb taskFormDb; 
 	IdentityService identityService; 
@@ -75,8 +76,6 @@ public class FormEngine {
 	public void setIdentityService(IdentityService identityService) {
 		this.identityService = identityService;
 	}
-
-
 
 	private TaskFormHandler getTaskFormHandler(Long typeId) {
 		TaskFormHandler result = formTypeId2Handler.get(typeId.toString());
@@ -117,6 +116,7 @@ public class FormEngine {
 			if (typeId != null) {
 				formInstance = getFormInstanceByCommonLocalVars(localVars, initialInstance);
 				
+				formInstance.setActUri((String)localVars.get(FormEngine.FORM_ACT_URI));
 				formInstance.setSubmitted(historicTask.getEndTime());
 				formInstance.setSubmittedBy(identityService.getUserByUuid(historicTask.getAssignee()));
 	
@@ -220,7 +220,7 @@ public class FormEngine {
 			startFormInstance.setDefinitionKey((String)processVars.get(START_FORM_DEFINITIONKEY));
 			startFormInstance.setInstanceId((String)processVars.get(START_FORM_INSTANCEID));
 			startFormInstance.setDataUri((String)processVars.get(START_FORM_DATA_URI));
-			startFormInstance.setActUri((String)processVars.get(START_FORM_ACT_URI));
+			startFormInstance.setActUri((String)processVars.get(FormEngine.START_FORM_ACT_URI));
 			startFormInstance.setSubmittedBy(identityService.getUserByUuid((String)processVars.get(START_FORM_ASSIGNEE)));
 			
 			HistoricProcessInstance historicProcessInstance = activitiEngineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
@@ -260,14 +260,14 @@ public class FormEngine {
 		if (forms != null) {
 			for (StartForm form : forms) {
 				form.setPage("form");
-				String label = getActivitiEngineService().getCoordinatriceDao().getStartFormLabelByStartFormDefinitionKey(form.getDefinitionKey(), locale, form.getDefinitionKey());
+				String label = getActivitiEngineService().getCoordinatriceFacade().getStartFormLabelByStartFormDefinitionKey(form.getDefinitionKey(), locale, form.getDefinitionKey());
 				form.setLabel(label);
 				
 				StartFormDefinition startFormDef;
 				try {
 					startFormDef = taskFormDb.getStartFormDefinitionByFormPath(form.getDefinitionKey());
 					if (startFormDef != null) {
-						 ProcessDefinitionState state = getActivitiEngineService().getCoordinatriceDao().getProcessDefinitionState(startFormDef.getProcessDefinitionUuid());
+						 ProcessDefinitionState state = getActivitiEngineService().getCoordinatriceFacade().getProcessDefinitionState(startFormDef.getProcessDefinitionUuid());
 						 if (state != null) {
 							 if (state.getStartableCode()==3) {
 								 result.add(form);

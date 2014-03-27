@@ -32,8 +32,8 @@ import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.TimelineItem;
-import org.inheritsource.service.rest.client.InheritServiceClient;
-import org.inheritsource.service.rest.client.domain.DocBoxFormData;
+import org.inheritsource.service.docbox.DocBoxFacade;
+import org.inheritsource.service.docbox.DocBoxFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,8 +92,8 @@ public class PaymentForm extends Form  {
 			formDocId = startFormDocId;
 		}
 
-		InheritServiceClient isc = new InheritServiceClient();
-		DocBoxFormData docBoxFormData = isc.getDocBoxFormData(formDocId);
+		DocBoxFacade docBox = new DocBoxFacade();
+		DocBoxFormData docBoxFormData =  docBox.getDocBoxFormData(formDocId);
 		
 		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();
 		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";

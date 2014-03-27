@@ -24,19 +24,16 @@
 package org.inheritsource.portal.components.mycases;
 
 
-import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
-import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
-import org.inheritsource.portal.beans.TextDocument;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.TimelineItem;
-import org.inheritsource.service.rest.client.InheritServiceClient;
-import org.inheritsource.service.rest.client.domain.DocBoxFormData;
+import org.inheritsource.service.docbox.DocBoxFacade;
+import org.inheritsource.service.docbox.DocBoxFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,14 +65,12 @@ public class SignForm extends Form  {
 		String signActivityLabel = "Dokument";
 		String signProcessLabel = "Dokument";
 		
-		InheritServiceClient isc = new InheritServiceClient();
-
 		if (formDocId == null || formDocId.trim().length() == 0 ) {
 			// alternative 2 (no formDocId)
 			ProcessInstanceDetails piDetails = null;
 			
 			if (activity != null && activity.getActivityInstanceUuid()!=null) {
-				piDetails = isc.getProcessInstanceDetailByActivityInstanceUuid(activity.getActivityInstanceUuid());
+				piDetails = engine.getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid(), request.getLocale());
 				
 				// sign process instance start form is the default behaviour
 				
@@ -114,7 +109,8 @@ public class SignForm extends Form  {
 			signAssetLabel = signProcessLabel;
 		}
 
-		DocBoxFormData docBoxFormData = isc.getDocBoxFormData(formDocId);
+		DocBoxFacade docBox = new DocBoxFacade();
+		DocBoxFormData docBoxFormData = docBox.getDocBoxFormData(formDocId);
 		
 		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();
 		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";

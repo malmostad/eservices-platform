@@ -2,15 +2,15 @@ package org.inheritsource.test.service.processengine;
 
 import java.util.Locale;
 
-import org.inheritsource.service.coordinatrice.CoordinatriceDao;
+import org.inheritsource.service.coordinatrice.CoordinatriceFacade;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-public class CoordinatriceDaoTest {
+public class CoordinatriceFacadeTest {
 	
-	CoordinatriceDao c;
+	CoordinatriceFacade c;
 	
 	@Before
 	public void before() {
@@ -19,7 +19,7 @@ public class CoordinatriceDaoTest {
         
         
 		
-		c = (CoordinatriceDao)applicationContext.getBean("coordinatriceDao");
+		c = (CoordinatriceFacade)applicationContext.getBean("coordinatriceFacade");
 		
 	}
 	
