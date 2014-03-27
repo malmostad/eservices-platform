@@ -14,13 +14,13 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
-public class CoordinatriceDao {
+public class CoordinatriceFacade {
 	
-	public static final Logger log = Logger.getLogger(CoordinatriceDao.class.getName());
+	public static final Logger log = Logger.getLogger(CoordinatriceFacade.class.getName());
 	
 	private ProcessEngine engine = null; 
 
-	public CoordinatriceDao() {
+	public CoordinatriceFacade() {
 		
 	}
 	
@@ -175,7 +175,7 @@ public class CoordinatriceDao {
 	}
 
 	public static void main(String[] args) {
-		CoordinatriceDao c = new CoordinatriceDao();
+		CoordinatriceFacade c = new CoordinatriceFacade();
 		System.out.println(c.getStartFormLabel("BMTest", "BMTestForm", "sv", 1));
 		System.out.println(c.getProcessDefinitionState("TestFunctionProcess1:1:9"));
 		System.out.println(c.getProcessDefinitionState("TestFunctionProcess1:2:305"));

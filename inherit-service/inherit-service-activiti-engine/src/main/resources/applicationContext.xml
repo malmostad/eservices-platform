@@ -7,6 +7,7 @@
 
 	<context:annotation-config />
 
+    <bean id="docBoxFacade" class="org.inheritsource.service.docbox.DocBoxFacade" scope="singleton"/>
 
 	<bean id="motriceConfig"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -51,7 +52,7 @@
 		<property name="activitiEngineService" ref="activitiEngineService" />
 	</bean>
 	
-	<bean id="coordinatriceDao" class="org.inheritsource.service.coordinatrice.CoordinatriceDao" scope="singleton">
+	<bean id="coordinatriceFacade" class="org.inheritsource.service.coordinatrice.CoordinatriceFacade" scope="singleton">
 		<property name="engine" ref="processEngine"/>
 	</bean>
 
@@ -61,7 +62,7 @@
 		<property name="engine" ref="processEngine" />
 		<property name="identityService" ref="identityService" />
 		<property name="formEngine" ref="formEngine" />
-		<property name="coordinatriceDao" ref="coordinatriceDao"/>
+		<property name="coordinatriceFacade" ref="coordinatriceFacade"/>
 	</bean>
 
 	<bean id="processEngineConfiguration"

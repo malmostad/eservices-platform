@@ -29,16 +29,29 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.rest.client.InheritServiceClient;
+import org.inheritsource.taskform.engine.TaskFormService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.ContextLoader;
 
 public class ServletUserNameUtil {
 
 	public static final Logger log = LoggerFactory.getLogger(ServletUserNameUtil.class);
-			
+	
+	private static TaskFormService engine;
+	
+	private static void checkEngine() {
+		if (engine == null) {
+			ApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();  
+			engine = (TaskFormService) ctx.getBean("engine");
+		}
+	}
+	
 	public static UserInfo getUserName(final HttpServletRequest request) {
 		UserInfo result = null;
-		InheritServiceClient isc = new InheritServiceClient();
+
+		checkEngine();
 		
 	    String dn = request.getHeader("x-ipl-dn");
 	    String ser = request.getHeader("x-ipl-ser");
@@ -46,12 +59,12 @@ public class ServletUserNameUtil {
 	    
 	    if (dn == null) {
 	    	if (ser != null) {
-	    		result = isc.getUserBySerial(ser, certificateSubject);
+	    		engine.getUserBySerial(ser, certificateSubject);
 	    	}
 	    }
 	    else {
 	    	if (ser == null) {
-	    		result = isc.getUserByDn(dn);
+	    		result = engine.getUserByDn(dn);
 	    	}
 	    	else {
 	    		log.debug("Only one of header x-ipl-dn and x-ipl-ser should be used");
@@ -63,10 +76,10 @@ public class ServletUserNameUtil {
 	    		 */
 	    		String pathInfo = request.getPathInfo();
 	    		if (pathInfo != null && pathInfo.indexOf("komin")>0) {
-	    			result = isc.getUserByDn(dn);
+	    			result = engine.getUserByDn(dn);
 	    		}
 	    		else {
-	    			result = isc.getUserBySerial(ser, certificateSubject);
+	    			result = engine.getUserBySerial(ser, certificateSubject);
 	    		}
 	    		
 	    	}
@@ -77,7 +90,7 @@ public class ServletUserNameUtil {
 			Principal principal = request.getUserPrincipal();
 			if (principal != null) {
 				String hippoDn = "CN=" + principal.getName() + ",OU=Personal,OU=Organisation,OU=Hippo Internal User,DC=adm,DC=inherit,DC=se";
-				result = isc.getUserByDn(hippoDn);
+				result = engine.getUserByDn(hippoDn);
 				//"CN=tesetj,OU=Personal,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"
 			}
 	    }

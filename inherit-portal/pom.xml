@@ -263,13 +263,6 @@
                       <context>/orbeon</context>
                     </properties>
                   </deployable>
-                   <deployable>
-                    <location>${project.basedir}/../inherit-service/inherit-service-rest-server/target/restrice.war</location>
-                    <type>war</type>
-                    <properties>
-                      <context>/restrice</context>
-                    </properties>
-                  </deployable>
                   <deployable>
                     <type>war</type>
                     <properties>
@@ -293,7 +286,9 @@
                   </configfile>
                 </configfiles>
                 <properties>
-                	<cargo.jvmargs>-Xmx1024m -Xms512m -XX:PermSize=512m -XX:MaxPermSize=512m</cargo.jvmargs>
+                	<cargo.jvmargs>-Xmx1024m -Xms512m -XX:PermSize=512m -XX:MaxPermSize=512m
+                	-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -Xnoagent -Djava.compiler=NONE
+					</cargo.jvmargs>
                 </properties>
               </configuration>
               <container>

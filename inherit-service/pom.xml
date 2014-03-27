@@ -18,7 +18,6 @@
     <module>inherit-service-common</module>
     <module>inherit-service-activiti-engine</module>
     <module>inherit-service-orbeon</module>
-    <module>inherit-service-rest-client</module>
     <module>inherit-service-rest-server</module>
   </modules>
 </project>

@@ -59,7 +59,7 @@ import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.common.domain.Timeline;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.coordinatrice.CoordinatriceDao;
+import org.inheritsource.service.coordinatrice.CoordinatriceFacade;
 import org.inheritsource.service.form.FormEngine;
 import org.inheritsource.service.identity.IdentityService;
 import org.springframework.context.ApplicationContext;
@@ -68,7 +68,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ActivitiEngineService {
 
-	private CoordinatriceDao coordinatriceDao = null;
+	private CoordinatriceFacade coordinatriceFacade = null;
 	
 	private ProcessEngine engine = null; 
 	private FormEngine formEngine = null;
@@ -87,12 +87,12 @@ public class ActivitiEngineService {
 		this.engine = engine;
 	}
 
-	public CoordinatriceDao getCoordinatriceDao() {
-		return coordinatriceDao;
+	public CoordinatriceFacade getCoordinatriceFacade() {
+		return coordinatriceFacade;
 	}
 
-	public void setCoordinatriceDao(CoordinatriceDao coordinatriceDao) {
-		this.coordinatriceDao = coordinatriceDao;
+	public void setCoordinatriceFacade(CoordinatriceFacade coordinatriceFacade) {
+		this.coordinatriceFacade = coordinatriceFacade;
 	}
 
 	public FormEngine getFormEngine() {
@@ -188,11 +188,11 @@ public class ActivitiEngineService {
 			
 			item.setActivityCreated(task.getCreateTime());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
-			item.setActivityLabel(coordinatriceDao.getLabel(task.getProcessDefinitionId(), task.getName(), locale)); 
+			item.setActivityLabel(coordinatriceFacade.getLabel(task.getProcessDefinitionId(), task.getName(), locale)); 
 			item.setExpectedEndDate(task.getDueDate());
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
-			item.setProcessLabel(coordinatriceDao.getStartFormLabel(task.getProcessInstanceId(), locale));
+			item.setProcessLabel(coordinatriceFacade.getStartFormLabel(task.getProcessInstanceId(), locale));
 						
 			ProcessInstance pI = getMainProcessInstanceByProcessInstanceId
 				(task.getProcessInstanceId());
@@ -278,11 +278,11 @@ public class ActivitiEngineService {
 			
 			item.setActivityCreated(task.getStartTime());
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
-			item.setActivityLabel(coordinatriceDao.getLabel(task.getProcessDefinitionId(), task.getName(), locale));
+			item.setActivityLabel(coordinatriceFacade.getLabel(task.getProcessDefinitionId(), task.getName(), locale));
 			item.setExpectedEndDate(task.getDueDate());
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
-			item.setProcessLabel(coordinatriceDao.getStartFormLabel(task.getProcessInstanceId(), locale));
+			item.setProcessLabel(coordinatriceFacade.getStartFormLabel(task.getProcessInstanceId(), locale));
 
 		    HistoricProcessInstance pI = getHistoricMainProcessInstanceByProcessInstanceId
 				(task.getProcessInstanceId());
@@ -688,7 +688,7 @@ public class ActivitiEngineService {
 					activityDefinitionUuid = task.getTaskDefinitionKey();
 					processInstanceId = task.getProcessInstanceId();
 					setActivityLabel = task.getName();
-					processLabel = coordinatriceDao.getStartFormLabel(task.getProcessInstanceId(), locale);
+					processLabel = coordinatriceFacade.getStartFormLabel(task.getProcessInstanceId(), locale);
 				} else {
 					historicTask = engine.getHistoryService().createHistoricTaskInstanceQuery().
 						taskId(taskId).singleResult();
@@ -698,7 +698,7 @@ public class ActivitiEngineService {
 						activityDefinitionUuid = historicTask.getTaskDefinitionKey();
 						processInstanceId = historicTask.getProcessInstanceId();
 						setActivityLabel = historicTask.getName();
-						processLabel = coordinatriceDao.getStartFormLabel(historicTask.getProcessInstanceId(), locale);
+						processLabel = coordinatriceFacade.getStartFormLabel(historicTask.getProcessInstanceId(), locale);
 					} else {
 						processDefinitionUuid = "";
 						activityDefinitionUuid = "";
@@ -821,7 +821,9 @@ public class ActivitiEngineService {
 		if (task != null) {
 			
 			Map<String, Object> variables = new HashMap<String, Object>();
-			variables.put(FormEngine.FORM_ACT_URI, actRefId);
+			if (actRefId != null) {
+				variables.put(FormEngine.FORM_ACT_URI, actRefId);
+			}
 			if (executeTask(task.getId(), variables, userId)) {
 				HistoricTaskInstance historicTask = getEngine().getHistoryService().createHistoricTaskInstanceQuery().taskId(task.getId()).includeTaskLocalVariables().singleResult();
 				
@@ -979,7 +981,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 					processInstanceListItem.setEndDate(null);
 					processInstanceListItem.setProcessInstanceLabel("");
-					processInstanceListItem.setProcessLabel(coordinatriceDao.getStartFormLabel(processInstanceListItem.getProcessInstanceUuid(), locale));
+					processInstanceListItem.setProcessLabel(coordinatriceFacade.getStartFormLabel(processInstanceListItem.getProcessInstanceUuid(), locale));
 					processInstanceListItem.setActivities(getUserInboxByProcessInstanceId
 						(processInstance.getProcessInstanceId(), locale));
 					processInstanceListItems.add(processInstanceListItem);
@@ -1108,7 +1110,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setStartedBy(processInstance.getStartUserId());
 					processInstanceListItem.setEndDate(processInstance.getEndTime());
 					processInstanceListItem.setProcessInstanceLabel("");
-					processInstanceListItem.setProcessLabel(coordinatriceDao.getStartFormLabel(processInstance.getId(), locale));
+					processInstanceListItem.setProcessLabel(coordinatriceFacade.getStartFormLabel(processInstance.getId(), locale));
 					processInstanceListItem.setActivities
 						(getHistoricUserInboxByProcessInstanceId(processInstance.getId(), locale));
 					
@@ -1202,7 +1204,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
 					processInstanceListItem.setEndDate(null);
 					processInstanceListItem.setProcessInstanceLabel("");
-					processInstanceListItem.setProcessLabel(coordinatriceDao.getStartFormLabel(processInstanceListItem.getProcessInstanceUuid(), locale));
+					processInstanceListItem.setProcessLabel(coordinatriceFacade.getStartFormLabel(processInstanceListItem.getProcessInstanceUuid(), locale));
 					processInstanceListItem.setActivities(getUserInboxByProcessInstanceId
 						(processInstance.getProcessInstanceId(), locale));
 					processInstanceListItems.add(processInstanceListItem);
@@ -1277,7 +1279,7 @@ public class ActivitiEngineService {
 					processInstanceListItem.setStartedBy(processInstance.getStartUserId());
 					processInstanceListItem.setEndDate(processInstance.getEndTime());
 					processInstanceListItem.setProcessInstanceLabel("");
-					processInstanceListItem.setProcessLabel(coordinatriceDao.getStartFormLabel(processInstance.getId(), locale));
+					processInstanceListItem.setProcessLabel(coordinatriceFacade.getStartFormLabel(processInstance.getId(), locale));
 					processInstanceListItem.setActivities(getHistoricUserInboxByProcessInstanceId(processInstance.getId(), locale));
 					processInstanceListItems.add(processInstanceListItem);
 				}
@@ -1519,15 +1521,11 @@ public class ActivitiEngineService {
 		// in inherit-service/inherit-service-activiti-engine directory
 		Deployment deployment;
 		
-		deployment = activitiEngineService.deployBpmn("../../bpm-processes/Arendeprocess.bpmn20.xml");
+		deployment = activitiEngineService.deployBpmn("../../bpm-processes/kommun/Forenklad_delgivning.bpmn");
 		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
 		
-		deployment = activitiEngineService.deployBpmn("../../bpm-processes/TestFunctionProcess1.bpmn20.xml");
-		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
-		
-		deployment = activitiEngineService.deployBpmn("../../bpm-processes/MyProcessExpression.bpmn");
-		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");		
-
+		deployment = activitiEngineService.deployBpmn("../../bpm-processes/kommun/Hemkompostering.bpmn");
+		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
 		
 		System.exit(0);
 	}
