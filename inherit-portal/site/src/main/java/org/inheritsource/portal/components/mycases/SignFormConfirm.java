@@ -27,10 +27,11 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
-import org.inheritsource.service.rest.client.domain.DocBoxFormData;
+import org.inheritsource.service.docbox.DocBoxFacade;
+import org.inheritsource.service.docbox.DocBoxFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,12 +77,18 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		}
 		request.setAttribute("document",doc);
 
-		InheritServiceClient isc = new InheritServiceClient();
-        DocBoxFormData docBoxFormData = isc.addDocBoxSignature(docboxRef, signature);
+		DocBoxFacade docBox = new DocBoxFacade();
+        DocBoxFormData docBoxFormData = docBox.addDocBoxSignature(docboxRef, signature);
 		        
         if (docBoxFormData != null) {
         	// save DocboxRef as formDocId. 
-        	isc.submitForm(formDocId, userUuid, docBoxFormData.getDocboxRef());
+        	FormInstance signedForm = null;
+			try {
+				signedForm = engine.submitActivityForm(formDocId, userUuid, docBoxFormData.getDocboxRef());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
     		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();
     		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
@@ -89,15 +96,16 @@ public class SignFormConfirm extends MyCasesBaseComponent {
     		
     		request.setAttribute("pdfUrl", pdfUrl);
 
+    		InboxTaskItem nextTask = null;
+    		if (signedForm!=null && !UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
+    	        nextTask = engine.getNextActivityInstanceItemByDocId(signedForm, user.getUuid());
+    	        appendChannelLabels(request, nextTask);
+    		}
+    		request.setAttribute("nextTask", nextTask);
         }
 		// utför aktivitet i processmotor och lagra signatur ... om signaturen är ok....
 		
-        InboxTaskItem nextTask = null;
-		if (!UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
-	        nextTask = isc.getNextActivityInstanceItemByDocId(docBoxFormData.getDocboxRef(), user.getUuid());
-	        appendChannelLabels(request, nextTask);
-		}
-		request.setAttribute("nextTask", nextTask);
+        
 		
 		request.setAttribute("docboxRef", docboxRef);
 		request.setAttribute("docNo", docNo);		

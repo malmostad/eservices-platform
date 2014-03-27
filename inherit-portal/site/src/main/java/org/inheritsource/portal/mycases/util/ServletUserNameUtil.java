@@ -28,7 +28,6 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.service.rest.client.InheritServiceClient;
 import org.inheritsource.taskform.engine.TaskFormService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
