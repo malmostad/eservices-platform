@@ -80,6 +80,9 @@ public class UserDirectoryService {
 		//env.put(Context.SECURITY_PROTOCOL, "ssl");
 		env.put(Context.SECURITY_PRINCIPAL,      securityPrincipal);
 		env.put(Context.SECURITY_CREDENTIALS,    pwd);
+		// TODO document this. 
+                // Avoid setting  up LDAP machinery if LDAP parameters are non existant or empty
+                // This should be configured more explicitely
 		try {
 			if (queryBaseDn != null && queryBaseDn.trim().length()>0 &&
 					baseDn != null && baseDn.trim().length()>0) {
@@ -216,10 +219,10 @@ public class UserDirectoryService {
 		return result;
 	}
 
-	public ArrayList<UserDirectoryEntry> lookupUserEntries(String[] cnList) {
+	public ArrayList<UserDirectoryEntry> lookupUserEntries(String[] cnArray) {
 		ArrayList<UserDirectoryEntry> result = new ArrayList<UserDirectoryEntry>();
 		try {
-			for (String cn : cnList ) {
+			for (String cn : cnArray ) {
 				UserDirectoryEntry ue = new UserDirectoryEntry();
 				Attributes attrs = getAttributesForCn(cn);
 				ue.setCn(cn);

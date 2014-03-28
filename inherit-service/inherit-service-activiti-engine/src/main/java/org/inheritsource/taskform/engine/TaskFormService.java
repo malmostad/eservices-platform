@@ -883,14 +883,28 @@ public class TaskFormService {
 	public List<UserDirectoryEntry> dirSearchUserEntries(String[] filterParams) {
 		List<UserDirectoryEntry> result = null;
 		try {
-			log.info("TaskFormService.dirSearchEntries: " + (userDirectoryService==null ? "null" : "nonull"));
-			result = userDirectoryService.searchForUserEntries(filterParams);
+		    // log.info("TaskFormService.dirSearchUserEntries: " +
+                    // (userDirectoryService==null ? "null" : "nonull"));
+		    result = userDirectoryService.searchForUserEntries(filterParams);
 		} catch (Exception e) {
-			log.severe("TaskFormService.dirSearchEntries: " + (userDirectoryService==null ? "null" : "nonull") +
+			log.severe("TaskFormService.dirSearchUserEntries: " + 
+                           (userDirectoryService==null ? "null" : "nonull") +
 					" Exception:" + e.toString());
 		}
 		return result;
 	}
 
-
+	public List<UserDirectoryEntry> dirLookupUserEntries(String[] cnArray) {
+		List<UserDirectoryEntry> result = null;
+		try {
+			//System.out.println("TaskFormService.dirLookupEntries: "
+                        //  + (userDirectoryService==null ? "null" : "nonull"));
+			result = userDirectoryService.lookupUserEntries(cnArray);
+		} catch (Exception e) {
+			log.severe("TaskFormService.dirLookupUserEntries: " +
+				   (userDirectoryService==null ? "null" : "nonull") +
+				   " Exception:" + e.toString());
+		}
+		return result;
+	}
 }
