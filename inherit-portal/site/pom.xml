@@ -94,8 +94,38 @@
 	<dependency>
 	  <groupId>org.onehippo.cms7.hst.components</groupId>
 	  <artifactId>hst-jaxrs</artifactId>
-	  <version>${hippo.hst.version}</version>
 	</dependency>
+
+	<!-- 
+	 Make sure same all four jackson dependencies is of same version 
+     i.e. the same version as jersey use, 
+     jersey includes jackson-core-asl and jackson-mapper-asl  
+     -->
+	<dependency>
+		<groupId>org.codehaus.jackson</groupId>
+		<artifactId>jackson-core-asl</artifactId>
+		<version>1.8.3</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.codehaus.jackson</groupId>
+		<artifactId>jackson-mapper-asl</artifactId>
+		<version>1.8.3</version>
+	</dependency>
+
+
+	<dependency>
+		<groupId>org.codehaus.jackson</groupId>
+		<artifactId>jackson-jaxrs</artifactId>
+		<version>1.8.3</version>
+	</dependency>
+
+	<dependency>
+		<groupId>org.codehaus.jackson</groupId>
+		<artifactId>jackson-xc</artifactId>
+		<version>1.8.3</version>
+	</dependency>
+            
     
   </dependencies>
 
