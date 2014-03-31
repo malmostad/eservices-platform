@@ -26,9 +26,14 @@ package org.inheritsource.service.common.domain;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("ActivityWorkflowInfo")
+@XmlRootElement(name="ActivityWorkflowInfo")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ActivityWorkflowInfo implements Serializable {
 	
 	private static final long serialVersionUID = 8813710157742764480L;
