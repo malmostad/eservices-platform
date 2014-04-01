@@ -329,7 +329,7 @@ public class SiteAjaxApplication extends AbstractResource {
 	public Tag addTag (
 			@Context HttpServletRequest servletRequest,
 			@Context HttpServletResponse servletResponse,
-			@FormParam("processActivityFormInstanceId") long processActivityFormInstanceId,
+			@FormParam("actinstId") String actinstId,
 			@FormParam("tagTypeId") long tagTypeId,
 			@FormParam("value") String value) {
 		
@@ -337,13 +337,13 @@ public class SiteAjaxApplication extends AbstractResource {
 				
 		String userId = getUserUuid(servletRequest);
 
-		log.debug("processActivityFormInstanceId: " + processActivityFormInstanceId);
+		log.debug("actinstId: " + actinstId);
 		log.debug("tagTypeId: " + tagTypeId);
 		log.debug("value: " + value);
 		log.debug("userId: " + userId);
 
 //		if (userId != null) {
-			result = engine.addTag(processActivityFormInstanceId, tagTypeId, value, userId);
+			result = engine.addTag(actinstId, tagTypeId, value, userId);
 	//	}
 //		else {
 	//				result = null;

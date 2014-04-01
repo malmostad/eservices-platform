@@ -52,6 +52,7 @@ public class TagType {
 	public static final Long TAG_OTHER = new Long(10000);
 
 	@Id
+	@Column(name="tag_type_id")
 	Long tagTypeId;
 	
 	@Column(unique=true, nullable=false)

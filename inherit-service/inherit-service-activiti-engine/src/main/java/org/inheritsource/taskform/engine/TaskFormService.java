@@ -680,7 +680,6 @@ public class TaskFormService {
      */
     public PagedProcessInstanceSearchResult searchProcessInstancesStartedByUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId) { 
             PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesStartedBy(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
-            appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
             return result;
     }
 
@@ -698,7 +697,6 @@ public class TaskFormService {
     */
    public PagedProcessInstanceSearchResult searchProcessInstancesWithInvolvedUser(String searchForUserId, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId) { 
            PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesWithInvolvedUser(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
-           appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
            return result;
    }
    
@@ -713,20 +711,13 @@ public class TaskFormService {
        public PagedProcessInstanceSearchResult searchProcessInstancesListByTag(String tagValue, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId) { 
                 List<String> uuids = taskFormDb.getProcessInstancesByTag(tagValue);
                PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesByUuids(uuids, fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
-               appendProcessAndActivityLabelsFromTaskFormDb(result.getHits()); // TODO merge with appendTaskFormData
                return result;
         }
- 
 
-       private void appendProcessAndActivityLabelsFromTaskFormDb(List<ProcessInstanceListItem> items) {
-// TODO
-    	   
-       }
-
-	public Tag addTag(Long processActivityFormInstanceId, Long tagTypeId,
+	public Tag addTag(String actinstId, Long tagTypeId,
 			String value, String userId) {
-		return taskFormDb.addTag(processActivityFormInstanceId, tagTypeId,
-				value, userId);
+		
+		return activitiEngineService.addTag(actinstId, tagTypeId, value, userId);
 	}
 
 	public boolean deleteTag(String processInstanceUuid, String value,

@@ -288,7 +288,7 @@
              else {
                 //console.log("added " + ui.tagLabel);
   	            siteAjaxPost("/site/restservices/site-ajax/addTag", {
-		              processActivityFormInstanceId : '${activity.processActivityFormInstanceId}',
+		              actinstId : '${activity.actinstId}',
                       tagTypeId : '10000',
 		              value: ui.tagLabel
 	               }, function(data) {
