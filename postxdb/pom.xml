@@ -6,7 +6,7 @@
   <groupId>se.inherit</groupId>
   <artifactId>exist</artifactId>
   <packaging>grails-app</packaging>
-  <version>0.8.1</version>
+  <version>0.8.2</version>
   <name>exist</name>
   <description>postxdb: An eXist-db drop-in replacement for Orbeon Forms</description>
 
@@ -78,7 +78,7 @@
     <dependency>
       <groupId>org.grails.plugins</groupId>
       <artifactId>resources</artifactId>
-      <version>1.1.6</version>
+      <version>1.2</version>
       <scope>runtime</scope>
       <type>zip</type>
     </dependency>
