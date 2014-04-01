@@ -57,6 +57,7 @@ class ProcdefController {
 
   /**
    * List process definitions having a given key
+   * Pass the key as the "id" parameter
    */
   def listname(Integer max) {
     if (log.debugEnabled) log.debug "LISTNAME ${params}"
@@ -272,7 +273,7 @@ class ProcdefController {
 
     procdefService.updateProcdefState(procdefInst, updatedState)
     def procdefKey = procdefInst.key
-    flash.message = message(code: 'default.updated.message', args: [message(code: 'procdef.label', default: 'Procdef'), procdefInst.id])
+    flash.message = message(code: 'default.updated.message', args: [message(code: 'procdef.label', default: 'Procdef'), id])
     redirect(action: 'listname', id: procdefKey)
   }
 

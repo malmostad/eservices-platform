@@ -6,7 +6,7 @@
     <g:set var="entityName" value="${message(code: 'procdef.label', default: 'Procdef')}" />
     <g:set var="formEntityName" value="${message(code: 'pxdFormdef.label', default: 'PxdFormdef')}" />
     <g:set var="categEntityName" value="${message(code: 'crdProcCategory.label', default: 'CrdProcCategory')}" />
-    <title><g:message code="default.list.label" args="[entityName]" /></title>
+    <title><g:message code="procdef.list.label"/></title>
   </head>
   <body>
     <a href="#list-procdef" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
@@ -18,7 +18,7 @@
       </ul>
     </div>
     <div id="list-procdef" class="content scaffold-list" role="main">
-      <h1><g:message code="default.list.label" args="[entityName]" /></h1>
+      <h1><g:message code="procdef.list.label"/></h1>
       <g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
       </g:if>

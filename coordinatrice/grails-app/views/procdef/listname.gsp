@@ -23,7 +23,7 @@
 	<h1><g:message code="procdef.deployment.list.label" args="[deplId]" /></h1>
       </g:if>
       <g:else>
-	<h1><g:message code="default.list.label" args="[entityName]" /></h1>
+	<h1><g:message code="procdef.versions.list.label" args="[procdefKey]" /></h1>
       </g:else>
       <g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
