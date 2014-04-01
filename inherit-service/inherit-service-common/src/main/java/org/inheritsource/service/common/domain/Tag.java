@@ -33,7 +33,8 @@ public class Tag implements Serializable {
 	private static final long serialVersionUID = -3351037984381420720L;
 	
 	Long processActivityTagId;
-	Long processActivityFormInstanceId;
+	String actinstId;
+	String procinstId;
 	Long typeId;
 	String typeLabel;
 	String value;
@@ -50,12 +51,21 @@ public class Tag implements Serializable {
 		this.processActivityTagId = processActivityTagId;
 	}
 
-	public Long getProcessActivityFormInstanceId() {
-		return processActivityFormInstanceId;
+
+	public String getActinstId() {
+		return actinstId;
 	}
 
-	public void setProcessActivityFormInstanceId(Long processActivityFormInstanceId) {
-		this.processActivityFormInstanceId = processActivityFormInstanceId;
+	public void setActinstId(String actinstId) {
+		this.actinstId = actinstId;
+	}
+
+	public String getProcinstId() {
+		return procinstId;
+	}
+
+	public void setProcinstId(String procinstId) {
+		this.procinstId = procinstId;
 	}
 
 	public Long getTypeId() {
@@ -86,14 +96,14 @@ public class Tag implements Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((processActivityFormInstanceId == null) ? 0
-						: processActivityFormInstanceId.hashCode());
+		result = prime * result
+				+ ((actinstId == null) ? 0 : actinstId.hashCode());
 		result = prime
 				* result
 				+ ((processActivityTagId == null) ? 0 : processActivityTagId
 						.hashCode());
+		result = prime * result
+				+ ((procinstId == null) ? 0 : procinstId.hashCode());
 		result = prime * result + ((typeId == null) ? 0 : typeId.hashCode());
 		result = prime * result
 				+ ((typeLabel == null) ? 0 : typeLabel.hashCode());
@@ -110,16 +120,20 @@ public class Tag implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Tag other = (Tag) obj;
-		if (processActivityFormInstanceId == null) {
-			if (other.processActivityFormInstanceId != null)
+		if (actinstId == null) {
+			if (other.actinstId != null)
 				return false;
-		} else if (!processActivityFormInstanceId
-				.equals(other.processActivityFormInstanceId))
+		} else if (!actinstId.equals(other.actinstId))
 			return false;
 		if (processActivityTagId == null) {
 			if (other.processActivityTagId != null)
 				return false;
 		} else if (!processActivityTagId.equals(other.processActivityTagId))
+			return false;
+		if (procinstId == null) {
+			if (other.procinstId != null)
+				return false;
+		} else if (!procinstId.equals(other.procinstId))
 			return false;
 		if (typeId == null) {
 			if (other.typeId != null)
@@ -142,10 +156,10 @@ public class Tag implements Serializable {
 	@Override
 	public String toString() {
 		return "Tag [processActivityTagId=" + processActivityTagId
-				+ ", processActivityFormInstanceId="
-				+ processActivityFormInstanceId + ", typeId=" + typeId
-				+ ", typeLabel=" + typeLabel + ", value=" + value + "]";
+				+ ", actinstId=" + actinstId + ", procinstId=" + procinstId
+				+ ", typeId=" + typeId + ", typeLabel=" + typeLabel
+				+ ", value=" + value + "]";
 	}
-	
+
 	
 }

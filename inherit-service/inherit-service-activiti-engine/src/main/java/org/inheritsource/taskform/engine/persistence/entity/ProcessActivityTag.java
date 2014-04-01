@@ -39,15 +39,18 @@ public class ProcessActivityTag {
 
 	@Id
 	@GeneratedValue
+	@Column(name="process_activity_tag_id")
 	Long processActivityTagId;
 
 	@ManyToOne
-    @JoinColumn(name="tagTypeId", nullable=false)
+    @JoinColumn(name="tag_type_id", nullable=false)
 	TagType type;
 
-	@ManyToOne
-    @JoinColumn(name="processActivityFormInstanceId", nullable=false)
-	ProcessActivityFormInstance processActivityFormInstance;
+	@Column(name="procinst_id")
+	String procinstId;
+	
+	@Column(name="actinst_id")
+	String actinstId;
 
 	@Column(nullable=false)
 	String value;
@@ -84,13 +87,20 @@ public class ProcessActivityTag {
 		this.type = type;
 	}
 
-	public ProcessActivityFormInstance getProcessActivityFormInstance() {
-		return processActivityFormInstance;
+	public String getProcinstId() {
+		return procinstId;
 	}
 
-	public void setProcessActivityFormInstance(
-			ProcessActivityFormInstance processActivityFormInstance) {
-		this.processActivityFormInstance = processActivityFormInstance;
+	public void setProcinstId(String procinstId) {
+		this.procinstId = procinstId;
+	}
+
+	public String getActinstId() {
+		return actinstId;
+	}
+
+	public void setActinstId(String actinstId) {
+		this.actinstId = actinstId;
 	}
 
 	public String getValue() {
@@ -121,14 +131,14 @@ public class ProcessActivityTag {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime
-				* result
-				+ ((processActivityFormInstance == null) ? 0
-						: processActivityFormInstance.hashCode());
+		result = prime * result
+				+ ((actinstId == null) ? 0 : actinstId.hashCode());
 		result = prime
 				* result
 				+ ((processActivityTagId == null) ? 0 : processActivityTagId
 						.hashCode());
+		result = prime * result
+				+ ((procinstId == null) ? 0 : procinstId.hashCode());
 		result = prime * result
 				+ ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -146,16 +156,20 @@ public class ProcessActivityTag {
 		if (getClass() != obj.getClass())
 			return false;
 		ProcessActivityTag other = (ProcessActivityTag) obj;
-		if (processActivityFormInstance == null) {
-			if (other.processActivityFormInstance != null)
+		if (actinstId == null) {
+			if (other.actinstId != null)
 				return false;
-		} else if (!processActivityFormInstance
-				.equals(other.processActivityFormInstance))
+		} else if (!actinstId.equals(other.actinstId))
 			return false;
 		if (processActivityTagId == null) {
 			if (other.processActivityTagId != null)
 				return false;
 		} else if (!processActivityTagId.equals(other.processActivityTagId))
+			return false;
+		if (procinstId == null) {
+			if (other.procinstId != null)
+				return false;
+		} else if (!procinstId.equals(other.procinstId))
 			return false;
 		if (timestamp == null) {
 			if (other.timestamp != null)
@@ -183,11 +197,10 @@ public class ProcessActivityTag {
 	@Override
 	public String toString() {
 		return "ProcessActivityTag [processActivityTagId="
-				+ processActivityTagId + ", type=" + type
-				+ ", processActivityFormInstance="
-				+ processActivityFormInstance + ", value=" + value
+				+ processActivityTagId + ", type=" + type + ", procinstId="
+				+ procinstId + ", actinstId=" + actinstId + ", value=" + value
 				+ ", timestamp=" + timestamp + ", userId=" + userId + "]";
 	}
 
-	
+		
 }

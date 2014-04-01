@@ -56,12 +56,14 @@ import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.ProcessInstanceListItem;
 import org.inheritsource.service.common.domain.StartLogItem;
+import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.Timeline;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.coordinatrice.CoordinatriceFacade;
 import org.inheritsource.service.form.FormEngine;
 import org.inheritsource.service.identity.IdentityService;
+import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -73,6 +75,7 @@ public class ActivitiEngineService {
 	private ProcessEngine engine = null; 
 	private FormEngine formEngine = null;
 	private IdentityService identityService = null;
+	private TaskFormDb taskFormDb = null;
 	
 	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
 	
@@ -111,6 +114,14 @@ public class ActivitiEngineService {
 
 	public void setIdentityService(IdentityService identityService) {
 		this.identityService = identityService;
+	}
+
+	public TaskFormDb getTaskFormDb() {
+		return taskFormDb;
+	}
+
+	public void setTaskFormDb(TaskFormDb taskFormDb) {
+		this.taskFormDb = taskFormDb;
 	}
 
 	public void close() {
@@ -1764,6 +1775,19 @@ public class ActivitiEngineService {
 		}
 		
 		return processInstances;
+	}
+	
+	public Tag addTag(String actinstId, Long tagTypeId,
+			String value, String userId) {
+		Tag tag = null;
+		
+		Task task = engine.getTaskService().createTaskQuery().taskId(actinstId).singleResult(); 
+		if (task != null) {
+			String procinstId = task.getProcessInstanceId();
+			tag = taskFormDb.addTag(procinstId, actinstId, tagTypeId, value, userId);
+		}
+		
+		return tag;
 	}
 
 }

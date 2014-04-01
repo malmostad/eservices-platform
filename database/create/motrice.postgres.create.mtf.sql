@@ -55,16 +55,17 @@ ALTER TABLE ONLY mtf_process_activity_form_instance
 
 
 CREATE TABLE mtf_process_activity_tag (
-    processactivitytagid bigint NOT NULL,
+    process_activity_tag_id bigint NOT NULL,
     "timestamp" timestamp without time zone NOT NULL,
     userid character varying(255) NOT NULL,
     value character varying(255) NOT NULL,
-    processactivityforminstanceid bigint NOT NULL,
-    tagtypeid bigint NOT NULL
+    actinst_id character varying(255),
+    procinst_id character varying(255),
+    tag_type_id bigint NOT NULL
 );
 
 ALTER TABLE ONLY mtf_process_activity_tag
-    ADD CONSTRAINT mtf_process_activity_tag_pkey PRIMARY KEY (processactivitytagid);
+    ADD CONSTRAINT mtf_process_activity_tag_pkey PRIMARY KEY (process_activity_tag_id);
 
 
 CREATE TABLE mtf_start_form_definition (
@@ -82,44 +83,20 @@ ALTER TABLE ONLY mtf_start_form_definition
 
 
 CREATE TABLE mtf_tag_type (
-    tagtypeid bigint NOT NULL,
+    tag_type_id bigint NOT NULL,
     label character varying(255) NOT NULL,
     name character varying(255) NOT NULL
 );
 
-ALTER TABLE ONLY mtf_tag_type
-    ADD CONSTRAINT mtf_tag_type_pkey PRIMARY KEY (tagtypeid);
 
 ALTER TABLE ONLY mtf_tag_type
-    ADD CONSTRAINT mtf_tag_type_name_key UNIQUE (name);
+    ADD CONSTRAINT mtf_tag_type_pkey PRIMARY KEY (tag_type_id);
+
 
 ALTER TABLE ONLY mtf_process_activity_tag
-    ADD CONSTRAINT fk4146f6dac31d8210 FOREIGN KEY (tagtypeid) REFERENCES mtf_tag_type(tagtypeid);
-
-ALTER TABLE ONLY mtf_process_activity_tag
-    ADD CONSTRAINT fk4146f6dad5e10f16 FOREIGN KEY (processactivityforminstanceid) REFERENCES mtf_process_activity_form_instance(processactivityforminstanceid);
+ADD CONSTRAINT fk4146f6dac31d8210 FOREIGN KEY (tag_type_id) REFERENCES mtf_tag_type(tag_type_id);
 
 ALTER TABLE ONLY mtf_process_activity_form_instance
-    ADD CONSTRAINT fk606cfcf095f89dba FOREIGN KEY (startformdefinitionid) REFERENCES mtf_start_form_definition(start_form_definition_id);
+    ADD CONSTRAINT fk606cfcf095f89dba FOREIGN KEY ( start_form_definition_id) REFERENCES mtf_start_form_definition(start_form_definition_id);
 
-
---
--- Initial data that _must_ exist 
---
-
---
--- mtf_tag_type
---
-
-INSERT INTO mtf_tag_type(
-            tagtypeid, label, name)
-    VALUES (1, 'Diarienr', 'diary_no');
-
-INSERT INTO mtf_tag_type(
-            tagtypeid, label, name)
-    VALUES (2, 'Ansökan av', 'application_by');
-
-INSERT INTO mtf_tag_type(
-            tagtypeid, label, name)
-    VALUES (10000, 'Annan', 'other');
 
