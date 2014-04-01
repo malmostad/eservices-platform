@@ -436,9 +436,9 @@ public class TaskFormService {
 		return result;
 	}
 	
-	public ActivityInstanceItem getActivityInstanceItem(String actinstId, String formInstanceId, String userId) {
+	public ActivityInstanceItem getActivityInstanceItem(String actinstId, String formInstanceId, Locale locale, String userId) {
 		
-		ActivityInstanceItem result = activitiEngineService.getActivityInstanceItem(actinstId, formInstanceId, userId);
+		ActivityInstanceItem result = activitiEngineService.getActivityInstanceItem(actinstId, formInstanceId, locale, userId);
 		
 		return result;
 	}
