@@ -122,7 +122,7 @@ log4j = {
 	   //trace 'org.hibernate.type'
 	   //debug 'org.hibernate.SQL'
 
-	   debug 'grails.app.controllers', 'org.motrice.coordinatrice.FormService', 'org.motrice.coordinatrice.ProcessEngineService', 'org.motrice.coordinatrice'
+	   error 'grails.app.controllers', 'org.motrice.coordinatrice.FormService', 'org.motrice.coordinatrice.ProcessEngineService', 'org.motrice.coordinatrice'
 }
 
 // Common timestamp display format

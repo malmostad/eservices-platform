@@ -45,13 +45,16 @@ class ProcdefService {
    * name: process definition name (String),
    * key: process definition key (String),
    * versions: number of versions (Integer).
+   * NOTE: If the name is empty, key is used.
    */
   List allProcessDefinitionsGroupByName() {
     def db = new groovy.sql.Sql(dataSource)
     def result = []
     db.eachRow(PROCDEF_BY_NAME_Q) {tuple ->
-      result << [name: tuple.NAME as String, key: tuple.KEY as String,
+      def item = [name: tuple.NAME as String, key: tuple.KEY as String,
       versions: tuple.VERSIONS as Integer]
+      if (!tuple.name) item.name = item.key
+      result << item
     }
 
     return result
@@ -318,6 +321,27 @@ class ProcdefService {
     }
 
     if (log.debugEnabled) log.debug "findProcessDefinition >> ${procdef}"
+    return procdef
+  }
+
+  /**
+   * Find the process definition with the given id.
+   * Do not populate with activities.
+   * Return the process definition or null if not found.
+   */
+  Procdef findShallowProcdef(String id) {
+    if (log.debugEnabled) log.debug "findShallowProcdef << ${id}"
+    assert id
+    def procdef = null
+
+    try {
+      def entity = activitiRepositoryService.getProcessDefinition(id)
+      procdef = createProcdef(entity)
+    } catch (ActivitiObjectNotFoundException exc) {
+      // Ignore and return null
+    }
+
+    if (log.debugEnabled) log.debug "findShallowProcdef >> ${procdef}"
     return procdef
   }
 
