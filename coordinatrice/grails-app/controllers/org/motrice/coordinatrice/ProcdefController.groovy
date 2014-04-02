@@ -105,7 +105,7 @@ class ProcdefController {
     def state = procdefInst.state
     def startForms = procdefInst.startForms
     if (log.debugEnabled) log.debug "SHOW >> ${procdefInst}, ${startForms}"
-    [procdefInst: procdefInst, startForms: startForms, editable: state.editable]
+    [procdefInst: procdefInst, startForms: startForms, editable: state.startFormChangeAllowed]
   }
 
   def diagramDownload() {
@@ -185,7 +185,7 @@ class ProcdefController {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
       redirect(action: "list")
       return
-    } else if (!procdefInst.state.editable) {
+    } else if (!procdefInst.state.startFormChangeAllowed) {
       flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
       redirect(action: "show", id: uuid)
       return
@@ -210,7 +210,7 @@ class ProcdefController {
     if (!procdefInst) {
       redirect(action: "edit", id: procdefInst.uuid)
       return
-    } else if (!procdefInst.state.editable) {
+    } else if (!procdefInst.state.startFormChangeAllowed) {
       flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), id])
       redirect(action: "list")
       return

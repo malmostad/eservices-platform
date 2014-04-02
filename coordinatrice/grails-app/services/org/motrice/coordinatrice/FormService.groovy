@@ -1,5 +1,7 @@
 package org.motrice.coordinatrice
 
+import org.apache.commons.logging.LogFactory
+
 import org.motrice.coordinatrice.pxd.PxdFormdefVer
 
 /**
@@ -8,6 +10,11 @@ import org.motrice.coordinatrice.pxd.PxdFormdefVer
 class FormService {
 
   static transactional = true
+
+  // Injection magic
+  def procdefService
+
+  private static final log = LogFactory.getLog(this)
 
   /**
    * Create a list of forms that may be associated with an activity.
@@ -26,6 +33,20 @@ class FormService {
     }
 
     return [formList: formList, selectedFormId: selectedFormdefVer?.id]
+  }
+
+  /**
+   * Add process definitions (transient property) to a List of
+   * MtfStartFormDefinition
+   */
+  List addProcdefs(List startFormList) {
+    if (log.debugEnabled) log.debug "addProcdefs << List(${startFormList.size()})"
+    startFormList.collect {item ->
+      // DEBUG
+      println "addProcdefs.collect ${item?.toDisplay()}"
+      item.tmpProcdef = procdefService.findShallowProcdef(item.procdefId)
+      return item
+    }
   }
 
   List startFormSelection() {

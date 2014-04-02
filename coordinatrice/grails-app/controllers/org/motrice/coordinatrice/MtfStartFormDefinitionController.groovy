@@ -8,6 +8,8 @@ import org.springframework.dao.DataIntegrityViolationException
  */
 class MtfStartFormDefinitionController {
 
+  def formService
+
   //static allowedMethods = [delete: "POST"]
 
   def index() {
@@ -18,9 +20,14 @@ class MtfStartFormDefinitionController {
    * List start forms
    */
   def list(Integer max) {
+    if (log.debugEnabled) log.debug "LIST ${params}"
     params.max = Math.min(max ?: 20, 100)
+    params.offset = params.offset as Integer ?: 0
     if (!params.sort) params.sort = 'formConnectionKey'
-    [startFormdefList: MtfStartFormDefinition.list(params), startFormdefTotal: MtfStartFormDefinition.count()]
+    def mtfEntityList = MtfStartFormDefinition.list(params)
+    def total = MtfStartFormDefinition.count()
+    mtfEntityList = formService.addProcdefs(mtfEntityList)
+    [startFormdefList: mtfEntityList, startFormdefTotal: total]
   }
 
   def show(Long id) {

@@ -17,13 +17,16 @@ class MtfStartFormDefinition implements Comparable {
 
   String userDataXpath
 
+  // Transient property, the procdef identified by procdefId
+  Procdef tmpProcdef
+
   static mapping = {
     id column: 'start_form_definition_id'
     version false
     formHandlerId column: 'form_type_id'
     formdefId column: 'form_connection_dbid'
   }
-  static transients = ['formdef', 'formHandlerType']
+  static transients = ['formdef', 'formHandlerType', 'tmpProcdef']
   static constraints = {
     authTypeReq nullable: false, maxSize: 255
     procdefId nullable: true, maxSize: 255
@@ -63,6 +66,10 @@ class MtfStartFormDefinition implements Comparable {
 
   MtfFormType getFormHandlerType() {
     MtfFormType.get(formHandlerId)
+  }
+
+  String toDisplay() {
+    "[StartFormDef ${formdef?.path} ${procdefId}]"
   }
 
   String toString() {

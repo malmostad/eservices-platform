@@ -325,6 +325,27 @@ class ProcdefService {
   }
 
   /**
+   * Find the process definition with the given id.
+   * Do not populate with activities.
+   * Return the process definition or null if not found.
+   */
+  Procdef findShallowProcdef(String id) {
+    if (log.debugEnabled) log.debug "findShallowProcdef << ${id}"
+    assert id
+    def procdef = null
+
+    try {
+      def entity = activitiRepositoryService.getProcessDefinition(id)
+      procdef = createProcdef(entity)
+    } catch (ActivitiObjectNotFoundException exc) {
+      // Ignore and return null
+    }
+
+    if (log.debugEnabled) log.debug "findShallowProcdef >> ${procdef}"
+    return procdef
+  }
+
+  /**
    * Find all process definitions from a given deployment id
    * Activity definitions are not populated.
    * initState may be a process state for initializing the process definition,

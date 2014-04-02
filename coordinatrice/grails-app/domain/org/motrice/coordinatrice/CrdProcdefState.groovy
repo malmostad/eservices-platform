@@ -29,7 +29,7 @@ class CrdProcdefState {
     id generator: 'assigned'
     cache usage: 'read-only'
   }
-  static transients = ['stateChangeAllowed']
+  static transients = ['startFormChangeAllowed', 'stateChangeAllowed']
   static constraints = {
     res blank: false, maxSize: 80
     defaultMessage blank: false, maxSize: 80
@@ -126,6 +126,13 @@ class CrdProcdefState {
     }
 
     return result
+  }
+
+  /**
+   * Constraints for allowing change of start form.
+   */
+  boolean isStartFormChangeAllowed() {
+    id < STATE_PUBLISHED_ID
   }
 
   /**
