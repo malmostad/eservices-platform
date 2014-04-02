@@ -42,8 +42,6 @@ class FormService {
   List addProcdefs(List startFormList) {
     if (log.debugEnabled) log.debug "addProcdefs << List(${startFormList.size()})"
     startFormList.collect {item ->
-      // DEBUG
-      println "addProcdefs.collect ${item?.toDisplay()}"
       item.tmpProcdef = procdefService.findShallowProcdef(item.procdefId)
       return item
     }
