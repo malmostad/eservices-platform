@@ -4,8 +4,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
+import org.inheritsource.service.common.domain.UserDirectoryEntry;
 import org.inheritsource.service.common.domain.UserInfo;
-import org.inheritsource.taskform.engine.ActorSelectorDirUtils;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.UserEntity;
 
@@ -15,9 +15,17 @@ public class IdentityServiceMalmoImpl implements IdentityService {
 			
 	ActorSelectorDirUtils aSelectorDirUtils;
 	TaskFormDb taskFormDb;
+	UserDirectoryService userDirectoryService;
 
-	
-	
+	public UserDirectoryService getUserDirectoryService() {
+		return userDirectoryService;
+	}
+
+	public void setUserDirectoryService(UserDirectoryService uds) {
+		this.userDirectoryService = uds;
+	}
+
+
 	public ActorSelectorDirUtils getaSelectorDirUtils() {
 		return aSelectorDirUtils;
 	}
@@ -55,12 +63,17 @@ public class IdentityServiceMalmoImpl implements IdentityService {
 		return result;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.inheritsource.service.identity.Tmp#getUserByUuid(java.lang.String)
-	 */
 	@Override
 	public UserInfo getUserByUuid(String uuid) {
 		UserInfo userInfo = taskFormDb.getUserByUuid(uuid);
+		log.info("getUserByUuid: " + uuid);
+		if ( userInfo == null ) {
+			UserDirectoryEntry ue = userDirectoryService.lookupUserByCn(uuid);
+			userInfo = new UserInfo();
+			userInfo.setUuid(ue.getCn());
+			userInfo.setLabel(ue.getLabel());
+			userInfo.setLabelShort(ue.getCn());
+		}
 		return userInfo;
 	}
 	

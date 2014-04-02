@@ -1,4 +1,4 @@
-package org.inheritsource.taskform.engine;
+package org.inheritsource.service.identity;
 
 import java.util.Hashtable;
 import java.util.ArrayList;
@@ -235,6 +235,25 @@ public class UserDirectoryService {
 			}
 		} catch (NamingException ne) {
 			ne.printStackTrace();
+		}
+		return result;
+	}
+
+	public UserDirectoryEntry lookupUserByCn(String cn) {
+		UserDirectoryEntry result = null;
+		Attributes attrs;
+		try {
+			attrs = getAttributesForCn(cn);
+			result = new UserDirectoryEntry();
+			result.setCn(cn);
+			result.setGivenName(  getAttributeByName(attrs,"givenName"));
+			result.setSn(         getAttributeByName(attrs,"sn"));
+			result.setMail(       getAttributeByName(attrs,"mail"));
+			result.setDepartment( getAttributeByName(attrs,"department"));
+			result.setCompany(    getAttributeByName(attrs,"company"));
+		} catch (NamingException ne) {
+			log.severe("lookupUserByCn, cn=" + cn + 
+					" Exception: " + ne.toString());
 		}
 		return result;
 	}
