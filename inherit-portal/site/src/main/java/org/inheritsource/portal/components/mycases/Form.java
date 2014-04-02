@@ -80,7 +80,7 @@ public class Form extends MyCasesBaseComponent {
         }
         else {
         	// specific BPMN engine activity instance is requested
-        	activity = engine.getActivityInstanceItem(actinstId, instanceId, user.getUuid());
+        	activity = engine.getActivityInstanceItem(actinstId, instanceId, request.getLocale(), user.getUuid());
         } 
         
     	request.setAttribute("activity", activity);

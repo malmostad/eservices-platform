@@ -129,7 +129,7 @@ public class TaskFormDbTestCase {
 		HibernateUtil.getSessionFactory().close();
 	 }
 
-	
+	/*
 	@Test
 	public void tags() {
 		// add tags 
@@ -229,6 +229,6 @@ public class TaskFormDbTestCase {
 		Assert.assertEquals(userInfoSer, qSer);
 		
 	}
-
+*/
 	
 }

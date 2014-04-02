@@ -498,14 +498,15 @@ public class TaskFormDb {
 		return result;
 	}
 	
-	public Tag addTag(Long processActivityFormInstanceId, Long tagTypeId, String value, String userId) {
+	public Tag addTag(String procinstId, String actinstId, Long tagTypeId, String value, String userId) {
 		Tag result = null;
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		try {
 			session.beginTransaction();
 			ProcessActivityTag processActivityTag = new ProcessActivityTag();
 			processActivityTag.setType(getTagType(session, tagTypeId));
-			processActivityTag.setProcessActivityFormInstance(getProcessActivityFormInstanceById(session, processActivityFormInstanceId));
+			processActivityTag.setProcinstId(procinstId);
+			processActivityTag.setActinstId(actinstId);
 			processActivityTag.setValue(value);
 			processActivityTag.setUserId(userId);
 			processActivityTag.setTimestamp(new Date());
@@ -515,7 +516,7 @@ public class TaskFormDb {
 			session.getTransaction().commit();
 		}
 		catch (Exception e) {
-			log.severe("processActivityFormInstanceId=[" + processActivityFormInstanceId + "] tagTypeId=[" + tagTypeId + "] value=[" + value  + "] userId=[" + userId + "] Exception: " + e);
+			log.severe("actinstId=[" + actinstId + "] tagTypeId=[" + tagTypeId + "] value=[" + value  + "] userId=[" + userId + "] Exception: " + e);
 		}
 		finally {		
 			session.close();
@@ -545,16 +546,15 @@ public class TaskFormDb {
 		return result;
 	}
 	
-	public boolean deleteTag(String processInstanceUuid, String value, String userId) {
+	public boolean deleteTag(String procinstId, String value, String userId) {
 		boolean result = false;
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		
 		try {
 			session.beginTransaction();
 			List<ProcessActivityTag> tags = (List<ProcessActivityTag>) session.createCriteria(ProcessActivityTag.class)
+					.add( Restrictions.eq("procinstId", procinstId) )
 					.add( Restrictions.eq("value", value) )
-					.createCriteria("processActivityFormInstance")
-					.add( Restrictions.eq("processInstanceUuid", processInstanceUuid) )
 				    .list();
 			
 			if (tags != null && tags.size()>0) {
@@ -566,7 +566,7 @@ public class TaskFormDb {
 			session.getTransaction().commit();
 		}
 		catch (Exception e) {
-			log.severe("processInstanceUuid=[" + processInstanceUuid + "] value=[" + value + "] userId=[" + userId + "] Exception: " + e);
+			log.severe("procinstId=[" + procinstId + "] value=[" + value + "] userId=[" + userId + "] Exception: " + e);
 		}
 		finally {		
 			session.close();
@@ -574,14 +574,13 @@ public class TaskFormDb {
 		return result;
 	}
 	
-	public List<Tag> getTagsByProcessInstance(String processInstanceUuid) {
+	public List<Tag> getTagsByProcessInstance(String procinstId) {
 		List<Tag> tags = new ArrayList<Tag>();
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		try {
 			List<ProcessActivityTag> result = (List<ProcessActivityTag>) session.createCriteria(ProcessActivityTag.class)
-					.createCriteria("processActivityFormInstance")
-					.add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) 
+					.add( Restrictions.eq("procinstId", procinstId) ) 
 				    .list();
 			
 			for (ProcessActivityTag pafi : result) {
@@ -589,7 +588,7 @@ public class TaskFormDb {
 			}
 		}
 		catch (Exception e) {
-			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
+			log.severe("procinstId=[" + procinstId + "] Exception: " + e);
 		}
 		finally {		
 			session.close();
@@ -603,14 +602,13 @@ public class TaskFormDb {
 		
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		try {
-			List<ProcessActivityFormInstance> hitItems = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-					.createCriteria("processActivityTags")
+			List<ProcessActivityTag> hitItems = (List<ProcessActivityTag>) session.createCriteria(ProcessActivityTag.class)
 					.add( Restrictions.eq("value", tagValue) ) 
 				    .list();
 			
 			if (hitItems != null) {
-				for (ProcessActivityFormInstance hitItem : hitItems) {
-					result.add(hitItem.getProcessInstanceUuid());
+				for (ProcessActivityTag hitItem : hitItems) {
+					result.add(hitItem.getProcinstId());
 				}
 			}
 		}
@@ -632,9 +630,10 @@ public class TaskFormDb {
 		tag.setTypeId(processActivityTag.getType().getTagTypeId());
 		tag.setTypeLabel(processActivityTag.getType().getLabel());
 		tag.setValue(processActivityTag.getValue());
-		tag.setProcessActivityFormInstanceId(processActivityTag.getProcessActivityFormInstance().getProcessActivityFormInstanceId());
+		tag.setActinstId(processActivityTag.getActinstId());
+		tag.setProcinstId(processActivityTag.getProcinstId());
 		return tag;
-	}
+	} 
 	
 	
 	public UserInfo getUserByUuid(String uuid) {

@@ -23,7 +23,6 @@ import org.activiti.bpmn.model.Process;
 import org.activiti.engine.ActivitiObjectNotFoundException;
 import org.activiti.engine.ActivitiTaskAlreadyClaimedException;
 import org.activiti.engine.ProcessEngine;
-import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricActivityInstance;
@@ -56,12 +55,14 @@ import org.inheritsource.service.common.domain.ProcessDefinitionInfo;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.domain.ProcessInstanceListItem;
 import org.inheritsource.service.common.domain.StartLogItem;
+import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.Timeline;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.coordinatrice.CoordinatriceFacade;
 import org.inheritsource.service.form.FormEngine;
 import org.inheritsource.service.identity.IdentityService;
+import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -73,6 +74,7 @@ public class ActivitiEngineService {
 	private ProcessEngine engine = null; 
 	private FormEngine formEngine = null;
 	private IdentityService identityService = null;
+	private TaskFormDb taskFormDb = null;
 	
 	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
 	
@@ -111,6 +113,14 @@ public class ActivitiEngineService {
 
 	public void setIdentityService(IdentityService identityService) {
 		this.identityService = identityService;
+	}
+
+	public TaskFormDb getTaskFormDb() {
+		return taskFormDb;
+	}
+
+	public void setTaskFormDb(TaskFormDb taskFormDb) {
+		this.taskFormDb = taskFormDb;
 	}
 
 	public void close() {
@@ -357,7 +367,7 @@ public class ActivitiEngineService {
 		return taskId;
 	}
 	
-	public ActivityInstanceItem getActivityInstanceItem(String actinstId, String formInstanceId, String userId) {
+	public ActivityInstanceItem getActivityInstanceItem(String actinstId, String formInstanceId, Locale locale, String userId) {
 		ActivityInstanceItem result = null;
 		
 		try {
@@ -371,12 +381,12 @@ public class ActivitiEngineService {
 			}
 			
 			if(task != null) {
-				result = task2ActivityInstancePendingItem(task);
+				result = task2ActivityInstancePendingItem(task, locale);
 			} else {
 				HistoricTaskInstance historicTask = engine.getHistoryService().
 						createHistoricTaskInstanceQuery().taskId(actinstId).includeTaskLocalVariables().singleResult();
 				if(historicTask != null) {
-					result = task2ActivityInstanceLogItem(historicTask);
+					result = task2ActivityInstanceLogItem(historicTask, locale);
 				}
 			}
 			
@@ -386,7 +396,7 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task) {
+	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task, Locale locale) {
 		ActivityInstancePendingItem item = null;
 		if (task != null) {
 			
@@ -398,7 +408,7 @@ public class ActivitiEngineService {
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
 			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
-			item.setActivityLabel(task.getName());
+			item.setActivityLabel(getTaskName(task, locale));
 			item.setStartDate(task.getCreateTime());
 			item.setCurrentState("EXECUTING");
 			item.setLastStateUpdate(task.getCreateTime());
@@ -448,7 +458,7 @@ public class ActivitiEngineService {
 		return activityType;
 	}
 	
-	private ActivityInstanceLogItem task2ActivityInstanceLogItem(HistoricTaskInstance task) {
+	private ActivityInstanceLogItem task2ActivityInstanceLogItem(HistoricTaskInstance task, Locale locale) {
 		ActivityInstanceLogItem item = null;
 		if (task != null) {
 			item = new ActivityInstanceLogItem();
@@ -460,7 +470,7 @@ public class ActivitiEngineService {
 			item.setActivityDefinitionUuid(task.getTaskDefinitionKey());
 			item.setActivityInstanceUuid(task.getId());
 			item.setActivityName(task.getName());
-			item.setActivityLabel(task.getName());
+			item.setActivityLabel(getHistoricTaskName(task, locale));
 			item.setStartDate(task.getStartTime());
 			item.setCurrentState("FINISHED");
 			item.setLastStateUpdate(task.getDueDate());
@@ -476,6 +486,24 @@ public class ActivitiEngineService {
 			item.setPerformedByUser(userId2UserInfo(task.getAssignee()));
 		}
 		return item;
+	}
+	
+	private String getTaskName(Task task, Locale locale) {
+		String result = task.getName();
+		String crdName = coordinatriceFacade.getLabel(task.getProcessDefinitionId(), task.getName(), locale);
+		if (crdName != null) {
+			result = crdName;
+		}
+		return result;
+	}
+	
+	private String getHistoricTaskName(HistoricTaskInstance task, Locale locale) {
+		String result = task.getName();
+		String crdName = coordinatriceFacade.getLabel(task.getProcessDefinitionId(), task.getName(), locale);
+		if (crdName != null) {
+			result = crdName;
+		}
+		return result;
 	}
 	
 	public DashOpenActivities getDashOpenActivitiesByUserId(String userId, int remainingDays) {
@@ -538,6 +566,45 @@ public class ActivitiEngineService {
 		return formEngine.getStartLogItem(processInstance, null);
 	}
 	
+	
+	private String getStartFormName(ProcessInstance processInstance, Locale locale) {
+		
+		String result = coordinatriceFacade.getStartFormLabel(processInstance.getProcessInstanceId(), locale);
+		
+		if (result == null) {
+			ProcessDefinition procDef = engine.getRepositoryService().getProcessDefinition(processInstance.getProcessDefinitionId());
+			if (procDef != null) {
+				result = procDef.getName();
+			}
+		}
+		if (result == null) {
+			result = "Ärende";
+		}
+		return result;
+	}
+	
+	private String getHistoricStartFormName(HistoricProcessInstance processInstance, Locale locale) {
+		String result = null;
+		if (processInstance != null) {
+			String formDefKey = (String)processInstance.getProcessVariables().get(FormEngine.START_FORM_DEFINITIONKEY);
+			if (formDefKey != null) {
+				result = coordinatriceFacade.getStartFormLabelByStartFormDefinitionKey(formDefKey, locale, null);
+			}
+		}
+		
+		if (result == null) {
+			
+			ProcessDefinition procDef = engine.getRepositoryService().getProcessDefinition(processInstance.getProcessDefinitionId());
+			if (procDef != null) {
+				result = procDef.getName();
+			}
+		}
+		if (result == null) {
+			result = "Ärende";
+		}
+		return result;
+	}
+	
 	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceId, Locale locale) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
@@ -551,12 +618,13 @@ public class ActivitiEngineService {
 			
 			
 			StartLogItem startLogItem = formEngine.getStartLogItem(processInstance, null);
-
-			
-			processInstanceDetails.setProcessInstanceLabel("");
-
 			
 			if(processInstance != null) {
+				String procInstLabel = getStartFormName(processInstance, locale);
+				processInstanceDetails.setProcessInstanceLabel(procInstLabel); // TODO is label in use
+				processInstanceDetails.setProcessLabel(procInstLabel);
+				
+				startLogItem.setActivityLabel(procInstLabel);
 				
 				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING);
 				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
@@ -572,7 +640,7 @@ public class ActivitiEngineService {
 				if(tasks != null && tasks.size() > 0) {
 					List<ActivityInstancePendingItem> activityInstancePendingItems = new ArrayList<ActivityInstancePendingItem>();
 					for(Task task : tasks) {
-						activityInstancePendingItems.add(task2ActivityInstancePendingItem(task));
+						activityInstancePendingItems.add(task2ActivityInstancePendingItem(task, locale));
 					}
 					processInstanceDetails.setPending(activityInstancePendingItems);	
 					processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks, locale, null)));
@@ -582,6 +650,10 @@ public class ActivitiEngineService {
 				HistoricProcessInstance historicProcessInstance = engine.getHistoryService().
 					createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
 				if(historicProcessInstance != null) {
+					String procInstLabel = getHistoricStartFormName(historicProcessInstance, locale);
+					processInstanceDetails.setProcessInstanceLabel(procInstLabel);
+					startLogItem.setActivityLabel(procInstLabel);
+					
 					processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_FINISHED);
 					processInstanceDetails.setStartedBy(historicProcessInstance.getStartUserId());
 					processInstanceDetails.setStartDate(historicProcessInstance.getStartTime());
@@ -598,7 +670,7 @@ public class ActivitiEngineService {
 			if(historicTasks != null) {
 				List<TimelineItem> activityInstanceLogItems = new ArrayList<TimelineItem>();
 				for (HistoricTaskInstance historicTask : historicTasks) {
-					activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask));
+					activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask, locale));
 				}
 				Timeline timeline = new Timeline();
 				timeline.add(startLogItem);
@@ -1764,6 +1836,19 @@ public class ActivitiEngineService {
 		}
 		
 		return processInstances;
+	}
+	
+	public Tag addTag(String actinstId, Long tagTypeId,
+			String value, String userId) {
+		Tag tag = null;
+		
+		Task task = engine.getTaskService().createTaskQuery().taskId(actinstId).singleResult(); 
+		if (task != null) {
+			String procinstId = task.getProcessInstanceId();
+			tag = taskFormDb.addTag(procinstId, actinstId, tagTypeId, value, userId);
+		}
+		
+		return tag;
 	}
 
 }

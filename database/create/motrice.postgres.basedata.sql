@@ -1,5 +1,9 @@
 --
--- Initialize a motrice database with some demo data 
+-- Initial data that _must_ exist 
+--
+
+--
+-- mtf_form_type
 --
 
 INSERT INTO mtf_form_type(
@@ -21,4 +25,20 @@ INSERT INTO mtf_form_type(
             formtypeid, label, formhandlerbean)
     VALUES (6, 'No form', 'motriceNoFormHandler');
 
+
+--
+-- mtf_tag_type
+--
+
+INSERT INTO mtf_tag_type(
+            tag_type_id, label, name)
+    VALUES (1, 'Diarienr', 'diary_no');
+
+INSERT INTO mtf_tag_type(
+            tag_type_id, label, name)
+    VALUES (2, 'Ansökan av', 'application_by');
+
+INSERT INTO mtf_tag_type(
+            tag_type_id, label, name)
+    VALUES (10000, 'Annan', 'other');
 

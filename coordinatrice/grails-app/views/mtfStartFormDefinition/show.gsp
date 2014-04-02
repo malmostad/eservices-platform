@@ -22,47 +22,35 @@
       </g:if>
       <ol class="property-list mtfStartFormDefinition">
 	
-	<g:if test="${mtfStartFormDefinitionInst?.authTypeReq}">
+	<g:if test="${startFormdefInst?.authTypeReq}">
 	  <li class="fieldcontain">
 	    <span id="authTypeReq-label" class="property-label"><g:message code="mtfStartFormDefinition.authTypeReq.label" default="Auth Type Req" /></span>
-	    
-	    <span class="property-value" aria-labelledby="authTypeReq-label"><g:fieldValue bean="${mtfStartFormDefinitionInst}" field="authTypeReq"/></span>
-	    
+	    <span class="property-value" aria-labelledby="authTypeReq-label"><g:fieldValue bean="${startFormdefInst}" field="authTypeReq"/></span>
 	  </li>
 	</g:if>
-	
-	<g:if test="${mtfStartFormDefinitionInst?.formPath}">
+	<g:if test="${startFormdefInst?.formConnectionKey}">
 	  <li class="fieldcontain">
-	    <span id="formPath-label" class="property-label"><g:message code="mtfStartFormDefinition.formPath.label" default="Form Path" /></span>
-	    
-	    <span class="property-value" aria-labelledby="formPath-label"><g:fieldValue bean="${mtfStartFormDefinitionInst}" field="formPath"/></span>
-	    
+	    <span id="formConnectionKey-label" class="property-label"><g:message code="mtfStartFormDefinition.formConnectionKey.label" default="Form Path" /></span>
+	    <span class="property-value" aria-labelledby="formConnectionKey-label"><g:fieldValue bean="${startFormdefInst}" field="formConnectionKey"/></span>
 	  </li>
 	</g:if>
-	
-	<g:if test="${mtfStartFormDefinitionInst?.processDefinitionUuid}">
+	<g:if test="${startFormdefInst?.procdefId}">
 	  <li class="fieldcontain">
-	    <span id="processDefinitionUuid-label" class="property-label"><g:message code="mtfStartFormDefinition.processDefinitionUuid.label" default="Process Definition Uuid" /></span>
-	    
-	    <span class="property-value" aria-labelledby="processDefinitionUuid-label"><g:fieldValue bean="${mtfStartFormDefinitionInst}" field="processDefinitionUuid"/></span>
-	    
+	    <span id="procdefId-label" class="property-label"><g:message code="mtfStartFormDefinition.procdefId.label" default="Process Definition Uuid" /></span>
+	    <span class="property-value" aria-labelledby="procdefId-label"><g:fieldValue bean="${startFormdefInst}" field="procdefId"/></span>
 	  </li>
 	</g:if>
-	
-	<g:if test="${mtfStartFormDefinitionInst?.userDataXpath}">
+	<g:if test="${startFormdefInst?.userDataXpath}">
 	  <li class="fieldcontain">
 	    <span id="userDataXpath-label" class="property-label"><g:message code="mtfStartFormDefinition.userDataXpath.label" default="User Data Xpath" /></span>
-	    
-	    <span class="property-value" aria-labelledby="userDataXpath-label"><g:fieldValue bean="${mtfStartFormDefinitionInst}" field="userDataXpath"/></span>
-	    
+	    <span class="property-value" aria-labelledby="userDataXpath-label"><g:fieldValue bean="${startFormdefInst}" field="userDataXpath"/></span>
 	  </li>
 	</g:if>
-	
       </ol>
       <g:form>
 	<fieldset class="buttons">
-	  <g:hiddenField name="id" value="${mtfStartFormDefinitionInst?.id}" />
-	  <g:link class="edit" action="edit" id="${mtfStartFormDefinitionInst?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+	  <g:hiddenField name="id" value="${startFormdefInst?.id}" />
+	  <g:link class="edit" action="edit" id="${startFormdefInst?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 	</fieldset>
       </g:form>

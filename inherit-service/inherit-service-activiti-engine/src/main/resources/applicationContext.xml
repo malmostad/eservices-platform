@@ -66,6 +66,7 @@
 		<property name="identityService" ref="identityService" />
 		<property name="formEngine" ref="formEngine" />
 		<property name="coordinatriceFacade" ref="coordinatriceFacade"/>
+	    <property name="taskFormDb" ref="taskFormDb" />
 	</bean>
 
 	<bean id="processEngineConfiguration"

@@ -4,7 +4,6 @@
   <head>
     <meta name="layout" content="main"/>
       <g:set var="entityName" value="${message(code: 'procdef.label', default: 'Procdef')}" />
-      <g:set var="formEntityName" value="${message(code: 'pxdFormdef.label', default: 'PxdFormdef')}" />
       <g:set var="categEntityName" value="${message(code: 'crdProcCategory.label', default: 'CrdProcCategory')}" />
       <title><g:message code="default.list.label" args="[entityName]" /></title>
   </head>
@@ -13,7 +12,8 @@
     <div class="nav" role="navigation">
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<li><g:link class="list" controller="PxdFormdef" action="list"><g:message code="default.list.label" args="[formEntityName]" /></g:link></li>
+	<li><g:link class="list" controller="MtfStartFormDefinition" action="list"><g:message code="startform.list.label"/></g:link></li>
+	<li><g:link class="list" controller="PxdFormdef" action="list"><g:message code="pxdFormdef.list.label"/></g:link></li>
 	<li><g:link class="list" controller="crdProcCategory" action="list"><g:message code="default.list.label" args="[categEntityName]" /></g:link></li>
       </ul>
     </div>
@@ -23,7 +23,7 @@
 	<h1><g:message code="procdef.deployment.list.label" args="[deplId]" /></h1>
       </g:if>
       <g:else>
-	<h1><g:message code="default.list.label" args="[entityName]" /></h1>
+	<h1><g:message code="procdef.versions.list.label" args="[procdefKey]" /></h1>
       </g:else>
       <g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
