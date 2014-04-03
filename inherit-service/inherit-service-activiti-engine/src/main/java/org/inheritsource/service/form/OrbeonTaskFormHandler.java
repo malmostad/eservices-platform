@@ -5,6 +5,7 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
 import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.util.ConfigUtil;
+import org.inheritsource.service.orbeon.OrbeonService;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
 
 public class OrbeonTaskFormHandler extends TaskFormHandler {
@@ -31,7 +32,8 @@ public class OrbeonTaskFormHandler extends TaskFormHandler {
 		form.setTypeId(activityFormDefinition.getFormTypeId());
 		form.setDefinitionKey(activityFormDefinition.getFormConnectionKey());
 		form.setActUri(null);
-		form.setDataUri(orbeonDataBaseUri + form.getDefinitionKey() + "/data/" + form.getInstanceId() + ".xml");
+		form.setDataUri(orbeonDataBaseUri + form.getDefinitionKey() + "/data/" + form.getInstanceId() + "/data.xml");
+		// sample: http://localhost:8080/exist/rest/db/orbeon-pe/fr/bm/bmf1--v002/data/1e9336f8-15a6-4b31-ac16-7a576a6934b6/data.xml
 		
 		// submitted is default to not submitted
 		
@@ -54,7 +56,7 @@ public class OrbeonTaskFormHandler extends TaskFormHandler {
 		form.setTypeId(formTypeId);
 		form.setDefinitionKey(formConnectionKey);
 		form.setActUri(null);
-		form.setDataUri(orbeonDataBaseUri + form.getDefinitionKey() + "/data/" + form.getInstanceId() + ".xml");
+		form.setDataUri(orbeonDataBaseUri + form.getDefinitionKey() + "/data/" + form.getInstanceId() + "/data.xml");
 		
 		// submitted is default to not submitted
 		
