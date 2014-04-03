@@ -35,6 +35,13 @@ class CrdProcCategory {
     }
   }
 
+  /**
+   * Return the default category
+   */
+  static CrdProcCategory defaultEntry() {
+    CrdProcCategory.findByName(DEFAULT_CATEGORY_NAME)
+  }
+
   String toString() {
     name
   }
