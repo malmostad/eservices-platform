@@ -51,7 +51,7 @@ class ProcessEngineService {
     if (log.debugEnabled) log.debug "deployFromProcdef << ${resourceMap?.procdef}"
     def procdef = resourceMap.procdef
     def db = createDeploymentBuilder(procdef.key)
-    if (procdef.category) db.category(procdef.category.toString())
+    if (procdef?.category) db.category(procdef.category.toString())
     def is = new ByteArrayInputStream(resourceMap.bytes)
     db.addInputStream(procdef.resourceName, is)
     def deployment = db.deploy()
@@ -172,7 +172,7 @@ class ProcessEngineService {
 						 'procdef.deployed.not.found')
     
     // Copy activity form connections from previous version
-    procdefList.each {reconnectActivityForms(resourceMap.procdef, it)}
+    if (resourceMap.procdef) procdefList.each {reconnectActivityForms(resourceMap.procdef, it)}
     return procdefList
   }
 
@@ -200,6 +200,23 @@ class ProcessEngineService {
     def resourceMap = [procdef: origProc, bytes: is.bytes, ctype: 'text/xml']
     def procdefList = deployAndReconnect(resourceMap)
     if (log.debugEnabled) log.debug "procdefVersionByUpdate >> ${procdefList}"
+    return procdefList
+  }
+
+  /**
+   * Create a process definition from scratch by uploading a new BPMN model.
+   */
+  List createProcdefFromScratch(UploadBpmnCommand cmd) {
+    if (log.debugEnabled) log.debug "procdefVersionFromScratch << ${cmd}"
+    def db = createDeploymentBuilder(cmd.deploymentName)
+    db.category(cmd.crdProcCategory.toString())
+    db.addInputStream(cmd.fileName, cmd.inputStream)
+    def deployment = db.deploy()
+    def editState = CrdProcdefState.get(CrdProcdefState.STATE_EDIT_ID)
+    def procdefList = procdefService.findProcessDefinitionsFromDeployment(deployment.id, editState)
+    if (!procdefList) throw new ServiceException("Created process definition not found",
+						 'procdef.deployed.not.found')
+    if (log.debugEnabled) log.debug "procdefVersionFromScratch >> ${procdefList}"
     return procdefList
   }
 

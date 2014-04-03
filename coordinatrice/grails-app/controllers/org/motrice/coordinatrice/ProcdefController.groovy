@@ -23,6 +23,18 @@ class ProcdefController {
   }
 
   /**
+   * Create a process definition from scratch by uploading XML.
+   * This is different from the upload in procdef/show where we assume the uploaded
+   * process is a new version and try to reconnect activity forms.
+   * In this action we do not try to reconnect.
+   */
+  def create() {
+    if (log.debugEnabled) log.debug "CREATE ${params}"
+    def categoryList = CrdProcCategory.listOrderByName()
+    [categoryList: categoryList, defaultCategory: CrdProcCategory.defaultEntry()]
+  }
+
+  /**
    * List process definition keys (no versions, no full names)
    */
   def list(Integer max) {
@@ -172,6 +184,32 @@ class ProcdefController {
     flash.message = message(code: 'procdef.newversion.count', args: [procList.size()])
     render(view: 'listname', model: [procdefInstList: procList,
 	   procdefInstTotal: procList.size(), procdefKey: 'unknown'])
+  }
+
+  def xmlUploadFromScratch(UploadBpmnCommand cmd) {
+    if (log.debugEnabled) {
+      log.debug "UPLOAD FROM SCRATCH ${params}"
+      log.debug "cmd: ${cmd}"
+    }
+    def procList = []
+    cmd.file = request.getFile('bpmnDef')
+    if (cmd.file.empty) {
+      flash.message = message(code: 'procdef.upload.bpmn.empty')
+    } else {
+      try {
+	// If you want to save the file there is the transferTo(File) method
+	procList = processEngineService.createProcdefFromScratch(cmd)
+      } catch (ServiceException exc) {
+	handleServiceException('xmlUpload', exc)
+	redirect(action: "list")
+	return
+      }
+    }
+
+    def procCount = procList?.size() ?: 0
+    flash.message = message(code: 'procdef.newversion.count', args: [procCount])
+    render(view: 'listname', model: [procdefInstList: procList,
+	   procdefInstTotal: procCount, procdefKey: 'unknown'])
   }
 
   /**
@@ -434,5 +472,24 @@ class StartFormSelectionCommand {
 
   String toString() {
     "[StartFormCmd(process ${id}): ${form}]"
+  }
+}
+
+class UploadBpmnCommand {
+  String deploymentName
+  CrdProcCategory crdProcCategory
+  // org.springframework.web.multipart.commons.CommonsMultipartFile
+  def file
+
+  String getFileName() {
+    file.originalFilename
+  }
+
+  InputStream getInputStream() {
+    file.inputStream
+  }
+
+  String toString() {
+    "[UploadBpmnCmd: ${deploymentName}, ${crdProcCategory}, ${file}]"
   }
 }
