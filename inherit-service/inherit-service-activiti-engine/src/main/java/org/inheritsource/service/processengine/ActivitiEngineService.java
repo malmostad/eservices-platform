@@ -654,23 +654,35 @@ public class ActivitiEngineService {
 	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceId, Locale locale) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
+		String mainProcessInstanceId = processInstanceId;
 		try {
 			processInstanceDetails = new ProcessInstanceDetails();
 			
 			// Check if process is found among the active ones 
-			
+						
 			ProcessInstance processInstance = engine.getRuntimeService().createProcessInstanceQuery().
 				processInstanceId(processInstanceId).includeProcessVariables().singleResult();
 			
 			
-			StartLogItem startLogItem = formEngine.getStartLogItem(processInstance, null);
+			StartLogItem startLogItem = null;
 			
 			if(processInstance != null) {
+				
+				ProcessInstance mainPi = getMainProcessInstanceByProcessInstanceId(processInstanceId);
+				if (mainPi != null) {
+					mainProcessInstanceId = mainPi.getProcessInstanceId();
+					processInstance = mainPi;
+				}
+				
 				String procInstLabel = getStartFormName(processInstance, locale);
 				processInstanceDetails.setProcessInstanceLabel(procInstLabel); // TODO is label in use
 				processInstanceDetails.setProcessLabel(procInstLabel);
 				
-				startLogItem.setActivityLabel(procInstLabel);
+				startLogItem = formEngine.getStartLogItem(processInstance, null);
+				if (startLogItem != null) {
+					startLogItem.setActivityLabel(procInstLabel);
+					processInstanceDetails.getTimeline().add(startLogItem);
+				}
 				
 				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING);
 				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
@@ -683,10 +695,27 @@ public class ActivitiEngineService {
 				// Check if process is found among the historic ones 
 				HistoricProcessInstance historicProcessInstance = engine.getHistoryService().
 					createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+				
+				
+				
 				if(historicProcessInstance != null) {
+					
+					HistoricProcessInstance mainPi = getHistoricMainProcessInstanceByProcessInstanceId(mainProcessInstanceId);
+					if (mainPi != null) {
+						mainProcessInstanceId = mainPi.getId();
+						historicProcessInstance = mainPi;
+					}
+
+					
 					String procInstLabel = getHistoricStartFormName(historicProcessInstance, locale);
 					processInstanceDetails.setProcessInstanceLabel(procInstLabel);
-					startLogItem.setActivityLabel(procInstLabel);
+
+					// todo historic start log item....this will not work
+					startLogItem = formEngine.getStartLogItem(processInstance, null);
+					if (startLogItem != null) {
+						startLogItem.setActivityLabel(procInstLabel);
+						processInstanceDetails.getTimeline().add(startLogItem);
+					}
 					
 					processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_FINISHED);
 					processInstanceDetails.setStartedBy(historicProcessInstance.getStartUserId());
@@ -699,10 +728,7 @@ public class ActivitiEngineService {
 			}
 			
 			// Append historic tasks in timeline and tasks to pending
-			appendDetailsFromProcessInstance(processInstanceDetails, processInstanceId, locale);
-			
-			// add start log item
-			processInstanceDetails.getTimeline().add(startLogItem);
+			appendDetailsFromProcessInstance(processInstanceDetails, mainProcessInstanceId, locale);
 			
 			// sort timeline
 			processInstanceDetails.getTimeline().sort();

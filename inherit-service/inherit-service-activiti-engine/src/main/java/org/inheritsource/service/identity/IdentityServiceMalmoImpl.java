@@ -67,13 +67,20 @@ public class IdentityServiceMalmoImpl implements IdentityService {
 	public UserInfo getUserByUuid(String uuid) {
 		UserInfo userInfo = taskFormDb.getUserByUuid(uuid);
 		log.info("getUserByUuid: " + uuid);
-		if ( userInfo == null ) {
+		if ( userInfo == null && userDirectoryService != null && uuid!=null) {
 			UserDirectoryEntry ue = userDirectoryService.lookupUserByCn(uuid);
 			userInfo = new UserInfo();
 			userInfo.setUuid(ue.getCn());
 			userInfo.setLabel(ue.getLabel());
 			userInfo.setLabelShort(ue.getCn());
 		}
+		if (userInfo == null) {
+			userInfo = new UserInfo();
+			userInfo.setUuid(UserInfo.ANONYMOUS_UUID);
+			userInfo.setLabel(UserInfo.ANONYMOUS_UUID);
+			userInfo.setLabelShort(UserInfo.ANONYMOUS_UUID);
+			
+		}		
 		return userInfo;
 	}
 	

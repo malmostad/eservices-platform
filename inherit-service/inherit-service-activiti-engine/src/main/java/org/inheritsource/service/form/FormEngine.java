@@ -213,7 +213,9 @@ public class FormEngine {
 		StartLogItem startFormInstance = null;
 		
 		Map <String, Object> processVars = processInstance.getProcessVariables();
-		
+		if (processVars.size()==0) {
+			processVars = activitiEngineService.getEngine().getRuntimeService().getVariables(processInstance.getId());
+		}
 		if (processVars != null) {
 			startFormInstance = new StartLogItem();
 			startFormInstance.setTypeId((Long)processVars.get(START_FORM_TYPEID));
