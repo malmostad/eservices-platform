@@ -52,7 +52,7 @@
 				      </td>
 				      <td>
 				      	<c:if test="${not empty item.relativePageLink}">
-							<a href="${item.relativePageLink}">e-tj&auml;nst</a>
+							<a href="${item.relativePageLink}"><fmt:message key="mycases.eservice"/></a>
 						</c:if>
 				      </td>
 				    </tr>
