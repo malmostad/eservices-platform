@@ -23,14 +23,13 @@
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
       <ol class="property-list procdef">
-	<g:if test="${procdefInst?.name}">
-	  <li class="fieldcontain">
-	    <span id="name-label" class="property-label"><g:message code="procdef.name.label" default="Name" /></span>
-	    <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${procdefInst}" field="name"/>
-	      (<g:fieldValue bean="${procdefInst}" field="uuid"/>)
-	    </span>
-	  </li>
-	</g:if>
+	<li class="fieldcontain">
+	  <span id="name-label" class="property-label"><g:message code="procdef.name.label" default="Name" /></span>
+	  <span class="property-value" aria-labelledby="name-label">
+	    <g:link action="listname" id="${procdefInst?.key}"><g:fieldValue bean="${procdefInst}" field="nameOrKey"/></g:link>
+	    &nbsp;&nbsp;(<g:fieldValue bean="${procdefInst}" field="uuid"/>)
+	  </span>
+	</li>
 	<g:if test="${procdefInst?.vno}">
 	  <li class="fieldcontain">
 	    <span id="vno-label" class="property-label"><g:message code="procdef.vno.label" default="Vno" /></span>

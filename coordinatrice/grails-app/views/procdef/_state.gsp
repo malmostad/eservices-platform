@@ -3,7 +3,7 @@
   <label for="name">
     <g:message code="procdef.name.label" default="Procdef Key" />
   </label>
-  <g:textField name="name" size="32" maxlength="255" value="${procdefInst?.name}" readonly="true"/>
+  <g:textField name="name" size="32" maxlength="255" value="${procdefInst?.nameOrKey}" readonly="true"/>
 </div>
 <div class="fieldcontain ${hasErrors(bean: procdefInst, field: 'vno', 'error')} required">
   <label for="vno">

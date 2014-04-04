@@ -31,7 +31,9 @@ class Procdef implements Comparable {
   // Valid values are Active and Suspended
   CrdProcdefState state
 
-  // The name of this process definition as used in human communication
+  // The name of this process definition as used in human communication.
+  // Weird, but the name may be empty, so we also introduce the transient property
+  // nameOrKey to cover those cases.
   String name
 
   // The "category" attribute in Activiti process definitions
@@ -61,7 +63,7 @@ class Procdef implements Comparable {
   static belongsTo = [persisted: CrdProcdef]
   static hasMany = [activities: ActDef]
   static transients = ['deletable', 'deployedTime', 'deployedTimeStr', 'deploymentId',
-		       'display', 'guideUrl', 'userActivities', 'startForms']
+		       'display', 'guideUrl', 'nameOrKey', 'userActivities', 'startForms']
   static constraints = {
     uuid maxSize: 64
     key nullable: false, maxSize: 255
@@ -116,6 +118,13 @@ class Procdef implements Comparable {
   }
 
   /**
+   * Get the name, or if it is empty, the key.
+   */
+  String getNameOrKey() {
+    name ?: key
+  }
+
+  /**
    * Get all activities of type Human
    * Return SortedSet of ActDef
    */
@@ -142,7 +151,7 @@ class Procdef implements Comparable {
   }
 
   String toString() {
-    "${name} [v${vno}]"
+    "${nameOrKey} [v${vno}]"
   }
 
   //-------------------- Comparable --------------------

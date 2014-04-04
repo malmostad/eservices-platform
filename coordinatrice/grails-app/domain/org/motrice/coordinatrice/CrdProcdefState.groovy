@@ -29,7 +29,7 @@ class CrdProcdefState {
     id generator: 'assigned'
     cache usage: 'read-only'
   }
-  static transients = ['stateChangeAllowed']
+  static transients = ['startFormChangeAllowed', 'stateChangeAllowed']
   static constraints = {
     res blank: false, maxSize: 80
     defaultMessage blank: false, maxSize: 80
@@ -128,8 +128,19 @@ class CrdProcdefState {
     return result
   }
 
+  /**
+   * Constraints for allowing change of start form.
+   */
+  boolean isStartFormChangeAllowed() {
+    id < STATE_PUBLISHED_ID
+  }
+
+  /**
+   * Constraints for allowing state change.
+   * Now state changes are always allowed.
+   */
   boolean isStateChangeAllowed() {
-    id >= STATE_EDIT_ID
+    true
   }
 
   /**
@@ -141,11 +152,15 @@ class CrdProcdefState {
     def result = []
 
     switch (id) {
+    case STATE_ACTIVE_ID:
+    case STATE_SUSPENDED_ID:
+    result = [STATE_EDIT_ID, STATE_TRIAL_ID]
+    break;
     case STATE_EDIT_ID:
-    result = [STATE_TRIAL_ID]
+    result = [STATE_TRIAL_ID, STATE_APPROVED_ID]
     break
     case STATE_TRIAL_ID:
-    result = [STATE_EDIT_ID, STATE_APPROVED_ID]
+    result = [STATE_EDIT_ID, STATE_APPROVED_ID, STATE_PUBLISHED_ID]
     break
     case STATE_APPROVED_ID:
     result = [STATE_EDIT_ID, STATE_PUBLISHED_ID]

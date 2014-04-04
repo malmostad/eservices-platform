@@ -41,10 +41,13 @@
 
 	<bean id="identityService" class="org.inheritsource.service.identity.IdentityServiceMalmoImpl">
 		<property name="taskFormDb" ref="taskFormDb" />
+		<property name="userDirectoryService" ref="userDirectoryService" />
 	</bean>
 
-	
 	<bean id="taskFormDb" class="org.inheritsource.taskform.engine.persistence.TaskFormDb" scope="singleton">
+	</bean>
+
+	<bean id="userDirectoryService" class="org.inheritsource.service.identity.UserDirectoryService" scope="singleton">
 	</bean>
 
 	<bean id="engine" class="org.inheritsource.taskform.engine.TaskFormService"

@@ -52,6 +52,8 @@ import org.inheritsource.service.common.domain.UserDirectoryEntry;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.form.FormEngine;
+import org.inheritsource.service.identity.ActorSelectorDirUtils;
+import org.inheritsource.service.identity.UserDirectoryService;
 import org.inheritsource.service.orbeon.OrbeonService;
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;

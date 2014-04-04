@@ -18,7 +18,7 @@
   <tbody>
     <g:each in="${procdefInstList}" status="i" var="procdefInst">
       <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-	<td><g:link action="show" id="${procdefInst.uuid}">${fieldValue(bean: procdefInst, field: "name")}</g:link></td>
+	<td><g:link action="show" id="${procdefInst.uuid}">${fieldValue(bean: procdefInst, field: "nameOrKey")}</g:link></td>
 	<td>${fieldValue(bean: procdefInst, field: "vno")}</td>
 	<td><g:pdefstate state="${procdefInst?.state}"/></td>
 	<g:if test="${delprefix}">

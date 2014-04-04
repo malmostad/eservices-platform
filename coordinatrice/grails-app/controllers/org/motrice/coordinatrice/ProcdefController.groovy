@@ -23,6 +23,18 @@ class ProcdefController {
   }
 
   /**
+   * Create a process definition from scratch by uploading XML.
+   * This is different from the upload in procdef/show where we assume the uploaded
+   * process is a new version and try to reconnect activity forms.
+   * In this action we do not try to reconnect.
+   */
+  def create() {
+    if (log.debugEnabled) log.debug "CREATE ${params}"
+    def categoryList = CrdProcCategory.listOrderByName()
+    [categoryList: categoryList, defaultCategory: CrdProcCategory.defaultEntry()]
+  }
+
+  /**
    * List process definition keys (no versions, no full names)
    */
   def list(Integer max) {
@@ -57,6 +69,7 @@ class ProcdefController {
 
   /**
    * List process definitions having a given key
+   * Pass the key as the "id" parameter
    */
   def listname(Integer max) {
     if (log.debugEnabled) log.debug "LISTNAME ${params}"
@@ -104,7 +117,7 @@ class ProcdefController {
     def state = procdefInst.state
     def startForms = procdefInst.startForms
     if (log.debugEnabled) log.debug "SHOW >> ${procdefInst}, ${startForms}"
-    [procdefInst: procdefInst, startForms: startForms, editable: state.editable]
+    [procdefInst: procdefInst, startForms: startForms, editable: state.startFormChangeAllowed]
   }
 
   def diagramDownload() {
@@ -173,6 +186,32 @@ class ProcdefController {
 	   procdefInstTotal: procList.size(), procdefKey: 'unknown'])
   }
 
+  def xmlUploadFromScratch(UploadBpmnCommand cmd) {
+    if (log.debugEnabled) {
+      log.debug "UPLOAD FROM SCRATCH ${params}"
+      log.debug "cmd: ${cmd}"
+    }
+    def procList = []
+    cmd.file = request.getFile('bpmnDef')
+    if (cmd.file.empty) {
+      flash.message = message(code: 'procdef.upload.bpmn.empty')
+    } else {
+      try {
+	// If you want to save the file there is the transferTo(File) method
+	procList = processEngineService.createProcdefFromScratch(cmd)
+      } catch (ServiceException exc) {
+	handleServiceException('xmlUpload', exc)
+	redirect(action: "list")
+	return
+      }
+    }
+
+    def procCount = procList?.size() ?: 0
+    flash.message = message(code: 'procdef.newversion.count', args: [procCount])
+    render(view: 'listname', model: [procdefInstList: procList,
+	   procdefInstTotal: procCount, procdefKey: 'unknown'])
+  }
+
   /**
    * Edit the start form connection (nothing else may be changed)
    */
@@ -184,7 +223,7 @@ class ProcdefController {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
       redirect(action: "list")
       return
-    } else if (!procdefInst.state.editable) {
+    } else if (!procdefInst.state.startFormChangeAllowed) {
       flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
       redirect(action: "show", id: uuid)
       return
@@ -209,7 +248,7 @@ class ProcdefController {
     if (!procdefInst) {
       redirect(action: "edit", id: procdefInst.uuid)
       return
-    } else if (!procdefInst.state.editable) {
+    } else if (!procdefInst.state.startFormChangeAllowed) {
       flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), id])
       redirect(action: "list")
       return
@@ -272,7 +311,7 @@ class ProcdefController {
 
     procdefService.updateProcdefState(procdefInst, updatedState)
     def procdefKey = procdefInst.key
-    flash.message = message(code: 'default.updated.message', args: [message(code: 'procdef.label', default: 'Procdef'), procdefInst.id])
+    flash.message = message(code: 'default.updated.message', args: [message(code: 'procdef.label', default: 'Procdef'), id])
     redirect(action: 'listname', id: procdefKey)
   }
 
@@ -433,5 +472,24 @@ class StartFormSelectionCommand {
 
   String toString() {
     "[StartFormCmd(process ${id}): ${form}]"
+  }
+}
+
+class UploadBpmnCommand {
+  String deploymentName
+  CrdProcCategory crdProcCategory
+  // org.springframework.web.multipart.commons.CommonsMultipartFile
+  def file
+
+  String getFileName() {
+    file.originalFilename
+  }
+
+  InputStream getInputStream() {
+    file.inputStream
+  }
+
+  String toString() {
+    "[UploadBpmnCmd: ${deploymentName}, ${crdProcCategory}, ${file}]"
   }
 }

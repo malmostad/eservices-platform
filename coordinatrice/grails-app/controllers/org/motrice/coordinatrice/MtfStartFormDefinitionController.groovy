@@ -3,9 +3,12 @@ package org.motrice.coordinatrice
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
- * Only used for deleting start forms from Procdef.edit
+ * Manage start forms -- not a plain crud controller.
+ * Some fields of the domain never appear on screen.
  */
 class MtfStartFormDefinitionController {
+
+  def formService
 
   //static allowedMethods = [delete: "POST"]
 
@@ -13,35 +16,44 @@ class MtfStartFormDefinitionController {
     redirect(action: "list", params: params)
   }
 
+  /**
+   * List start forms
+   */
   def list(Integer max) {
-    params.max = Math.min(max ?: 10, 100)
-    [mtfStartFormDefinitionInstList: MtfStartFormDefinition.list(params), mtfStartFormDefinitionInstTotal: MtfStartFormDefinition.count()]
+    if (log.debugEnabled) log.debug "LIST ${params}"
+    params.max = Math.min(max ?: 20, 100)
+    params.offset = params.offset as Integer ?: 0
+    if (!params.sort) params.sort = 'formConnectionKey'
+    def mtfEntityList = MtfStartFormDefinition.list(params)
+    def total = MtfStartFormDefinition.count()
+    mtfEntityList = formService.addProcdefs(mtfEntityList)
+    [startFormdefList: mtfEntityList, startFormdefTotal: total]
   }
 
   def show(Long id) {
-    def mtfStartFormDefinitionInst = MtfStartFormDefinition.get(id)
-    if (!mtfStartFormDefinitionInst) {
+    def startFormdefInst = MtfStartFormDefinition.get(id)
+    if (!startFormdefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'mtfStartFormDefinition.label', default: 'MtfStartFormDefinition'), id])
       redirect(action: "list")
       return
     }
 
-    [mtfStartFormDefinitionInst: mtfStartFormDefinitionInst]
+    [startFormdefInst: startFormdefInst]
   }
 
   def delete(Long id) {
     if (log.debugEnabled) log.debug "DELETE: ${params}"
-    def mtfStartFormDefinitionInst = MtfStartFormDefinition.get(id)
-    if (!mtfStartFormDefinitionInst) {
+    def startFormdefInst = MtfStartFormDefinition.get(id)
+    if (!startFormdefInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'mtfStartFormDefinition.label', default: 'MtfStartFormDefinition'), id])
       redirect(controller: 'procdef', action: 'edit', id: params.procdefId)
       return
     }
 
-    def formName = mtfStartFormDefinitionInst.formConnectionKey
+    def formName = startFormdefInst.formConnectionKey
 
     try {
-      mtfStartFormDefinitionInst.delete(flush: true)
+      startFormdefInst.delete(flush: true)
       flash.message = message(code: 'startform.deleted.label', args: [formName])
       redirect(controller: 'procdef', action: 'edit', id: params.procdefId)
     }
