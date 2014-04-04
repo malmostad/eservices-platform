@@ -135,7 +135,8 @@ public class CoordinatriceFacade {
 	public String getStartFormLabel(String processInstanceId, Locale locale) {
 		String label = null;
 		
-		ProcessInstance processInstance = getEngine().getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstanceId).includeProcessVariables().singleResult();
+		ProcessInstance processInstance = getEngine().getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstanceId).includeProcessVariables().singleResult();		
+		
 		if (processInstance != null && processInstance.getProcessVariables() != null && locale != null) {
 
 			// First try to find form label from coordinatrice

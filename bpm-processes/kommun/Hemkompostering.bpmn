@@ -8,6 +8,7 @@
       <lane id="laneMedborgare" name="Medborgare">
         <flowNodeRef>startevent1</flowNodeRef>
         <flowNodeRef>endevent1</flowNodeRef>
+        <flowNodeRef>callForenkladDelgivning</flowNodeRef>
       </lane>
       <lane id="laneRegistrator" name="Registrator">
         <flowNodeRef>registrering</flowNodeRef>
@@ -24,18 +25,26 @@
         <activiti:executionListener event="start" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
       </extensionElements>
     </startEvent>
-    <userTask id="registrering" name="Registrering" activiti:candidateUsers="admin">
+    <userTask id="registrering" name="Registrering" activiti:candidateUsers="admin"></userTask>
+    <userTask id="handlaggning" name="Handläggning" activiti:candidateUsers="admin">
       <extensionElements>
         <activiti:executionListener event="end" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
+        <activiti:executionListener event="end" class="org.inheritsource.service.delegates.SetDecisionAct"></activiti:executionListener>
       </extensionElements>
     </userTask>
-    <userTask id="handlaggning" name="Handläggning" activiti:candidateUsers="admin"></userTask>
     <userTask id="expediering" name="Expediering" activiti:candidateUsers="admin"></userTask>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow12" sourceRef="handlaggning" targetRef="expediering"></sequenceFlow>
     <sequenceFlow id="flow14" sourceRef="registrering" targetRef="handlaggning"></sequenceFlow>
     <sequenceFlow id="flow15" sourceRef="startevent1" targetRef="registrering"></sequenceFlow>
-    <sequenceFlow id="flow16" sourceRef="expediering" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="expediering" targetRef="callForenkladDelgivning"></sequenceFlow>
+    <callActivity id="callForenkladDelgivning" name="Förenklad delgivning" calledElement="procForenkladDelgivning">
+      <extensionElements>
+        <activiti:in source="decision.act.uri" target="serviceDocUri"></activiti:in>
+        <activiti:in source="motrice.start.form.assignee" target="recipientUserId"></activiti:in>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="flow17" sourceRef="callForenkladDelgivning" targetRef="endevent1"></sequenceFlow>
     <textAnnotation id="annotationRegistrering">
       <text>Registrator skapar och fördelar ärende i Miljöreda</text>
     </textAnnotation>
@@ -71,7 +80,10 @@
         <omgdc:Bounds height="55.0" width="105.0" x="610.0" y="750.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="1050.0" y="120.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="1130.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="callForenkladDelgivning" id="BPMNShape_callForenkladDelgivning">
+        <omgdc:Bounds height="55.0" width="141.0" x="890.0" y="120.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="annotationRegistrering" id="BPMNShape_annotationRegistrering">
         <omgdc:Bounds height="50.0" width="161.0" x="370.0" y="333.0"></omgdc:Bounds>
@@ -93,8 +105,14 @@
         <omgdi:waypoint x="282.0" y="330.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
-        <omgdi:waypoint x="662.0" y="750.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1067.0" y="155.0"></omgdi:waypoint>
+        <omgdi:waypoint x="715.0" y="777.0"></omgdi:waypoint>
+        <omgdi:waypoint x="755.0" y="775.0"></omgdi:waypoint>
+        <omgdi:waypoint x="770.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="1031.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1130.0" y="147.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="association3" id="BPMNEdge_association3">
         <omgdi:waypoint x="370.0" y="358.0"></omgdi:waypoint>

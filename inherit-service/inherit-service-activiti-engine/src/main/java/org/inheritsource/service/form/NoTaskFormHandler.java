@@ -25,8 +25,15 @@ public class NoTaskFormHandler extends TaskFormHandler {
 
 		// initialize local task variables, will be stored by FormEngine
 		form.setInstanceId(docId);
-		form.setTypeId(activityFormDefinition.getFormTypeId());
-		form.setDefinitionKey(activityFormDefinition.getFormConnectionKey());
+		if (activityFormDefinition == null) {
+			// no form
+			form.setTypeId(new Long(6)); // no form type id 
+			form.setDefinitionKey(null);
+		}
+		else {
+			form.setTypeId(activityFormDefinition.getFormTypeId());
+			form.setDefinitionKey(activityFormDefinition.getFormConnectionKey());
+		}
 		form.setActUri(null);
 		form.setDataUri(null);
 		

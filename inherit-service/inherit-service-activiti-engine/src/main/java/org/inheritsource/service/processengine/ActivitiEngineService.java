@@ -163,18 +163,30 @@ public class ActivitiEngineService {
 	public Set<InboxTaskItem> getUserInboxByProcessInstanceId(String processInstanceId, Locale locale) {
 		Set<InboxTaskItem> result = new LinkedHashSet<InboxTaskItem>();
 		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().
-			processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
-		
-		List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks, locale, null);
-		
-		if(inboxTaskItemList != null) {
-			for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
-				result.add(inboxTaskItem);
-			}
-		}
-		
+		appendInboxTaskItemsFromProcessInstance(result, processInstanceId, locale);
+				
 		return result;
+	}
+		
+	private void appendInboxTaskItemsFromProcessInstance(Set<InboxTaskItem> items, String processInstanceId, Locale locale) {
+		if (items != null && processInstanceId != null) {
+			List<Task> tasks = engine.getTaskService().createTaskQuery().
+					processInstanceId(processInstanceId).orderByTaskCreateTime().asc().list();
+				
+				List<InboxTaskItem> inboxTaskItemList = taskList2InboxTaskItemList(tasks, locale, null);
+				
+				if(inboxTaskItemList != null) {
+					for(InboxTaskItem inboxTaskItem : inboxTaskItemList) {
+						items.add(inboxTaskItem);
+					}
+				}
+				List<ProcessInstance> subprocesses = engine.getRuntimeService().createProcessInstanceQuery().superProcessInstanceId(processInstanceId).list();
+				if (subprocesses != null) {
+					for (ProcessInstance subProcInst : subprocesses) {
+						appendInboxTaskItemsFromProcessInstance(items, subProcInst.getProcessInstanceId(), locale);
+					}
+				}
+		}
 	}
 	
 
@@ -189,7 +201,6 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
-	
 	private InboxTaskItem task2InboxTaskItem(Task task, Locale locale, String userId) {
 		InboxTaskItem item = new InboxTaskItem();
 		if (task != null) {
@@ -202,17 +213,20 @@ public class ActivitiEngineService {
 			item.setExpectedEndDate(task.getDueDate());
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
-			item.setProcessLabel(coordinatriceFacade.getStartFormLabel(task.getProcessInstanceId(), locale));
+			
 						
 			ProcessInstance pI = getMainProcessInstanceByProcessInstanceId
 				(task.getProcessInstanceId());
-			
+						
 		    if(pI != null) {
 		    	item.setRootProcessInstanceUuid(pI.getProcessInstanceId());
-				item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId()); 
+				item.setRootProcessDefinitionUuid(pI.getProcessDefinitionId());
+				item.setProcessLabel(coordinatriceFacade.getStartFormLabel(pI.getProcessInstanceId(), locale));
+
 		    } else {
 		    	item.setRootProcessInstanceUuid(task.getProcessInstanceId());
 				item.setRootProcessDefinitionUuid(task.getProcessDefinitionId());
+				item.setProcessLabel(coordinatriceFacade.getStartFormLabel(task.getProcessInstanceId(), locale));
 		    }
 		}
 		return item;
@@ -605,6 +619,38 @@ public class ActivitiEngineService {
 		return result;
 	}
 	
+	private void appendDetailsFromProcessInstance(ProcessInstanceDetails processInstanceDetails, String processInstanceId, Locale locale) {
+	
+		// Tasks in this process
+		List<Task> tasks = engine.getTaskService().createTaskQuery().
+			processInstanceId(processInstanceId).orderByTaskName().includeTaskLocalVariables().asc().list();
+
+		// append historic tasks (i.e. to pending items)
+		if(tasks != null && tasks.size() > 0) {
+			for(Task task : tasks) {
+				processInstanceDetails.addActivityInstanceItem(task2ActivityInstancePendingItem(task, locale));
+			}	
+		}	
+	
+		// append historic tasks (i.e. to timeline)
+		List<HistoricTaskInstance> historicTasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
+				processInstanceId(processInstanceId).finished().includeTaskLocalVariables().orderByHistoricTaskInstanceStartTime().asc().list();
+			if(historicTasks != null) {
+				for (HistoricTaskInstance historicTask : historicTasks) {
+					processInstanceDetails.addActivityInstanceItem(task2ActivityInstanceLogItem(historicTask, locale));
+				}
+			}
+
+			List<ProcessInstance> subprocesses = engine.getRuntimeService().createProcessInstanceQuery().superProcessInstanceId(processInstanceId).list();
+			if (subprocesses != null) {
+				// iterate sub processes and add details from them as well
+				for (ProcessInstance subProcInst : subprocesses) {
+					appendDetailsFromProcessInstance(processInstanceDetails, subProcInst.getProcessInstanceId(), locale);
+				}
+			}
+	}
+
+	
 	public ProcessInstanceDetails getProcessInstanceDetails(String processInstanceId, Locale locale) {
 		ProcessInstanceDetails processInstanceDetails = null;
 		
@@ -632,19 +678,7 @@ public class ActivitiEngineService {
 				processInstanceDetails.setEndDate(null);
 				processInstanceDetails.setProcessInstanceUuid(processInstance.getProcessInstanceId());
 				
-				// Handle pendings
 				
-				List<Task> tasks = engine.getTaskService().createTaskQuery().
-					processInstanceId(processInstance.getProcessInstanceId()).orderByTaskName().includeTaskLocalVariables().asc().list();
-							
-				if(tasks != null && tasks.size() > 0) {
-					List<ActivityInstancePendingItem> activityInstancePendingItems = new ArrayList<ActivityInstancePendingItem>();
-					for(Task task : tasks) {
-						activityInstancePendingItems.add(task2ActivityInstancePendingItem(task, locale));
-					}
-					processInstanceDetails.setPending(activityInstancePendingItems);	
-					processInstanceDetails.setActivities(new TreeSet<InboxTaskItem>(taskList2InboxTaskItemList(tasks, locale, null)));
-				}	
 			} else {
 				// Check if process is found among the historic ones 
 				HistoricProcessInstance historicProcessInstance = engine.getHistoryService().
@@ -663,20 +697,15 @@ public class ActivitiEngineService {
 					return null;
 				}
 			}
-			// Handle historic tasks
-				
-			List<HistoricTaskInstance> historicTasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
-				processInstanceId(processInstanceId).finished().includeTaskLocalVariables().orderByHistoricTaskInstanceStartTime().asc().list();
-			if(historicTasks != null) {
-				List<TimelineItem> activityInstanceLogItems = new ArrayList<TimelineItem>();
-				for (HistoricTaskInstance historicTask : historicTasks) {
-					activityInstanceLogItems.add(task2ActivityInstanceLogItem(historicTask, locale));
-				}
-				Timeline timeline = new Timeline();
-				timeline.add(startLogItem);
-				timeline.addAndSort(activityInstanceLogItems);
-				processInstanceDetails.setTimeline(timeline);
-			}
+			
+			// Append historic tasks in timeline and tasks to pending
+			appendDetailsFromProcessInstance(processInstanceDetails, processInstanceId, locale);
+			
+			// add start log item
+			processInstanceDetails.getTimeline().add(startLogItem);
+			
+			// sort timeline
+			processInstanceDetails.getTimeline().sort();
 			
 		} catch (Exception e) {
 			log.severe("Unable to getProcessInstanceDetails with processInstanceId: " + processInstanceId + 
@@ -1783,27 +1812,28 @@ public class ActivitiEngineService {
 		return name;
 	}
 	
-	
 	private List<ProcessInstance> pageList(List<ProcessInstance> processInstances, int fromIndex, int pageSize) {
-		int len;
-		int toIndex;
-		
 		if(processInstances == null) {
 			return(null);
 		}
-		
+
+		List<ProcessInstance> result = new ArrayList<ProcessInstance>();
+
 		try {
-			// If exception is thrown for fromIndex element then list is cleared.
-			processInstances.get(fromIndex);
-			
-			len = processInstances.size();
-			
-			if((fromIndex + pageSize) <= len) {
-				toIndex = fromIndex + pageSize;
-				processInstances = processInstances.subList(fromIndex, toIndex);
-			} else {
-				processInstances = processInstances.subList(fromIndex, len);
-			}	
+			int index = fromIndex;
+			int count = 0;
+			int N = processInstances.size();
+			while (index<N && count<pageSize) {
+				// If exception is thrown for fromIndex element then stop.
+				ProcessInstance pi = processInstances.get(index);
+				String parentInstanceId = getParentProcessInstanceUuid(pi.getProcessInstanceId());
+				if (parentInstanceId==null) {
+					// there is not a parent process to this process 
+					result.add(pi);
+					count++;
+				}
+				index++;
+			}			
 		} catch (Exception e) {
 			processInstances.clear();
 		}
@@ -1811,32 +1841,35 @@ public class ActivitiEngineService {
 		return processInstances;
 	}
 
+	
 	private List<HistoricProcessInstance> pageHistoricList(List<HistoricProcessInstance> processInstances, int fromIndex, int pageSize) {
-		int len;
-		int toIndex;
-		
 		if(processInstances == null) {
 			return(null);
 		}
-		
+
+		List<HistoricProcessInstance> result = new ArrayList<HistoricProcessInstance>();
+
 		try {
-			// If exception is thrown for fromIndex element then list is cleared.
-			processInstances.get(fromIndex);
-			
-			len = processInstances.size();
-			
-			if((fromIndex + pageSize) <= len) {
-				toIndex = fromIndex + pageSize;
-				processInstances = processInstances.subList(fromIndex, toIndex);
-			} else {
-				processInstances = processInstances.subList(fromIndex, len);
-			}	
+			int index = fromIndex;
+			int count = 0;
+			int N = processInstances.size();
+			while (index<N && count<pageSize) {
+				// If exception is thrown for fromIndex element then stop.
+				HistoricProcessInstance pi = processInstances.get(index);
+				if (pi.getSuperProcessInstanceId()==null) {
+					// there is not a super process to this process 
+					result.add(pi);
+					count++;
+				}
+				index++;
+			}			
 		} catch (Exception e) {
 			processInstances.clear();
 		}
 		
 		return processInstances;
 	}
+	
 	
 	public Tag addTag(String actinstId, Long tagTypeId,
 			String value, String userId) {

@@ -4,49 +4,48 @@
     <participant id="poolForenkladDelgivning" name="Förenklad delgivning" processRef="procForenkladDelgivning"></participant>
   </collaboration>
   <process id="procForenkladDelgivning" name="Förenklad delgivning" isExecutable="true">
-    <laneSet id="laneSet_process_pool1">
+    <laneSet id="laneSet_procForenkladDelgivning">
       <lane id="laneSystem" name="System">
         <flowNodeRef>startevent1</flowNodeRef>
         <flowNodeRef>parallelgateway1</flowNodeRef>
         <flowNodeRef>servicetaskMeddelandeOmBeslut</flowNodeRef>
         <flowNodeRef>servicetaskKontrollmeddelande</flowNodeRef>
         <flowNodeRef>parallelgateway2</flowNodeRef>
-        <flowNodeRef>endEventDelgivenLast</flowNodeRef>
         <flowNodeRef>timerDelayKontrollmeddelande</flowNodeRef>
         <flowNodeRef>timerDelayDelgiven</flowNodeRef>
+        <flowNodeRef>endEventDelgiven</flowNodeRef>
       </lane>
       <lane id="laneMottagare" name="Mottagare">
         <flowNodeRef>usertaskTaDelAvBeslut</flowNodeRef>
         <flowNodeRef>boundarytimer1</flowNodeRef>
-        <flowNodeRef>endevent1</flowNodeRef>
+        <flowNodeRef>exclusivegateway1</flowNodeRef>
       </lane>
     </laneSet>
     <startEvent id="startevent1" name="Start"></startEvent>
     <serviceTask id="servicetaskMeddelandeOmBeslut" name="Meddelande om beslut" activiti:class="org.inheritsource.service.delegates.EmailDelegate"></serviceTask>
     <intermediateCatchEvent id="timerDelayKontrollmeddelande" name="Vänteläge innan kontrollmeddelande skickas">
       <timerEventDefinition>
-        <timeDuration>PT1M</timeDuration>
+        <timeDuration>PT20M</timeDuration>
       </timerEventDefinition>
     </intermediateCatchEvent>
     <parallelGateway id="parallelgateway1" name="Exclusive Gateway"></parallelGateway>
     <serviceTask id="servicetaskKontrollmeddelande" name="Skicka kontrollmeddelande" activiti:class="org.inheritsource.service.delegates.EmailDelegate"></serviceTask>
     <intermediateCatchEvent id="timerDelayDelgiven" name="Vänteläge till delgiven">
       <timerEventDefinition>
-        <timeDuration>PT1M</timeDuration>
+        <timeDuration>PT20M</timeDuration>
       </timerEventDefinition>
     </intermediateCatchEvent>
     <parallelGateway id="parallelgateway2" name="Exclusive Gateway"></parallelGateway>
     <userTask id="usertaskTaDelAvBeslut" name="Ta del av beslut" activiti:assignee="${recipientUserId}"></userTask>
     <boundaryEvent id="boundarytimer1" name="Timer" attachedToRef="usertaskTaDelAvBeslut" cancelActivity="true">
       <timerEventDefinition>
-        <timeDuration>PT2M</timeDuration>
+        <timeDuration>PT40M</timeDuration>
       </timerEventDefinition>
     </boundaryEvent>
-    <sequenceFlow id="flow8" sourceRef="usertaskTaDelAvBeslut" targetRef="parallelgateway2"></sequenceFlow>
-    <endEvent id="endEventDelgivenLast" name="Delgiven, bekräftat läst beslut"></endEvent>
-    <sequenceFlow id="flow9" sourceRef="parallelgateway2" targetRef="endEventDelgivenLast"></sequenceFlow>
-    <endEvent id="endevent1" name="End"></endEvent>
-    <sequenceFlow id="flow10" sourceRef="boundarytimer1" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow8" sourceRef="usertaskTaDelAvBeslut" targetRef="exclusivegateway1"></sequenceFlow>
+    <endEvent id="endEventDelgiven" name="Delgiven"></endEvent>
+    <sequenceFlow id="flow9" sourceRef="parallelgateway2" targetRef="endEventDelgiven"></sequenceFlow>
+    <sequenceFlow id="flow10" sourceRef="boundarytimer1" targetRef="exclusivegateway1"></sequenceFlow>
     <sequenceFlow id="flow11" sourceRef="startevent1" targetRef="servicetaskMeddelandeOmBeslut"></sequenceFlow>
     <sequenceFlow id="flow12" sourceRef="servicetaskMeddelandeOmBeslut" targetRef="parallelgateway1"></sequenceFlow>
     <sequenceFlow id="flow13" sourceRef="parallelgateway1" targetRef="timerDelayKontrollmeddelande"></sequenceFlow>
@@ -54,6 +53,8 @@
     <sequenceFlow id="flow15" sourceRef="timerDelayKontrollmeddelande" targetRef="servicetaskKontrollmeddelande"></sequenceFlow>
     <sequenceFlow id="flow16" sourceRef="servicetaskKontrollmeddelande" targetRef="timerDelayDelgiven"></sequenceFlow>
     <sequenceFlow id="flow17" sourceRef="timerDelayDelgiven" targetRef="parallelgateway2"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow18" sourceRef="exclusivegateway1" targetRef="parallelgateway2"></sequenceFlow>
     <textAnnotation id="textannotation1">
       <text>http://www.domstol.se/Delgivning/Forenklad-delgivning/
 
@@ -107,11 +108,11 @@ Delgivningsmottagaren anses delgiven när två veckor har förflutit från det a
       <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
         <omgdc:Bounds height="30.0" width="30.0" x="550.0" y="422.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="endEventDelgivenLast" id="BPMNShape_endEventDelgivenLast">
+      <bpmndi:BPMNShape bpmnElement="endEventDelgiven" id="BPMNShape_endEventDelgiven">
         <omgdc:Bounds height="35.0" width="35.0" x="1030.0" y="171.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
-        <omgdc:Bounds height="35.0" width="35.0" x="1030.0" y="451.0"></omgdc:Bounds>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="880.0" y="388.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
         <omgdc:Bounds height="231.0" width="211.0" x="1080.0" y="90.0"></omgdc:Bounds>
@@ -121,8 +122,7 @@ Delgivningsmottagaren anses delgiven när två veckor har förflutit från det a
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
         <omgdi:waypoint x="595.0" y="408.0"></omgdi:waypoint>
-        <omgdi:waypoint x="899.0" y="408.0"></omgdi:waypoint>
-        <omgdi:waypoint x="900.0" y="208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="880.0" y="408.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
         <omgdi:waypoint x="920.0" y="188.0"></omgdi:waypoint>
@@ -131,7 +131,8 @@ Delgivningsmottagaren anses delgiven när två veckor har förflutit från det a
       <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
         <omgdi:waypoint x="565.0" y="452.0"></omgdi:waypoint>
         <omgdi:waypoint x="564.0" y="468.0"></omgdi:waypoint>
-        <omgdi:waypoint x="1030.0" y="468.0"></omgdi:waypoint>
+        <omgdi:waypoint x="900.0" y="468.0"></omgdi:waypoint>
+        <omgdi:waypoint x="900.0" y="428.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
         <omgdi:waypoint x="125.0" y="187.0"></omgdi:waypoint>
@@ -161,6 +162,10 @@ Delgivningsmottagaren anses delgiven när två veckor har förflutit från det a
       <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
         <omgdi:waypoint x="835.0" y="187.0"></omgdi:waypoint>
         <omgdi:waypoint x="880.0" y="188.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="900.0" y="388.0"></omgdi:waypoint>
+        <omgdi:waypoint x="900.0" y="208.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
