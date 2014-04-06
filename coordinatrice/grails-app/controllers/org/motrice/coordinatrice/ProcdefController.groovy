@@ -29,9 +29,46 @@ class ProcdefController {
    * In this action we do not try to reconnect.
    */
   def create() {
-    if (log.debugEnabled) log.debug "CREATE ${params}"
+    if (log.debugEnabled) log.debug "CREATE FROM SCRATCH ${params}"
     def categoryList = CrdProcCategory.listOrderByName()
     [categoryList: categoryList, defaultCategory: CrdProcCategory.defaultEntry()]
+  }
+
+  /**
+   * Copy the process definition and make it a new version.
+   */
+  def createcopy() {
+    if (log.debugEnabled) log.debug "NEW VERSION ${params}"
+    def uuid = params.id
+    def procdefList = null
+
+    try {
+      procdefList = processEngineService.createNewProcdefVersionByDuplication(uuid)
+    } catch (ServiceException exc) {
+      handleServiceException('newversion', exc)
+      redirect(action: "list")
+      return
+    }
+
+    flash.message = message(code: 'procdef.newversion.count', args: [procdefList.size()])
+    render(view: 'listname', model: [procdefInstList: procdefList,
+	   procdefInstTotal: procdefList.size(), procdefKey: 'unknown'])
+  }
+
+  /**
+   * Upload BPMN defining what we assume is a new version of this process definition.
+   */
+  def createnewversion() {
+    if (log.debugEnabled) log.debug "CREATE NEW VERSION ${params}"
+    def uuid = params.id
+    def procdefInst = procdefService.findProcessDefinition(uuid)
+    if (!procdefInst) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
+      redirect(action: "list")
+      return
+    }
+
+    [procdefInst: procdefInst]
   }
 
   /**
@@ -152,6 +189,11 @@ class ProcdefController {
     response.outputStream << resourceMap.bytes
   }
 
+  /**
+   * Create a new version of a process definition by uploading BPMN.
+   * We have no control over what's uploaded.
+   * We act as if it is a new version and try to connect activity forms.
+   */
   def xmlUpload() {
     if (log.debugEnabled) log.debug "XMLUPLOAD ${params}"
     def uuid = params.id
@@ -170,6 +212,8 @@ class ProcdefController {
     def file = request.getFile('bpmnDef')
     if (file.empty) {
       flash.message = message(code: 'procdef.upload.bpmn.empty')
+      redirect(action: "show", id: uuid)
+      return
     } else {
       try {
 	// If you want to save the file there is the transferTo(File) method
@@ -195,6 +239,8 @@ class ProcdefController {
     cmd.file = request.getFile('bpmnDef')
     if (cmd.file.empty) {
       flash.message = message(code: 'procdef.upload.bpmn.empty')
+      redirect(action: "list")
+      return
     } else {
       try {
 	// If you want to save the file there is the transferTo(File) method
@@ -313,27 +359,6 @@ class ProcdefController {
     def procdefKey = procdefInst.key
     flash.message = message(code: 'default.updated.message', args: [message(code: 'procdef.label', default: 'Procdef'), id])
     redirect(action: 'listname', id: procdefKey)
-  }
-
-  /**
-   * Edit the start form connection (nothing else may be changed)
-   */
-  def newversion() {
-    if (log.debugEnabled) log.debug "NEW VERSION ${params}"
-    def uuid = params.id
-    def procdefList = null
-
-    try {
-      procdefList = processEngineService.createNewProcdefVersionByDuplication(uuid)
-    } catch (ServiceException exc) {
-      handleServiceException('newversion', exc)
-      redirect(action: "list")
-      return
-    }
-
-    flash.message = message(code: 'procdef.newversion.count', args: [procdefList.size()])
-    render(view: 'listname', model: [procdefInstList: procdefList,
-	   procdefInstTotal: procdefList.size(), procdefKey: 'unknown'])
   }
 
   /**
