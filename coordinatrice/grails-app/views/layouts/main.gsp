@@ -14,12 +14,14 @@
 		<link rel="apple-touch-icon" sizes="114x114" href="${resource(dir: 'images', file: 'apple-touch-icon-retina.png')}">
 		<link rel="stylesheet" href="${resource(dir: 'css', file: 'main.css')}" type="text/css">
 		<link rel="stylesheet" href="${resource(dir: 'css', file: 'mobile.css')}" type="text/css">
+		<link rel="stylesheet" href="${resource(dir: 'css', file: 'main-menu.css')}" type="text/css">
 		<g:layoutHead/>
 
 		<r:layoutResources />
 	</head>
 	<body>
 		<div id="grailsLogo" role="banner"><a href="http://motrice.org"><img src="${resource(dir: 'images', file: 'coordinatrice43.png')}" alt="Motrice"/></a><span class="meta">coordinatrice <g:meta name="app.version"/></span></div>
+		<g:render template="/navigation"/>
 		<g:layoutBody/>
 		<div id="motriceLogo" class="footer" role="contentinfo">
 		  <a href="http://motrice.org"><img src="${resource(dir: 'images', file: 'motrice_logo99x27.png')}" alt="Motrice"/></a>
