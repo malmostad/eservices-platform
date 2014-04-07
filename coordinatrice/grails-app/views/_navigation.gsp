@@ -17,6 +17,11 @@
 	</ul>
     </li>
     <li><a href="#"><g:message code="migration.menu"/></a>
+	<ul class="submenu">
+	  <li><g:link controller="MtfStartFormDefinition" action="list"><g:message code="startform.list.label"/></g:link></li>
+	  <li><g:link controller="PxdFormdef" action="list"><g:message code="pxdFormdef.list.label"/></g:link></li>
+	  <li><a class="create" href="${orbeonUri}/new" target="_"><g:message code="pxdFormdef.create.menu"/></a></li>
+	</ul>
     </li>
   </ul>
 </div>

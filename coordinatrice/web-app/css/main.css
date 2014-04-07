@@ -98,6 +98,7 @@ img {
         font-size: 150%;
 	color: #CCE1E8;
 	vertical-align: top;
+	width: 220px;
 }
 
 #motriceLogo a {
@@ -117,7 +118,7 @@ img {
 
 .content h1 {
 	border-bottom: 1px solid #CCCCCC;
-	margin: 0.8em 1em 0.3em;
+	margin: 0.4em 1em 0.3em;
 	padding: 0 0.25em;
 }
 
