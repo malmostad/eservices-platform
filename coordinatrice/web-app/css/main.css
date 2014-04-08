@@ -90,8 +90,8 @@ img {
 /* GENERAL */
 
 #grailsLogo a {
-	display: inline-block;
-	margin: 2px 1em;
+    display: inline-block;
+    margin: 1px 1em 0px 2em;
 }
 
 #grailsLogo span.meta {
@@ -119,7 +119,6 @@ img {
 .content h1 {
 	border-bottom: 1px solid #CCCCCC;
 	margin: 0.4em 1em 0.3em;
-	padding: 0 0.25em;
 }
 
 .scaffold-list h1 {
