@@ -596,6 +596,9 @@
       <sv:value>../mycases-common</sv:value>
       <sv:value>../inheritportal-common</sv:value>
     </sv:property>
+    <sv:property sv:name="hst:lockedby" sv:type="String">
+      <sv:value/>
+    </sv:property>
   </sv:node>
   <sv:node sv:name="malmo-internal-common">
     <sv:property sv:name="jcr:primaryType" sv:type="Name">
