@@ -20,7 +20,7 @@
 		<r:layoutResources />
 	</head>
 	<body>
-		<div id="grailsLogo" role="banner"><g:render template="/navigation"/><a href="http://motrice.org"><img src="${resource(dir: 'images', file: 'piano-61x35.png')}" alt="Motrice"/></a><span class="meta">coordinatrice <g:meta name="app.version"/></span></div>
+		<div id="grailsLogo" role="banner"><g:render template="/navigation"/><div class="meta"><a href="http://motrice.org"><img src="${resource(dir: 'images', file: 'piano-61x35.png')}" alt="Motrice"/></a>coordinatrice <g:meta name="app.version"/></div></div>
 		<g:layoutBody/>
 		<div id="motriceLogo" class="footer" role="contentinfo">
 		  <a href="http://motrice.org"><img src="${resource(dir: 'images', file: 'motrice_logo99x27.png')}" alt="Motrice"/></a>

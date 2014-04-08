@@ -90,15 +90,13 @@ img {
 /* GENERAL */
 
 #grailsLogo a {
-    display: inline-block;
-    margin: 1px 1em 0px 2em;
+    margin: 1px 1em 0px 1em;
 }
 
-#grailsLogo span.meta {
+#grailsLogo div.meta {
+	vertical-align: top;
         font-size: 150%;
 	color: #CCE1E8;
-	vertical-align: top;
-	width: 220px;
 }
 
 #motriceLogo a {
