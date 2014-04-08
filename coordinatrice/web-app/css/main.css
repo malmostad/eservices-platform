@@ -90,7 +90,7 @@ img {
 /* GENERAL */
 
 #grailsLogo a {
-    margin: 1px 1em 0px 1em;
+    margin: 1px 0.5em 0px 1.5em;
 }
 
 #grailsLogo div.meta {
@@ -200,7 +200,7 @@ img {
 	text-decoration: underline;
 }
 
-.nav a.home, .nav a.list, .nav a.create {
+.nav a.home, .nav a.list, .nav a.create, .nav a.newpackage {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
@@ -216,6 +216,10 @@ img {
 
 .nav a.create {
 	background-image: url(../images/skin/database_add.png);
+}
+
+.nav a.newpackage {
+	background-image: url(../images/silk/package_add.png);
 }
 
 /* CREATE/EDIT FORMS AND SHOW PAGES */
@@ -595,7 +599,9 @@ th:hover, tr:hover {
 	text-decoration: underline;
 }
 
-.buttons .delete, .buttons .edit, .buttons .save, .buttons .show {
+.buttons .delete, .buttons .edit, .buttons .save, .buttons .show,
+.buttons .add, .buttons .checkall, .buttons .clearall, .buttons .remove,
+.buttons .export, .buttons .upload, .buttons .install {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
@@ -620,6 +626,38 @@ th:hover, tr:hover {
 
 .buttons .show {
 	background-image: url(../images/silk/application_view_detail.png);
+}
+
+.buttons .add {
+	background-image: url(../images/silk/add.png);
+}
+
+.buttons .remove {
+	background-image: url(../images/silk/delete.png);
+}
+
+#textForAddContaining {
+    background-color: #999999;
+}
+
+.buttons .checkall {
+	background-image: url(../images/silk/accept.png);
+}
+
+.buttons .clearall {
+	background-image: url(../images/silk/cross.png);
+}
+
+.buttons .export {
+	background-image: url(../images/silk/arrow_down.png);
+}
+
+.buttons .upload {
+	background-image: url(../images/silk/arrow_up.png);
+}
+
+.buttons .install {
+	background-image: url(../images/silk/arrow_rotate_clockwise.png);
 }
 
 a.skip {

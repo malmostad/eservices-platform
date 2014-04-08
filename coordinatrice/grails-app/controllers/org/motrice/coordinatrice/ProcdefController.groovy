@@ -5,7 +5,7 @@ import org.motrice.coordinatrice.pxd.PxdFormdefVer
 import org.motrice.coordinatrice.MtfStartFormDefinition
 
 /**
- * Process definition controller tailored to Bonita
+ * Process definition controller
  */
 class ProcdefController {
 

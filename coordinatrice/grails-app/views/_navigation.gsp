@@ -11,16 +11,16 @@
     </li>
     <li><a href="#"><g:message code="pxdFormdef.menu"/></a>
 	<ul class="submenu">
-	  <li><g:link controller="MtfStartFormDefinition" action="list"><g:message code="startform.list.label"/></g:link></li>
-	  <li><g:link controller="PxdFormdef" action="list"><g:message code="pxdFormdef.list.label"/></g:link></li>
+	  <li><g:link controller="mtfStartFormDefinition" action="list"><g:message code="startform.list.label"/></g:link></li>
+	  <li><g:link controller="pxdFormdef" action="list"><g:message code="pxdFormdef.list.label"/></g:link></li>
 	  <li><a class="create" href="${orbeonUri}/new" target="_"><g:message code="pxdFormdef.create.menu"/></a></li>
 	</ul>
     </li>
     <li><a href="#"><g:message code="migration.menu"/></a>
 	<ul class="submenu">
-	  <li><g:link controller="MtfStartFormDefinition" action="list"><g:message code="startform.list.label"/></g:link></li>
-	  <li><g:link controller="PxdFormdef" action="list"><g:message code="pxdFormdef.list.label"/></g:link></li>
-	  <li><a class="create" href="${orbeonUri}/new" target="_"><g:message code="pxdFormdef.create.menu"/></a></li>
+	  <li><g:link controller="migPackage" action="list"><g:message code="migPackage.list.menu"/></g:link></li>
+	  <li><g:link controller="migPackage" action="uploadprepare"><g:message code="migPackage.upload.menu"/></g:link></li>
+	  <li><g:link controller="migPackage" action="listexp"><g:message code="migPackage.create.menu"/></g:link></li>
 	</ul>
     </li>
   </ul>
