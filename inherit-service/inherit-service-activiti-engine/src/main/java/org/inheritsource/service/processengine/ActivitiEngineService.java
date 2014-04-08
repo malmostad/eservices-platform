@@ -1088,8 +1088,9 @@ public class ActivitiEngineService {
 			
 			if(processInstances != null) {
 				
-				// Filter due to fromIndex and pageSize	
-				processInstances = pageList(processInstances, fromIndex, pageSize);
+				// Filter due to fromIndex and pageSize
+				// bjmo made a quick fix here, but the number of pages will be wrong because it is based on a array with subprocesses included.
+				List<ProcessInstance> pageProcessInstances = pageList(processInstances, fromIndex, pageSize);
 				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
@@ -1097,7 +1098,7 @@ public class ActivitiEngineService {
 			
 				HashMap<String, Date> startDates = getProcessInstanceStartDates(processInstances);
 				
-				for(ProcessInstance processInstance : processInstances) {
+				for(ProcessInstance processInstance : pageProcessInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 					
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
@@ -1220,13 +1221,14 @@ public class ActivitiEngineService {
 			if(processInstances != null) {
 				
 				// Filter due to fromIndex and pageSize	
-				processInstances = pageHistoricList(processInstances, fromIndex, pageSize);
+				// bjmo made a quick fix here, but the number of pages will be wrong because it is based on a array with subprocesses included.
+				List<HistoricProcessInstance> pageProcessInstances = pageHistoricList(processInstances, fromIndex, pageSize);
 				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
 				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
 		
-				for(HistoricProcessInstance processInstance : processInstances) {
+				for(HistoricProcessInstance processInstance : pageProcessInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 				
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
@@ -1312,7 +1314,8 @@ public class ActivitiEngineService {
 			if(processInstances != null) {
 				
 				// Filter due to fromIndex and pageSize	
-				processInstances = pageList(processInstances, fromIndex, pageSize);
+				// bjmo made a quick fix here, but the number of pages will be wrong because it is based on a array with subprocesses included.
+				List<ProcessInstance> pageProcessInstances = pageList(processInstances, fromIndex, pageSize);
 				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
@@ -1320,7 +1323,7 @@ public class ActivitiEngineService {
 			
 				HashMap<String, Date> startDates = getProcessInstanceStartDates(processInstances);
 				
-				for(ProcessInstance processInstance : processInstances) {
+				for(ProcessInstance processInstance : pageProcessInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 					
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getProcessInstanceId());
@@ -1389,13 +1392,14 @@ public class ActivitiEngineService {
 			if(processInstances != null) {
 				
 				// Filter due to fromIndex and pageSize	
-				processInstances = pageHistoricList(processInstances, fromIndex, pageSize);
+				// bjmo made a quick fix here, but the number of pages will be wrong because it is based on a array with subprocesses included.
+				List<HistoricProcessInstance> pageProcessInstances = pageHistoricList(processInstances, fromIndex, pageSize);
 				
 				pagedProcessInstanceSearchResult.setNumberOfHits(processInstances.size());
 				
 				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
 		
-				for(HistoricProcessInstance processInstance : processInstances) {
+				for(HistoricProcessInstance processInstance : pageProcessInstances) {
 					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
 				
 					processInstanceListItem.setProcessInstanceUuid(processInstance.getId());
@@ -1860,7 +1864,7 @@ public class ActivitiEngineService {
 			processInstances.clear();
 		}
 		
-		return processInstances;
+		return result;
 	}
 
 	
@@ -1889,7 +1893,7 @@ public class ActivitiEngineService {
 			processInstances.clear();
 		}
 		
-		return processInstances;
+		return result;
 	}
 	
 	
