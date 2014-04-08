@@ -1860,7 +1860,7 @@ public class ActivitiEngineService {
 			processInstances.clear();
 		}
 		
-		return processInstances;
+		return result;
 	}
 
 	
@@ -1889,7 +1889,7 @@ public class ActivitiEngineService {
 			processInstances.clear();
 		}
 		
-		return processInstances;
+		return result;
 	}
 	
 	
