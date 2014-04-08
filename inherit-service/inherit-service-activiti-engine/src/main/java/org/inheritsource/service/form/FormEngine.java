@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.inheritsource.service.common.domain.FormInstance;
@@ -17,6 +18,7 @@ import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.coordinatrice.ProcessDefinitionState;
 import org.inheritsource.service.identity.IdentityService;
 import org.inheritsource.service.processengine.ActivitiEngineService;
+import org.inheritsource.service.processengine.ActivitiEngineUtil;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
 import org.inheritsource.taskform.engine.persistence.entity.StartFormDefinition;
@@ -116,10 +118,16 @@ public class FormEngine {
 			if (typeId != null) {
 				formInstance = getFormInstanceByCommonLocalVars(localVars, initialInstance);
 				
-				formInstance.setActUri((String)localVars.get(FormEngine.FORM_ACT_URI));
 				formInstance.setSubmitted(historicTask.getEndTime());
 				formInstance.setSubmittedBy(identityService.getUserByUuid(historicTask.getAssignee()));
 	
+				String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + historicTask.getId() + "]";
+				
+				HistoricVariableInstance historicVar = activitiEngineService.getEngine().getHistoryService().createHistoricVariableInstanceQuery().variableName(taskDocActVarName).singleResult();
+				if (historicVar != null) {
+					formInstance.setActUri((String)historicVar.getValue());
+				}
+				
 				TaskFormHandler handler = getTaskFormHandler(formInstance.getTypeId());
 				if (handler != null) {
 					handler.getHistoricFormInstance(formInstance, historicTask, userId);
@@ -136,6 +144,7 @@ public class FormEngine {
 		return formInstance;
 	}
 	
+	
 	/**  
 	 * initialize a task form instance in activiti engine. set variables by convention.
 	 * Get existing FormInstance if form already is initialized.
@@ -144,7 +153,8 @@ public class FormEngine {
 	public FormInstance getFormInstance(Task task, String userId, FormInstance initialInstance) {
 		FormInstance formInstance = null;
 		
-		Map <String, Object> localVars = task.getTaskLocalVariables();
+		Map <String, Object> localVars = ActivitiEngineUtil.getTaskLocalVarables(activitiEngineService.getEngine(), task);
+		
 		Long typeId = (Long)localVars.get(FORM_TYPEID);
 		if (typeId != null) {
 			// this form is already initialized
@@ -174,7 +184,7 @@ public class FormEngine {
 				localVars.put(FORM_DEFINITIONKEY, formInstance.getDefinitionKey());
 				localVars.put(FORM_INSTANCEID, formInstance.getInstanceId());
 				localVars.put(FORM_DATA_URI, formInstance.getDataUri());
-				localVars.put(FORM_ACT_URI, formInstance.getActUri());
+				//localVars.put(FORM_ACT_URI, formInstance.getActUri());
 				
 				activitiEngineService.getEngine().getTaskService().setVariablesLocal(task.getId(), localVars);
 			}
@@ -209,13 +219,11 @@ public class FormEngine {
 	
 	
 	
-	public StartLogItem getStartLogItem(ProcessInstance processInstance, String userId) {
+	public StartLogItem getStartLogItem(HistoricProcessInstance historicProcessInstance, String userId) {
 		StartLogItem startFormInstance = null;
 		
-		Map <String, Object> processVars = processInstance.getProcessVariables();
-		if (processVars.size()==0) {
-			processVars = activitiEngineService.getEngine().getRuntimeService().getVariables(processInstance.getId());
-		}
+		Map <String, Object> processVars = historicProcessInstance.getProcessVariables();
+		
 		if (processVars != null) {
 			startFormInstance = new StartLogItem();
 			startFormInstance.setTypeId((Long)processVars.get(START_FORM_TYPEID));
@@ -224,8 +232,6 @@ public class FormEngine {
 			startFormInstance.setDataUri((String)processVars.get(START_FORM_DATA_URI));
 			startFormInstance.setActUri((String)processVars.get(FormEngine.START_FORM_ACT_URI));
 			startFormInstance.setSubmittedBy(identityService.getUserByUuid((String)processVars.get(START_FORM_ASSIGNEE)));
-			
-			HistoricProcessInstance historicProcessInstance = activitiEngineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstance.getProcessInstanceId()).singleResult();
 			
 			if (historicProcessInstance != null) {
 				startFormInstance.setSubmitted(historicProcessInstance.getStartTime());

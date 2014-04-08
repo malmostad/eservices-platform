@@ -1,17 +1,13 @@
 package org.inheritsource.service.delegates;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
-import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
-import org.inheritsource.service.docbox.DocBoxFacade;
-import org.inheritsource.service.docbox.DocBoxFormData;
 import org.inheritsource.service.form.FormEngine;
 
 public class SetDecisionAct implements ExecutionListener {
@@ -40,9 +36,8 @@ public class SetDecisionAct implements ExecutionListener {
 		if (task != null) {
 			if (ExecutionListener.EVENTNAME_END.equals(execution.getEventName())) {
 				
-				Map<String, Object> taskVars = execution.getEngineServices().getTaskService().getVariablesLocal(task.getId());
-				
-				String formActUri = (String)taskVars.get(FormEngine.FORM_ACT_URI);
+				String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + task.getId() + "]";
+				String formActUri = (String)execution.getEngineServices().getRuntimeService().getVariable(execution.getId(), taskDocActVarName);
 
 				if (formActUri != null && formActUri.trim().length()>0) {
 					execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), DECISION_ACT_URI, formActUri);

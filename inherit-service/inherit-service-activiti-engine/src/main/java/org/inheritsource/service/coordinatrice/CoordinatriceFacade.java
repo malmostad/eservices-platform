@@ -6,8 +6,8 @@ import java.util.logging.Logger;
 import javax.ws.rs.core.MediaType;
 
 import org.activiti.engine.ProcessEngine;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.repository.ProcessDefinition;
-import org.activiti.engine.runtime.ProcessInstance;
 import org.inheritsource.service.form.FormEngine;
 
 import com.sun.jersey.api.client.Client;
@@ -135,8 +135,7 @@ public class CoordinatriceFacade {
 	public String getStartFormLabel(String processInstanceId, Locale locale) {
 		String label = null;
 		
-		ProcessInstance processInstance = getEngine().getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstanceId).includeProcessVariables().singleResult();		
-		
+		HistoricProcessInstance processInstance = getEngine().getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).includeProcessVariables().singleResult();
 		if (processInstance != null && processInstance.getProcessVariables() != null && locale != null) {
 
 			// First try to find form label from coordinatrice

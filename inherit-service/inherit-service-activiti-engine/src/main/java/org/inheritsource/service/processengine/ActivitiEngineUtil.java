@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.task.Task;
 
 
 
@@ -64,5 +65,23 @@ public class ActivitiEngineUtil {
 		for (String key : counts.keySet()) {
 			log.info("Key: " + key + " count: " + counts.get(key));
 		}
+	}
+	
+	/**
+	 * Use preloaded local task variables from task object, 
+	 * try to load variables from engine if empty
+	 * @param engine
+	 * @param task
+	 * @return
+	 */
+	public static Map<String, Object> getTaskLocalVarables(ProcessEngine engine, Task task) {
+		Map <String, Object> localVars = task.getTaskLocalVariables();
+		
+		// variables empty, try to load them
+		if (localVars == null || localVars.size()==0) {
+			localVars = engine.getTaskService().getVariablesLocal(task.getId());
+		}
+		
+		return localVars;
 	}
 }

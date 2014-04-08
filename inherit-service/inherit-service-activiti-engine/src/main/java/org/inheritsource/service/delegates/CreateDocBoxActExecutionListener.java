@@ -40,10 +40,12 @@ public class CreateDocBoxActExecutionListener extends CreateDocBoxRefExecutionLi
 		if (task != null) {
 			// task end event
 			if (ExecutionListener.EVENTNAME_END.equals(execution.getEventName())) {
-				String docBoxRef = (String) execution.getEngineServices().getTaskService().getVariableLocal(task.getId(), FormEngine.FORM_DOCBOXREF);
+				String taskDocBoxRefVarName = FormEngine.FORM_DOCBOXREF + "[" + task.getId() + "]";
+				String docBoxRef = (String) execution.getEngineServices().getRuntimeService().getVariable(execution.getId(), taskDocBoxRefVarName);
 				if (docBoxRef != null && docBoxRef.trim().length()>0 && actBaseUri!=null) {
 					String actUri = actBaseUri + docBoxRef;
-					execution.getEngineServices().getTaskService().setVariableLocal(task.getId(), FormEngine.FORM_ACT_URI, actUri);
+					String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + task.getId() + "]";
+					execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), taskDocActVarName, actUri);
 				}
 				else {
 					log.severe("Could not create act for task with taskId=[" + task.getId() + "] actBaseUri=[" + actBaseUri + "] and docBoxRef=[" + docBoxRef + "]" );

@@ -247,7 +247,7 @@ public class ActivitiEngineService {
 				if(processInstance == null) {
 					mainProcessInstanceFound = true;
 					mainProcessInstance = engine.getRuntimeService().createProcessInstanceQuery().
-						processInstanceId(processInstanceId).singleResult();
+						processInstanceId(processInstanceId).includeProcessVariables().singleResult();
 				} else {
 					processInstanceId = processInstance.getProcessInstanceId();
 					
@@ -269,7 +269,7 @@ public class ActivitiEngineService {
 		Set<InboxTaskItem> result = new LinkedHashSet<InboxTaskItem>();
 		
 		List<HistoricTaskInstance> tasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
-			processInstanceId(processInstanceId).finished().orderByHistoricTaskInstanceStartTime().asc().list();
+			processInstanceId(processInstanceId).finished().orderByHistoricTaskInstanceStartTime().asc().includeTaskLocalVariables().list();
 		
 		List<InboxTaskItem> inboxTaskItemList = historicTaskList2InboxTaskItemList(tasks, locale);
 		
@@ -333,7 +333,7 @@ public class ActivitiEngineService {
 			while(!mainProcessInstanceFound) {
 				turns++;
 				processInstance = engine.getHistoryService().createHistoricProcessInstanceQuery().
-						processInstanceId(processInstanceId).singleResult();
+						processInstanceId(processInstanceId).includeProcessVariables().singleResult();
 				
 				if(processInstance.getSuperProcessInstanceId() == null) {
 					mainProcessInstanceFound = true;
@@ -573,17 +573,15 @@ public class ActivitiEngineService {
 	}
 
 	public StartLogItem getStartLogItem(String processInstanceId) {
-		ProcessInstance processInstance = engine.getRuntimeService().createProcessInstanceQuery().
-				processInstanceId(processInstanceId).includeProcessVariables().singleResult();
+		HistoricProcessInstance historicProcessInstance = engine.getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).includeProcessVariables().singleResult();
 			
-			
-		return formEngine.getStartLogItem(processInstance, null);
+		return formEngine.getStartLogItem(historicProcessInstance, null);
 	}
 	
 	
-	private String getStartFormName(ProcessInstance processInstance, Locale locale) {
+	private String getStartFormName(HistoricProcessInstance processInstance, Locale locale) {
 		
-		String result = coordinatriceFacade.getStartFormLabel(processInstance.getProcessInstanceId(), locale);
+		String result = coordinatriceFacade.getStartFormLabel(processInstance.getId(), locale);
 		
 		if (result == null) {
 			ProcessDefinition procDef = engine.getRepositoryService().getProcessDefinition(processInstance.getProcessDefinitionId());
@@ -659,18 +657,17 @@ public class ActivitiEngineService {
 			processInstanceDetails = new ProcessInstanceDetails();
 			
 			// Check if process is found among the active ones 
-						
-			ProcessInstance processInstance = engine.getRuntimeService().createProcessInstanceQuery().
-				processInstanceId(processInstanceId).includeProcessVariables().singleResult();
 			
+			HistoricProcessInstance processInstance = engine.getHistoryService().createHistoricProcessInstanceQuery().
+					processInstanceId(processInstanceId).includeProcessVariables().singleResult();
 			
 			StartLogItem startLogItem = null;
 			
 			if(processInstance != null) {
 				
-				ProcessInstance mainPi = getMainProcessInstanceByProcessInstanceId(processInstanceId);
+				HistoricProcessInstance mainPi = getHistoricMainProcessInstanceByProcessInstanceId(processInstanceId);
 				if (mainPi != null) {
-					mainProcessInstanceId = mainPi.getProcessInstanceId();
+					mainProcessInstanceId = mainPi.getId();
 					processInstance = mainPi;
 				}
 				
@@ -685,10 +682,10 @@ public class ActivitiEngineService {
 				}
 				
 				processInstanceDetails.setStatus(ProcessInstanceListItem.STATUS_PENDING);
-				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(processInstance.getProcessInstanceId()));
-				processInstanceDetails.setStartDate(getProcessInstanceStartDateByProcessInstanceId(processInstance.getProcessInstanceId()));
+				processInstanceDetails.setStartedBy(getStarterByProcessInstanceId(processInstance.getId()));
+				processInstanceDetails.setStartDate(getProcessInstanceStartDateByProcessInstanceId(processInstance.getId()));
 				processInstanceDetails.setEndDate(null);
-				processInstanceDetails.setProcessInstanceUuid(processInstance.getProcessInstanceId());
+				processInstanceDetails.setProcessInstanceUuid(processInstance.getId());
 				
 				
 			} else {
@@ -948,8 +945,9 @@ public class ActivitiEngineService {
 		if (task != null) {
 			
 			Map<String, Object> variables = new HashMap<String, Object>();
-			if (actRefId != null) {
-				variables.put(FormEngine.FORM_ACT_URI, actRefId);
+			if (actRefId != null && actRefId.trim().length()>0) {
+				String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + task.getId() + "]";
+				variables.put(taskDocActVarName, actRefId);
 			}
 			if (executeTask(task.getId(), variables, userId)) {
 				HistoricTaskInstance historicTask = getEngine().getHistoryService().createHistoricTaskInstanceQuery().taskId(task.getId()).includeTaskLocalVariables().singleResult();
@@ -1712,11 +1710,9 @@ public class ActivitiEngineService {
 	
 		
 	private String getStarterByProcessInstanceId(String processInstanceId) {
-		List<IdentityLink> identityLinks = engine.getRuntimeService().
-			getIdentityLinksForProcessInstance(processInstanceId);
-				
+		List<HistoricIdentityLink> identityLinks = engine.getHistoryService().getHistoricIdentityLinksForProcessInstance(processInstanceId);		
 		if(identityLinks != null) {
-			for(IdentityLink iL : identityLinks) {
+			for(HistoricIdentityLink iL : identityLinks) {
 				if(iL.getType().equals(IdentityLinkType.STARTER)) {
 					return(iL.getUserId());
 				}

@@ -634,7 +634,7 @@ public class TaskFormService {
 						String processInstanceUuid = activitiEngineService.startProcess(pDefUuid, variables, userId);
 						activity.setProcessInstanceUuid(processInstanceUuid);
 						
-						formInstance = activitiEngineService.getFormEngine().getStartLogItem(activitiEngineService.getEngine().getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstanceUuid).includeProcessVariables().singleResult(), userId);
+						formInstance = activitiEngineService.getFormEngine().getStartLogItem(activitiEngineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstanceUuid).includeProcessVariables().singleResult(), userId);
 
 					}
 				}

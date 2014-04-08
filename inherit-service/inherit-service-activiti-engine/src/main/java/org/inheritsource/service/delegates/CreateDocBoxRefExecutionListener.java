@@ -48,9 +48,8 @@ public class CreateDocBoxRefExecutionListener implements ExecutionListener {
 							String docBoxRef = docBoxFormData.getDocboxRef();
 							if (docBoxRef != null && docBoxRef.trim().length()>0) {
 								// there is a docBoxRef 
-								// execution.getEngineServices().getTaskService().setVariableLocal(task.getId(), FormEngine.FORM_DOCBOXREF, docBoxRef);
-								String taskDocBoxRefVarName = FormEngine.FORM_DOCBOXREF;
-								execution.getEngineServices().getTaskService().setVariableLocal(task.getId(), taskDocBoxRefVarName, docBoxRef);
+								String taskDocBoxRefVarName = FormEngine.FORM_DOCBOXREF + "[" + task.getId() + "]";
+								execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), taskDocBoxRefVarName, docBoxRef);
 							}
 						}
 					}
