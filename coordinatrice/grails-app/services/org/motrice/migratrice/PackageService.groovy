@@ -176,7 +176,7 @@ class PackageService {
 	if (!fdv.save(insert: true)) log.error "MigFormdefVer save: ${fdv.errors.allErrors.join(',')}"
       }
 
-      // Find and remember all items, do not save just yet
+      // Find and save all items
       def itemList = allLocalDefItems(formdef)
       itemList.each {item ->
 	formdef.addToItems(item)
@@ -285,9 +285,7 @@ class PackageService {
     def xml = baos.toString('UTF-8')
     if (log.debugEnabled) log.debug "importPackage xml ${xml.size()}"
     def metaList = parseImportedMetadata(xml)
-    if (log.debugEnabled) log.debug "parseImportedMetadata > ${metaList}"
     def pack = createImportedPackageObject(metaList)
-    if (log.debugEnabled) log.debug "createImportedPackageObject > ${pack}"
     def objMap = createAllImportedObjects(pack, metaList)
     linkAllImportedObjects(objMap)
     readAllImportedContents(zipInput, objMap)

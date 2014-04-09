@@ -24,7 +24,7 @@
 	  <li class="fieldcontain">
 	    <span id="body-label" class="property-label"><g:message code="migReport.body.label" default="Body" /></span>
 	    <span class="property-value" aria-labelledby="body-label">
-	      <g:textArea id="report-body" name="body" wrap="hard" cols="40" value="${migReportInst?.body?.encodeAsHTML()}"/>
+	      <g:textArea id="report-body" name="body" wrap="hard" value="${migReportInst?.body?.encodeAsHTML()}" style="width:550px"/>
 	    </span>
 	  </li>
 	</g:if>

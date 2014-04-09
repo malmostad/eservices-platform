@@ -1,3 +1,5 @@
+import grails.converters.*
+
 import org.motrice.coordinatrice.CrdProcCategory
 import org.motrice.coordinatrice.CrdProcdefState
 import org.motrice.coordinatrice.TaskType
@@ -5,6 +7,11 @@ import org.motrice.coordinatrice.TaskType
 class BootStrap {
 
   def init = { servletContext ->
+    // This call makes Grails look for a toXml method in the domain
+    // when rendering an instance as XML (for Migratrice)
+    XML.registerObjectMarshaller(new org.codehaus.groovy.grails.web.converters
+				 .marshaller.xml.InstanceMethodBasedMarshaller())
+
     // Make sure the default category is defined
     CrdProcCategory.createCategory(CrdProcCategory.DEFAULT_CATEGORY_NAME,
 				CrdProcCategory.DEFAULT_CATEGORY_DESCRIPTION)
