@@ -87,21 +87,16 @@ public class Form extends MyCasesBaseComponent {
     	log.error("XXX Form activity" + activity);
     	
     	HippoBean guide = null;
-    	if (activity != null && doc != null) {
-    		String piUuid = activity.getProcessDefinitionUuid();
-    		String aiUuid = activity.getActivityDefinitionUuid();
+    	if (activity != null && activity.getGuideUri() != null) {
+    		String guidePath = getMount(request).getCanonicalContentPath() + "/mycases/processes/" + activity.getGuideUri();
+    		log.debug("guide path: " + guidePath );
     		
-    		if (piUuid != null && aiUuid != null) {    			
-	    		String guidePath = getMount(request).getCanonicalContentPath() + "/mycases/processes/" + piUuid.toLowerCase() + "/" + aiUuid.toLowerCase();
-	    		log.debug("guide path: " + guidePath );
-	    		
-	    		try {
-					guide = (HippoBean) getObjectBeanManager(request).getObject(guidePath);
-				} catch (ObjectBeanManagerException e) {
-					// TODO Auto-generated catch block
-					log.error("Error while searching for activity guide with path=[" + guidePath + "] Exception: " + e);
-				}
-    		}
+    		try {
+				guide = (HippoBean) getObjectBeanManager(request).getObject(guidePath);
+			} catch (ObjectBeanManagerException e) {
+				// TODO Auto-generated catch block
+				log.error("Error while searching for activity guide with path=[" + guidePath + "] Exception: " + e);
+			}
     	}
     	request.setAttribute("guide", guide);
     	request.setAttribute("user", user);

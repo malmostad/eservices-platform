@@ -52,6 +52,7 @@ public abstract class ActivityInstanceItem extends FormInstance implements Seria
 	Date lastStateUpdate;
 	String lastStateUpdateByUserId;
 	String startedBy;
+	String guideUri;
 	Date expectedEndDate;
 	int activityType;
 	int priority;
@@ -123,6 +124,12 @@ public abstract class ActivityInstanceItem extends FormInstance implements Seria
 	public void setStartedBy(String startedBy) {
 		this.startedBy = startedBy;
 	}
+	public String getGuideUri() {
+		return guideUri;
+	}
+	public void setGuideUri(String guideUri) {
+		this.guideUri = guideUri;
+	}
 	public Date getExpectedEndDate() {
 		return expectedEndDate;
 	}
@@ -150,7 +157,7 @@ public abstract class ActivityInstanceItem extends FormInstance implements Seria
 	@Override
 	public int hashCode() {
 		final int prime = 31;
-		int result = 1;
+		int result = super.hashCode();
 		result = prime
 				* result
 				+ ((activityDefinitionUuid == null) ? 0
@@ -168,6 +175,8 @@ public abstract class ActivityInstanceItem extends FormInstance implements Seria
 				+ ((currentState == null) ? 0 : currentState.hashCode());
 		result = prime * result
 				+ ((expectedEndDate == null) ? 0 : expectedEndDate.hashCode());
+		result = prime * result
+				+ ((guideUri == null) ? 0 : guideUri.hashCode());
 		result = prime * result
 				+ ((lastStateUpdate == null) ? 0 : lastStateUpdate.hashCode());
 		result = prime
@@ -196,7 +205,7 @@ public abstract class ActivityInstanceItem extends FormInstance implements Seria
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
@@ -232,6 +241,11 @@ public abstract class ActivityInstanceItem extends FormInstance implements Seria
 			if (other.expectedEndDate != null)
 				return false;
 		} else if (!expectedEndDate.equals(other.expectedEndDate))
+			return false;
+		if (guideUri == null) {
+			if (other.guideUri != null)
+				return false;
+		} else if (!guideUri.equals(other.guideUri))
 			return false;
 		if (lastStateUpdate == null) {
 			if (other.lastStateUpdate != null)
@@ -281,10 +295,11 @@ public abstract class ActivityInstanceItem extends FormInstance implements Seria
 				+ startDate + ", currentState=" + currentState
 				+ ", lastStateUpdate=" + lastStateUpdate
 				+ ", lastStateUpdateByUserId=" + lastStateUpdateByUserId
-				+ ", startedBy=" + startedBy + ", expectedEndDate="
-				+ expectedEndDate + ", activityType=" + activityType + ", priority="
-				+ priority + ", processActivityFormInstanceId="
-				+ processActivityFormInstanceId + super.toString() + "]";
+				+ ", startedBy=" + startedBy + ", guideUri=" + guideUri
+				+ ", expectedEndDate=" + expectedEndDate + ", activityType="
+				+ activityType + ", priority=" + priority
+				+ ", processActivityFormInstanceId="
+				+ processActivityFormInstanceId + "]";
 	}
 	
 }

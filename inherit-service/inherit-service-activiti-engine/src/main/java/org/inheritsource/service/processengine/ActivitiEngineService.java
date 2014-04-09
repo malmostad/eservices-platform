@@ -428,6 +428,7 @@ public class ActivitiEngineService {
 			item.setLastStateUpdate(task.getCreateTime());
 			item.setLastStateUpdateByUserId("");
 			item.setStartedBy(getStarterByTaskId(task.getId()));
+			item.setGuideUri(getGuideUri(task));
 			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setActivityType(getActivityTypeByExecutionIdTaskId(task.getExecutionId(), task.getId()));
 			item.setPriority(task.getPriority());
@@ -438,6 +439,16 @@ public class ActivitiEngineService {
 
 		}
 		return item;
+	}
+	
+	private String getGuideUri(Task task) {
+		ProcessDefinition procDef = engine.getRepositoryService().getProcessDefinition(task.getProcessDefinitionId());
+		return procDef.getKey().toLowerCase() + "/" + task.getTaskDefinitionKey().toLowerCase();
+	}
+	
+	private String getGuideUri(HistoricTaskInstance task) {
+		ProcessDefinition procDef = engine.getRepositoryService().getProcessDefinition(task.getProcessDefinitionId());
+		return procDef.getKey().toLowerCase() + "/" + task.getTaskDefinitionKey().toLowerCase();
 	}
 	
 	private int getActivityTypeByExecutionIdTaskId(String executionId, String taskId) {
@@ -490,6 +501,7 @@ public class ActivitiEngineService {
 			item.setLastStateUpdate(task.getDueDate());
 			item.setLastStateUpdateByUserId("");
 			item.setStartedBy(getHistoricStarterByTaskId(task.getId()));
+			item.setGuideUri(getGuideUri(task));
 			item.setProcessActivityFormInstanceId(new Long(0));
 			item.setActivityType(getActivityTypeByExecutionIdTaskId(task.getExecutionId(), task.getId()));
 			item.setPriority(task.getPriority());
