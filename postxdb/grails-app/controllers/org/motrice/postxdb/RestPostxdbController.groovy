@@ -23,7 +23,7 @@ class RestPostxdbController {
     def formdefList = postxdbService.formdefGet(id)
     if (formdefList) {
       response.status = 200
-      render formdefList as XML
+      render(text: formdefList as XML, encoding:'UTF-8')
     } else {
       render(status: 404, text: 'No formdef was found', contentType: 'text/plain')
     }
@@ -38,7 +38,7 @@ class RestPostxdbController {
     def map = postxdbService.formdefVerGet(id, params.uuid, params.formdef)
     response.status = map.status
     if (map.status == 200) {
-      render map.list as XML
+      render(text: map.list as XML, encoding:'UTF-8')
     } else {
       render(contentType: 'text/plain', text: map.message)
     }
@@ -54,7 +54,7 @@ class RestPostxdbController {
     response.status = map.status
     if (map.status == 200) {
       map.list.each {item -> item.formref = map.formref}
-      render map.list as XML
+      render(text: map.list as XML, encoding:'UTF-8')
     } else {
       render(contentType: 'text/plain', text: map.message)
     }
@@ -69,7 +69,7 @@ class RestPostxdbController {
     def itemList = postxdbService.instItemGet(params.formdefver)
     if (itemList) {
       response.status = 200
-      render itemList as XML
+      render(text: itemList as XML, encoding:'UTF-8')
     } else {
       render(status: 404, text: 'No item found', contentType: 'text/plain')
     }
