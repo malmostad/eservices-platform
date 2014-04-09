@@ -8,16 +8,6 @@
     <title><g:message code="procdef.list.label"/></title>
   </head>
   <body>
-    <a href="#list-procdef" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-    <div class="nav" role="navigation">
-      <ul>
-	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<li><g:link class="list" controller="MtfStartFormDefinition" action="list"><g:message code="startform.list.label"/></g:link></li>
-	<li><g:link class="list" controller="PxdFormdef" action="list"><g:message code="pxdFormdef.list.label"/></g:link></li>
-	<li><g:link class="list" controller="crdProcCategory" action="list"><g:message code="default.list.label" args="[categEntityName]" /></g:link></li>
-	<li><g:link class="create" action="create"><g:message code="procdef.upload.bpmn.label"/></g:link></li>
-      </ul>
-    </div>
     <div id="list-procdef" class="content scaffold-list" role="main">
       <h1><g:message code="procdef.list.label"/></h1>
       <g:if test="${flash.message}">
@@ -38,7 +28,7 @@
 	      <td><g:link action="listname" id="${procdefInfo.key}">${procdefInfo.name}</g:link></td>
 	      <td>${procdefInfo.versions}</td>
 	      <td><g:link controller="crdI18nActLabel" action="listkey" id="${procdefInfo.key}">
-		  <g:message code="procdef.i18n.labels.label" default="See labels"/>
+		  <g:message code="procdef.i18n.act.labels.label" default="See labels"/>
 	      </g:link></td>
 	      <td><g:link controller="crdI18nGuideUrl" action="listkey" id="${procdefInfo.key}">
 		  <g:message code="procdef.i18n.guides.label" default="See labels"/>

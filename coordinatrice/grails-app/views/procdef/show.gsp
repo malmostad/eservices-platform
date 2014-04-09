@@ -8,15 +8,6 @@
   </head>
   <body>
     <a href="#show-procdef" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-    <div class="nav" role="navigation">
-      <ul>
-	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<div class="buttons"><g:uploadForm action="xmlUpload">
-	    <g:hiddenField name="id" value="${procdefInst?.uuid}" />
-	    <input class="upload" type="submit" value="${message(code: 'procdef.upload.bpmn.label')}"/><input type="file" name="bpmnDef"/>
-	  </g:uploadForm></div>
-      </ul>
-    </div>
     <div id="show-procdef" class="content scaffold-show" role="main">
       <h1><g:message code="default.show.label" args="[entityName]" /></h1>
       <g:if test="${flash.message}">
@@ -121,7 +112,8 @@
       <g:form>
 	<fieldset class="buttons">
 	  <g:hiddenField name="uuid" value="${procdefInst?.uuid}" />
-	  <g:link class="edit" action="newversion" id="${procdefInst?.uuid}"><g:message code="procdef.edit.label" default="Edit" /></g:link>
+	  <g:link class="edit" action="createcopy" id="${procdefInst?.uuid}"><g:message code="procdef.edit.label" default="Edit" /></g:link>
+	  <g:link class="edit" action="createnewversion" id="${procdefInst?.uuid}"><g:message code="procdef.upload.version.label" default="Upload" /></g:link>
 	  <g:if test="${procdefInst?.state?.stateChangeAllowed}">
 	    <g:link class="edit" action="editstate" id="${procdefInst?.uuid}"><g:message code="procdef.edit.state.label" default="Edit" /></g:link>
 	  </g:if>
