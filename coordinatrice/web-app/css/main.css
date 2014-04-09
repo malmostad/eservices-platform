@@ -445,10 +445,15 @@ tr>td:last-child, tr>th:last-child {
 }
 
 td, th {
-	line-height: 1.2em;
-	padding: 0.4em;
+	line-height: 1.5em;
+	padding: 0.1em 0.6em;
 	text-align: left;
 	vertical-align: top;
+}
+
+table.compact td, table.compact th {
+    line-height: 1.2em;
+    font-size: 85%;
 }
 
 th {
@@ -564,8 +569,7 @@ th:hover, tr:hover {
 	border: none;
 }
 
-.buttons input,
-.buttons a {
+.buttons input, .buttons span, .buttons a {
 	background-color: transparent;
 	border: 0;
 	color: #666666;
@@ -604,7 +608,7 @@ th:hover, tr:hover {
 .buttons .export, .buttons .upload, .buttons .install {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
-	text-indent: 25px;
+	text-indent: 21px;
 }
 
 .ie6 .buttons input.delete, .ie6 .buttons input.edit, .ie6 .buttons input.save,

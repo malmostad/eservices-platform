@@ -285,7 +285,9 @@ class PackageService {
     def xml = baos.toString('UTF-8')
     if (log.debugEnabled) log.debug "importPackage xml ${xml.size()}"
     def metaList = parseImportedMetadata(xml)
+    if (log.debugEnabled) log.debug "parseImportedMetadata > ${metaList}"
     def pack = createImportedPackageObject(metaList)
+    if (log.debugEnabled) log.debug "createImportedPackageObject > ${pack}"
     def objMap = createAllImportedObjects(pack, metaList)
     linkAllImportedObjects(objMap)
     readAllImportedContents(zipInput, objMap)
@@ -417,6 +419,7 @@ class PackageService {
    * Read imported item contents and add to database objects.
    */
   private readAllImportedContents(ZipInputStream zip, Map objMap) {
+    if (log.debugEnabled) log.debug "readAllImportedContents << ${objMap?.keySet()}"
     def entry = null
     while ((entry = zip.nextEntry)) {
       def ename = entry.name
@@ -754,7 +757,8 @@ class PackageService {
   private String localPostxdbText(String tail) {
     String result = null
     try {
-      result = localPostxdb(tail).text
+      result = new String(localPostxdbBytes(tail), 'UTF-8')
+      //result = localPostxdb(tail).text
     } catch (ConnectException exc) {
       log.error "Postxdb connection problem: ${exc}"
       throw new MigratriceException('postxdb.connect.problem', exc.message)

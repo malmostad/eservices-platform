@@ -22,15 +22,15 @@ class MigPackageController {
    */
   def uploadprepare() {
     if (log.debugEnabled) log.debug "PREPARE UPLOAD ${params}"
-    [prop: 'value']
   }
 
   /**
    * Upload a package
    */
   def upload() {
+    if (log.debugEnabled) log.debug "UPLOAD ${params}"
     def file = request.getFile('pkgUpload')
-    if (file.empty) {
+    if (file == null || file.empty) {
       flash.message = message(code: 'migPackage.upload.file.empty')
     } else {
       try {
