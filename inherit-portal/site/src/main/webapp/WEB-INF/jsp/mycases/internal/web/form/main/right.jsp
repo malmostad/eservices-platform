@@ -231,7 +231,7 @@
 	       class="text ui-widget-content ui-corner-all" />
 	<br/>
     <div >
-       <input type="submit" value="<fmt:message key="search.submit.text" />" /> 
+       <input type="submit" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="<fmt:message key="search.submit.text" />" /> 
     </div>
       </form>
 
@@ -253,7 +253,8 @@
 				<td></td>
 				<td></td>
 				<td></td>
-				<td><button class="add-candidate-btn" href="#"></button></td>
+<!--				<td><button class="add-candidate-btn" href="#"></button></td> -->
+				<td></td>
 			</tr>
 		</tbody>
 	</table>
@@ -560,7 +561,7 @@ $jq("#dialog-edit-candidates").dialog({
 	    $jq('#output1').html('<tr />');
         },
 	  buttons : {
-	    "Stäng" : function() {
+	    "St\u00e4ng" : function() {
 	      $jq(this).dialog("close");
 	    }
 	}
