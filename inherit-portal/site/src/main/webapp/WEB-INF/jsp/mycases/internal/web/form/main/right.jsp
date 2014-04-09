@@ -71,7 +71,7 @@
 									key="mycases.assigntome.lbl" /></a>
 						</p>
 						<p>
-							<a href="#" id="add-comment">Kommentera Ã¤rendet</a>
+							<a href="#" id="add-comment"><fmt:message key="mycases.addcomment.lbl" /></a>
 						</p>
 					</div>
 				</div>
@@ -109,7 +109,7 @@
 					<div id="h-Verktygampsystem">
 						<!-- Verktyg &amp; system -->
 					</div>
-					<h2>Handl&auml;ggningsguide</h2>
+					<h2><fmt:message key="handlaggningsguide.lbl" /></h2>
 					<h1>${guide.title}</h1>
 					<p>${guide.summary}</p>
 					<hst:html hippohtml="${guide.html}" />
@@ -160,22 +160,24 @@
 		<thead>
 			<tr>
 				<th><fmt:message key="mycases.name.lbl" /></th>
-				<th><fmt:message key="mycases.username.lbl" /></th>
+				<th><fmt:message key="mycases.cn.lbl" /></th>
 				<th><fmt:message key="mycases.email.lbl" /></th>
+				<th></th>
 				<th></th>
 			</tr>
 		</thead>
-		<tbody id="output2" >
-			<tr>
-				<td>Bj&ouml;rn Molin</td>
-				<td>bjmo</td>
-				<td>bjorn@email.com</td>
-				<td><button class="remove-candidate-btn" href="#"></button></td>
-			</tr>
-		</tbody>
+	<tbody id="output2" >
+	  <tr>
+	    <td></td>
+	    <td></td>
+        <td></td>
+	    <td><button class="remove-candidate-btn" href="#"></button></td>
+	    <td><button class="lock-candidate-btn" href="#"></button></td>
+	  </tr>
+	</tbody>
 	</table>
 
-	<h3>SÃƒÂ¶k kandidater att uf&ouml;ra aktiviten</h3>
+	<h3></h3>
 
 <!-- 
 			<label for="name"><fmt:message key="mycases.name.lbl" /></label> <input
@@ -189,62 +191,68 @@
 -->
 	
 	<form id="search-users-form" action="/site/restservices/site-ajax/dirSearchUserEntries" method="post"> 
-	<!-- cn -->        
-	<label for="cn">uid</label>
+	<!-- uid -->        
+	<label for="cn"><fmt:message key="mycases.cn.lbl" /></label>
 	<input type="text" name="cn" id="cn"
 	       class="text ui-widget-content ui-corner-all" />
 	<br/>
 
 	<!-- sn -->        
-	<label for="sn">Efternamn</label>
+	<label for="sn"><fmt:message key="mycases.sn.lbl" /></label>
 	<input type="text" name="sn" id="sn"
 	       class="text ui-widget-content ui-corner-all" />
 	<br/>
 
 	<!-- mail -->      
-	<label for="mail">Epost</label>
+	<label for="mail"><fmt:message key="mycases.email.lbl" /></label>
 	<input type="text" name="mail"
 	       id="mail" value=""
 	       class="text ui-widget-content ui-corner-all" />
 	<br/>
 
 	<!-- givenName --> 
-	<label for="givenName">Förnamn</label>
+	<label for="givenName"><fmt:message key="mycases.givenname.lbl" /></label>
 	<input type="text" name="givenName"
 	       id="givenName" value=""
 	       class="text ui-widget-content ui-corner-all" />
 	<br/>
 
 	<!-- department -->
-	<label for="department">Avdelning</label>
+	<label for="department"><fmt:message key="mycases.department.lbl" /></label>
 	<input type="text" name="department"
 	       id="department" value=""
 	       class="text ui-widget-content ui-corner-all" />
 	<br/>
 
 	<!-- company -->
-	<label for="company">Förvaltning</label>
+	<label for="company"><fmt:message key="mycases.company.lbl" /></label>
 	<input type="text" name="company"
 	       id="company" value=""
 	       class="text ui-widget-content ui-corner-all" />
 	<br/>
-	<input type="submit" value="Search for users" /> 
+    <div >
+       <input type="submit" value="<fmt:message key="search.submit.text" />" /> 
+    </div>
       </form>
+
+	<h3>
+		<fmt:message key="mycases.searchresult.column.lbl" />
+	</h3>
 
 	<table>
 		<thead>
 			<tr>
 				<th><fmt:message key="mycases.name.lbl" /></th>
-				<th><fmt:message key="mycases.username.lbl" /></th>
+				<th><fmt:message key="mycases.cn.lbl" /></th>
 				<th><fmt:message key="mycases.email.lbl" /></th>
 				<th></th>
 			</tr>
 		</thead>
 		<tbody id="output1">
 			<tr>
-				<td>John Doe</td>
-				<td>john</td>
-				<td>john@email.com</td>
+				<td></td>
+				<td></td>
+				<td></td>
 				<td><button class="add-candidate-btn" href="#"></button></td>
 			</tr>
 		</tbody>
@@ -286,6 +294,254 @@
 <script type="text/javascript" charset="utf-8">
   var $jq = jQuery.noConflict();
 
+	$jq(document).ready(function() {
+		siteAjaxPost("/site/restservices/site-ajax/getActivityWorkflowInfo", {
+			activityInstanceUuid : '${activity.activityInstanceUuid}'
+		}, function(data) {
+			refreshActivityWorkflowInfo(data);
+		});
+		
+		siteAjaxPost("/site/restservices/site-ajax/getCommentFeed", 
+                             {activityInstanceUuid:
+                             '${activity.activityInstanceUuid}'},
+                             function(data) {
+		                refreshCommentFeed(data);
+		             } );
+	
+        var options = { 
+          target:       '#output1',      // target element(s) to be updated with server response 
+          dataType:     'json',          // 'xml', 'script', or 'json' (expected server response type) 
+          clearForm:    false,            // clear all form fields after successful submit 
+          resetForm:    false,            // reset the form after successful submit 
+          beforeSubmit: showRequest,     // pre-submit callback 
+          success:      showResponse     // post-submit callback 
+ 
+          // other available options: 
+          //url:       url         // override for form's 'action' attribute 
+          //type:      type        // 'get' or 'post', override for form's 'method' attribute 
+ 
+          // $jq.ajax options can be used here too, for example: 
+          //timeout:   3000 
+        }; 
+
+        console.log("In document.ready, before call to jq(#search-users-form) for activity: " +
+	      "${activity.activityInstanceUuid}");
+
+        // bind 'search-users-form' and provide a callback function 
+
+        //$jq('#search-users-form').ajaxForm(function(options) { 
+        //  alert("Thank you for your input!"+ JSON.stringify(options, null, 4));  
+        //});
+
+        console.log("before binding #search-users-form, options: " + JSON.stringify(options, null, 4)); 
+        $jq('#search-users-form').ajaxForm(options);
+
+	});
+	
+    // pre-submit callback 
+    function showRequest(formData, jqForm, options) { 
+	  // formData is an array; here we use $jq.param to convert it to a string to display it 
+	  // but the form plugin does this for you automatically when it submits the data 
+	  var queryString = $jq.param(formData);
+
+	  // jqForm is a jQuery object encapsulating the form element. To access the 
+	  // DOM element for the form do this: 
+	  // var formElement = jqForm[0]; 
+
+        console.log("in showRequest...About to submit: " + queryString); 
+
+	  // here we could return false to prevent the form from being submitted; 
+	  // returning anything other than false will allow the form submit to continue 
+	  return true; 
+    } 
+
+    // post-submit callback 
+    function showResponse(responseText, statusText, xhr, $form)  { 
+	  // for normal html responses, the first argument to the success callback 
+	  // is the XMLHttpRequest object's responseText property 
+
+	  // if the ajaxForm method was passed an Options Object with the dataType 
+	  // property set to 'xml' then the first argument to the success callback 
+	  // is the XMLHttpRequest object's responseXML property 
+
+	  // if the ajaxForm method was passed an Options Object with the dataType 
+	  // property set to 'json' then the first argument to the success callback 
+	  // is the json data object returned by the server 
+
+	  //alert('status: ' + statusText + '\n\nresponseText: \n' + 
+        //      JSON.stringify(responseText, null, 4) + 
+	  //      '\n\nThe output div should have already been updated with the responseText.');
+
+        //$jq('#output1').hide().html(JSON.stringify(responseText, null, 4)).fadeIn('slow');
+
+        var htmlfragment = "";
+        $jq.each(responseText, function() {
+          htmlfragment += 
+            '<tr>' + 
+            '<td>' + this.label + '</td>' +
+            '<td>' + this.cn    + '</td>' +
+            '<td>' + this.mail  + '</td>' +
+	      '<td><button class="add-candidate-btn" href="#"></button></td>' +
+            '</tr>' ;
+        });
+    
+       $jq('#output1').html(htmlfragment);
+
+	 $jq(".add-candidate-btn").button({
+              create: function (event,ui) {console.log("add candidate button create event...");},
+		color : 'green',
+		icons : {
+			primary : 'ui-icon-circle-plus',
+			secondary : null
+		}
+	 }).click(function(event){ 
+         // console.log("add button clicked...:" + event.target.nodename );
+         // first, siteAjaxPost addcandidate message  with uid and 
+         // activityinstanceuuid of current activity
+         event.preventDefault();
+         var entry    = $jq(this).closest('tr').children().first().next().text();
+         var entryrow = $jq(this).closest('tr');
+         console.log("targetUserId: " + entry);
+         siteAjaxPost("/site/restservices/site-ajax/assignTask",
+           "activityInstanceUuid=${activity.activityInstanceUuid}&action=addcandidate&targetUserId=" + entry,
+           function(data) {
+             // if success remove table row entry from page
+             console.log("add candidate: " + entry + ", removing row from search results");
+//             event.preventDefault();
+//             $jq(this).closest("tr").remove();
+             $jq(entryrow).remove();
+             refreshActualCandidates();
+	   }); 
+       });
+    }
+
+    function refreshActualCandidates() {
+        console.log("refreshActualCandidates for activity: ${activity.activityInstanceUuid}");
+        siteAjaxPost(
+          "/site/restservices/site-ajax/getActivityWorkflowInfo",
+          "activityInstanceUuid=${activity.activityInstanceUuid}",
+          function(data) {
+              var assignedUserUid = data.assignedUser.uuid;
+              if ( assignedUserUid.trim() ) { // not null, not empty and not only WS
+                // first check if assignedUserUid is present in candidate array
+                // if not, add it to the candidate array
+                resultArray = $jq.grep(data.candidates, 
+                   function(n,i) {
+//                     console.log( ((n.uuid === assignedUserUid)? 'found' : 'not found') + ': ' + n.uuid  + ' ' + assignedUserUid);
+                     return (n.uuid === assignedUserUid);
+                   }
+                );
+                if ( resultArray.length === 0 ) { // add assigned user to candidate list
+                   data.candidates.push(data.assignedUser);
+                }
+              }
+  
+            var cnListQueryStr = '';
+            $jq.each(data.candidates, 
+              function() {
+                cnListQueryStr += 'cnList=' + this.uuid + '&' ;
+              }
+            );
+            console.log("refreshActualCandidates, cnListQueryStr: " + cnListQueryStr);
+            if (cnListQueryStr.trim()) {
+ 	       siteAjaxPost(
+		 "/site/restservices/site-ajax/dirLookupUserEntries",
+		 cnListQueryStr,
+		 function(data) {
+		   var htmlfragment = '';
+           var assigned = false;
+		   console.log('Assigned User: "' + assignedUserUid + '"');
+                   if (assignedUserUid.trim()) { // there is an assigned user in the list
+                     $jq.each(data, function() {
+                       assigned = (this.cn == assignedUserUid);
+                       htmlfragment += 
+                         ( assigned ? '<tr class="assigned">' : '<tr class="unassigned">' ) +
+			 ( assigned ? '<td class="assigned">' : '<td class="unassigned">' ) + this.label + '</td>' +
+			 ( assigned ? '<td class="assigned">' : '<td class="unassigned">' ) + this.cn    + '</td>' +
+			 ( assigned ? '<td class="assigned">' : '<td class="unassigned">' ) + this.mail  + '</td>' +
+                          '<td />' +
+             ( assigned ? '<td><button class="lock-candidate-btn" href="#"></button></td>' : '<td />' ) +
+			 '</tr>' ;
+                     });
+                   } else {
+                     $jq.each(data, function() {
+                       htmlfragment += 
+                         '<tr>' +
+               			 '<td>' + this.label + '</td>' +
+			             '<td>' + this.cn    + '</td>' +
+			             '<td>' + this.mail  + '</td>' +
+                         '<td><button class="remove-candidate-btn" href="#"></button></td>' +
+                         '<td><button class="lock-candidate-btn" href="#"></button></td>' +
+			             '</tr>' ;
+                     });
+                   }
+
+                   //console.log("dirlookup htmlfragment: " + htmlfragment);
+		   $jq('#output2').html(htmlfragment);
+		   $jq(".remove-candidate-btn").button({
+		     create: function (event,ui) {console.log("remove candidate button create event...");},
+		     color : 'red',
+		     icons : {
+		       primary : 'ui-icon-circle-minus',
+		       secondary : null
+		     }
+		   }).click(function(event){ 
+                  // console.log("remove button clicked...:" + event.target.nodename );
+                  // first, siteAjaxPost with uid and activityinstanceuuid of current
+                  //   activity 
+                  event.preventDefault();
+                  var entry = $jq(this).closest('tr').children().first().next().text();
+                  console.log("targetUserId: " + entry);
+                  siteAjaxPost("/site/restservices/site-ajax/assignTask",
+                               "activityInstanceUuid=${activity.activityInstanceUuid}&action=removecandidate&targetUserId=" + entry,
+                    function(data) {
+                      // if success, refreshActualCandidates(), else leave as is
+                      refreshActualCandidates();
+                    });
+		   });
+
+		   $jq(".lock-candidate-btn").button({
+			     create: function (event,ui) {
+	                       console.log("lock button create event2...");
+	                       //$jq(this).parent().closest('tr').css({backgroundColor:'yellow'});
+	                     },
+			     color : 'red',
+			     icons : {
+			       primary : ( (assignedUserUid.trim() ) ? 'ui-icon-locked' : 'ui-icon-unlocked' ),
+			       secondary : null
+			     }
+			   }).click(function(event){ 
+	                       console.log("Locking/Unlocking row...");
+	                       event.preventDefault();
+	                       // get targetUid, i.e. uid of current row
+	                       var entry = $jq(this).closest('tr').children().first().next().text();
+	                       console.log("targetUserId: " + entry);
+//	                       $jq(this).closest('tr').css({backgroundColor:'yellow'});
+	                       console.log($jq(this).parent().html());
+//	                       $jq(this).closest('button.assigned')....;
+		             if ( assignedUserUid.trim() ) {
+	                     siteAjaxPost("/site/restservices/site-ajax/assignTask",
+	                                  "activityInstanceUuid=${activity.activityInstanceUuid}&action=unassign&targetUserId=" + entry,
+	                       function(data) {
+	                         // if success, refreshActualCandidates(), else leave as is
+	                         refreshActualCandidates();
+	                       }); } else {
+	                        siteAjaxPost("/site/restservices/site-ajax/assignTask",
+	                                     "activityInstanceUuid=${activity.activityInstanceUuid}&action=assign&targetUserId=" + entry,
+	                       function(data) {
+	                         // if success, refreshActualCandidates(), else leave as is
+	                         refreshActualCandidates();
+	                       }); 
+	                      }
+			   });
+              });
+            } else {
+		   $jq('#output2').html("<tr />");
+            }                
+          }); 
+      }
+
+
 $jq("#dialog-edit-candidates").dialog({
 	  autoOpen : false,
         resizable: false,
@@ -295,16 +551,16 @@ $jq("#dialog-edit-candidates").dialog({
         width:'auto',
 	  modal : true,
 	  open: function( event, ui ) {
-	          console.log("open event fired...");
+	          console.log("#dialog-edit-candidates: open event fired...");
                 refreshActualCandidates();
         },
 	  beforeClose: function( event, ui ) {
-	    console.log("beforeclose event fired...");
+	    console.log("#dialog-edit-candidates: beforeclose event fired...");
           $jq('#search-users-form').clearForm();
 	    $jq('#output1').html('<tr />');
         },
 	  buttons : {
-	    "Close" : function() {
+	    "Stäng" : function() {
 	      $jq(this).dialog("close");
 	    }
 	}
@@ -386,11 +642,17 @@ $jq("#dialog-edit-candidates").dialog({
 				}
 			});
 
-
 	$jq("#add-candidates").click(function() {
 		$jq("#dialog-edit-candidates").dialog("open");
 	});
 
+//	 $jq("#search-users-form input:last").button({
+//         create: function (event,ui) {console.log("#search-users-form input:last button create event...");},
+//	     color : 'green'
+//	}
+//})
+	
+	
 	$jq("#add-comment").click(function() {
 		$jq("#dialog-comment-case").dialog("open");
 	});
@@ -491,245 +753,13 @@ $jq("#dialog-edit-candidates").dialog({
 		$jq("#activity-candidates").text(str);
 		$jq("#activity-priority").val(info.priority);
 	}
-	
+
 	function refreshCommentFeed(comments) {
 	   $jq("#commentfeed").empty();
-       for (var i=0;i<comments.length;i++) {
-    	   var commentDate = new Date(comments[i].timestamp);
+           for (var i=0;i<comments.length;i++) {
+    	     var commentDate = new Date(comments[i].timestamp);
 	       $jq("#commentfeed").append("<li><b>" + $jq.datepicker.formatDate('yy-mm-dd', commentDate) + " (" + comments[i].activityLabel + ") " + comments[i].user.label + ": </b><br/>" + comments[i].message + "</li>");
 	   }
 	}
 	
-	$jq(document).ready(function() {
-		siteAjaxPost("/site/restservices/site-ajax/getActivityWorkflowInfo", {
-			activityInstanceUuid : '${activity.activityInstanceUuid}'
-		}, function(data) {
-			refreshActivityWorkflowInfo(data);
-		});
-		
-		siteAjaxPost("/site/restservices/site-ajax/getCommentFeed", {activityInstanceUuid: '${activity.activityInstanceUuid}'}, function(data) {
-		    refreshCommentFeed(data);
-		} );
-	
-        var options = { 
-          target:       '#output1',      // target element(s) to be updated with server response 
-          dataType:     'json',          // 'xml', 'script', or 'json' (expected server response type) 
-          clearForm:    false,            // clear all form fields after successful submit 
-          resetForm:    false,            // reset the form after successful submit 
-          beforeSubmit: showRequest,     // pre-submit callback 
-          success:      showResponse     // post-submit callback 
- 
-          // other available options: 
-          //url:       url         // override for form's 'action' attribute 
-          //type:      type        // 'get' or 'post', override for form's 'method' attribute 
- 
-          // $jq.ajax options can be used here too, for example: 
-          //timeout:   3000 
-        }; 
-
-        // bind 'search-users-form' and provide a callback function 
-        //$jq('#search-users-form').ajaxForm(function(options) { 
-        //  alert("Thank you for your input!"+ JSON.stringify(options, null, 4));  
-        //});
-
-         $jq('#search-users-form').ajaxForm(options);
-
-	});
-	
-    // pre-submit callback 
-    function showRequest(formData, jqForm, options) { 
-	  // formData is an array; here we use $jq.param to convert it to a string to display it 
-	  // but the form plugin does this for you automatically when it submits the data 
-	  var queryString = $jq.param(formData);
-
-	  // jqForm is a jQuery object encapsulating the form element. To access the 
-	  // DOM element for the form do this: 
-	  // var formElement = jqForm[0]; 
-
-        console.log("in showRequest...About to submit: " + queryString); 
-
-	  // here we could return false to prevent the form from being submitted; 
-	  // returning anything other than false will allow the form submit to continue 
-	  return true; 
-    } 
-
-    // post-submit callback 
-    function showResponse(responseText, statusText, xhr, $form)  { 
-	  // for normal html responses, the first argument to the success callback 
-	  // is the XMLHttpRequest object's responseText property 
-
-	  // if the ajaxForm method was passed an Options Object with the dataType 
-	  // property set to 'xml' then the first argument to the success callback 
-	  // is the XMLHttpRequest object's responseXML property 
-
-	  // if the ajaxForm method was passed an Options Object with the dataType 
-	  // property set to 'json' then the first argument to the success callback 
-	  // is the json data object returned by the server 
-
-	  //alert('status: ' + statusText + '\n\nresponseText: \n' + 
-        //      JSON.stringify(responseText, null, 4) + 
-	  //      '\n\nThe output div should have already been updated with the responseText.');
-
-        //$jq('#output1').hide().html(JSON.stringify(responseText, null, 4)).fadeIn('slow');
-
-        var htmlfragment = "";
-        $jq.each(responseText, function() {
-          htmlfragment += 
-            '<tr>' + 
-            '<td>' + this.label + '</td>' +
-            '<td>' + this.cn    + '</td>' +
-            '<td>' + this.mail  + '</td>' +
-	      '<td><button class="add-candidate-btn" href="#"></button></td>' +
-            '</tr>' ;
-        });
-    
-       $jq('#output1').html(htmlfragment);
-
-	 $jq(".add-candidate-btn").button({
-              create: function (event,ui) {console.log("add candidate button create event...");},
-		color : 'green',
-		icons : {
-			primary : 'ui-icon-circle-plus',
-			secondary : null
-		}
-	 }).click(function(event){ 
-         // console.log("add button clicked...:" + event.target.nodename );
-         // first, siteAjaxPost addcandidate message  with uid and 
-         // activityinstanceuuid of current activity
-         event.preventDefault();
-         var entry    = $jq(this).closest('tr').children().first().next().text();
-         var entryrow = $jq(this).closest('tr');
-         console.log("targetUserId: " + entry);
-         siteAjaxPost("/site/restservices/site-ajax/assignTask",
-           "activityInstanceUuid=${activity.activityInstanceUuid}&action=addcandidate&targetUserId=" + entry,
-           function(data) {
-             // if success remove table row entry from page
-             console.log("add candidate: " + entry + ", removing row from search results");
-//             event.preventDefault();
-//             $jq(this).closest("tr").remove();
-             $jq(entryrow).remove();
-             refreshActualCandidates();
-	   }); 
-       });
-    }
-
-    // post-submit callback 
-    function showResponse(responseText, statusText, xhr, $form)  { 
-	  // for normal html responses, the first argument to the success callback 
-	  // is the XMLHttpRequest object's responseText property 
-
-	  // if the ajaxForm method was passed an Options Object with the dataType 
-	  // property set to 'xml' then the first argument to the success callback 
-	  // is the XMLHttpRequest object's responseXML property 
-
-	  // if the ajaxForm method was passed an Options Object with the dataType 
-	  // property set to 'json' then the first argument to the success callback 
-	  // is the json data object returned by the server 
-
-	  //alert('status: ' + statusText + '\n\nresponseText: \n' + 
-        //      JSON.stringify(responseText, null, 4) + 
-	  //      '\n\nThe output div should have already been updated with the responseText.');
-
-        //$jq('#output1').hide().html(JSON.stringify(responseText, null, 4)).fadeIn('slow');
-
-        var htmlfragment = "";
-        $jq.each(responseText, function() {
-          htmlfragment += 
-            '<tr>' + 
-            '<td>' + this.label + '</td>' +
-            '<td>' + this.cn    + '</td>' +
-            '<td>' + this.mail  + '</td>' +
-	      '<td><button class="add-candidate-btn" href="#"></button></td>' +
-            '</tr>' ;
-        });
-    
-       $jq('#output1').html(htmlfragment);
-
-	 $jq(".add-candidate-btn").button({
-              create: function (event,ui) {console.log("add candidate button create event...");},
-		color : 'green',
-		icons : {
-			primary : 'ui-icon-circle-plus',
-			secondary : null
-		}
-	 }).click(function(event){ 
-         // console.log("add button clicked...:" + event.target.nodename );
-         // first, siteAjaxPost addcandidate message  with uid and 
-         // activityinstanceuuid of current activity
-         event.preventDefault();
-         var entry    = $jq(this).closest('tr').children().first().next().text();
-         var entryrow = $jq(this).closest('tr');
-         console.log("targetUserId: " + entry);
-         siteAjaxPost("/site/restservices/site-ajax/assignTask",
-           "activityInstanceUuid=${activity.activityInstanceUuid}&action=addcandidate&targetUserId=" + entry,
-           function(data) {
-             // if success remove table row entry from page
-             console.log("add candidate: " + entry + ", removing row from search results");
-//             event.preventDefault();
-//             $jq(this).closest("tr").remove();
-             $jq(entryrow).remove();
-             refreshActualCandidates();
-	   }); 
-       });
-    }
-
-    function refreshActualCandidates() {
-        //console.log("refreshActualCandidates...");
-        siteAjaxPost(
-          "/site/restservices/site-ajax/getActivityWorkflowInfo",
-          "activityInstanceUuid=${activity.activityInstanceUuid}",
-          function(data) {
-            var cnListQueryStr = '';
-            $jq.each(data.candidates, 
-              function() {
-                cnListQueryStr += 'cnList=' + this.uuid + '&' ;
-              }
-            );
-            console.log("refreshActualCandidates, cnListQueryStr: " + cnListQueryStr);
-            if (cnListQueryStr.trim()) {
-	       siteAjaxPost(
-		 "/site/restservices/site-ajax/dirLookupUserEntries",
-		 cnListQueryStr,
-		 function(data) {
-		   var htmlfragment = '';
-		   $jq.each(data, function() {
-		     htmlfragment += 
-		       '<tr>' + 
-		       '<td>' + this.label + '</td>' +
-		       '<td>' + this.cn    + '</td>' +
-		       '<td>' + this.mail  + '</td>' +
-		       '<td><button class="remove-candidate-btn" href="#"></button></td>' +
-		       '<td />' +
-		       '</tr>' ;
-		   });
-
-		   //console.log("dirlookup htmlfragment: " + htmlfragment);
-		   $jq('#output2').html(htmlfragment);
-		   $jq(".remove-candidate-btn").button({
-		     create: function (event,ui) {console.log("remove candidate button create event...");},
-		     color : 'red',
-		     icons : {
-		       primary : 'ui-icon-circle-minus',
-		       secondary : null
-		     }
-		   }).click(function(event){ 
-                  // console.log("remove button clicked...:" + event.target.nodename );
-                  // first, siteAjaxPost with uid and activityinstanceuuid of current
-                  //   activity 
-                  event.preventDefault();
-                  var entry = $jq(this).closest('tr').children().first().next().text();
-                  console.log("targetUserId: " + entry);
-                  siteAjaxPost("/site/restservices/site-ajax/assignTask",
-                               "activityInstanceUuid=${activity.activityInstanceUuid}&action=removecandidate&targetUserId=" + entry,
-                    function(data) {
-                      // if success, refreshActualCandidates(), else leave as is
-                      refreshActualCandidates();
-                    });
-		   });
-              });
-            } else {
-		   $jq('#output2').html("<tr />");
-            }                
-          }); 
-      }
 </script>
