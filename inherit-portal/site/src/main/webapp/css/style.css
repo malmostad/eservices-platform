@@ -83,14 +83,24 @@ td.unassigned {
 }
 
 #search-users-form input:last-child {
-    display: inline-block;
-	background: lightgrey;
-    margin-top: 10px;
-    margin-left: auto;
+    background: none repeat scroll 0 0 #D9EBD2;
+    margin-left: 80%;
     margin-right: auto;
-    width: 15%;
+    margin-top: 10px;
+    width: 20%;
 }
 
+#search-users-form input:last-child:hover {
+    background: none repeat scroll 0 0 #ffffff;
+}
+
+#search-users-form + h3 {
+    padding-top: 10px;
+}
+
+#search-users-form + h3 + table {
+    width: 100%;
+}
 
 @media print {
 /* print specific styling here*/
