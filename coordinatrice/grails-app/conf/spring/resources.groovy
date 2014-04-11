@@ -11,6 +11,10 @@ import org.motrice.jmx.BasicAppManagement
 
 // Place your Spring DSL code here
 beans = {
+  // Custom date editor for automatic data binding when converting
+  // XML to domain objects
+  customPropertyEditorRegistrar(org.motrice.migratrice.CustomDateEditorRegistrar)
+
   // The following stuff wires Spring components together for exporting
   // the management bean to JMX.
   // The convenience of using annotation brings some extra components.

@@ -1,0 +1,41 @@
+#grailsLogo div.mainmenu {
+    display: inline;
+    float: left;
+}
+ul#menu, ul.submenu{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    z-index: 999;
+}
+ul#menu li{
+    float: left;
+}
+/* hide the submenu */
+li ul.submenu {
+    display: none;
+}
+ul#menu li a {
+    display: block;
+    text-decoration: none;
+    color: #ffffff;
+    padding: 7px 14px;
+    background: 66A0D1;
+    border-right: 1px solid white;
+    border-top: 1px solid white;
+    margin: 0;
+    float:none;
+}
+/* show the submenu */
+ul#menu li:hover ul.submenu {
+    display: block;
+    position: absolute;
+    float:left;
+}
+ul#menu li:hover li,  ul#menu li:hover a {
+    float: none;
+    background: #215988;
+}
+ul#menu li:hover li a:hover {
+    background: #419C9D;
+}

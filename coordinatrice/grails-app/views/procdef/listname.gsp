@@ -9,14 +9,6 @@
   </head>
   <body>
     <a href="#list-procdef" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-    <div class="nav" role="navigation">
-      <ul>
-	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-	<li><g:link class="list" controller="MtfStartFormDefinition" action="list"><g:message code="startform.list.label"/></g:link></li>
-	<li><g:link class="list" controller="PxdFormdef" action="list"><g:message code="pxdFormdef.list.label"/></g:link></li>
-	<li><g:link class="list" controller="crdProcCategory" action="list"><g:message code="default.list.label" args="[categEntityName]" /></g:link></li>
-      </ul>
-    </div>
     <div id="list-procdef" class="content scaffold-list" role="main">
       <g:if test="${deploymentId}">
 	<g:set var="deplId" value="${deploymentId}"/>

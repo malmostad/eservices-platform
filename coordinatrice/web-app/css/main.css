@@ -90,14 +90,13 @@ img {
 /* GENERAL */
 
 #grailsLogo a {
-	display: inline-block;
-	margin: 2px 1em;
+    margin: 1px 0.5em 0px 1.5em;
 }
 
-#grailsLogo span.meta {
+#grailsLogo div.meta {
+	vertical-align: top;
         font-size: 150%;
 	color: #CCE1E8;
-	vertical-align: top;
 }
 
 #motriceLogo a {
@@ -117,8 +116,7 @@ img {
 
 .content h1 {
 	border-bottom: 1px solid #CCCCCC;
-	margin: 0.8em 1em 0.3em;
-	padding: 0 0.25em;
+	margin: 0.4em 1em 0.3em;
 }
 
 .scaffold-list h1 {
@@ -202,7 +200,7 @@ img {
 	text-decoration: underline;
 }
 
-.nav a.home, .nav a.list, .nav a.create {
+.nav a.home, .nav a.list, .nav a.create, .nav a.newpackage {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
 	text-indent: 25px;
@@ -218,6 +216,10 @@ img {
 
 .nav a.create {
 	background-image: url(../images/skin/database_add.png);
+}
+
+.nav a.newpackage {
+	background-image: url(../images/silk/package_add.png);
 }
 
 /* CREATE/EDIT FORMS AND SHOW PAGES */
@@ -443,10 +445,15 @@ tr>td:last-child, tr>th:last-child {
 }
 
 td, th {
-	line-height: 1.2em;
-	padding: 0.4em;
+	line-height: 1.5em;
+	padding: 0.1em 0.6em;
 	text-align: left;
 	vertical-align: top;
+}
+
+table.compact td, table.compact th {
+    line-height: 1.2em;
+    font-size: 85%;
 }
 
 th {
@@ -562,8 +569,7 @@ th:hover, tr:hover {
 	border: none;
 }
 
-.buttons input,
-.buttons a {
+.buttons input, .buttons span, .buttons a {
 	background-color: transparent;
 	border: 0;
 	color: #666666;
@@ -597,10 +603,12 @@ th:hover, tr:hover {
 	text-decoration: underline;
 }
 
-.buttons .delete, .buttons .edit, .buttons .save, .buttons .show {
+.buttons .delete, .buttons .edit, .buttons .save, .buttons .show,
+.buttons .add, .buttons .checkall, .buttons .clearall, .buttons .remove,
+.buttons .export, .buttons .upload, .buttons .install {
 	background-position: 0.7em center;
 	background-repeat: no-repeat;
-	text-indent: 25px;
+	text-indent: 21px;
 }
 
 .ie6 .buttons input.delete, .ie6 .buttons input.edit, .ie6 .buttons input.save,
@@ -622,6 +630,38 @@ th:hover, tr:hover {
 
 .buttons .show {
 	background-image: url(../images/silk/application_view_detail.png);
+}
+
+.buttons .add {
+	background-image: url(../images/silk/add.png);
+}
+
+.buttons .remove {
+	background-image: url(../images/silk/delete.png);
+}
+
+#textForAddContaining {
+    background-color: #999999;
+}
+
+.buttons .checkall {
+	background-image: url(../images/silk/accept.png);
+}
+
+.buttons .clearall {
+	background-image: url(../images/silk/cross.png);
+}
+
+.buttons .export {
+	background-image: url(../images/silk/arrow_down.png);
+}
+
+.buttons .upload {
+	background-image: url(../images/silk/arrow_up.png);
+}
+
+.buttons .install {
+	background-image: url(../images/silk/arrow_rotate_clockwise.png);
 }
 
 a.skip {

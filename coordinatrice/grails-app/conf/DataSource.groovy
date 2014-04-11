@@ -2,12 +2,6 @@
 dataSource {
     pooled = true
 }
-// Datasource for process info (read-only)
-dataSource_bonita {
-    pooled = true
-    dbCreate = 'validate'
-    readOnly = true
-}
 hibernate {
     cache.use_second_level_cache = true
     cache.use_query_cache = false

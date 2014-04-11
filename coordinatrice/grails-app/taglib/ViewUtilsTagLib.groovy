@@ -2,6 +2,9 @@
  * Various view utility tags
  */ 
 class ViewUtilsTagLib {
+  static final FMTM = 'yyyy-MM-dd HH:mm'
+  static final FMTS = 'yyyy-MM-dd HH:mm:ss'
+
   /**
    * Tag for displaying the instance boolean in PxdItem
    */
@@ -32,4 +35,41 @@ class ViewUtilsTagLib {
     def type = attrs.type
     out << message(code: type?.res, default: type?.defaultMessage)
   }
+
+  /***** From Migratrice *****/
+
+  /**
+   * Tag for displaying MigPackage.originLocal
+   */
+  def formatOrigin = {attrs, body ->
+    def flag = attrs.flag
+    out << (flag? g.message(code: 'migPackage.originIsLocal.label') :
+	    g.message(code: 'migPackage.originIsRemote.label'))
+  }
+
+  /**
+   * Tag for displaying MigFormdefVer.published
+   */
+  def formatPublished = {attrs, body ->
+    def flag = attrs.flag
+    out << (flag? g.message(code: 'migFormdefVer.ispublished.label') :
+	    g.message(code: 'migFormdefVer.unpublished.label'))
+  }
+
+  /**
+   * Tag for displaying Date with minute precision
+   */
+  def tstamp = {attrs, body ->
+    def date = attrs.date
+    out << date.format(FMTM)
+  }
+
+  /**
+   * Tag for displaying Date with second precision
+   */
+  def tstampsec = {attrs, body ->
+    def date = attrs.date
+    out << date.format(FMTS)
+  }
+
 }
