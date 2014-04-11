@@ -13,21 +13,46 @@ TOMCAT_DIR=apache-tomcat-7.0.53
 TOMCAT_TGZ=${TOMCAT_DIR}.tar.gz
 TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/bin/${TOMCAT_TGZ}
 
-FORGEROCK_POLICY_AGENT_ZIP=tomcat_v6_agent_3.1.0-Xpress.zip
-FORGEROCK_POLICY_AGENT_URL=file:///home/bjmo/H%C3%A4mtningar/${FORGEROCK_POLICY_AGENT_ZIP}
-OPENAM_POLICY_AGENT_PWD_FILE=~/tmp/pwd.txt
+#####################################################################
+# Container config 
+#####################################################################
 
-# Name of container roots
-BOS=BOS-5.9-Tomcat-6.0.35
-ESERVICE=hippo-eservice-tomcat
-KSERVICE=hippo-kservice-tomcat
+ESERVICE=hippo-eservice-tomcat        # PATH in CONTAINER_ROOT
+ESERVICE_SSL=FALSE                    # TRUE/FALSE
+ESERVICE_HOST=eminburk.malmo.se       # DNS name
+ESERVICE_PORT=8080                    # external port normally 80 or 443
 
-ESERVICEPATCH=eminburk.malmo.se
-KSERVICEPATCH=kminburk.malmo.se
+KSERVICE=hippo-kservice-tomcat        # PATH in CONTAINER_ROOT
+KSERVICE_SSL=FALSE                    # TRUE/FALSE
+KSERVICE_HOST=kminburk.malmo.se       # DNS name
+KSERVICE_PORT=8080                    # external port normally 80 or 443
+
+ESERVICEPATCH=${ESERVICE_HOST}
+KSERVICEPATCH=${KSERVICE_HOST}
 PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
 
-BOS_PORT=58080
-ESERVICE_PORT=38080
-KSERVICE_PORT=8080
+ESERVICE_PORT=38080                   # internal port i.e. tomcat port
+KSERVICE_PORT=8080                    # internal port i.e. tomcat port
 
 WITH_KSERVICES=true
+
+#####################################################################
+# Open AM config
+#####################################################################
+FORGEROCK_POLICY_AGENT_ZIP=tomcat_v6_agent_3.1.0-Xpress.zip
+FORGEROCK_POLICY_AGENT_URL=file:///home/bjmo/H%C3%A4mtningar/${FORGEROCK_POLICY_AGENT_ZIP}
+
+# OpenAM EService config
+OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE=~/tmp/pwd.txt
+OPENAM_SERVER_URL_ESERVICE=https://eservicetest.malmo.se:443/openam
+OPENAM_POLICY_AGENT_ESERVICE=eserviceTestAgent
+OPENAM_REALM_ESERVICE=medbrealm
+
+# OpenAM KService config
+OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE=~/tmp/pwd.txt
+OPENAM_SERVER_URL_KSERVICE=https://eservicetest.malmo.se:443/openam
+OPENAM_POLICY_AGENT_KSERVICE=kserviceTestAgent
+OPENAM_REALM_KSERVICE=kominrealm
+
+
+

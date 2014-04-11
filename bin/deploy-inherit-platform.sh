@@ -33,24 +33,22 @@ then
     exit $ERRORSTATUS
 fi
 
-echo "CONTAINER_ROOT/BOS:      $CONTAINER_ROOT/$BOS"
 echo "CONTAINER_ROOT/ESERVICE: $CONTAINER_ROOT/$ESERVICE"
 echo "CONTAINER_ROOT/KSERVICE: $CONTAINER_ROOT/$KSERVICE"
 
-if [ ! -d ${CONTAINER_ROOT}/${BOS} ] || [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${KSERVICE} ]
+if [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${KSERVICE} ]
 then
-    echo "Either of ${CONTAINER_ROOT}/${BOS} ${CONTAINER_ROOT}/${ESERVICE} ${CONTAINER_ROOT}/${KSERVICE} do not exist, aborting execution of $0"
+    echo "Either of ${CONTAINER_ROOT}/${ESERVICE} ${CONTAINER_ROOT}/${KSERVICE} do not exist, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
 
-echo "BOS_PORT: $BOS_PORT"
 echo "ESERVICE_PORT: $ESERVICE_PORT"
 echo "KSERVICE_PORT: $KSERVICE_PORT"
 
-if [ -z "${BOS_PORT}" ] || [ -z "${ESERVICE_PORT}" ] || [ -z "${KSERVICE_PORT}" ]
+if [ -z "${ESERVICE_PORT}" ] || [ -z "${KSERVICE_PORT}" ]
 then
-    echo "Either of parameters BOS_PORT, ESERVICE_PORT or KSERVICE_PORT unset, aborting execution of $0"
+    echo "Either of parameters ESERVICE_PORT or KSERVICE_PORT unset, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
@@ -73,8 +71,18 @@ then
        cp $PROPERTIES_LOCAL_BEFOREPATCH properties-local.xml # thereby conserving mod date of properties-local.xml
                                                              # when $PROPERTIES_LOCAL_BEFOREPATCH is renamed
                                                              # back to properties-local.xml in step 8
-       sed s/eservices.malmo.se/${ESERVICEPATCH}/g properties-local.xml > properties-local.xml.eservicepatch
-       sed s/eservices.malmo.se/${KSERVICEPATCH}/g properties-local.xml > properties-local.xml.kservicepatch
+if [ "${ESERVICE_SSL}" = "TRUE" ]; then
+   sed -e "s/https:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
+else
+    sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
+fi
+
+if [ "${KSERVICE_SSL}" = "TRUE" ]; then
+   sed -e "s/https:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${KSERVICE_HOST}:${KSERVICE_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
+else
+    sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${KSERVICE_HOST}:${KSERVICE_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
+fi
+
        mv properties-local.xml.eservicepatch properties-local.xml
     popd
 else
@@ -149,39 +157,7 @@ fi
 # 9. Stop j2ee containers
     pushd ${CONTAINER_ROOT}
 
-cd ${BOS}/bin/
-
-BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ "${BOS_PID}" ] 
-then 
-    echo "Shutting down BOS, pid: " ${BOS_PID}
-    ./shutdown.sh
-    sleep 1
-    LOOPVAR=0
-    while ps -p ${BOS_PID} && [ ${LOOPVAR} -lt 6  ]
-    do
-	LOOPVAR=$(expr ${LOOPVAR} + 1)
-	sleep 1
-    done
-
-  # If proper shutdown did not bite
-    if ps -p ${BOS_PID}
-    then 
-	echo "Force shutting down BOS, pid: " ${BOS_PID}
-	kill  ${BOS_PID}
-	sleep 6
-    fi
-
-  # If still did not bite
-    if ps -p ${BOS_PID}
-    then 
-	echo "Failed to shut down BOS, pid: " ${BOS_PID}
-	ERRORSTATUS=1
-    fi
-fi
-
-
-cd ../../${ESERVICE}/bin/
+cd ${ESERVICE}/bin/
 
 ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
 if [ "${ESERVICE_PID}" ] 
@@ -284,19 +260,6 @@ then
     fi
 fi
 
-# 12. Install TASKFORM engine on BOS container
-echo "Installing taskform engine on BOS"
-if [ -d ${CONTAINER_ROOT}/${BOS}/webapps ] 
-then
-    pushd ${CONTAINER_ROOT}/${BOS}/webapps
-    cp ${BUILD_DIR}/inherit-service/inherit-service-rest-server/target/inherit-service-rest-server-1.0-SNAPSHOT.war .
-    rm -rf inherit-service-rest-server-1.0-SNAPSHOT
-    popd
-else
-    echo "Directory ${CONTAINER_ROOT}/${BOS}/webapps does not exist. Halting."
-    exit 1
-fi
-
 # 13. Clean up content repositories
 echo "Clean up content repository..."
 pushd ${CONTENT_ROOT}
@@ -309,25 +272,6 @@ popd
 
 # 14. Restart containers
 pushd ${CONTAINER_ROOT}
-
-echo "Restart BOS container..."
-cd ${BOS}/bin/
-./startup.sh 
-LOOPVAR=0
-BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-while [ -z "${BOS_PID}" -a  ${LOOPVAR} -lt 20  ]
-do
-    LOOPVAR=$(expr ${LOOPVAR} + 1)
-    sleep 1
-    BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-done
-
-if [ -z "${BOS_PID}" ]
-then
-    echo "Error: could not start BOS service"
-    ERRORSTATUS=1
-fi
-cd ../..
 
 echo "Restart eservice container..."
 cd ${ESERVICE}/bin/

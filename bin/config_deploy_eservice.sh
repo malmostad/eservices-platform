@@ -4,22 +4,55 @@
 BUILD_DIR=${HOME}/inherit-platform-gitclone/eservices-platform
 
 # ROOT of directory holding the j2ee containers
-CONTAINER_ROOT=${HOME}/inherit-platform
+CONTAINER_ROOT=${HOME}/motrice-14.4
 
 # ROOT of Hippo jcr content repository
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
 
-# Name of container roots
-BOS=BOS-5.9-Tomcat-6.0.35
-ESERVICE=hippo-eservice-tomcat-6.0.36
-KSERVICE=hippo-kservice-tomcat-6.0.36
+# ROOT of Hippo jcr content repository
+CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
 
-ESERVICEPATCH=eservice.malmo.se
-KSERVICEPATCH=kservice.malmo.se
+TOMCAT_DIR=apache-tomcat-7.0.53
+TOMCAT_TGZ=${TOMCAT_DIR}.tar.gz
+TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/bin/${TOMCAT_TGZ}
+
+#####################################################################
+# Container config 
+#####################################################################
+
+ESERVICE=hippo-eservice-tomcat        # PATH in CONTAINER_ROOT
+ESERVICE_SSL=TRUE                     # TRUE/FALSE
+ESERVICE_HOST=eservice.malmo.se       # DNS name
+ESERVICE_PORT=443                     # external port normally 80 or 443
+
+KSERVICE=hippo-kservice-tomcat        # PATH in CONTAINER_ROOT
+KSERVICE_SSL=TRUE                     # TRUE/FALSE
+KSERVICE_HOST=kservice.malmo.se       # DNS name
+KSERVICE_PORT=443                     # external port normally 80 or 443
+
+ESERVICEPATCH=${ESERVICE_HOST}
+KSERVICEPATCH=${KSERVICE_HOST}
 PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
 
-BOS_PORT=58080
-ESERVICE_PORT=38080
-KSERVICE_PORT=8080
+ESERVICE_PORT=38080                   # internal port i.e. tomcat port
+KSERVICE_PORT=8080                    # internal port i.e. tomcat port
 
 WITH_KSERVICES=true
+
+#####################################################################
+# Open AM config
+#####################################################################
+FORGEROCK_POLICY_AGENT_ZIP=tomcat_v6_agent_3.1.0-Xpress.zip
+FORGEROCK_POLICY_AGENT_URL=file:///home/inherit/download/${FORGEROCK_POLICY_AGENT_ZIP}
+
+# OpenAM EService config
+OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE=~/inherit-platform-gitclone/pwd.txt
+OPENAM_SERVER_URL_ESERVICE=https://eservicetest.malmo.se:443/openam
+OPENAM_POLICY_AGENT_ESERVICE=eserviceTestAgent
+OPENAM_REALM_ESERVICE=medbrealm
+
+# OpenAM KService config
+OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE=~/tmp/pwd.txt
+OPENAM_SERVER_URL_KSERVICE=https://eservicetest.malmo.se:443/openam
+OPENAM_POLICY_AGENT_KSERVICE=kserviceTestAgent
+OPENAM_REALM_KSERVICE=kominrealm
