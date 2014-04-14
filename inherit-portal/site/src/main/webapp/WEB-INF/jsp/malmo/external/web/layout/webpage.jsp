@@ -46,6 +46,10 @@
     
     <link rel="stylesheet" href="<hst:link path="/css/platform/inherit-platform.css"/>" type="text/css"/>
     <script type="text/javascript" src="<hst:link path="/js/platform/inherit-platform.js"/>"></script>
+
+    <script type="text/javascript" charset="utf-8">
+        var $jq = jQuery.noConflict();
+    </script>
     
   </head>
   <body>
