@@ -38,8 +38,6 @@ class MigPackageController {
 	packageService.importPackage(file.inputStream)
       } catch (MigratriceException exc) {
 	flash.message = message(code: exc.code)
-      } finally {
-	if (!log.debugEnabled) tempFile.delete()
       }
     }
 
