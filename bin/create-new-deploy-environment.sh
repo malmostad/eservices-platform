@@ -101,7 +101,7 @@ sed -e 's/\(common\.loader=\)\(.*\)$/\1\2,\${catalina.base}\/common\/classes,\${
 
 cp -r  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${ESERVICE}
 mv  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${KSERVICE}
-
+cp ${BUILD_DIR}/conf/repository.xml ${CONTAINER_ROOT}/${KSERVICE}/conf/
 ################################################################
 # Write kservice Tomcat setenv.sh due to Hippo and Motrice requirements 
 ################################################################
