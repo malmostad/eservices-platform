@@ -102,12 +102,13 @@ sed -e 's/\(common\.loader=\)\(.*\)$/\1\2,\${catalina.base}\/common\/classes,\${
 cp -r  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${ESERVICE}
 mv  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${KSERVICE}
 cp ${BUILD_DIR}/conf/repository.xml ${CONTAINER_ROOT}/${KSERVICE}/conf/
+
 ################################################################
 # Write kservice Tomcat setenv.sh due to Hippo and Motrice requirements 
 ################################################################
 
 echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo REP_OPTS=\"-Drepo.upgrade=false -Drepo.path= ${CONTENT_ROOT} -Drepo.config=file:\${CATALINA_BASE}/conf/repository.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo REP_OPTS=\"-Drepo.upgrade=false -Drepo.path=${CONTENT_ROOT} -Drepo.config=file:\${CATALINA_BASE}/conf/repository.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
 echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
 echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
 echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${REP_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
@@ -131,6 +132,12 @@ cp -r ${CONTAINER_ROOT}/j2ee_agents/tomcat_v6_agent ${CONTAINER_ROOT}/j2ee_agent
 mv ${CONTAINER_ROOT}/j2ee_agents/tomcat_v6_agent ${CONTAINER_ROOT}/j2ee_agents/kservice-tomcat_v6_agent
 # copy the top secret pwd file to j2ee_agents
 cp ${OPENAM_POLICY_AGENT_PWD_FILE} ${CONTAINER_ROOT}/j2ee_agents/
+
+################################################################
+# change port on eservice tomcat
+################################################################
+mv  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml.orig
+sed -e 's/8080/38080/g' -e 's/8009/38009/g' -e 's/8005/38005/g'  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml.orig >  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml
 
 ################################################################
 # eservice - Agent install configuration
