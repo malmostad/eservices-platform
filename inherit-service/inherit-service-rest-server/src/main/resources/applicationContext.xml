@@ -93,7 +93,6 @@
   <bean name="/getActivityWorkflowInfo/{activityInstanceUuid}" class="org.inheritsource.service.rest.server.GetActivityWorkflowInfo" scope="singleton" autowire="byName" /> 
   <bean name="/inboxByUserId/{userid}" class="org.inheritsource.service.rest.server.InboxByUserId" scope="singleton" autowire="byName" />
   <bean name="/setActivityPriority/{activityInstanceUuid}/{priority}" class="org.inheritsource.service.rest.server.SetActivityPriority" scope="singleton" autowire="byName" /> 
-  <bean name="/addTag/{processActivityFormInstanceId}/{tagTypeId}/{value}/{userid}" class="org.inheritsource.service.rest.server.AddTag" scope="singleton" autowire="byName" /> 
   <bean name="/deleteTag/{processInstanceUuid}/{value}/{userid}" class="org.inheritsource.service.rest.server.DeleteTagByValue" scope="singleton" autowire="byName" /> 
   <bean name="/getTagsByProcessInstance/{processInstanceUuid}" class="org.inheritsource.service.rest.server.GetTagsByProcessInstance" scope="singleton" autowire="byName" /> 
   <bean name="/searchProcessInstancesByTagValue/{tagValue}/{fromIndex}/{pageSize}/{sortBy}/{sortOrder}/{filter}/{userId}" class="org.inheritsource.service.rest.server.SearchProcessInstancesByTagValue" scope="singleton" autowire="byName" /> 
