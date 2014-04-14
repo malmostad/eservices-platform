@@ -20,6 +20,7 @@ su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.box
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.crd.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.mtf.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.pxd.sql"'
+su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.mig.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/activiti.postgres.create.engine.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/activiti.postgres.create.history.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/activiti.postgres.create.identity.sql"'
