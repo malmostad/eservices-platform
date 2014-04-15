@@ -202,10 +202,6 @@ class ProcdefController {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
       redirect(action: "list")
       return
-    } else if (!procdefInst.state.editable) {
-      flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), uuid])
-      redirect(action: "show", id: uuid)
-      return
     }
 
     def procList = []
