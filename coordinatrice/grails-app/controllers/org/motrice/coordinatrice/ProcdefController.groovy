@@ -154,7 +154,7 @@ class ProcdefController {
     def state = procdefInst.state
     def startForms = procdefInst.startForms
     if (log.debugEnabled) log.debug "SHOW >> ${procdefInst}, ${startForms}"
-    [procdefInst: procdefInst, startForms: startForms, editable: state.startFormChangeAllowed]
+    [procdefInst: procdefInst, startForms: startForms, procState: state]
   }
 
   def diagramDownload() {
@@ -271,7 +271,15 @@ class ProcdefController {
       return
     }
 
-    def selection = formService.startFormSelection()
+    def selection = null
+    try {
+      selection = formService.startFormSelection()
+    } catch (ServiceException exc) {
+      handleServiceException('edit', exc)
+      redirect(action: "list")
+      return
+    }
+
     def startForms = procdefInst.startForms
     if (log.debugEnabled) log.debug "EDIT >> ${procdefInst}, ${startForms}"
     [procdefInst: procdefInst, startForms: startForms, formList: selection]

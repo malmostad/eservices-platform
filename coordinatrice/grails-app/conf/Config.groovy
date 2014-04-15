@@ -23,19 +23,19 @@ def CONFENV2 = System.getenv(ENV_VAR2)
 if (!grails.config.locations || !(grails.config.locations instanceof List)) grails.config.locations = []
 
 if (CONFPROP1) {
-  println "--- CONFIG: Command line specified ${CONFPROP1}"
+  println "--- Coordinatrice CONFIG: Command line specified ${CONFPROP1}"
   FILENAME = CONFPROP1
 } else if (CONFENV1) {
-  println "--- CONFIG: Environment specified ${CONFENV1}"
+  println "--- Coordinatrice CONFIG: Environment specified ${CONFENV1}"
   FILENAME = CONFENV1
 } else if (CONFPROP2) {
-  println "--- CONFIG: Command line specified ${CONFPROP2}"
+  println "--- Coordinatrice CONFIG: Command line specified ${CONFPROP2}"
   FILENAME = CONFPROP2
 } else if (CONFENV2) {
-  println "--- CONFIG: Environment specified ${CONFENV2}"
+  println "--- Coordinatrice CONFIG: Environment specified ${CONFENV2}"
   FILENAME = CONFENV2
 } else {
-  println "--- CONFIG: Default ${FILENAME}"
+  println "--- Coordinatrice CONFIG: Default ${FILENAME}"
 }
 
 grails.config.locations << "file:${FILENAME}"
@@ -122,7 +122,7 @@ log4j = {
 	   //trace 'org.hibernate.type'
 	   //debug 'org.hibernate.SQL'
 
-	   error 'grails.app.controllers', 'org.motrice.coordinatrice.FormService', 'org.motrice.coordinatrice.ProcessEngineService', 'org.motrice.coordinatrice', 'org.motrice.migratrice.PackageService'
+	   debug 'grails.app.controllers', 'org.motrice.coordinatrice.FormService', 'org.motrice.coordinatrice.ProcessEngineService', 'org.motrice.coordinatrice', 'org.motrice.migratrice.PackageService'
 }
 
 // Common timestamp display format

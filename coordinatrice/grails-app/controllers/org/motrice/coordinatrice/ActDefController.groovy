@@ -41,7 +41,7 @@ class ActDefController {
       return
     } else if (!actDefInst.process.state.editable) {
       flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), id])
-      redirect(action: "list")
+      redirect(controller: 'procdef', action: "list")
       return
     }
 
@@ -76,7 +76,7 @@ class ActDefController {
       return
     } else if (!actDefInst.process.state.editable) {
       flash.message = message(code: 'procdef.state.not.editable', args: [message(code: 'procdef.label', default: 'Procdef'), acc.id])
-      redirect(action: "list")
+      redirect(controller: 'procdef', action: "list")
       return
     }
 
