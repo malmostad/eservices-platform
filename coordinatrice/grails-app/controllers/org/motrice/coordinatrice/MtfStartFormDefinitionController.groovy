@@ -27,7 +27,12 @@ class MtfStartFormDefinitionController {
     def mtfEntityList = MtfStartFormDefinition.list(params)
     def total = MtfStartFormDefinition.count()
     mtfEntityList = formService.addProcdefs(mtfEntityList)
-    [startFormdefList: mtfEntityList, startFormdefTotal: total]
+    // Add a map to form definitions
+    def formdefMap = mtfEntityList.inject([:]) {map, cnx ->
+      map[cnx.id] = cnx.formdef.formdef
+      return map
+    }
+    [startFormdefList: mtfEntityList, startFormdefTotal: total, formdefMap: formdefMap]
   }
 
   def show(Long id) {

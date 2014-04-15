@@ -34,7 +34,9 @@
 		  <g:img uri="/images/silk/application_form_edit.png" title="${message(code: 'pxdFormdef.link.edit.label', default: 'Edit')}"/>
 	      </a></td>
 	      <td><g:abbr text="${pxdFormdefInst?.uuid}"/></td>
-	      <td><g:link controller="crdI18nFormLabel" action="listkey" id="${pxdFormdefInst?.id}">${message(code: 'pxdFormdef.i18n.start.labels.label')}</td></g:link>
+	      <td><g:link controller="crdI18nFormLabel" action="listkey" id="${pxdFormdefInst?.id}">
+		  <g:img uri="/images/silk/tag_blue.png" title="${message(code: 'pxdFormdef.i18n.start.labels.label')}"/>
+	      </g:link></td>
 	    </tr>
 	  </g:each>
 	</tbody>

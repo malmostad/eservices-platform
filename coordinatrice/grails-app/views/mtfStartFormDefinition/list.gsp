@@ -17,6 +17,7 @@
 	<thead>
 	  <tr>
 	    <g:sortableColumn property="formPath" title="${message(code: 'startform.form.label')}"/>
+	    <th>${message(code: 'pxdFormdef.i18n.title')}</th>
 	    <g:sortableColumn property="procdefId" title="${message(code: 'procdef.label')}"/>
 	    <th>${message(code: 'procdef.vno.label')}</th>
 	    <th>${message(code: 'procdef.state.label')}</th>
@@ -29,6 +30,9 @@
 	    <g:set var="startFormChangeAllowed" value="${startFormdefInst?.tmpProcdef?.state?.startFormChangeAllowed}"/>
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 	      <td><g:link controller="pxdFormdefVer" action="show" id="${startFormdefInst?.formdefId}">${fieldValue(bean: startFormdefInst, field: "formConnectionKey")}</g:link></td>
+	      <td><g:link controller="crdI18nFormLabel" action="listkey" id="${formdefMap[startFormdefInst?.id]?.id}">
+		  <g:img uri="/images/silk/tag_blue.png" title="${message(code: 'pxdFormdef.i18n.start.labels.label')}"/>
+	      </g:link></td>
 	      <td><g:link controller="procdef" action="show" id="${procdefId}">${startFormdefInst?.tmpProcdef?.nameOrKey?.encodeAsHTML()}</g:link></td>
 	      <td>${startFormdefInst?.tmpProcdef?.vno}</td>
 	      <td><g:pdefstate state="${startFormdefInst?.tmpProcdef?.state}"/></td>

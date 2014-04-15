@@ -47,11 +47,21 @@ class FormService {
     }
   }
 
+  /**
+   * Get a start form selection list.
+   * Throw an exception if the form_connection_dbid is null.
+   */
   List startFormSelection() {
     def selection = []
     def formsInUse = new TreeSet()
-    MtfStartFormDefinition.list().each {
-      formsInUse.add(it.formdefId)
+    def formList = MtfStartFormDefinition.list()
+    formList.each {tup ->
+      if (tup.formdefId == null) {
+	def msg = 'Null form_connection_dbid found in mtf_start_form_definition. ' +
+	  'Manually initialized?'
+	throw new ServiceException(msg, 'startform.initialization.problem')
+      }
+      formsInUse.add(tup.formdefId)
     }
     PxdFormdefVer.allPublishedForms().each {
       if (!formsInUse.contains(it.id)) selection.add(it)

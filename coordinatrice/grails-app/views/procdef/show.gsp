@@ -72,7 +72,7 @@
 		  <g:set var="linktitle"><g:message code="startform.selection.invalid.link"/></g:set>
 		  <g:img uri="/images/silk/exclamation.png" title="${linktitle}"/> ${startFormView?.formConnectionKey?.encodeAsHTML()}
 		</g:else>
-		<g:if test="${editable}">
+		<g:if test="${procState?.startFormChangeAllowed}">
 		  <g:link class="edit" action="edit" id="${procdefInst?.uuid}">
 		    <g:img uri="/images/silk/pencil_go.png" title="${message(code: 'default.button.edit.label', default: 'Edit')}"/>
 		  </g:link>
@@ -92,7 +92,6 @@
 
 	<g:if test="${procdefInst?.activities}">
 	  <g:set var="procId" value="${procdefInst?.uuid}"/>
-	  <g:set var="isEditable" value="${editable}"/>
 	  <li class="fieldcontain">
 	    <table>
 	    <span id="activities-label" class="property-label"><g:message code="procdef.act.cnx.label" default="Activities" /></span>
@@ -102,7 +101,7 @@
 	      <g:set var="cnx" value="${new org.motrice.coordinatrice.TaskFormSpec(a, formdef)}"/>
 	      <span class="property-value" aria-labelledby="activities-label"><tr>
 		  <td><g:link controller="actDef" action="show" id="${a?.fullId}">${a?.encodeAsHTML()}</g:link></td>
-		  <g:render template="/activityConnection" model="[connection:cnx, actDefInst:a, formdef:formdef, editable:isEditable]"/>
+		  <g:render template="/activityConnection" model="[connection:cnx, actDefInst:a, formdef:formdef, procState:procState]"/>
 	      </tr></span>
 	    </g:each>
 	    </table>
@@ -114,7 +113,7 @@
 	  <g:hiddenField name="uuid" value="${procdefInst?.uuid}" />
 	  <g:link class="edit" action="createcopy" id="${procdefInst?.uuid}"><g:message code="procdef.edit.label" default="Edit" /></g:link>
 	  <g:link class="edit" action="createnewversion" id="${procdefInst?.uuid}"><g:message code="procdef.upload.version.label" default="Upload" /></g:link>
-	  <g:if test="${procdefInst?.state?.stateChangeAllowed}">
+	  <g:if test="${procState?.stateChangeAllowed}">
 	    <g:link class="edit" action="editstate" id="${procdefInst?.uuid}"><g:message code="procdef.edit.state.label" default="Edit" /></g:link>
 	  </g:if>
 	</fieldset>
