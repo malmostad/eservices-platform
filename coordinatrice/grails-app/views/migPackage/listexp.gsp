@@ -22,12 +22,12 @@
     <a href="#list-migFormdef" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
     <div id="list-migFormdef" class="content scaffold-list" role="main">
       <g:form method="post" action="saveexp">
-	<div class="fieldcontain ${hasErrors(bean: migPackageInst, field: 'packageName', 'error')} ">
+	<div class="fieldcontain">
 	  <label for="packageName">
 	    <g:message code="migPackage.new.package.name.label" default="Package Name" />
 	    <span class="required-indicator">*</span>
 	  </label>
-	  <g:textField name="packageName" maxlength="120" value="${migPackageInst?.packageName}"/>
+	  <g:textField name="packageName" maxlength="120" value="${packageName}"/>
 	</div>
 	<g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>

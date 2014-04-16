@@ -12,6 +12,7 @@ class ProcdefController {
   def formService
   def procdefService
   def processEngineService
+  def siteService
 
   static allowedMethods = [update: 'POST', delete: 'POST']
 
@@ -155,6 +156,11 @@ class ProcdefController {
     def startForms = procdefInst.startForms
     if (log.debugEnabled) log.debug "SHOW >> ${procdefInst}, ${startForms}"
     [procdefInst: procdefInst, startForms: startForms, procState: state]
+  }
+
+  def showconfig() {
+    def configList = siteService.configDisplay()
+    [config: configList]
   }
 
   def diagramDownload() {

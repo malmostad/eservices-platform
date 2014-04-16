@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.metaclass.BindDynamicMethod
 import org.codehaus.groovy.grails.commons.metaclass.GroovyDynamicMethodsInterceptor
 
+import org.motrice.coordinatrice.ServiceException
 import org.motrice.zip.ZipBuilder
 
 class PackageService {
@@ -161,6 +162,11 @@ class PackageService {
 	def formdefId = formdefMap[path]
 	if (formdefId) formdefList.add(singleLocalFormdef(formdefId))
       }
+    }
+
+    if (!formdefList) {
+      def msg = "No form selected when creating migration package ${packageName}"
+      throw new ServiceException(msg, 'migPackage.create.empty')
     }
     
     // Set up relationships
@@ -755,7 +761,8 @@ class PackageService {
   private String localPostxdbText(String tail) {
     String result = null
     try {
-      result = new String(localPostxdbBytes(tail), 'UTF-8')
+      def bytes = localPostxdbBytes(tail)
+      result = (bytes != null)? new String(bytes, 'UTF-8') : null
       //result = localPostxdb(tail).text
     } catch (ConnectException exc) {
       log.error "Postxdb connection problem: ${exc}"

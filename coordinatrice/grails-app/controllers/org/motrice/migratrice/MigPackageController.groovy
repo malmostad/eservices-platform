@@ -2,6 +2,8 @@ package org.motrice.migratrice
 
 import org.springframework.dao.DataIntegrityViolationException
 
+import org.motrice.coordinatrice.ServiceException
+
 class MigPackageController {
   // Injection magic
   def packageService
@@ -128,7 +130,7 @@ class MigPackageController {
     def formdefList = null
     try {
       formdefList = packageService.allLocalFormdefs()?.sort()
-      [migFormdefInstList: formdefList]
+      [migFormdefInstList: formdefList, packageName: params.packageName ?: '']
     } catch (MigratriceException exc) {
       flash.message = message(code: exc.code)
       redirect(action: 'list')
@@ -148,6 +150,11 @@ class MigPackageController {
       } catch (MigratriceException exc) {
 	flash.message = message(code: exc.code)
 	redirect(action: 'list')
+	return
+      } catch (ServiceException exc) {
+	flash.message = message(code: exc.key)
+	redirect(action: 'listexp', params: [packageName: packageName])
+	return
       }
     } else {
       flash.message = message(code: 'migPackage.package.name.required')
