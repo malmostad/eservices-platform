@@ -70,5 +70,6 @@ beans = {
   }
 
   activitiRepositoryService(processEngine: "getRepositoryService")
+  activitiManagementService(processEngine: "getManagementService")
 
 }
