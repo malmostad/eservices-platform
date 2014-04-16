@@ -28,7 +28,7 @@
 	      <td><g:link action="listname" id="${procdefInfo.key}">${procdefInfo.name}</g:link></td>
 	      <td>${procdefInfo.versions}</td>
 	      <td><g:link controller="crdI18nActLabel" action="listkey" id="${procdefInfo.key}">
-		  <g:message code="procdef.i18n.act.labels.label" default="See labels"/>
+		  <g:img uri="/images/silk/tag_orange.png" title="${message(code: 'procdef.i18n.act.labels.label')}"/>
 	      </g:link></td>
 	      <td><g:link controller="crdI18nGuideUrl" action="listkey" id="${procdefInfo.key}">
 		  <g:message code="procdef.i18n.guides.label" default="See labels"/>
