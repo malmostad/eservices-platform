@@ -24,20 +24,8 @@
 	  <g:each in="${config}" status="i" var="entry">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 	      <td><g:message code="${entry?.name}" default="${entry?.name}"/></td>
-	      <td>${entry?.value}</td>
-	      <td>
-	      <g:if test="${entry?.live != null}">
-		<g:if test="${entry?.live}">
-		  <g:img uri="/images/silk/tick.png" title="${message(code: 'config.liveness.true')}"/>
-		</g:if>
-		<g:else>
-		  <g:img uri="/images/silk/cross.png" title="${message(code: 'config.liveness.false')}"/>
-		</g:else>
-	      </g:if>
-	      <g:else>
-		<g:img uri="/images/silk/bullet_white.png" title="${message(code: 'config.liveness.null')}"/>
-	      </g:else>
-	      </td>
+	      <td>${entry?.value?.encodeAsHTML()}</td>
+	      <td><g:img uri="${entry?.img}" title="${entry?.title}"/></td>
 	    </tr>
 	  </g:each>
 	</tbody>
