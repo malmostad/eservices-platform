@@ -35,6 +35,8 @@ class SiteService {
    */
   List configDisplay() {
     def list = []
+    // If you ask for a non-configured configuration item the response is an empty Map.
+    // Use ?: to convert to null and avoid complications.
     list << configItem('config.item.applicationName',
 		       grailsApplication.metadata.'app.name' ?: null)
     list << configItem('config.item.applicationVersion',
@@ -45,12 +47,12 @@ class SiteService {
 			  grailsApplication.config.dataSource.url ?: null)
     dataSourceLive(list, item)
     activitiDatabaseSchema(list)
-    item = configItem('config.item.formBuilderBaseUri',
-		      grailsApplication.config.coordinatrice.orbeon.builder.base.uri ?: null)
-    orbeonLive(list, item)
     item = configItem('config.item.postxdbBaseUri',
 		      grailsApplication.config.migratrice.postxdb.uri ?: null)
     postxdbLive(list, item)
+    item = configItem('config.item.formBuilderBaseUri',
+		      grailsApplication.config.coordinatrice.orbeon.builder.base.uri ?: null)
+    orbeonLive(list, item)
 
     return list
   }
@@ -154,8 +156,15 @@ class SiteService {
       try {
 	def formdefList = packageService.allLocalFormdefs()
 	def formdefCount = PxdFormdef.count()
-	item.state = (formdefList?.size() == formdefCount)? STATE_OPERATIONAL :
-	STATE_INOPERATIVE
+	if (formdefList?.size() == formdefCount) {
+	  item.state = STATE_OPERATIONAL
+	  list << item
+	} else {
+	  item.state = STATE_INOPERATIVE
+	  list << item
+	  item = problemItem('Postxdb uses a different database')
+	  list << item
+	}
       } catch (Exception exc) {
 	item.state = STATE_INOPERATIVE
 	list << item
