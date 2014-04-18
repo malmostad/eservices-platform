@@ -9,6 +9,13 @@ import org.motrice.coordinatrice.pxd.PxdFormdef
 class SiteService {
   static transactional = false
   
+  // States of configured resources
+  static final STATE_CONFIGURED = 1
+  static final STATE_NOT_CONFIGURED = 2
+  static final STATE_OPERATIONAL = 3
+  static final STATE_INOPERATIVE = 4
+  static final STATE_DIAGNOSTIC = 5
+
   def grailsApplication
   // Datasource injected to allow direct SQL query
   javax.sql.DataSource dataSource
@@ -28,91 +35,135 @@ class SiteService {
    */
   List configDisplay() {
     def list = []
-    list << [name: 'config.item.applicationName', value: grailsApplication.metadata.'app.name']
-    list << [name: 'config.item.applicationVersion', value: grailsApplication.metadata.'app.version']
-    list << [name: 'config.item.siteName', value: localSiteName()]
-    def item = [name: 'config.item.dataSource', value: grailsApplication.config.dataSource.url]
-    item.live = dataSourceLive()
-    list << item
-    def actSchema = activitiDatabaseSchema()
-    list << [name: 'config.item.activiti.schema', value: actSchema ?: '???', live: actSchema != null]
-    item = [name: 'config.item.formBuilderBaseUri',
-    value: grailsApplication.config.coordinatrice.orbeon.builder.base.uri]
-    item.live = orbeonLive()
-    list << item
-    item = [name: 'config.item.postxdbBaseUri', value: grailsApplication.config.migratrice.postxdb.uri]
-    item.live = postxdbLive()
-    list << item
+    list << configItem('config.item.applicationName',
+		       grailsApplication.metadata.'app.name' ?: null)
+    list << configItem('config.item.applicationVersion',
+		       grailsApplication.metadata.'app.version' ?: null)
+    list << configItem('config.item.siteName',
+		       grailsApplication.config.motrice.site.name ?: null)
+    def item = configItem('config.item.dataSource',
+			  grailsApplication.config.dataSource.url ?: null)
+    dataSourceLive(list, item)
+    activitiDatabaseSchema(list)
+    item = configItem('config.item.formBuilderBaseUri',
+		      grailsApplication.config.coordinatrice.orbeon.builder.base.uri ?: null)
+    orbeonLive(list, item)
+    item = configItem('config.item.postxdbBaseUri',
+		      grailsApplication.config.migratrice.postxdb.uri ?: null)
+    postxdbLive(list, item)
 
     return list
+  }
+
+  private Map configItem(String resourceName, String value) {
+    def item = [name: resourceName, value: value]
+    if (item.value) {
+      item.state = STATE_CONFIGURED
+    } else {
+      item.value = '-???-'
+      item.state = STATE_NOT_CONFIGURED
+    }
+
+    return item
+  }
+
+  private Map problemItem(String message) {
+    [name: 'config.liveness.problem', value: message, state: STATE_DIAGNOSTIC]
   }
 
   /**
    * Check that Activiti is live, get the schema version.
    * There isn't a lot of properties to choose from.
+   * SIDE EFFECT: Adds one or two config items (Map) to the list.
    */
-  private String activitiDatabaseSchema() {
-    def result = null
+  private activitiDatabaseSchema(List list) {
+    def item = [name: 'config.item.activiti.schema']
     try {
       def props = activitiManagementService.properties
-      result = props['schema.version']
+      item.value = props['schema.version']
+      item.state = STATE_OPERATIONAL
+      list << item
     } catch (Exception exc) {
-      println "activitiDatabaseSchema: ${exc?.message}"
+      item.value = '???'
+      item.state = STATE_INOPERATIVE
+      list << item
+      list << [name: 'config.liveness.problem', value: exc.message, state: STATE_DIAGNOSTIC]
     }
-
-    return result
   }
 
   /**
-   * Check if the datasource is live
+   * Check if the datasource is live.
+   * item must be the result of configItem
+   * SIDE EFFECT: Adds one or two config items (Map) to the list.
    */
-  private boolean dataSourceLive() {
-    def result = false
-    try {
-      def db = new groovy.sql.Sql(dataSource)
-      def tup = db.firstRow('select 1 as one')
-      def one = tup.ONE as Integer
-      result = one == 1
-    } catch (Exception exc) {
-      println "dataSourceLive: ${exc?.message}"
+  private dataSourceLive(List list, Map item) {
+    if (item.state == STATE_CONFIGURED) {
+      def db = null
+      try {
+	db = new groovy.sql.Sql(dataSource)
+	def tup = db.firstRow('select 1 as one')
+	def one = tup.ONE as Integer
+	item.state = STATE_OPERATIONAL
+	list << item
+      } catch (Exception exc) {
+	item.state = STATE_INOPERATIVE
+	list << item
+	list << problemItem(exc.message)
+      } finally {
+	try {
+	  db?.close()
+	} catch (Exception exc2) {
+	  // Ignore
+	}
+      }
+    } else {
+      list << item
     }
-
-    return result
   }
 
   /**
-   * Check orbeon liveness
+   * Check orbeon liveness.
+   * item must be the result of configItem
+   * SIDE EFFECT: Adds one or two config items (Map) to the list.
    */
-  private boolean orbeonLive() {
-    def result = false
-    try {
-      String urlStr = "${grailsApplication.config.coordinatrice.orbeon.builder.base.uri}/summary"
-      def url = new URL(urlStr)
-      def summary = url.getText('UTF-8')
-      result = summary?.length() > 0
-    } catch (Exception exc) {
-      println "orbeonLive: ${exc?.message}"
+  private orbeonLive(List list, Map item) {
+    if (item.state == STATE_CONFIGURED) {
+      try {
+	String urlStr = "${item.value}/summary"
+	def url = new URL(urlStr)
+	def summary = url.getText('UTF-8')
+	item.state = (summary?.length() > 0)? STATE_OPERATIONAL : STATE_INOPERATIVE
+	list << item
+      } catch (Exception exc) {
+	item.state = STATE_INOPERATIVE
+	list << item
+	list << problemItem(exc.message)
+      }
+    } else {
+      list << item
     }
-
-    return result
   }
 
   /**
    * Check postxdb liveness.
-   * TODO: If the formdef counts are different the two applications may
-   * be connected to different databases.
+   * item must be the result of configItem
+   * SIDE EFFECT: Adds one or two config items (Map) to the list.
    */
-  private boolean postxdbLive() {
-    def result = false
-    try {
-      def formdefList = packageService.allLocalFormdefs()
-      def formdefCount = PxdFormdef.count()
-      result = formdefList?.size() == formdefCount
-    } catch (Exception exc) {
-      println "postxdbLive: ${exc?.message}"
+  private postxdbLive(List list, Map item) {
+    if (item.state == STATE_CONFIGURED) {
+      try {
+	def formdefList = packageService.allLocalFormdefs()
+	def formdefCount = PxdFormdef.count()
+	item.state = (formdefList?.size() == formdefCount)? STATE_OPERATIONAL :
+	STATE_INOPERATIVE
+      } catch (Exception exc) {
+	item.state = STATE_INOPERATIVE
+	list << item
+	list << problemItem(exc.message)
+      }
+    } else {
+      list << item
     }
-
-    return result
   }
 
 }
