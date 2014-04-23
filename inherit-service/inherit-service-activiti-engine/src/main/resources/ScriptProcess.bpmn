@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://motrice.org/test">
+  <process id="scriptprocess" name="Script process" isExecutable="true">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.inheritsource.service.delegates.CreateVariablesListener" />
+        <activiti:executionListener event="start" class="org.inheritsource.service.delegates.CreateVariablesListener" />
+      </extensionElements>
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:formProperty id="startevent1_start_forename" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="startevent1_start_lastname" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="startevent1_start_emailaddress" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="startevent1_start_phonenumber" type="string" required="true"></activiti:formProperty>
+        <activiti:formProperty id="startevent1_start_currentgroup_long" type="long"></activiti:formProperty>
+        <activiti:formProperty id="startevent1_start_phonenumber" type="string"></activiti:formProperty>
+      </extensionElements>
+    </startEvent>
+    <userTask id="usertask1" name="Add comment" activiti:assignee="admin">
+      <extensionElements>
+        <activiti:taskListener event="complete" class="org.inheritsource.service.delegates.CreateVariablesTaskListener" />
+        <activiti:formProperty id="comment" type="string" default="kommentar"></activiti:formProperty>
+      </extensionElements>
+    </userTask>
+    <scriptTask id="scripttask1" name="Script Task 1" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>
+				out:println "forename         "+ startevent1_start_forename ;
+				out:println "lastname         "+ startevent1_start_lastname ;
+				out:println "emailaddress         "+ startevent1_start_emailaddress ;
+				out:println "phonenumber         "+ startevent1_start_phonenumber ;
+				out:println "currentgroup_long         "+ startevent1_start_currentgroup_long ;
+				out:println "info         "+ startevent1_start_info ;
+def scriptVar = "test789";
+execution.setVariable("myVar", scriptVar)
+               </script>
+    </scriptTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow3" sourceRef="scripttask1" targetRef="endevent1"></sequenceFlow>
+    <scriptTask id="scripttask2" name="Script Task 2" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>
+				out:println "order for isbn " ;
+                            def scriptVar = "test123"
+               </script>
+    </scriptTask>
+    <sequenceFlow id="flow4" sourceRef="startevent1" targetRef="scripttask2">
+      <extensionElements>
+        <activiti:executionListener class="org.inheritsource.service.delegates.CreateVariablesFlowListener" />
+      </extensionElements>
+</sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="scripttask2" targetRef="usertask1"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow6" sourceRef="usertask1" targetRef="exclusivegateway1"></sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="exclusivegateway1" targetRef="scripttask1">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${startevent1_start_currentgroup_long<5}]]></conditionExpression>
+    </sequenceFlow>
+    <scriptTask id="scripttask3" name="Script Task 3" scriptFormat="groovy" activiti:autoStoreVariables="false">
+      <script>out:println "group &gt;=5        ";
+def scriptVar = "test456";
+execution.setVariable("myVar", scriptVar)
+</script>
+    </scriptTask>
+    <sequenceFlow id="flow8" sourceRef="exclusivegateway1" targetRef="scripttask3">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${startevent1_start_currentgroup_long>=5}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <sequenceFlow id="flow9" sourceRef="scripttask3" targetRef="endevent2"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_scriptprocess">
+    <bpmndi:BPMNPlane bpmnElement="scriptprocess" id="BPMNPlane_scriptprocess">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="20.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="300.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask1" id="BPMNShape_scripttask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="670.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="810.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask2" id="BPMNShape_scripttask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="100.0" y="100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="450.0" y="108.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="scripttask3" id="BPMNShape_scripttask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="660.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="810.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="775.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="810.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="55.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="100.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="205.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="300.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="405.0" y="127.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="128.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="490.0" y="128.0"></omgdi:waypoint>
+        <omgdi:waypoint x="670.0" y="127.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="470.0" y="148.0"></omgdi:waypoint>
+        <omgdi:waypoint x="470.0" y="261.0"></omgdi:waypoint>
+        <omgdi:waypoint x="660.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="765.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="810.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
