@@ -22,7 +22,18 @@ def doit(String locale) {
     }
   }
 
-  println "Missing entries:"
+  println "Missing entries in locale '${locale}':"
+  missingSet.each {println "${it}"}
+
+  missingSet.clear()
+  otherProps.each {entry ->
+    def en = enProps.getProperty(entry.key)
+    if (!en) {
+      missingSet << entry.key
+    }
+  }
+
+  println "Missing entries in locale 'en':"
   missingSet.each {println "${it}"}
 }
 

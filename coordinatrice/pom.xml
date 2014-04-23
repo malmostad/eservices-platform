@@ -6,7 +6,7 @@
   <groupId>org.motrice</groupId>
   <artifactId>coordinatrice</artifactId>
   <packaging>grails-app</packaging>
-  <version>0.9.10</version>
+  <version>0.9.11</version>
   <name>coordinatrice</name>
   <description>coordinatrice</description>
 
