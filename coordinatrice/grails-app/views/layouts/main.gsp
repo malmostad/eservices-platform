@@ -50,6 +50,7 @@
 		<div id="motriceLogo" class="footer" role="contentinfo">
 		  <a href="http://motrice.org"><img src="${resource(dir: 'images', file: 'motrice_logo99x27.png')}" alt="Motrice"/></a>
 		  <span class="meta">${message(code: 'motrice.slogan', default: '')}</span>
+		  <div class="copyr"><a href="http://motrice.org">Copyright © 2011-2014 Motrice AB</a></div>
 		</div>
 		<div id="spinner" class="spinner" style="display:none;"><g:message code="spinner.alt" default="Loading&hellip;"/></div>
 		<g:javascript library="application"/>

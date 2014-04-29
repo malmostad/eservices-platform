@@ -107,11 +107,25 @@ img {
 	margin-left: 0.2em;
 }
 
+#motriceLogo a:link, #motriceLogo a:visited, #motriceLogo a:hover {
+	color: #FEC372;
+	text-decoration: none;
+}
+
 #motriceLogo span.meta {
         font-size: 150%;
 	color: #FEC372;
 	margin-left: 1.5em;
 	vertical-align: bottom;
+}
+
+#motriceLogo div.copyr {
+        display: inline-block;
+	float: right;
+        font-size: 60%;
+	color: #FEC372;
+	margin-right: 0.5em;
+	margin-top: 2.0em;
 }
 
 .content {
