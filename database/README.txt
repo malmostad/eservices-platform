@@ -24,8 +24,9 @@ sudo sh -c "./create_tables.sh"
 Insert required base data to motricedb:
 sudo sh -c "./execute_file.sh motricedb ../create/motrice.postgres.basedata.sql"
 
-Insert base demo data to motricedb:
-sudo sh -c "./execute_file.sh motricedb ../create/motrice.postgres.demodata.sql"
+#### OBSOLETE, this is done with Coordinatrice ########
+# Insert base demo data to motricedb:
+# sudo sh -c "./execute_file.sh motricedb ../create/motrice.postgres.demodata.sql"
 
 Backup of the data only:  Note: For the moment table mtf_tag_type is excluded
 sudo ./backup_database.sh
