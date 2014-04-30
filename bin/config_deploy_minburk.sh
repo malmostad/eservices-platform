@@ -4,7 +4,7 @@
 BUILD_DIR=${HOME}/workspaces/motrice/pawap
 
 # ROOT of directory holding the j2ee containers
-CONTAINER_ROOT=${HOME}/motrice-14.4
+CONTAINER_ROOT=${HOME}/motrice-0.5
 
 # ROOT of Hippo jcr content repository
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
@@ -18,12 +18,12 @@ TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/
 #####################################################################
 
 ESERVICE=hippo-eservice-tomcat        # PATH in CONTAINER_ROOT
-ESERVICE_SSL=TRUE                     # TRUE/FALSE
+ESERVICE_SSL=true                     # true/false
 ESERVICE_HOST=eminburk.malmo.se       # DNS name
 ESERVICE_PORT=8080                    # external port normally 80 or 443
 
 KSERVICE=hippo-kservice-tomcat        # PATH in CONTAINER_ROOT
-KSERVICE_SSL=TRUE                     # TRUE/FALSE
+KSERVICE_SSL=true                     # true/false
 KSERVICE_HOST=kminburk.malmo.se       # DNS name
 KSERVICE_PORT=8080                    # external port normally 80 or 443
 

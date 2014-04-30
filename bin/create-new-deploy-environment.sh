@@ -10,17 +10,12 @@
 # Select one config to deploy below                            #
 ################################################################
 
-###### Prod in Malmo ###########################################
-# . config_deploy_eservice.sh
-
-###### Test in Malmo ###########################################
-# . config_deploy_eservicetest.sh
-
-###### Funkar på min burk - developer's workstation config #####
-. config_deploy_minburk.sh
+###### current_config.sh  #####
+# symlink to actual config of current installation
+. current_config.sh
 
 
-if [ "${ESERVICE_SSL}" = "TRUE" ]; then
+if ${ESERVICE_SSL}; then
    if [ -n "$ESERVICE_PORT" ]; then
      ESERVICE_SITE_URL=https://${ESERVICE_HOST}:${ESERVICE_PORT}/site
    else 
@@ -28,13 +23,13 @@ if [ "${ESERVICE_SSL}" = "TRUE" ]; then
    fi
 else
    if [ -n "$ESERVICE_PORT" ]; then
-     ESERVICE_SITE_URL=https://${ESERVICE_HOST}:${ESERVICE_PORT}/site
+     ESERVICE_SITE_URL=http://${ESERVICE_HOST}:${ESERVICE_PORT}/site
    else 
-     ESERVICE_SITE_URL=https://${ESERVICE_HOST}:80/site
+     ESERVICE_SITE_URL=http://${ESERVICE_HOST}:80/site
    fi
 fi
 
-if [ "${KSERVICE_SSL}" = "TRUE" ]; then
+if ${KSERVICE_SSL}; then
    if [ -n "$KSERVICE_PORT" ]; then
      KSERVICE_SITE_URL=https://${KSERVICE_HOST}:${KSERVICE_PORT}/site
    else 
@@ -42,9 +37,9 @@ if [ "${KSERVICE_SSL}" = "TRUE" ]; then
    fi
 else
    if [ -n "$KSERVICE_PORT" ]; then
-     KSERVICE_SITE_URL=https://${KSERVICE_HOST}:${KSERVICE_PORT}/site
+     KSERVICE_SITE_URL=http://${KSERVICE_HOST}:${KSERVICE_PORT}/site
    else 
-     KSERVICE_SITE_URL=https://${KSERVICE_HOST}:80/site
+     KSERVICE_SITE_URL=http://${KSERVICE_HOST}:80/site
    fi
 fi
 
@@ -58,12 +53,17 @@ TMP_DIR=tmp
 if [ -d ${CONTAINER_ROOT} ];
 then
    echo "Cannot create deploy environment at ${CONTAINER_ROOT}. Directory already exists."
-   exit 0;
+   exit 1;
 fi
 
-if [ ! -f ${OPENAM_POLICY_AGENT_PWD_FILE} ]; then 
-  echo "Missing file OPENAM_POLICY_AGENT_PWD_FILE=${OPENAM_POLICY_AGENT_PWD_FILE}"
-   exit 0;
+if [ ! -f ${OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE} ]; then 
+  echo "Missing file OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE=${OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE}"
+   exit 1;
+fi
+
+if [ ! -f ${OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE} ]; then 
+  echo "Missing file OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE=${OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE}"
+   exit 1;
 fi
 
 mkdir -p ${CONTAINER_ROOT}
@@ -130,8 +130,6 @@ unzip -uq downloads/${FORGEROCK_POLICY_AGENT_ZIP}
 mv j2ee_agents  ${CONTAINER_ROOT}/
 cp -r ${CONTAINER_ROOT}/j2ee_agents/tomcat_v6_agent ${CONTAINER_ROOT}/j2ee_agents/eservice-tomcat_v6_agent
 mv ${CONTAINER_ROOT}/j2ee_agents/tomcat_v6_agent ${CONTAINER_ROOT}/j2ee_agents/kservice-tomcat_v6_agent
-# copy the top secret pwd file to j2ee_agents
-cp ${OPENAM_POLICY_AGENT_PWD_FILE} ${CONTAINER_ROOT}/j2ee_agents/
 
 ################################################################
 # change port on eservice tomcat
@@ -195,6 +193,6 @@ sed -e "s/\(com\.sun\.identity\.agents\.config\.organization\.name\s=\s\/\).*$/\
 popd
 
 # prepare a directory for hippo jcr
-mkdir ${CONTENT_ROOT}
+mkdir -p ${CONTENT_ROOT}
 
 

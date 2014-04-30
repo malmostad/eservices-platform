@@ -4,14 +4,9 @@
 # Select one config to deploy below                            #
 ################################################################
 
-###### Prod in Malmo ###########################################
-# . config_deploy_eservice.sh
-
-###### Test in Malmo ###########################################
-# . config_deploy_eservicetest.sh
-
-###### Funkar på min burk - developer's workstation config #####
-. config_deploy_minburk.sh
+###### current_config.sh  #####
+# symlink to actual config of current installation
+. current_config.sh
 
 ################################################################
 # END OF CONFIG                                                #
@@ -71,13 +66,13 @@ then
        cp $PROPERTIES_LOCAL_BEFOREPATCH properties-local.xml # thereby conserving mod date of properties-local.xml
                                                              # when $PROPERTIES_LOCAL_BEFOREPATCH is renamed
                                                              # back to properties-local.xml in step 8
-if [ "${ESERVICE_SSL}" = "TRUE" ]; then
+if ${ESERVICE_SSL}; then
    sed -e "s/https:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
 else
     sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
 fi
 
-if [ "${KSERVICE_SSL}" = "TRUE" ]; then
+if ${KSERVICE_SSL}; then
    sed -e "s/https:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${KSERVICE_HOST}:${KSERVICE_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
 else
     sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${KSERVICE_HOST}:${KSERVICE_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
