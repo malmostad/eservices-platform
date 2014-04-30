@@ -27,14 +27,21 @@ KSERVICE_SSL=true                     # true/false
 KSERVICE_HOST=kservice.malmo.se       # DNS name
 KSERVICE_PORT=443                     # external port normally 80 or 443
 
+CMSSERVICE=hippo-cmsservice-tomcat    # PATH in CONTAINER_ROOT
+CMSSERVICE_SSL=false                  #
+CMSSERVICE_HOST=kservice.malmo.se     # DNS name
+CMSSERVICE_PORT=80                    # external port normally 80 or 443
+
 ESERVICEPATCH=${ESERVICE_HOST}
 KSERVICEPATCH=${KSERVICE_HOST}
 PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
 
 ESERVICE_PORT=38080                   # internal port i.e. tomcat port
 KSERVICE_PORT=8080                    # internal port i.e. tomcat port
+CMSSERVICE_PORT=48080                 # internal port i.e. tomcat port
 
 WITH_KSERVICES=true
+WITH_CMSSERVICES=true
 
 #####################################################################
 # Open AM config

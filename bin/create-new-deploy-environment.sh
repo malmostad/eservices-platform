@@ -6,13 +6,17 @@
 #
 ################################################################
 
-# CONFIG #######################################################
-# Select one config to deploy below                            #
+################################################################
+# CONFIG                                                #
 ################################################################
 
 ###### current_config.sh  #####
 # symlink to actual config of current installation
 . current_config.sh
+
+################################################################
+# END OF CONFIG                                                #
+################################################################
 
 
 if ${ESERVICE_SSL}; then
@@ -53,7 +57,7 @@ TMP_DIR=tmp
 if [ -d ${CONTAINER_ROOT} ];
 then
    echo "Cannot create deploy environment at ${CONTAINER_ROOT}. Directory already exists."
-   exit 1;
+   exit 0;
 fi
 
 if [ ! -f ${OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE} ]; then 
@@ -100,32 +104,43 @@ sed -e 's/\(common\.loader=\)\(.*\)$/\1\2,\${catalina.base}\/common\/classes,\${
 ################################################################
 
 cp -r  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${ESERVICE}
+cp -r  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${CMSSERVICE}
 mv  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${KSERVICE}
-cp ${BUILD_DIR}/conf/repository.xml ${CONTAINER_ROOT}/${KSERVICE}/conf/
+### NOTE Check this
+## cp ${BUILD_DIR}/conf/repository.xml ${CONTAINER_ROOT}/${KSERVICE}/conf/
+cp ${BUILD_DIR}/conf/repository.xml ${CONTAINER_ROOT}/${CMSSERVICE}/conf/
 
 ################################################################
 # Write kservice Tomcat setenv.sh due to Hippo and Motrice requirements 
 ################################################################
 
-echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo REP_OPTS=\"-Drepo.upgrade=false -Drepo.path=${CONTENT_ROOT} -Drepo.config=file:\${CATALINA_BASE}/conf/repository.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${REP_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo export CATALINA_OPTS >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+##  use for "cms service 
+echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo REP_OPTS=\"-Drepo.upgrade=false -Drepo.path=${CONTENT_ROOT} -Drepo.config=file:\${CATALINA_BASE}/conf/repository.xml\" >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${REP_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo export CATALINA_OPTS >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
 
 ################################################################
 # Write eservice Tomcat setenv.sh due to Hippo and Motrice requirements 
 #   the diff is repo conf and policy agent conf
 ################################################################
 
+##  use for KSERVICE and ESERVICE 
 echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 echo export CATALINA_OPTS >>  ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 
-# copy one policy agent config per tomcat
+echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo export CATALINA_OPTS >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+
+# copy one policy agent config per tomcat ( only  KSERVICE and ESERVICE )
 unzip -uq downloads/${FORGEROCK_POLICY_AGENT_ZIP}
 mv j2ee_agents  ${CONTAINER_ROOT}/
 cp -r ${CONTAINER_ROOT}/j2ee_agents/tomcat_v6_agent ${CONTAINER_ROOT}/j2ee_agents/eservice-tomcat_v6_agent
@@ -136,6 +151,14 @@ mv ${CONTAINER_ROOT}/j2ee_agents/tomcat_v6_agent ${CONTAINER_ROOT}/j2ee_agents/k
 ################################################################
 mv  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml.orig
 sed -e 's/8080/38080/g' -e 's/8009/38009/g' -e 's/8005/38005/g'  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml.orig >  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml
+#  use 4XXXX for CMS 
+
+################################################################
+# change port on cmsservice tomcat
+################################################################
+mv  ${CONTAINER_ROOT}/${CMSSERVICE}/conf/server.xml  ${CONTAINER_ROOT}/${CMSSERVICE}/conf/server.xml.orig
+sed -e 's/8080/48080/g' -e 's/8009/48009/g' -e 's/8005/48005/g'  ${CONTAINER_ROOT}/${CMSSERVICE}/conf/server.xml.orig >  ${CONTAINER_ROOT}/${CMSSERVICE}/conf/server.xml
+#  use 4XXXX for CMS 
 
 ################################################################
 # eservice - Agent install configuration
