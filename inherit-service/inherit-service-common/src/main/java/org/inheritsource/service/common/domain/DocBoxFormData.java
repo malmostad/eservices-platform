@@ -21,7 +21,7 @@
  *  phone: +46 8 641 64 14 
  */ 
  
-package org.inheritsource.service.docbox;
+package org.inheritsource.service.common.domain;
 
 import java.io.Serializable;
 
@@ -43,6 +43,9 @@ public class DocBoxFormData implements Serializable {
 	String docNo;
 	String checkSum;
 	int signCount;
+	
+	String docUri;
+	String signText;
 	
 	public DocBoxFormData() {
 		
@@ -87,6 +90,22 @@ public class DocBoxFormData implements Serializable {
 	public void setSignCount(int signCount) {
 		this.signCount = signCount;
 	}
+	
+	public String getDocUri() {
+		return docUri;
+	}
+
+	public void setDocUri(String docUri) {
+		this.docUri = docUri;
+	}
+
+	public String getSignText() {
+		return signText;
+	}
+
+	public void setSignText(String signText) {
+		this.signText = signText;
+	}
 
 	@Override
 	public int hashCode() {
@@ -95,11 +114,14 @@ public class DocBoxFormData implements Serializable {
 		result = prime * result
 				+ ((checkSum == null) ? 0 : checkSum.hashCode());
 		result = prime * result + ((docNo == null) ? 0 : docNo.hashCode());
+		result = prime * result + ((docUri == null) ? 0 : docUri.hashCode());
 		result = prime * result
 				+ ((docboxRef == null) ? 0 : docboxRef.hashCode());
 		result = prime * result
 				+ ((formDataUuid == null) ? 0 : formDataUuid.hashCode());
 		result = prime * result + signCount;
+		result = prime * result
+				+ ((signText == null) ? 0 : signText.hashCode());
 		return result;
 	}
 
@@ -122,6 +144,11 @@ public class DocBoxFormData implements Serializable {
 				return false;
 		} else if (!docNo.equals(other.docNo))
 			return false;
+		if (docUri == null) {
+			if (other.docUri != null)
+				return false;
+		} else if (!docUri.equals(other.docUri))
+			return false;
 		if (docboxRef == null) {
 			if (other.docboxRef != null)
 				return false;
@@ -134,6 +161,11 @@ public class DocBoxFormData implements Serializable {
 			return false;
 		if (signCount != other.signCount)
 			return false;
+		if (signText == null) {
+			if (other.signText != null)
+				return false;
+		} else if (!signText.equals(other.signText))
+			return false;
 		return true;
 	}
 
@@ -141,7 +173,8 @@ public class DocBoxFormData implements Serializable {
 	public String toString() {
 		return "DocBoxFormData [formDataUuid=" + formDataUuid + ", docboxRef="
 				+ docboxRef + ", docNo=" + docNo + ", checkSum=" + checkSum
-				+ ", signCount=" + signCount + "]";
+				+ ", signCount=" + signCount + ", docUri=" + docUri
+				+ ", signText=" + signText + "]";
 	}
 	
 }

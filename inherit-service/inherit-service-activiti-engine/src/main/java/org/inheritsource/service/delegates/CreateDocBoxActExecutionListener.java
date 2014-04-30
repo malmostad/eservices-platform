@@ -40,11 +40,11 @@ public class CreateDocBoxActExecutionListener extends CreateDocBoxRefExecutionLi
 		if (task != null) {
 			// task end event
 			if (ExecutionListener.EVENTNAME_END.equals(execution.getEventName())) {
-				String taskDocBoxRefVarName = FormEngine.FORM_DOCBOXREF + "[" + task.getId() + "]";
+				String taskDocBoxRefVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_DOCBOXREF, task.getId());
 				String docBoxRef = (String) execution.getEngineServices().getRuntimeService().getVariable(execution.getId(), taskDocBoxRefVarName);
 				if (docBoxRef != null && docBoxRef.trim().length()>0 && actBaseUri!=null) {
 					String actUri = actBaseUri + docBoxRef;
-					String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + task.getId() + "]";
+					String taskDocActVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, task.getId());
 					execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), taskDocActVarName, actUri);
 				}
 				else {

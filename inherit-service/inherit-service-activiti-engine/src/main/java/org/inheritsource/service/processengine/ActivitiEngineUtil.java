@@ -74,7 +74,7 @@ public class ActivitiEngineUtil {
 	 * @param task
 	 * @return
 	 */
-	public static Map<String, Object> getTaskLocalVarables(ProcessEngine engine, Task task) {
+	public static Map<String, Object> getTaskLocalVariables(ProcessEngine engine, Task task) {
 		Map <String, Object> localVars = task.getTaskLocalVariables();
 		
 		// variables empty, try to load them
@@ -84,4 +84,23 @@ public class ActivitiEngineUtil {
 		
 		return localVars;
 	}
+	
+	/**
+	 * Use preloaded process variables from task object, 
+	 * try to load variables from engine if empty
+	 * @param engine
+	 * @param task
+	 * @return
+	 */
+	public static Map<String, Object> getProcessVariables(ProcessEngine engine, Task task) {
+		Map <String, Object> processVars = task.getProcessVariables();
+		
+		// variables empty, try to load them
+		if (processVars == null || processVars.size()==0) {
+			processVars = engine.getRuntimeService().getVariables(task.getExecutionId());
+		}
+		
+		return processVars;
+	}
+
 }

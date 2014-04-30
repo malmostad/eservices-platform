@@ -46,6 +46,7 @@ import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CandidateInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.GroupInfo;
 import org.inheritsource.service.common.domain.InboxTaskItem;
@@ -59,7 +60,10 @@ import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.Timeline;
 import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserInfo;
+import org.inheritsource.service.common.util.ConfigUtil;
 import org.inheritsource.service.coordinatrice.CoordinatriceFacade;
+import org.inheritsource.service.delegates.DelegateUtil;
+import org.inheritsource.service.docbox.DocBoxFacade;
 import org.inheritsource.service.form.FormEngine;
 import org.inheritsource.service.identity.IdentityService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
@@ -77,6 +81,7 @@ public class ActivitiEngineService {
 	private TaskFormDb taskFormDb = null;
 	
 	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
+	public static String docboxBaseUrl = ConfigUtil.getConfigProperties().getProperty("docbox.doc.base.url");
 	
 	public ActivitiEngineService() {		
 	}
@@ -950,17 +955,24 @@ public class ActivitiEngineService {
 		return getActivityWorkflowInfo(taskId);
 	}
 
-	public FormInstance submitForm(String formInstanceId, String userId, String actRefId) {
+	public FormInstance submitForm(String formInstanceId, String userId, DocBoxFormData docBoxFormData) {
 		FormInstance result = null;
 		Task task = engine.getTaskService().createTaskQuery().taskVariableValueEquals(FormEngine.FORM_INSTANCEID, formInstanceId).singleResult();
 		
 		if (task != null) {
 			
 			Map<String, Object> variables = new HashMap<String, Object>();
-			if (actRefId != null && actRefId.trim().length()>0) {
-				String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + task.getId() + "]";
-				variables.put(taskDocActVarName, actRefId);
-			}
+			if (docBoxFormData != null) {
+				
+				if (docBoxFormData.getDocboxRef()!= null && docBoxFormData.getDocboxRef().trim().length()>0) {
+					String taskDocRefVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_DOCBOXREF, task.getId());
+					variables.put(taskDocRefVarName, docBoxFormData.getDocboxRef());
+				}
+				if (docBoxFormData.getDocUri() != null && docBoxFormData.getDocUri().trim().length()>0) {
+					String taskDocActVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, task.getId());
+					variables.put(taskDocActVarName, docBoxFormData.getDocUri());
+				}
+			}	
 			if (executeTask(task.getId(), variables, userId)) {
 				HistoricTaskInstance historicTask = getEngine().getHistoryService().createHistoricTaskInstanceQuery().taskId(task.getId()).includeTaskLocalVariables().singleResult();
 				
@@ -1921,5 +1933,76 @@ public class ActivitiEngineService {
 		
 		return tag;
 	}
+	
+	public DocBoxFormData getDocBoxFormDataToSign(ActivityInstanceItem activity, Locale locale) {
+		DocBoxFacade docBox = new DocBoxFacade();
+		DocBoxFormData docBoxFormData = null;
 
+		if (activity != null && activity.getActivityInstanceUuid()!=null) {
+			String formInstanceIdToSign = null;
+			String assetLabelToSign = null;
+			String startFormInstanceId = null;
+			String signActivityLabel = "activity"; // fall back activity label
+			String signProcessLabel = "case"; // fall back case label
+
+			ProcessInstanceDetails piDetails = getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid(), locale);
+
+			for (TimelineItem item : piDetails.getTimeline().getItems()) {
+
+				if (item instanceof ActivityInstanceLogItem) {
+					if (activity.getTypeId()==new Long(3)) {
+						ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)item;
+						if (logItem.getActivityName() != null && logItem.getActivityName().equals(activity.getDefinitionKey())) {
+							// TODO check that docbox pdf/a converter exist...
+							formInstanceIdToSign = logItem.getInstanceId();
+							assetLabelToSign = logItem.getActivityLabel();
+						}
+					}
+				}
+
+				if (item instanceof StartLogItem) {
+					if (activity.getTypeId()==new Long(2)) {
+						// sign start form
+
+						// TODO check that docbox pdf/a converter exist...
+						StartLogItem startItem = (StartLogItem)item;
+
+						formInstanceIdToSign = startItem.getInstanceId();;
+						assetLabelToSign = startItem.getActivityLabel();;
+					}
+				}
+			}
+
+
+			if (formInstanceIdToSign == null || assetLabelToSign == null) {
+
+				// TODO throw exception and handle in site
+			}
+
+			/*
+	String docBoxRefVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_DOCBOXREF, actinstId);
+
+
+			Task task = engine.getTaskService().createTaskQuery().taskId(actinstId).includeProcessVariables().includeTaskLocalVariables().singleResult();
+			formEngine.getFormInstance(task, userId, initialInstance);
+
+
+			String docBoxRef = (String)task.getProcessVariables().get(docBoxRefVarName);
+			 */
+
+			// TODO diskutera med håkan, hur formInstanceId(docId) och docrefid förhåller sig till varandra och hur de ska lagras
+			docBoxFormData = docBox.getDocBoxFormData(formInstanceIdToSign);
+
+			if (docBoxFormData != null) {
+				String signText = "Härmed undertecknar jag " + assetLabelToSign + " med dokumentnummer [" + docBoxFormData.getDocNo() + "] och kontrollsumman [" + docBoxFormData.getCheckSum() + "].";
+
+				docBoxFormData.setDocUri(docboxBaseUrl + docBoxFormData.getDocboxRef());
+				docBoxFormData.setSignText(signText);
+			}
+			else {
+				// TODO throw exception and handle in site
+			}
+		}
+		return docBoxFormData;
+	}
 }

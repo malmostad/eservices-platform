@@ -27,11 +27,11 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.docbox.DocBoxFacade;
-import org.inheritsource.service.docbox.DocBoxFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		String docNo = getPublicRequestParameter(request, "docNo"); 
 		String status = getPublicRequestParameter(request, "status"); 
 		String signature = getPublicRequestParameter(request, "signature"); 
-		String formDocId = getPublicRequestParameter(request, "formDocId");
+		String instanceId = getPublicRequestParameter(request, "instance_id");
 
 		log.info("SignFormConfirm:" + docboxRef + " docNo=" + docNo + " status=" + status + " signature=" + signature);
 
@@ -77,24 +77,18 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		}
 		request.setAttribute("document",doc);
 
-		DocBoxFacade docBox = new DocBoxFacade();
-        DocBoxFormData docBoxFormData = docBox.addDocBoxSignature(docboxRef, signature);
-		        
-        if (docBoxFormData != null) {
-        	// save DocboxRef as formDocId. 
-        	FormInstance signedForm = null;
-			try {
-				signedForm = engine.submitActivityForm(formDocId, userUuid, docBoxFormData.getDocboxRef());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-    		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();
-    		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
-    		String pdfUrl = protocolStr + "://" + request.getServerName() + portStr +  "/docbox/doc/ref/" + docBoxFormData.getDocboxRef();
-    		
-    		request.setAttribute("pdfUrl", pdfUrl);
+		FormInstance signedForm = null;
+		try {
+			signedForm = engine.submitSignForm(instanceId, userUuid, docboxRef, signature);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+        if (signedForm != null) {
+            		
+    		request.setAttribute("pdfUrl", signedForm.getActUri());
 
     		InboxTaskItem nextTask = null;
     		if (signedForm!=null && !UserInfo.ANONYMOUS_UUID.equals(userUuid)) {

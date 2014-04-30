@@ -91,20 +91,10 @@ public class NoTaskFormHandler extends TaskFormHandler {
 	}
 	
 	private void calcUris(FormInstance form) {
-		
-		if (form.isSubmitted()) {
-			form.setEditUrl(null);
-			form.setEditUrlExternal(null);
-			form.setViewUrl(null);
-			form.setViewUrlExternal(null);
-		}
-		else {
-			form.setEditUrl(null);
-			form.setEditUrlExternal(null);
-			form.setViewUrl(null);
-			form.setViewUrlExternal(null);
-		}
-		
+		form.setEditUrl(null);
+		form.setEditUrlExternal(null);
+		form.setViewUrl(null);
+		form.setViewUrlExternal(null);
 	}
 
 	@Override

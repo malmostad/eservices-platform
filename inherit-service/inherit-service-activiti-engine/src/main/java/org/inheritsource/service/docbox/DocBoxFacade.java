@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.util.ParameterEncoder;
 
 import com.sun.jersey.api.client.Client;

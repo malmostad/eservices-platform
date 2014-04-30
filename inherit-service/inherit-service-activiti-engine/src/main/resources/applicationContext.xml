@@ -26,11 +26,13 @@
 	
 	<bean id="motriceOrbeonFormHandler" class="org.inheritsource.service.form.OrbeonTaskFormHandler"/>
 	<bean id="motriceNoFormHandler" class="org.inheritsource.service.form.NoTaskFormHandler"/>
+	<bean id="motriceSignStartFormHandler" class="org.inheritsource.service.form.SignStartFormTaskHandler"/>
 	
 	<bean id="formEngine" class="org.inheritsource.service.form.FormEngine">
 		<property name="formTypeId2Handler">
 	        <map>
 	            <entry key="1" value-ref="motriceOrbeonFormHandler" />
+	            <entry key="2" value-ref="motriceSignStartFormHandler" />
 	            <entry key="6" value-ref="motriceNoFormHandler" />	            
 	        </map>
 	    </property>

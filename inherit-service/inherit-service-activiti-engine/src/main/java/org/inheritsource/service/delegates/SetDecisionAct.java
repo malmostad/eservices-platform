@@ -36,7 +36,7 @@ public class SetDecisionAct implements ExecutionListener {
 		if (task != null) {
 			if (ExecutionListener.EVENTNAME_END.equals(execution.getEventName())) {
 				
-				String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + task.getId() + "]";
+				String taskDocActVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, task.getId());
 				String formActUri = (String)execution.getEngineServices().getRuntimeService().getVariable(execution.getId(), taskDocActVarName);
 
 				if (formActUri != null && formActUri.trim().length()>0) {

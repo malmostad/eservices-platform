@@ -39,6 +39,7 @@ import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
@@ -51,6 +52,8 @@ import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserDirectoryEntry;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.common.domain.MyProfile;
+import org.inheritsource.service.delegates.DelegateUtil;
+import org.inheritsource.service.docbox.DocBoxFacade;
 import org.inheritsource.service.form.FormEngine;
 import org.inheritsource.service.identity.ActorSelectorDirUtils;
 import org.inheritsource.service.identity.UserDirectoryService;
@@ -545,6 +548,52 @@ public class TaskFormService {
 		return submitActivityForm(docId, userId, null);
 	}
 			
+	public FormInstance submitSignForm(String formInstanceId, String userId, String docboxRef, String signature) throws Exception {
+		DocBoxFacade docBox = new DocBoxFacade();
+        DocBoxFormData docBoxFormData = docBox.addDocBoxSignature(docboxRef, signature);
+        FormInstance signedForm = null;
+        
+        if (docBoxFormData != null) {
+        	// save DocboxRef as formDocId. 
+			try {
+				signedForm = submitActivityForm(formInstanceId, userId, docBoxFormData);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+		return signedForm;
+	}
+
+	/*
+	 *
+	 * DocBoxFacade docBox = new DocBoxFacade();
+        DocBoxFormData docBoxFormData = docBox.addDocBoxSignature(docboxRef, signature);
+		        
+        if (docBoxFormData != null) {
+        	// save DocboxRef as formDocId. 
+        	FormInstance signedForm = null;
+			try {
+				signedForm = engine.submitActivityForm(instanceId, userUuid, docBoxFormData.getDocboxRef());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+    		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();
+    		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
+    		String pdfUrl = protocolStr + "://" + request.getServerName() + portStr +  "/docbox/doc/ref/" + docBoxFormData.getDocboxRef();
+    		
+    		request.setAttribute("pdfUrl", pdfUrl);
+
+    		InboxTaskItem nextTask = null;
+    		if (signedForm!=null && !UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
+    	        nextTask = engine.getNextActivityInstanceItemByDocId(signedForm, user.getUuid());
+    	        appendChannelLabels(request, nextTask);
+    		}
+    		request.setAttribute("nextTask", nextTask);
+        }
+	 */
 	
 	/**
 	 * submit form
@@ -554,14 +603,14 @@ public class TaskFormService {
 	 * @param newDocId Replace docId with a new one on submit. 
 	 * @return confirmation form instance. null if submission fails.
 	 */
-	public FormInstance submitActivityForm(String docId, String userId, String newDocId)
+	public FormInstance submitActivityForm(String docId, String userId, DocBoxFormData docBoxFormData)
 			throws Exception {
 		FormInstance formInstance;
 		
 		// TODO, när userId är null 1) kolla om det finns i formulärdata i xpath angiven av startformdef 2) anonymous om startformdef tillåter anonym
-		log.info("submitActivityForm docId=" + docId + " userId=" + userId + " newDocId=" + newDocId);
+		log.info("submitActivityForm docId=" + docId + " userId=" + userId + " docBoxFormData=" + docBoxFormData);
 		try {
-			formInstance = activitiEngineService.submitForm(docId, userId, newDocId);
+			formInstance = activitiEngineService.submitForm(docId, userId, docBoxFormData);
 			if (formInstance == null) {
 
 				// maybe a start form
@@ -570,10 +619,6 @@ public class TaskFormService {
 					Date tstamp = new Date();
 					activity.setSubmitted(tstamp);
 					activity.setUserId(userId);
-					
-					if (newDocId != null) {
-						activity.setFormDocId(newDocId);
-					}
 					
 					if (activity.isStartForm()) {
 						String startFormUser = null;
@@ -899,5 +944,9 @@ public class TaskFormService {
 				   " Exception:" + e.toString());
 		}
 		return result;
+	}
+	
+	public DocBoxFormData getDocBoxFormDataToSign(ActivityInstanceItem activity, Locale locale) {
+		return activitiEngineService.getDocBoxFormDataToSign(activity, locale);
 	}
 }

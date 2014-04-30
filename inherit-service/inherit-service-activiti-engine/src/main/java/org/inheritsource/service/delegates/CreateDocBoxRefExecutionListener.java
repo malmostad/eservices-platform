@@ -9,8 +9,8 @@ import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.docbox.DocBoxFacade;
-import org.inheritsource.service.docbox.DocBoxFormData;
 import org.inheritsource.service.form.FormEngine;
 
 public class CreateDocBoxRefExecutionListener implements ExecutionListener {
@@ -48,7 +48,7 @@ public class CreateDocBoxRefExecutionListener implements ExecutionListener {
 							String docBoxRef = docBoxFormData.getDocboxRef();
 							if (docBoxRef != null && docBoxRef.trim().length()>0) {
 								// there is a docBoxRef 
-								String taskDocBoxRefVarName = FormEngine.FORM_DOCBOXREF + "[" + task.getId() + "]";
+								String taskDocBoxRefVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_DOCBOXREF, task.getId());
 								execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), taskDocBoxRefVarName, docBoxRef);
 							}
 						}

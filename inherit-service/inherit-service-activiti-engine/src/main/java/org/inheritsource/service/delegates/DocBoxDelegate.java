@@ -9,8 +9,8 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.task.Task;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.docbox.DocBoxFacade;
-import org.inheritsource.service.docbox.DocBoxFormData;
 import org.inheritsource.service.form.FormEngine;
 
 public class DocBoxDelegate implements JavaDelegate {

@@ -16,6 +16,7 @@ import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.StartForm;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.coordinatrice.ProcessDefinitionState;
+import org.inheritsource.service.delegates.DelegateUtil;
 import org.inheritsource.service.identity.IdentityService;
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.inheritsource.service.processengine.ActivitiEngineUtil;
@@ -121,7 +122,7 @@ public class FormEngine {
 				formInstance.setSubmitted(historicTask.getEndTime());
 				formInstance.setSubmittedBy(identityService.getUserByUuid(historicTask.getAssignee()));
 	
-				String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + historicTask.getId() + "]";
+				String taskDocActVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, historicTask.getId());
 				
 				HistoricVariableInstance historicVar = activitiEngineService.getEngine().getHistoryService().createHistoricVariableInstanceQuery().variableName(taskDocActVarName).singleResult();
 				if (historicVar != null) {
@@ -153,7 +154,7 @@ public class FormEngine {
 	public FormInstance getFormInstance(Task task, String userId, FormInstance initialInstance) {
 		FormInstance formInstance = null;
 		
-		Map <String, Object> localVars = ActivitiEngineUtil.getTaskLocalVarables(activitiEngineService.getEngine(), task);
+		Map <String, Object> localVars = ActivitiEngineUtil.getTaskLocalVariables(activitiEngineService.getEngine(), task);
 		
 		Long typeId = (Long)localVars.get(FORM_TYPEID);
 		if (typeId != null) {
