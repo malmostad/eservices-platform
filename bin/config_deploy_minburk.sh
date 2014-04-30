@@ -18,12 +18,12 @@ TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/
 #####################################################################
 
 ESERVICE=hippo-eservice-tomcat        # PATH in CONTAINER_ROOT
-ESERVICE_SSL=FALSE                    # TRUE/FALSE
+ESERVICE_SSL=TRUE                     # TRUE/FALSE
 ESERVICE_HOST=eminburk.malmo.se       # DNS name
 ESERVICE_PORT=8080                    # external port normally 80 or 443
 
 KSERVICE=hippo-kservice-tomcat        # PATH in CONTAINER_ROOT
-KSERVICE_SSL=FALSE                    # TRUE/FALSE
+KSERVICE_SSL=TRUE                     # TRUE/FALSE
 KSERVICE_HOST=kminburk.malmo.se       # DNS name
 KSERVICE_PORT=8080                    # external port normally 80 or 443
 
