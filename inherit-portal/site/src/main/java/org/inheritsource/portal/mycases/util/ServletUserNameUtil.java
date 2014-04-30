@@ -58,10 +58,10 @@ public class ServletUserNameUtil {
 	    String dn = request.getHeader("x-ipl-dn");
 	    String ser = request.getHeader("x-ipl-ser");
 	    String certificateSubject = request.getHeader("x-ipl-cer-sub");
-	    
+
 	    if (dn == null) {
 	    	if (ser != null) {
-	    		engine.getUserBySerial(ser, certificateSubject);
+	    		result = engine.getUserBySerial(ser, certificateSubject);
 	    	}
 	    }
 	    else {
@@ -88,7 +88,12 @@ public class ServletUserNameUtil {
 	    }
 
 	    if (result == null) {
-			log.info("userName header not found, get user principal instead"); 
+			log.error("userName header not found, get user principal instead"); 
+			log.error("Only one of header x-ipl-dn and x-ipl-ser should be used");
+			log.error("x-ipl-dn=[" + dn + "]");
+			log.error("x-ipl-ser=[" + ser + "]");
+			log.error("x-ipl-cer-sub=[" + certificateSubject + "]");
+			
 			Principal principal = request.getUserPrincipal();
 			if (principal != null) {
 				String hippoDn = "CN=" + principal.getName() + ",OU=Personal,OU=Organisation,OU=Hippo Internal User,DC=adm,DC=inherit,DC=se";
@@ -97,7 +102,7 @@ public class ServletUserNameUtil {
 			}
 	    }
 	    
-	    log.info("Render page with userInfo=[" + result + "]");
+	    log.debug("Render page with userInfo=[" + result + "]");
 	   
 	    return result;
 	}
