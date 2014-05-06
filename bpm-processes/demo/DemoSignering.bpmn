@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="signDemo" name="Signera ansökan och komplettering" isExecutable="true">
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:executionListener event="start" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="usertaskSignStartform" name="Signera ansökan" activiti:assignee="${motriceStartFormAssignee}"></userTask>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertaskSignStartform"></sequenceFlow>
+    <userTask id="usertaskCompletion" name="Komplettera" activiti:assignee="${motriceStartFormAssignee}">
+      <extensionElements>
+        <activiti:executionListener event="end" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </userTask>
+    <sequenceFlow id="flow2" sourceRef="usertaskSignStartform" targetRef="usertaskCompletion"></sequenceFlow>
+    <userTask id="usertaskSignCompletion" name="Signera komplettering" activiti:assignee="${motriceStartFormAssignee}"></userTask>
+    <sequenceFlow id="flow3" sourceRef="usertaskCompletion" targetRef="usertaskSignCompletion"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow4" sourceRef="usertaskSignCompletion" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_signDemo">
+    <bpmndi:BPMNPlane bpmnElement="signDemo" id="BPMNPlane_signDemo">
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="60.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertaskSignStartform" id="BPMNShape_usertaskSignStartform">
+        <omgdc:Bounds height="55.0" width="141.0" x="140.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertaskCompletion" id="BPMNShape_usertaskCompletion">
+        <omgdc:Bounds height="55.0" width="141.0" x="330.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertaskSignCompletion" id="BPMNShape_usertaskSignCompletion">
+        <omgdc:Bounds height="55.0" width="151.0" x="530.0" y="140.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="726.0" y="150.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="95.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="140.0" y="167.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="281.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="167.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="471.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="167.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="681.0" y="167.0"></omgdi:waypoint>
+        <omgdi:waypoint x="726.0" y="167.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
