@@ -41,4 +41,32 @@ public class StartLogItem extends ActivityInstanceLogItem {
 	public Date getTimestamp() {
 		return submitted;
 	}
+
+	@Override
+	public String toString() {
+		return "StartLogItem [endDate=" + endDate + ", performedByUser="
+				+ performedByUser + ", processDefinitionUuid="
+				+ processDefinitionUuid + ", processInstanceUuid="
+				+ processInstanceUuid + ", activityDefinitionUuid="
+				+ activityDefinitionUuid + ", activityInstanceUuid="
+				+ activityInstanceUuid + ", activityName=" + activityName
+				+ ", activityLabel=" + activityLabel + ", startDate="
+				+ startDate + ", currentState=" + currentState
+				+ ", lastStateUpdate=" + lastStateUpdate
+				+ ", lastStateUpdateByUserId=" + lastStateUpdateByUserId
+				+ ", startedBy=" + startedBy + ", guideUri=" + guideUri
+				+ ", expectedEndDate=" + expectedEndDate + ", activityType="
+				+ activityType + ", priority=" + priority
+				+ ", processActivityFormInstanceId="
+				+ processActivityFormInstanceId + ", page=" + page
+				+ ", viewUrl=" + viewUrl + ", viewUrlExternal="
+				+ viewUrlExternal + ", editUrl=" + editUrl
+				+ ", editUrlExternal=" + editUrlExternal + ", dataUri="
+				+ dataUri + ", definitionKey=" + definitionKey + ", typeId="
+				+ typeId + ", instanceId=" + instanceId + ", actUri=" + actUri
+				+ ", actinstId=" + actinstId + ", submitted=" + submitted
+				+ ", submittedBy=" + submittedBy + "]";
+	}
+	
+	
 }

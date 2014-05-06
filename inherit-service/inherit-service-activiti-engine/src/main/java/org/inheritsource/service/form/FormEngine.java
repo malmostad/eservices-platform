@@ -54,21 +54,21 @@ public class FormEngine {
 	public static final Logger log = Logger.getLogger(FormEngine.class.getName());
 	
 	// motrice start process instance variables by convention
-	public static final String START_FORM_TYPEID        = "motrice.start.form.typeId";
-	public static final String START_FORM_DEFINITIONKEY = "motrice.start.form.definitionKey";
-	public static final String START_FORM_INSTANCEID    = "motrice.start.form.instanceId";
-	public static final String START_FORM_ASSIGNEE      = "motrice.start.form.assignee";
-	public static final String START_FORM_DATA_URI      = "motrice.start.form.dataUri";
-	public static final String START_FORM_DOCBOXREF		= "motrice.start.form.preservation.docbox.ref";
-	public static final String START_FORM_ACT_URI       = "motrice.start.form.preservation.act.uri";
+	public static final String START_FORM_TYPEID        = "motriceStartFormTypeId";
+	public static final String START_FORM_DEFINITIONKEY = "motriceStartFormDefinitionKey";
+	public static final String START_FORM_INSTANCEID    = "motriceStartFormInstanceId";
+	public static final String START_FORM_ASSIGNEE      = "motriceStartFormAssignee";
+	public static final String START_FORM_DATA_URI      = "motriceStartFormDataUri";
+	public static final String START_FORM_DOCBOXREF		= "motriceStartFormPreservationDocboxRef";
+	public static final String START_FORM_ACT_URI       = "motriceStartFormPreservationActUri";
 	
 	// motrice task local instance variables by convention
-	public static final String FORM_TYPEID              = "motrice.form.typeId";
-	public static final String FORM_DEFINITIONKEY       = "motrice.form.definitionKey";
-	public static final String FORM_INSTANCEID          = "motrice.form.instanceId";
-	public static final String FORM_DATA_URI            = "motrice.form.dataUri";
-	public static final String FORM_DOCBOXREF			= "motrice.form.preservation.docbox.ref";
-	public static final String FORM_ACT_URI             = "motrice.form.preservation.act.uri";
+	public static final String FORM_TYPEID              = "motriceFormTypeId";
+	public static final String FORM_DEFINITIONKEY       = "motriceFormDefinitionKey";
+	public static final String FORM_INSTANCEID          = "motriceFormInstanceId";
+	public static final String FORM_DATA_URI            = "motriceFormDataUri";
+	public static final String FORM_DOCBOXREF			= "motriceFormPreservationDocboxRef";
+	public static final String FORM_ACT_URI             = "motriceFormPreservationActUri";
 	
 
 	ActivitiEngineService activitiEngineService;

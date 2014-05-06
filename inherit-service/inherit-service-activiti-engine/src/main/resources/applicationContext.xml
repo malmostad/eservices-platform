@@ -33,6 +33,7 @@
 	        <map>
 	            <entry key="1" value-ref="motriceOrbeonFormHandler" />
 	            <entry key="2" value-ref="motriceSignStartFormHandler" />
+	            <entry key="3" value-ref="motriceSignStartFormHandler" />
 	            <entry key="6" value-ref="motriceNoFormHandler" />	            
 	        </map>
 	    </property>

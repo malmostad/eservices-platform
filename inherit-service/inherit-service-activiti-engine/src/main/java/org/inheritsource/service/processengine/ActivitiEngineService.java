@@ -989,12 +989,16 @@ public class ActivitiEngineService {
 			Map<String, Object> variables = new HashMap<String, Object>();
 			if (docBoxFormData != null) {
 				
+				String taskDocActVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, task.getId());
+				
 				if (docBoxFormData.getDocboxRef()!= null && docBoxFormData.getDocboxRef().trim().length()>0) {
 					String taskDocRefVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_DOCBOXREF, task.getId());
 					variables.put(taskDocRefVarName, docBoxFormData.getDocboxRef());
+					if (docBoxFormData.getDocUri() == null) {
+						variables.put(taskDocActVarName, docboxBaseUrl + docBoxFormData.getDocboxRef());
+					}
 				}
 				if (docBoxFormData.getDocUri() != null && docBoxFormData.getDocUri().trim().length()>0) {
-					String taskDocActVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, task.getId());
 					variables.put(taskDocActVarName, docBoxFormData.getDocUri());
 				}
 			}	
@@ -1971,13 +1975,12 @@ public class ActivitiEngineService {
 			String signProcessLabel = "case"; // fall back case label
 
 			ProcessInstanceDetails piDetails = getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid(), locale);
-
 			for (TimelineItem item : piDetails.getTimeline().getItems()) {
 
 				if (item instanceof ActivityInstanceLogItem) {
-					if (activity.getTypeId()==new Long(3)) {
+					if ((new Long(3)).equals(activity.getTypeId())) {
 						ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)item;
-						if (logItem.getActivityName() != null && logItem.getActivityName().equals(activity.getDefinitionKey())) {
+						if (logItem.getActivityName() != null && logItem.getActivityDefinitionUuid().equals(activity.getDefinitionKey())) {
 							// TODO check that docbox pdf/a converter exist...
 							formInstanceIdToSign = logItem.getInstanceId();
 							assetLabelToSign = logItem.getActivityLabel();
@@ -1986,7 +1989,7 @@ public class ActivitiEngineService {
 				}
 
 				if (item instanceof StartLogItem) {
-					if (activity.getTypeId()==new Long(2)) {
+					if ((new Long(2)).equals(activity.getTypeId())) {
 						// sign start form
 
 						// TODO check that docbox pdf/a converter exist...

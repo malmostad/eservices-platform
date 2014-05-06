@@ -35,7 +35,7 @@ public class DelegateUtil {
 	 * properly if task variables is set at an ExecutionListener's end event 
 	 */
 	public static String calcTaskVariableName(String variableName, String taskId) {
-		return variableName + "[" + taskId + "]";
+		return variableName + "{" + taskId + "}";
 	}
 
 }

@@ -76,7 +76,7 @@ public class DocBoxFacade {
 					service
 					.path(docBoxRef)
 					.accept(MediaType.APPLICATION_JSON)
-					.put(DocBoxFormData.class, signature);
+					.post(DocBoxFormData.class, signature);
 		}
 		catch (UniformInterfaceException e) {
 			log.severe("Exception: " + e);

@@ -92,13 +92,13 @@ public class SignFormConfirm extends MyCasesBaseComponent {
         if (signedForm != null) {
             		
     		request.setAttribute("pdfUrl", signedForm.getActUri());
-
+/*
     		InboxTaskItem nextTask = null;
     		if (signedForm!=null && !UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
     	        nextTask = engine.getNextActivityInstanceItemByDocId(signedForm, user.getUuid());
-    	        appendChannelLabels(request, nextTask);
     		}
     		request.setAttribute("nextTask", nextTask);
+    		*/
         }
 		// utför aktivitet i processmotor och lagra signatur ... om signaturen är ok....
 		
