@@ -41,7 +41,7 @@ public class SetDecisionAct implements ExecutionListener {
 	
 	private static final long serialVersionUID = -1522506737389383556L;
 	
-	public static final String DECISION_ACT_URI = "decision.act.uri";
+	public static final String DECISION_ACT_URI = "decisionActUri";
 	
 	@Override
 	public void notify(DelegateExecution execution) throws Exception {
