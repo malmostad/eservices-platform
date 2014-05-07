@@ -65,12 +65,12 @@
       <g:select id="signactivity" name="sign.id" from="${activityList}" optionKey="uuid" required="" class="many-to-one"/>
     </div>
   </g:if>
-  <g:if test="${!activityList.isEmpty()}">
+  <g:if test="${!allActivitiesList.isEmpty()}">
     <div class="property-value">
       <hr class="property-value-sep"/>
       <g:radio name="connectionState" value="${TaskFormSpec.NOTIFY_ACTIVITY_STATE}" checked="${activityConnection?.notifyState}"/>
       <g:message code="activity.connection.state.notifyactivity"/>
-      <g:select id="notifyactivity" name="notify.id" from="${activityList}" optionKey="uuid" required="" class="many-to-one"/>
+      <g:select id="notifyactivity" name="notify.id" from="${allActivitiesList}" optionKey="uuid" required="" class="many-to-one"/>
     </div>
   </g:if>
 </div>
