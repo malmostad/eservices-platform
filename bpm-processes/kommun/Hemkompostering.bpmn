@@ -40,8 +40,8 @@
     <sequenceFlow id="flow16" sourceRef="expediering" targetRef="callForenkladDelgivning"></sequenceFlow>
     <callActivity id="callForenkladDelgivning" name="Förenklad delgivning" calledElement="procForenkladDelgivning">
       <extensionElements>
-        <activiti:in source="decision.act.uri" target="serviceDocUri"></activiti:in>
-        <activiti:in source="motrice.start.form.assignee" target="recipientUserId"></activiti:in>
+        <activiti:in source="decisionActUri" target="serviceDocUri"></activiti:in>
+        <activiti:in source="motriceStartFormAssignee" target="recipientUserId"></activiti:in>
       </extensionElements>
     </callActivity>
     <sequenceFlow id="flow17" sourceRef="callForenkladDelgivning" targetRef="endevent1"></sequenceFlow>
