@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # ROOT of build directory
-BUILD_DIR=${HOME}/workspaces/motrice/pawap
+#BUILD_DIR=${HOME}/workspaces/motrice/pawap
+BUILD_DIR=${HOME}/workspaces/inheritsource-develop/pawap
 
 # ROOT of directory holding the j2ee containers
 CONTAINER_ROOT=${HOME}/motrice-0.5
@@ -47,7 +48,8 @@ WITH_CMSSERVICES=true
 # Open AM config
 #####################################################################
 FORGEROCK_POLICY_AGENT_ZIP=tomcat_v6_agent_3.1.0-Xpress.zip
-FORGEROCK_POLICY_AGENT_URL=file:///home/bjmo/H%C3%A4mtningar/${FORGEROCK_POLICY_AGENT_ZIP}
+#ORGEROCK_POLICY_AGENT_URL=file:///home/bjmo/H%C3%A4mtningar/${FORGEROCK_POLICY_AGENT_ZIP}
+FORGEROCK_POLICY_AGENT_URL=file:///home/rol/download/${FORGEROCK_POLICY_AGENT_ZIP}
 
 # OpenAM EService config
 OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE=~/tmp/pwd.txt
@@ -60,6 +62,3 @@ OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE=~/tmp/pwd.txt
 OPENAM_SERVER_URL_KSERVICE=https://eservicetest.malmo.se:443/openam
 OPENAM_POLICY_AGENT_KSERVICE=kserviceTestAgent
 OPENAM_REALM_KSERVICE=kominrealm
-
-
-
