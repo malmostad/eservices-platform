@@ -25,14 +25,14 @@
         <activiti:executionListener event="start" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
       </extensionElements>
     </startEvent>
-    <userTask id="registrering" name="Registrering" activiti:candidateUsers="admin"></userTask>
-    <userTask id="handlaggning" name="Handläggning" activiti:candidateUsers="admin">
+    <userTask id="registrering" name="Registrering" activiti:candidateUsers="admin" activiti:candidateGroups="Registrator"></userTask>
+    <userTask id="handlaggning" name="Handläggning" activiti:candidateUsers="admin" activiti:candidateGroups="Handlaggare">
       <extensionElements>
         <activiti:executionListener event="end" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
         <activiti:executionListener event="end" class="org.inheritsource.service.delegates.SetDecisionAct"></activiti:executionListener>
       </extensionElements>
     </userTask>
-    <userTask id="expediering" name="Expediering" activiti:candidateUsers="admin"></userTask>
+    <userTask id="expediering" name="Expediering" activiti:candidateUsers="admin" activiti:candidateGroups="Assistent"></userTask>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow12" sourceRef="handlaggning" targetRef="expediering"></sequenceFlow>
     <sequenceFlow id="flow14" sourceRef="registrering" targetRef="handlaggning"></sequenceFlow>
@@ -46,7 +46,7 @@
     </callActivity>
     <sequenceFlow id="flow17" sourceRef="callForenkladDelgivning" targetRef="endevent1"></sequenceFlow>
     <textAnnotation id="annotationRegistrering">
-      <text>Registrator skapar och fördelar ärende i Miljöreda</text>
+      <text>Registrator skapar och fördelar ärendet i Miljöreda</text>
     </textAnnotation>
     <association id="association3" sourceRef="annotationRegistrering" targetRef="registrering"></association>
   </process>

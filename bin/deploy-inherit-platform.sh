@@ -238,7 +238,7 @@ then
     # If proper shutdown did not bite
 	if ps -p ${CMSSERVICE_PID}
 	then 
-	    echo "Force shutting down kservice, pid: " ${KSERVICE_PID}
+	    echo "Force shutting down cmsservice, pid: " ${CMSSERVICE_PID}
 	    kill  ${CMSSERVICE_PID}
 	    sleep 6
 	fi

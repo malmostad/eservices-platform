@@ -1,102 +1,142 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
-	http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
+			   http://www.springframework.org/schema/context
+			   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-	<context:annotation-config />
+  <context:annotation-config />
 
-    <bean id="docBoxFacade" class="org.inheritsource.service.docbox.DocBoxFacade" scope="singleton"/>
+  <bean id="docBoxFacade" class="org.inheritsource.service.docbox.DocBoxFacade" scope="singleton"/>
 
-	<bean id="motriceConfig"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="ignoreResourceNotFound" value="true" />
-		<property name="locations">
-			<list>
-				<!--  at first look at default config file, if it exist -->
-				<value>file:/usr/local/etc/motrice/motrice.properties</value>
-				<!--  override with properties in MOTRICE_CONF, if it exist -->
-				<value>file:${MOTRICE_CONF}</value>
-				<!--  override with properties in MOTRICE_HOME/conf/motrice.properties, if it exist  -->
-				<value>file:${MOTRICE_HOME}/conf/motrice.properties</value>
-			</list>
-		</property>
+  <bean id="motriceConfig"
+	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="ignoreResourceNotFound" value="true" />
+    <property name="locations">
+      <list>
+	<!--  at first look at default config file, if it exist -->
+	<value>file:/usr/local/etc/motrice/motrice.properties</value>
+	<!--  override with properties in MOTRICE_CONF, if it exist -->
+	<value>file:${MOTRICE_CONF}</value>
+	<!--  override with properties in MOTRICE_HOME/conf/motrice.properties, if it exist  -->
+	<value>file:${MOTRICE_HOME}/conf/motrice.properties</value>
+      </list>
+    </property>
+  </bean>
+  
+  <bean id="motriceOrbeonFormHandler" class="org.inheritsource.service.form.OrbeonTaskFormHandler"/>
+  <bean id="motriceNoFormHandler" class="org.inheritsource.service.form.NoTaskFormHandler"/>
+  <bean id="motriceSignStartFormHandler" class="org.inheritsource.service.form.SignStartFormTaskHandler"/>
+  
+  <bean id="formEngine" class="org.inheritsource.service.form.FormEngine">
+    <property name="formTypeId2Handler">
+      <map>
+	<entry key="1" value-ref="motriceOrbeonFormHandler" />
+	<entry key="2" value-ref="motriceSignStartFormHandler" />
+	<entry key="3" value-ref="motriceSignStartFormHandler" />
+	<entry key="6" value-ref="motriceNoFormHandler" />	            
+      </map>
+    </property>
+    <property name="taskFormDb" ref="taskFormDb" />
+    <property name="identityService" ref="identityService" />
+    <property name="activitiEngineService" ref="activitiEngineService" />
+  </bean>
+
+  <bean id="identityService" class="org.inheritsource.service.identity.IdentityServiceMalmoImpl">
+    <property name="taskFormDb" ref="taskFormDb" />
+    <property name="userDirectoryService" ref="userDirectoryService" />
+  </bean>
+
+  <bean id="taskFormDb" class="org.inheritsource.taskform.engine.persistence.TaskFormDb" scope="singleton">
+  </bean>
+
+  <bean id="userDirectoryService" class="org.inheritsource.service.identity.UserDirectoryService" scope="singleton">
+  </bean>
+
+  <bean id="engine" class="org.inheritsource.taskform.engine.TaskFormService"
+	scope="singleton">
+    <property name="activitiEngineService" ref="activitiEngineService" />
+  </bean>
+  
+  <bean id="coordinatriceFacade" class="org.inheritsource.service.coordinatrice.CoordinatriceFacade" scope="singleton">
+    <property name="engine" ref="processEngine"/>
+  </bean>
+
+  <bean id="activitiEngineService"
+	class="org.inheritsource.service.processengine.ActivitiEngineService"
+	scope="singleton">
+    <property name="engine" ref="processEngine" />
+    <property name="identityService" ref="identityService" />
+    <property name="formEngine" ref="formEngine" />
+    <property name="coordinatriceFacade" ref="coordinatriceFacade"/>
+    <property name="taskFormDb" ref="taskFormDb" />
+  </bean>
+
+  <bean id="processEngineConfiguration"
+	class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration">
+
+    <property name="jdbcUrl" value="${dataSource.url}" />
+    <property name="jdbcDriver" value="${dataSource.driverClassName}" />
+    <property name="jdbcUsername" value="${dataSource.username}" />
+    <property name="jdbcPassword" value="${dataSource.password}" />
+
+    <property name="databaseSchemaUpdate" value="true" />
+
+    <property name="jobExecutorActivate" value="true" />
+
+    <property name="mailServerHost" value="${mail.smtp.host}" />
+    <property name="mailServerPort" value="${mail.smtp.port}" />
+
+    <property name="beans">
+      <map>
+	<entry key="motriceEngine" value-ref="engine" />
+      </map>
+    </property>
+
+    <property name="configurators">
+      <list>
+	<bean class="org.activiti.ldap.LDAPConfigurator">
+	  
+	  <!-- Server connection params -->
+	  <property name="server" value="ldap://localhost" />
+	  <property name="port" value="1389" />
+	  <property name="user" value="cn=Directory Manager" />
+	  <property name="password" value="0pen1dap" />
+	  
+	  <!-- Query params -->
+	  <property name="userBaseDn" 
+		    value="OU=IDMGroups,ou=Organisation,ou=Malmo,dc=adm,dc=malmo,dc=se" />
+
+	  <property name="groupBaseDn" 
+		    value="ou=eserviceRoller,OU=074 Miljöförvaltningen,OU=IDMGroups,ou=Organisation,ou=Malmo,dc=adm,dc=malmo,dc=se" />
+
+	  <property name="queryUserByUserId" value="(&amp;(objectClass=inetOrgPerson)(uid={0}))" />
+	  <property name="queryUserByFullNameLike" value="(&amp;(objectClass=inetOrgPerson)(|({0}=*{1}*)({2}=*{3}*)))" />
+	  <!--
+	      <property name="queryGroupsForUser"
+	      value="(&amp;(objectclass=groupofentries)(member={0}))" />
+	  -->
+
+	  <property name="queryGroupsForUser" value="(&amp;(objectclass=groupofentries)(member=CN={0},OU=Personal,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se))" />
+
+	  <property name="userIdAttribute" value="uid" />
+	  <property name="userFirstNameAttribute" value="cn" />
+	  <property name="userLastNameAttribute" value="sn" />
+	  
+	  <property name="groupIdAttribute" value="cn" />
+	  <property name="groupNameAttribute" value="cn" />
+
+	  <property name="ldapQueryBuilder">
+	    <bean
+		class="org.inheritsource.service.processengine.IDMG_LDAPQueryBuilder"/>
+	  </property>
 	</bean>
-	
-	<bean id="motriceOrbeonFormHandler" class="org.inheritsource.service.form.OrbeonTaskFormHandler"/>
-	<bean id="motriceNoFormHandler" class="org.inheritsource.service.form.NoTaskFormHandler"/>
-	<bean id="motriceSignStartFormHandler" class="org.inheritsource.service.form.SignStartFormTaskHandler"/>
-	
-	<bean id="formEngine" class="org.inheritsource.service.form.FormEngine">
-		<property name="formTypeId2Handler">
-	        <map>
-	            <entry key="1" value-ref="motriceOrbeonFormHandler" />
-	            <entry key="2" value-ref="motriceSignStartFormHandler" />
-	            <entry key="3" value-ref="motriceSignStartFormHandler" />
-	            <entry key="6" value-ref="motriceNoFormHandler" />	            
-	        </map>
-	    </property>
-	    <property name="taskFormDb" ref="taskFormDb" />
-		<property name="identityService" ref="identityService" />
-	    <property name="activitiEngineService" ref="activitiEngineService" />
-	</bean>
+      </list>
+    </property>
 
-	<bean id="identityService" class="org.inheritsource.service.identity.IdentityServiceMalmoImpl">
-		<property name="taskFormDb" ref="taskFormDb" />
-		<property name="userDirectoryService" ref="userDirectoryService" />
-	</bean>
+  </bean>
 
-	<bean id="taskFormDb" class="org.inheritsource.taskform.engine.persistence.TaskFormDb" scope="singleton">
-	</bean>
-
-	<bean id="userDirectoryService" class="org.inheritsource.service.identity.UserDirectoryService" scope="singleton">
-	</bean>
-
-	<bean id="engine" class="org.inheritsource.taskform.engine.TaskFormService"
-		scope="singleton">
-		<property name="activitiEngineService" ref="activitiEngineService" />
-	</bean>
-	
-	<bean id="coordinatriceFacade" class="org.inheritsource.service.coordinatrice.CoordinatriceFacade" scope="singleton">
-		<property name="engine" ref="processEngine"/>
-	</bean>
-
-	<bean id="activitiEngineService"
-		class="org.inheritsource.service.processengine.ActivitiEngineService"
-		scope="singleton">
-		<property name="engine" ref="processEngine" />
-		<property name="identityService" ref="identityService" />
-		<property name="formEngine" ref="formEngine" />
-		<property name="coordinatriceFacade" ref="coordinatriceFacade"/>
-	    <property name="taskFormDb" ref="taskFormDb" />
-	</bean>
-
-	<bean id="processEngineConfiguration"
-		class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration">
-
-		<property name="jdbcUrl" value="${dataSource.url}" />
-		<property name="jdbcDriver" value="${dataSource.driverClassName}" />
-		<property name="jdbcUsername" value="${dataSource.username}" />
-		<property name="jdbcPassword" value="${dataSource.password}" />
-
-		<property name="databaseSchemaUpdate" value="true" />
-
-		<property name="jobExecutorActivate" value="true" />
-
-		<property name="mailServerHost" value="${mail.smtp.host}" />
-		<property name="mailServerPort" value="${mail.smtp.port}" />
-
-		<property name="beans">
-			<map>
-				<entry key="motriceEngine" value-ref="engine" />
-			</map>
-		</property>
-	</bean>
-
-	<bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
-		<property name="processEngineConfiguration" ref="processEngineConfiguration" />
-	</bean>
-
-	
+  <bean id="processEngine" class="org.activiti.spring.ProcessEngineFactoryBean">
+    <property name="processEngineConfiguration" ref="processEngineConfiguration" />
+  </bean>
 </beans>
