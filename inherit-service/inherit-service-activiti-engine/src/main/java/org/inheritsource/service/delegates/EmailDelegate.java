@@ -31,13 +31,17 @@ import java.util.logging.Logger;
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.delegate.DelegateExecution;
 
-;
-
 public class EmailDelegate implements JavaDelegate {
 	public static final Logger log = Logger.getLogger(EmailDelegate.class.getName());
 
+	public static String ACT_VAR_RECIPIENT_USER_ID = "emailRecipientUserId";
+	public static String ACT_VAR_MESSAGE_TEXT = "emailMessageText";
+	
+	
 	public void execute(DelegateExecution execution) throws Exception {
-		System.out.println("Email Delegate called from " + execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date());  
-    }
+		System.out.println("Email Delegate called from " + execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date());
+		
+		
+    } 
 	
 }

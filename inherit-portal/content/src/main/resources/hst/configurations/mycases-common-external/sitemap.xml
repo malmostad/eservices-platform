@@ -245,5 +245,27 @@
         <sv:value>${parent}/viewform</sv:value>
       </sv:property>
     </sv:node>
+    <sv:node sv:name="notify">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemapitem</sv:value>
+      </sv:property>
+      <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+        <sv:value>hst:pages/notify</sv:value>
+      </sv:property>
+      <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+        <sv:value>${parent}/form-external</sv:value>
+      </sv:property>
+      <sv:node sv:name="confirm">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+          <sv:value>hst:pages/notifyconfirm</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+          <sv:value>${parent}/../confirmform-external</sv:value>
+        </sv:property>
+      </sv:node>
+    </sv:node>
   </sv:node>
 </sv:node>

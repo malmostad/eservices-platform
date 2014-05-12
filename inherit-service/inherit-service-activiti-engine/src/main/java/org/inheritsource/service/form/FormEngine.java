@@ -258,6 +258,8 @@ public class FormEngine {
 			startFormInstance.setDataUri((String)processVars.get(START_FORM_DATA_URI));
 			startFormInstance.setActUri((String)processVars.get(FormEngine.START_FORM_ACT_URI));
 			startFormInstance.setSubmittedBy(identityService.getUserByUuid((String)processVars.get(START_FORM_ASSIGNEE)));
+			startFormInstance.setProcessInstanceUuid(historicProcessInstance.getId());
+			startFormInstance.setProcessDefinitionUuid(historicProcessInstance.getProcessDefinitionId());
 			
 			if (historicProcessInstance != null) {
 				startFormInstance.setSubmitted(historicProcessInstance.getStartTime());

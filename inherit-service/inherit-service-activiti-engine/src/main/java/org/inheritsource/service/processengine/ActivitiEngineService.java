@@ -443,7 +443,6 @@ public class ActivitiEngineService {
 	private ActivityInstancePendingItem task2ActivityInstancePendingItem(Task task, Locale locale) {
 		ActivityInstancePendingItem item = null;
 		if (task != null) {
-			
 			item = new ActivityInstancePendingItem();
 			
 			item = (ActivityInstancePendingItem) formEngine.getFormInstance(task, null, item);
@@ -1645,7 +1644,7 @@ public class ActivitiEngineService {
 		return parentProcessInstanceId;
 	}
 
-	public InboxTaskItem getNextInboxTaskItem(String currentProcessInstance, String userId) {
+	public InboxTaskItem getNextInboxTaskItem(String currentProcessInstance, Locale locale, String userId) {
 		List<String> parentProcessInstanceList = null;
 	
 		if (currentProcessInstance == null || userId == null) {
@@ -1653,7 +1652,7 @@ public class ActivitiEngineService {
 		}
 		
 		try {
-			List<InboxTaskItem> inboxTaskItems = getUserInbox(null, userId);
+			List<InboxTaskItem> inboxTaskItems = getUserInbox(locale, userId);
 			
 			if(inboxTaskItems == null) {
 				return null;
@@ -1970,9 +1969,6 @@ public class ActivitiEngineService {
 		if (activity != null && activity.getActivityInstanceUuid()!=null) {
 			String formInstanceIdToSign = null;
 			String assetLabelToSign = null;
-			String startFormInstanceId = null;
-			String signActivityLabel = "activity"; // fall back activity label
-			String signProcessLabel = "case"; // fall back case label
 
 			ProcessInstanceDetails piDetails = getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid(), locale);
 			for (TimelineItem item : piDetails.getTimeline().getItems()) {
@@ -2032,5 +2028,46 @@ public class ActivitiEngineService {
 			}
 		}
 		return docBoxFormData;
+	}
+	
+	public ActivityInstanceLogItem getActivityInstanceLogItemToNotify(ActivityInstanceItem activity, Locale locale) {
+		ActivityInstanceLogItem logItemToNotify = null;
+		
+		/*
+		if (activity != null && activity.getActivityInstanceUuid()!=null) {
+
+			ProcessInstanceDetails piDetails = getProcessInstanceDetailsByActivityInstance(activity.getActivityInstanceUuid(), locale);
+			for (TimelineItem item : piDetails.getTimeline().getItems()) {
+
+				if (item instanceof ActivityInstanceLogItem) {
+					if ((new Long(3)).equals(activity.getTypeId())) {
+						ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)item;
+						if (logItem.getActivityName() != null && logItem.getActivityDefinitionUuid().equals(activity.getDefinitionKey())) {
+							logItemToNotify = logItem;
+						}
+					}
+				}
+
+				if (item instanceof StartLogItem) {
+					if ((new Long(2)).equals(activity.getTypeId())) {
+						StartLogItem startItem = (StartLogItem)item;
+						logItemToNotify = startItem;
+					}
+				}
+			}
+
+			if (logItemToNotify == null) {
+
+				// TODO throw exception and handle in site
+			}
+		}
+		return logItemToNotify;
+		*/
+		
+		String actUri = (String)engine.getRuntimeService().createProcessInstanceQuery().processInstanceId(activity.getProcessInstanceUuid()).includeProcessVariables().singleResult().getProcessVariables().get("serviceDocUri");
+		logItemToNotify = new ActivityInstanceLogItem();
+		logItemToNotify.setActUri(actUri);
+		
+		return logItemToNotify;
 	}
 }

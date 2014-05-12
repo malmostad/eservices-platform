@@ -22,7 +22,7 @@
       </lane>
     </laneSet>
     <startEvent id="startevent1" name="Start"></startEvent>
-    <serviceTask id="servicetaskMeddelandeOmBeslut" name="Meddelande om beslut" activiti:class="org.inheritsource.service.delegates.EmailDelegate"></serviceTask>
+    <serviceTask id="servicetaskMeddelandeOmBeslut" name="Meddelande om beslut" activiti:class="org.inheritsource.service.delegates.SimplifiedServiceMessageDelegate"></serviceTask>
     <intermediateCatchEvent id="timerDelayKontrollmeddelande" name="Vänteläge innan kontrollmeddelande skickas">
       <timerEventDefinition>
         <timeDuration>PT20M</timeDuration>

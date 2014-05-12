@@ -104,8 +104,7 @@ public class Confirm extends MyCasesBaseComponent {
 		
 		InboxTaskItem nextTask = null;
 		if (!UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
-	        nextTask = engine.getNextActivityInstanceItemByDocId(formInstance, user.getUuid());
-	        appendChannelLabels(request, nextTask);
+	        nextTask = engine.getNextActivityInstanceItemByDocId(formInstance, request.getLocale(), user.getUuid());
 		}
 		request.setAttribute("nextTask", nextTask);
 		

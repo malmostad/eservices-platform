@@ -27,6 +27,11 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
 
+
+	<div class="row-fluid">
+		<div class="span12">
+
+
 <c:choose>
   <c:when test="${empty document}">
     <tag:pagenotfound/>
@@ -38,22 +43,35 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
-	
-	<div class="row-fluid">
-		<div class="span12">
-			<c:if test="${not empty document}">
-				<h2>${document.title}</h2>
-				<p>${document.summary}</p>
-				<hst:html hippohtml="${document.html}" />
-			</c:if>	   
-			    		
-    		<c:if test="${not empty nextTask}">
-	    		<p>
-	    			<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.relativePageLink}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
-	    		</p>
-    		</c:if>
-		</div>
-	</div>    
     
+    <c:if test="${not empty guide}">
+		<h1>${guide.title}</h1>
+		<p>${guide.summary}</p>
+		<hst:html hippohtml="${guide.html}"/>
+	</c:if>
+				    
   </c:otherwise>  
 </c:choose>
+
+		    <c:if test="${not empty activity}">
+		       <c:choose>
+		         <c:when test="${activity.typeId eq 5}">
+		          <c:if test="${not empty notifyItem}">
+		          	<p> <fmt:message key="mycases.actdoc"/>&nbsp;
+						<a href="${notifyItem.actUri}"><fmt:message key="mycases.actdocLink"/></a>
+					</p>
+		          </c:if>
+			    		<form method="post" action="notify/confirm">
+								<input type="hidden" name="document" value="${activity.instanceId}" />
+								<input type="submit" value="<fmt:message key="mycases.notify.okbtn.label"/>"/>
+						</form>
+					
+				</c:when>
+			  	<c:otherwise>
+			  	   <fmt:message key="mycases.noform.cannothandle"/>
+			  	</c:otherwise>
+			  </c:choose>
+			</c:if>
+		</div>
+	</div>    
+

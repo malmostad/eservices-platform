@@ -421,11 +421,11 @@ public class TaskFormService {
      * @param userId
      * @return guess next InboxTaskItem from current
      */
-	public InboxTaskItem getNextActivityInstanceItemByDocId(FormInstance currentFormInstance, String userId) {
+	public InboxTaskItem getNextActivityInstanceItemByDocId(FormInstance currentFormInstance, Locale locale, String userId) {
 		InboxTaskItem result = null;
 		
 		try {
-			List<InboxTaskItem> items = activitiEngineService.getUserInbox(null, userId);
+			List<InboxTaskItem> items = activitiEngineService.getUserInbox(locale, userId);
 			
 			if (currentFormInstance instanceof ActivityInstanceLogItem) {
 				ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)currentFormInstance;
@@ -434,6 +434,10 @@ public class TaskFormService {
 						result = item;
 					}
 				}
+			}
+			
+			if (result == null && items!= null && items.size()>0) {
+				result = items.get(0);
 			}
 			//result = activitiEngineService.getNextInboxTaskItem(currentProcessInstance, userId);
 		}
@@ -681,6 +685,8 @@ public class TaskFormService {
 						
 						String processInstanceUuid = activitiEngineService.startProcess(pDefUuid, variables, userId);
 						activity.setProcessInstanceUuid(processInstanceUuid);
+						
+						taskFormDb.saveProcessActivityFormInstance(activity);
 						
 						formInstance = activitiEngineService.getFormEngine().getStartLogItem(activitiEngineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstanceUuid).includeProcessVariables().singleResult(), userId);
 
@@ -952,4 +958,9 @@ public class TaskFormService {
 	public DocBoxFormData getDocBoxFormDataToSign(ActivityInstanceItem activity, Locale locale) {
 		return activitiEngineService.getDocBoxFormDataToSign(activity, locale);
 	}
+
+	public ActivityInstanceLogItem getActivityInstanceLogItemToNotify(ActivityInstanceItem activity, Locale locale) {
+		return activitiEngineService.getActivityInstanceLogItemToNotify(activity, locale);
+	}
+
 }
