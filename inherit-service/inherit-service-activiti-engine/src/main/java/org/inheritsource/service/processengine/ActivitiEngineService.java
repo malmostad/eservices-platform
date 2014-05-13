@@ -426,6 +426,8 @@ public class ActivitiEngineService {
 			
 			if(task != null) {
 				result = task2ActivityInstancePendingItem(task, locale);
+				
+				
 			} else {
 				HistoricTaskInstance historicTask = engine.getHistoryService().
 						createHistoricTaskInstanceQuery().taskId(actinstId).includeTaskLocalVariables().singleResult();
@@ -480,6 +482,11 @@ public class ActivitiEngineService {
 		return procDef.getKey().toLowerCase() + "/" + task.getTaskDefinitionKey().toLowerCase();
 	}
 	
+	private String getGuideUri(HistoricActivityInstance activity) {
+		ProcessDefinition procDef = engine.getRepositoryService().getProcessDefinition(activity.getProcessDefinitionId());
+		return procDef.getKey().toLowerCase() + "/" + activity.getActivityId().toLowerCase();
+	}
+	
 	private int getActivityTypeByExecutionIdTaskId(String executionId, String taskId) {
 		
 		int activityType = 0;
@@ -512,6 +519,43 @@ public class ActivitiEngineService {
 		return activityType;
 	}
 	
+	
+	private ActivityInstanceLogItem historicActivitiy2ActivityInstanceLogItem(HistoricActivityInstance activity, Locale locale) {
+		ActivityInstanceLogItem item = null;
+		if (activity != null) {
+			item = new ActivityInstanceLogItem();
+			
+			if ("userTask".equals(activity.getActivityType())) {
+				HistoricTaskInstance historicTaskInstance = engine.getHistoryService().createHistoricTaskInstanceQuery().taskId(activity.getTaskId()).includeTaskLocalVariables().singleResult();
+				item = (ActivityInstanceLogItem) formEngine.getHistoricFormInstance(historicTaskInstance, null, item);
+			}
+			else if ("serviceTask".equals(activity.getActivityType())) {
+				item.setSubmitted(activity.getEndTime());
+				item.setSubmittedBy(null);
+			}
+			
+			item.setProcessDefinitionUuid(activity.getProcessDefinitionId());
+			item.setProcessInstanceUuid(activity.getProcessInstanceId());
+			item.setActivityDefinitionUuid(activity.getActivityId());
+			item.setActivityInstanceUuid(activity.getId());
+			item.setActivityName(activity.getActivityName());
+			item.setActivityLabel(getHistoricActivityName(activity, locale));
+			item.setStartDate(activity.getStartTime());
+			item.setCurrentState("FINISHED");
+			item.setLastStateUpdate(activity.getEndTime()); // TODO w
+			item.setLastStateUpdateByUserId(activity.getAssignee());
+			//item.setStartedBy(getHistoricStarterByTaskId(activity.getId())); //TODO
+			item.setGuideUri(getGuideUri(activity));
+			item.setProcessActivityFormInstanceId(new Long(0));
+			item.setActivityType(getActivityTypeByExecutionIdTaskId(activity.getExecutionId(), activity.getId()));
+			
+			// ActivityInstancelogItem
+			item.setEndDate(activity.getEndTime());
+			item.setPerformedByUser(userId2UserInfo(activity.getAssignee()));
+		}
+		return item;
+	}
+	
 	private ActivityInstanceLogItem task2ActivityInstanceLogItem(HistoricTaskInstance task, Locale locale) {
 		ActivityInstanceLogItem item = null;
 		if (task != null) {
@@ -527,8 +571,8 @@ public class ActivitiEngineService {
 			item.setActivityLabel(getHistoricTaskName(task, locale));
 			item.setStartDate(task.getStartTime());
 			item.setCurrentState("FINISHED");
-			item.setLastStateUpdate(task.getDueDate());
-			item.setLastStateUpdateByUserId("");
+			item.setLastStateUpdate(task.getDueDate());  // TODO bjmo think this is strange
+			item.setLastStateUpdateByUserId(""); // TODO bjmo think this is strange
 			item.setStartedBy(getHistoricStarterByTaskId(task.getId()));
 			item.setGuideUri(getGuideUri(task));
 			item.setProcessActivityFormInstanceId(new Long(0));
@@ -555,6 +599,15 @@ public class ActivitiEngineService {
 	private String getHistoricTaskName(HistoricTaskInstance task, Locale locale) {
 		String result = task.getName();
 		String crdName = coordinatriceFacade.getLabel(task.getProcessDefinitionId(), task.getName(), locale);
+		if (crdName != null) {
+			result = crdName;
+		}
+		return result;
+	}
+	
+	private String getHistoricActivityName(HistoricActivityInstance activity, Locale locale) {
+		String result = activity.getActivityName();
+		String crdName = coordinatriceFacade.getLabel(activity.getProcessDefinitionId(), activity.getActivityName(), locale);
 		if (crdName != null) {
 			result = crdName;
 		}
@@ -659,11 +712,10 @@ public class ActivitiEngineService {
 	}
 	
 	private void appendDetailsFromProcessInstance(ProcessInstanceDetails processInstanceDetails, String processInstanceId, Locale locale) {
-	
+		
 		// Tasks in this process
 		List<Task> tasks = engine.getTaskService().createTaskQuery().
 			processInstanceId(processInstanceId).orderByTaskName().includeTaskLocalVariables().asc().list();
-
 		// append historic tasks (i.e. to pending items)
 		if(tasks != null && tasks.size() > 0) {
 			for(Task task : tasks) {
@@ -671,6 +723,12 @@ public class ActivitiEngineService {
 			}	
 		}	
 	
+		// TODO decide activity types to include in timeline
+		List<HistoricActivityInstance> historicActivities = engine.getHistoryService().createHistoricActivityInstanceQuery().processInstanceId(processInstanceId).activityType("serviceTask").finished().orderByHistoricActivityInstanceEndTime().asc().list();
+		for (HistoricActivityInstance historicActivitiy : historicActivities) {
+			processInstanceDetails.addActivityInstanceItem(historicActivitiy2ActivityInstanceLogItem(historicActivitiy, locale));
+			
+		}
 		// append historic tasks (i.e. to timeline)
 		List<HistoricTaskInstance> historicTasks = engine.getHistoryService().createHistoricTaskInstanceQuery().
 				processInstanceId(processInstanceId).finished().includeTaskLocalVariables().orderByHistoricTaskInstanceStartTime().asc().list();
@@ -2064,10 +2122,22 @@ public class ActivitiEngineService {
 		return logItemToNotify;
 		*/
 		
-		String actUri = (String)engine.getRuntimeService().createProcessInstanceQuery().processInstanceId(activity.getProcessInstanceUuid()).includeProcessVariables().singleResult().getProcessVariables().get("serviceDocUri");
-		logItemToNotify = new ActivityInstanceLogItem();
-		logItemToNotify.setActUri(actUri);
+		// work around
 		
+		if (activity.getActUri() == null || activity.getActUri().trim().length()==0) {
+			String actUri = (String)engine.getRuntimeService().createProcessInstanceQuery().processInstanceId(activity.getProcessInstanceUuid()).includeProcessVariables().singleResult().getProcessVariables().get("serviceDocUri");
+			logItemToNotify = new ActivityInstanceLogItem();
+			logItemToNotify.setActUri(actUri);
+			
+			Task task = engine.getTaskService().createTaskQuery().taskId(activity.getActinstId()).singleResult();
+			if (task != null) {
+				String varName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, task.getId());
+				engine.getRuntimeService().setVariable(task.getExecutionId(), varName, actUri);
+			}
+		}
+		else {
+			logItemToNotify.setActUri(activity.getActUri());
+		}
 		return logItemToNotify;
 	}
 }

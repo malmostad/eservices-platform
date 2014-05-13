@@ -35,9 +35,9 @@ import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NotifyForm extends Form  {
+public class NotifyFormWithDetails extends FormWithDetails  {
  
-	public static final Logger log = LoggerFactory.getLogger(NotifyForm.class);
+	public static final Logger log = LoggerFactory.getLogger(NotifyFormWithDetails.class);
 
 	public static final String START = "START";
 	@Override
@@ -47,7 +47,7 @@ public class NotifyForm extends Form  {
 		ActivityInstanceItem activity = (ActivityInstanceItem)request.getAttribute("activity");
 
 		ActivityInstanceLogItem notifyItem = engine.getActivityInstanceLogItemToNotify(activity, request.getLocale());
-		
+
 		request.setAttribute("notifyItem", notifyItem);
 	}
 	
