@@ -33,8 +33,14 @@ import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.task.Task;
 import org.inheritsource.service.form.FormEngine;
+import org.inheritsource.taskform.engine.TaskFormService;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public class SimplifiedServiceMessageDelegate implements JavaDelegate {
+public class SimplifiedServiceMessageDelegate implements JavaDelegate, ApplicationContextAware {
+	
 	public static final Logger log = Logger.getLogger(SimplifiedServiceMessageDelegate.class.getName());
 
 	public static String PROC_VAR_RECIPIENT_USER_ID = "recipientUserId";
@@ -42,11 +48,12 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate {
 	
 	public static String ACT_VAR_MESSAGE_TEXT = "emailMessageText";
 	public static String ACT_VAR_SUBJECT = "emailSubject";
-	
-	
+
 	public void execute(DelegateExecution execution) throws Exception {
 		System.out.println("SimplifiedServiceMessageDelegate called from " + execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date());
 
+		TaskFormService service = (TaskFormService) context.getBean("engine");
+		
 		/*
 		TaskService taskService = execution.getEngineServices().getTaskService();
 		Task task = taskService.createTaskQuery().executionId(execution.getId()).singleResult();
@@ -81,6 +88,17 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate {
 		System.out.println("Email subject: " +  messageSubject);
 		System.out.println("Email text: " +  messageText);
 
-    } 
+    }
+
+	// work around app context
 	
+	@Override
+	public void setApplicationContext(ApplicationContext arg0)
+			throws BeansException {
+		context = arg0;
+		
+	} 
+	
+	private static ApplicationContext context;
+
 }

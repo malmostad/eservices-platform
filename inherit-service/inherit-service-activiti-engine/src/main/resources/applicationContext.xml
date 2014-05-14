@@ -143,4 +143,6 @@
     <property name="processEngineConfiguration" ref="processEngineConfiguration" />
   </bean>
     
+  <bean id="simplifiedServiceMessageDelegate" class="org.inheritsource.service.delegates.SimplifiedServiceMessageDelegate"/>
+  
 </beans>
