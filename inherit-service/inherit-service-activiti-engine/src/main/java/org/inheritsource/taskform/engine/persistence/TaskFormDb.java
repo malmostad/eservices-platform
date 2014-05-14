@@ -118,27 +118,6 @@ public class TaskFormDb {
 		}
 		return result;
 	}	
-
-	public ProcessActivityFormInstance getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(String processInstanceUuid) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-				    .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) // identifies the start form
-				    .add( Restrictions.isNull("activityInstanceUuid")) // only start forms
-				    .list();
-		}
-		catch (Exception e) {
-			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return filterUniqueProcessActivityFormInstanceFromList(result);
-	}
-
 	
 	public ProcessActivityFormInstance getStartProcessActivityFormInstanceByFormPathAndUser(String formPath, String userId) {
 		List<ProcessActivityFormInstance> result = null;
@@ -162,110 +141,7 @@ public class TaskFormDb {
 		}
 		return filterUniqueProcessActivityFormInstanceFromList(result);
 	}
-
-	public ProcessActivityFormInstance getStartProcessActivityFormInstanceByProcessInstanceUuid(String processInstanceUuid) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-				    .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) // identifies the start form
-				    .add( Restrictions.isNull("activityInstanceUuid")) // only start forms
-				    .add( Restrictions.isNotNull("submitted")) // only submitted forms
-				    .list();
-		}
-		catch (Exception e) {
-			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return filterUniqueProcessActivityFormInstanceFromList(result);
-	}
 	
-   @SuppressWarnings("unchecked")
-   public List<ProcessActivityFormInstance> getProcessActivityFormInstances(String processInstanceUuid) {
-           List<ProcessActivityFormInstance> result = null;
-           
-           Session session = HibernateUtil.getSessionFactory().openSession();
-           
-           try {
-                   //result = (List<ProcessDefinition>)session.createQuery(hql).list();
-                   result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-                                   .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) )  
-                                   .list();
-           }
-           catch (Exception e) {
-                   log.severe("Exception in getProcessActivityFormInstances: processInstanceUuid="  + processInstanceUuid + " exception: " + e);
-           }
-           finally {
-                   session.close();
-           }
-           return result;
-   }
-
-	
-	public ProcessActivityFormInstance getProcessActivityFormInstanceByActivityInstanceUuid(String activityInstanceUuid) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-				    .add( Restrictions.eq("activityInstanceUuid", activityInstanceUuid) )
-				    .list();
-		}
-		catch (Exception e) {
-			log.severe("activityInstanceUuid=[" + activityInstanceUuid + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return filterUniqueProcessActivityFormInstanceFromList(result);
-	}
-
-	
-	public ProcessActivityFormInstance getProcessActivityFormInstanceById(Long id) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-					                                   .add( Restrictions.eq("processActivityFormInstanceId", id) )
-				                                       .list();
-
-		}
-		catch (Exception e) {
-			log.severe("id=[" + id + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return filterUniqueProcessActivityFormInstanceFromList(result);
-	}
-	
-	public ProcessActivityFormInstance getProcessActivityFormInstanceById(Session session, Long id) {
-		ProcessActivityFormInstance result = null;
-		result = (ProcessActivityFormInstance)session.load(ProcessActivityFormInstance.class, id);
-		return result;
-	}
-
-
-	public ProcessActivityFormInstance getProcessStartFormInstanceById(String processInstanceUuid) {
-		ProcessActivityFormInstance result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		result = getProcessStartFormInstanceById(session, processInstanceUuid);
-		
-		session.close();
-		
-		return result;
-	}
-
 	public ProcessActivityFormInstance getProcessStartFormInstanceById(Session session, String processInstanceUuid) {
 		List<ProcessActivityFormInstance> result = null;
 				
@@ -378,43 +254,6 @@ public class TaskFormDb {
 		}
 		return result;
 	}
-
-	
-	@SuppressWarnings("unchecked")
-	public List<ProcessActivityFormInstance> getPendingProcessActivityFormInstances(String userId) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-					.add( Restrictions.eq("userId", userId) )  // this user is last writer
-					.add(Restrictions.isNull("submitted"))     // not submitted
-				    .list();
-		}
-		catch (Exception e) {
-			log.severe("Exception in getProcessActivityFormInstances: userId="  + userId + " exception: " + e);
-		}
-		finally {
-			session.close();
-		}
-		return result;
-	}
-
-	
-	public StartFormDefinition getStartFormDefinition(String activityDefinitionUuid, String processInstanceUuid) {
-		StartFormDefinition result = null;
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		ProcessActivityFormInstance startForm = getProcessStartFormInstanceById(session, processInstanceUuid);
-		if (startForm != null) {
-			String startFormPath = startForm.getFormConnectionKey();
-			result = getStartFormDefinitionByFormPath(session, startFormPath);
-		}
-		session.close();
-		return result;
-	}
-	
 	
 	/**
 	 * Returns 
@@ -483,7 +322,7 @@ public class TaskFormDb {
 	}
 
 
-	private void saveProcessActivityTag(ProcessActivityTag processActivityTag) {
+	public void saveProcessActivityTag(ProcessActivityTag processActivityTag) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		

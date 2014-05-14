@@ -33,6 +33,22 @@
 			<div id="Hogerspalt">
 				<!-- HÃ¶gerspalt -->
 			</div>
+			
+			<div id="svid12_1d8b012512b3897f473800038730">
+				<div id="Text3-0">
+					<!-- Text 3 -->
+				</div>
+				<div id="h-Omduvill">
+					<!-- Om du vill: -->
+				</div>
+				<h2>
+					<fmt:message key="mycases.actlist.lbl" />
+				</h2>
+
+				<tag:actlist timelineItems="${processInstanceDetails.timeline.items}" viewMode="full"/>
+
+			</div>
+			
 			<div id="svid10_1d8b012512b3897f473800038728">
 				<div id="Text-1">
 					<!-- Text -->
@@ -79,6 +95,7 @@
 					</div>
 				</div>
 			</div>
+			
 			<div id="svid12_1d8b012512b3897f473800038730">
 				<div id="Text3-0">
 					<!-- Text 3 -->

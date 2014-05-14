@@ -75,7 +75,7 @@ public class Form extends MyCasesBaseComponent {
         	String userId = (user == null ? getTransientUserId(request) : user.getUuid());
         	
         	try {
-				activity = engine.getStartActivityInstanceItem(startformkey, userId);
+				activity = engine.getStartActivityInstanceItem(startformkey, request.getLocale(), userId);
 			} catch (Exception e) {
 				log.info("startformkey=[" + startformkey + "] userId=[" + userId + "] doeas not identify an activity");
     		}	

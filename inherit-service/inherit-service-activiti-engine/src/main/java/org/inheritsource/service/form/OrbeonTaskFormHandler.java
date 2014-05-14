@@ -95,6 +95,10 @@ public class OrbeonTaskFormHandler extends TaskFormHandler {
 	public FormInstance getPendingFormInstance(FormInstance form, Task task, String userId) {
 		form.setPage(PAGE);
 
+		if (task == null) {
+			// start form
+		}
+		
 		// common local task variables should be loaded already by FormEngine 
 		
 		calcUris(form);

@@ -66,7 +66,7 @@ public class RuntimeService {
 		log.fine("REST call with parameter formPath=[" + formPath + "] by userId=[" + userId + "]");
 		
 		try {
-			result = engine.getStartActivityInstanceItem(formPath, userId);
+			result = engine.getStartActivityInstanceItem(formPath, null, userId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			log.severe(e.toString());

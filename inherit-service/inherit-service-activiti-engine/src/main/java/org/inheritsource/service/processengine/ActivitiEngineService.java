@@ -185,6 +185,9 @@ public class ActivitiEngineService {
 		}
 	
 		result = taskList2InboxTaskItemList(tasks, locale, userId);
+		
+		result.addAll(formEngine.getPendingStartFormInstances(userId, locale));
+		
 		Collections.sort(result);
 		
 		return result;

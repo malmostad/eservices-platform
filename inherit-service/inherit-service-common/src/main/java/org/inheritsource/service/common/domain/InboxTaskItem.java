@@ -139,23 +139,6 @@ public class InboxTaskItem extends FormInstance implements Serializable, Compara
 		this.processDefinitionUuid = processDefinitionUuid;
 	}
 
-	/*
-	 * This url represent a 
-	 */
-	public String getRelativePageLink() {
-		String result = super.getRelativePageLink();
-		if (actinstId != null && actinstId.trim().length()>0) {
-			// task
-			result += "&actinstId=" + actinstId;
-			
-		}
-		else {
-			// it is implicit a start form if no actinstId
-			result = page + "?startforminstId=" + instanceId;
-		}
-		return result;
-	}
-	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}

@@ -83,6 +83,12 @@ public class ProcessActivityFormInstance {
 	String formConnectionKey;
 	
 	/**
+	 * 
+	 */
+	@Column(name="form_data_uri")
+	String formDataUri;
+	
+	/**
 	 * If null, this form is still not submitted, otherwise submission time stamp.
 	 */
 	Date submitted = null;
@@ -133,6 +139,14 @@ public class ProcessActivityFormInstance {
 
 	public void setFormDocId(String formDocId) {
 		this.formDocId = formDocId;
+	}
+
+	public String getFormDataUri() {
+		return formDataUri;
+	}
+
+	public void setFormDataUri(String formDataUri) {
+		this.formDataUri = formDataUri;
 	}
 
 	public Long getFormTypeId() {
@@ -222,6 +236,8 @@ public class ProcessActivityFormInstance {
 				+ ((formConnectionKey == null) ? 0 : formConnectionKey
 						.hashCode());
 		result = prime * result
+				+ ((formDataUri == null) ? 0 : formDataUri.hashCode());
+		result = prime * result
 				+ ((formDocId == null) ? 0 : formDocId.hashCode());
 		result = prime * result
 				+ ((formTypeId == null) ? 0 : formTypeId.hashCode());
@@ -265,6 +281,11 @@ public class ProcessActivityFormInstance {
 			if (other.formConnectionKey != null)
 				return false;
 		} else if (!formConnectionKey.equals(other.formConnectionKey))
+			return false;
+		if (formDataUri == null) {
+			if (other.formDataUri != null)
+				return false;
+		} else if (!formDataUri.equals(other.formDataUri))
 			return false;
 		if (formDocId == null) {
 			if (other.formDocId != null)
@@ -318,9 +339,9 @@ public class ProcessActivityFormInstance {
 				+ startFormDefinition + ", activityInstanceUuid="
 				+ activityInstanceUuid + ", formDocId=" + formDocId
 				+ ", formTypeId=" + formTypeId + ", formConnectionKey="
-				+ formConnectionKey + ", submitted=" + submitted + ", userId="
-				+ userId + ", processActivityTags=" + processActivityTags + "]";
+				+ formConnectionKey + ", formDataUri=" + formDataUri
+				+ ", submitted=" + submitted + ", userId=" + userId
+				+ ", processActivityTags=" + processActivityTags + "]";
 	}
-
 	
 }

@@ -36,6 +36,9 @@
   <c:otherwise> 
   	<p>${processInstanceDetails.processLabel}
   	</p>
+  	<h2><fmt:message key="mycases.actlist.lbl" /></h2>
+	<tag:actlist timelineItems="${processInstanceDetails.timeline.items}" viewMode="limit"/>
+ 	
  	<h2><fmt:message key="mycases.pendingActivities.lbl"/></h2>   
  	<p></p>
 		 <table class="display dataTable">
