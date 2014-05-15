@@ -1,25 +1,28 @@
-/* 
- *  Process Aware Web Application Platform 
+/* == Motrice Copyright Notice == 
  * 
- *  Copyright (C) 2011-2013 Inherit S AB 
+ * Motrice Service Platform 
  * 
- *  This program is free software: you can redistribute it and/or modify 
- *  it under the terms of the GNU Affero General Public License as published by 
- *  the Free Software Foundation, either version 3 of the License, or 
- *  (at your option) any later version. 
+ * Copyright (C) 2011-2014 Motrice AB 
  * 
- *  This program is distributed in the hope that it will be useful, 
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- *  GNU Affero General Public License for more details. 
+ * This program is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU Affero General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
  * 
- *  You should have received a copy of the GNU Affero General Public License 
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * GNU Affero General Public License for more details. 
  * 
- *  e-mail: info _at_ inherit.se 
- *  mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
- *  phone: +46 8 641 64 14 
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * 
+ * e-mail: info _at_ motrice.se 
+ * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+ * phone: +46 8 641 64 14 
+ 
  */ 
+ 
  
 package org.inheritsource.taskform.engine;
 
@@ -39,6 +42,7 @@ import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
@@ -51,6 +55,8 @@ import org.inheritsource.service.common.domain.TimelineItem;
 import org.inheritsource.service.common.domain.UserDirectoryEntry;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.common.domain.MyProfile;
+import org.inheritsource.service.delegates.DelegateUtil;
+import org.inheritsource.service.docbox.DocBoxFacade;
 import org.inheritsource.service.form.FormEngine;
 import org.inheritsource.service.identity.ActorSelectorDirUtils;
 import org.inheritsource.service.identity.UserDirectoryService;
@@ -99,119 +105,7 @@ public class TaskFormService {
 
 	public void setActivitiEngineService(ActivitiEngineService activitiEngineService) {
 		this.activitiEngineService = activitiEngineService;
-	}	
-	
-		
-	public String getPreviousActivitiesData(String currentActivityFormDocId) {
-		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
-		return currentActivity==null ? "" : getProcessInstanceChainActivitiesData(currentActivity.getProcessInstanceUuid());
-	}
-	
-	public String getPreviousActivityDataByInstanceUuid(String currentActivityInstanceUuid, String previousActivityName, String uniqueXPathExpr) {
-		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(currentActivityInstanceUuid);
-		return currentActivity==null ? "" : getProcessInstanceActivityData(currentActivity.getProcessInstanceUuid(), previousActivityName, uniqueXPathExpr);
-	}
-	
-	public String getPreviousActivityDataByDocId(String currentActivityFormDocId, String previousActivityName, String uniqueXPathExpr) {
-		ProcessActivityFormInstance currentActivity = taskFormDb.getProcessActivityFormInstanceByFormDocId(currentActivityFormDocId);
-		return currentActivity==null ? "" : getProcessInstanceActivityData(currentActivity.getProcessInstanceUuid(), previousActivityName, uniqueXPathExpr);
-	}
-	
-	public String getProcessInstanceActivityData(String processInstanceUuid, String activityName, String uniqueXPathExpr) {
-		String result = "";
-		/*
-		ProcessActivityFormInstance previousActivity = null;
-		if ("startform".equalsIgnoreCase(activityName)) {
-			previousActivity = taskFormDb.getStartProcessActivityFormInstanceByProcessInstanceUuid(processInstanceUuid);
-		}
-		else {
-			String previousActivityUuid = activitiEngineService.getActivityInstanceUuid(processInstanceUuid, activityName);
-			if (previousActivityUuid != null) {
-				previousActivity = taskFormDb.getProcessActivityFormInstanceByActivityInstanceUuid(previousActivityUuid);
-			}
-		}
-		if (previousActivity!=null) {
-			result = orbeonService.getFormDataValue(previousActivity.getFormPath(), previousActivity.getFormDocId(), uniqueXPathExpr);
-		}
-		*/
-		return result;
-	}
-	
-	public String getProcessInstanceChainActivitiesData(String processInstanceUuid) {
-		StringBuffer result = new StringBuffer();
-		
-		result.append("<pawap><process processInstanceUuid=\"");
-		result.append(processInstanceUuid);
-		result.append("\">");
-		
-		// anropa activitiEngineService och gör där en ny metod som returnerar alla processvariabler
-		// bygg upp xml av dem
-		
-		@SuppressWarnings("unused")
-		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
-
-		result.append("<pawap><formdata>");
-
-		if (processInstanceUuid != null && !processInstanceUuid.isEmpty()) {
-			getProcessInstanceActivitiesFormData(processInstanceUuid, result);
-		}
-
-		result.append("</formdata>");
-
-		//result.append("<processdata>");
-		  // anropa bonitaClient och gör där en ny metod som returnerar alla processvariabler
-		  // bygg upp xml av dem
-		//result.append("</processdata>");
-		result.append("</pawap>");
-		return result.toString();
-	}
-	
-	public void getProcessInstanceActivitiesFormData(String processInstanceUuid, StringBuffer buf) {
-		/*
-		String parentProcessInstanceUuid = activitiEngineService.getParentProcessInstanceUuid(processInstanceUuid);
-		if (parentProcessInstanceUuid != null && !parentProcessInstanceUuid.isEmpty()) {
-			getProcessInstanceActivitiesFormData(parentProcessInstanceUuid,buf);
-		}
-		buf.append("<process processInstanceUuid=\"");
-		buf.append(processInstanceUuid);
-		buf.append("\">");
-		List<ProcessActivityFormInstance> pafis = taskFormDb.getProcessActivityFormInstances(processInstanceUuid);
-		if (pafis != null) {
-			for (ProcessActivityFormInstance pafi : pafis) {
-				if (pafi.getSubmitted() != null) {
-					String formDataFragment = orbeonService.getFormData(
-							pafi.getFormPath(), pafi.getFormDocId());
-					if (formDataFragment != null) {
-						if (pafi.isStartForm()) {
-							buf.append("<startform>");
-							buf.append(formDataFragment);
-							buf.append("</startform>");
-						} else {
-							// activity form
-
-							ActivityInstanceItem activityItem = activitiEngineService.getActivityInstanceItem(pafi.getActivityInstanceUuid());
-							if (activityItem != null) {
-								buf.append("<activity uuid=\"");
-								buf.append(pafi.getActivityInstanceUuid());
-								buf.append("\" activityName=\"");
-								buf.append(activityItem.getActivityName());
-								buf.append("\" activityDefinitionUuid=\"");
-								buf.append(activityItem
-										.getActivityDefinitionUuid());
-								buf.append("\">");
-								buf.append(formDataFragment);
-								buf.append("</activity>");
-							}
-						}
-					}
-				}
-			}
-			buf.append("</process>");
-		}
-		return;
-		*/
-	}
- 
+	}	 
 
 	/**
 	 * 
@@ -245,15 +139,8 @@ public class TaskFormService {
 	 */
 	public List<InboxTaskItem> getInboxTaskItems(Locale locale, String userId) {
 
-		// Find partially filled not submitted start forms
-		// TODO FIX THIS
-		//List<ProcessActivityFormInstance> unsubmittedStartForms;
-		//unsubmittedStartForms = taskFormDb.getPendingStartformFormInstances(userId);
-
 		// find inbox tasks from activiti engine
 		List<InboxTaskItem> inbox = activitiEngineService.getUserInbox(locale, userId);
-
-		//inbox.addAll(unsubmittedStartForms);
 
 		Collections.sort(inbox);
 		
@@ -415,11 +302,11 @@ public class TaskFormService {
      * @param userId
      * @return guess next InboxTaskItem from current
      */
-	public InboxTaskItem getNextActivityInstanceItemByDocId(FormInstance currentFormInstance, String userId) {
+	public InboxTaskItem getNextActivityInstanceItemByDocId(FormInstance currentFormInstance, Locale locale, String userId) {
 		InboxTaskItem result = null;
 		
 		try {
-			List<InboxTaskItem> items = activitiEngineService.getUserInbox(null, userId);
+			List<InboxTaskItem> items = activitiEngineService.getUserInbox(locale, userId);
 			
 			if (currentFormInstance instanceof ActivityInstanceLogItem) {
 				ActivityInstanceLogItem logItem = (ActivityInstanceLogItem)currentFormInstance;
@@ -428,6 +315,10 @@ public class TaskFormService {
 						result = item;
 					}
 				}
+			}
+			
+			if (result == null && items!= null && items.size()>0) {
+				result = items.get(0);
 			}
 			//result = activitiEngineService.getNextInboxTaskItem(currentProcessInstance, userId);
 		}
@@ -445,93 +336,17 @@ public class TaskFormService {
 		return result;
 	}
 	
-	public ActivityInstanceItem getStartActivityInstanceItem(String formPath,
+	public ActivityInstanceItem getStartActivityInstanceItem(String formPath, Locale locale,
 			String userId) throws Exception {
 		ActivityInstanceItem result = new ActivityInstancePendingItem();
 		
-		result = (ActivityInstanceItem)getActivitiEngineService().getFormEngine().getStartFormInstance(new Long(1), formPath , userId, result);
+		result = (ActivityInstanceItem)getActivitiEngineService().getFormEngine().getStartFormInstance(new Long(1), formPath , userId, result, locale);
 
-		// TODO replace LATER 
-		initializeStartForm(result, userId);
 		return result;
 	}
 
-	/**
-	 * This conversion is only valid on StartForms
-	 * 
-	 * @param src
-	 * @return
-	 */
-	private ActivityInstancePendingItem processActivityFormInstance2ActivityInstancePendingItem(
-			ProcessActivityFormInstance src) {
-		// TODO this method name is confusing, it is only working on start
-		// forms...
-		ActivityInstancePendingItem dst = new ActivityInstancePendingItem();
-		try {
-			dst.setProcessDefinitionUuid(src.getStartFormDefinition()
-					.getProcessDefinitionUuid());
-			dst.setActivityName("StartCaseTODO");
-			dst.setActivityLabel("Starta ärende TODO");
-			dst.setStartDate(null);
-			dst.setCurrentState("TODO");
-			dst.setLastStateUpdate(null);
-			dst.setLastStateUpdateByUserId(src.getUserId());
-			dst.setExpectedEndDate(null);
-			dst.setPriority(0);
-			dst.setStartedBy("");
-			dst.setAssignedUser(taskFormDb.getUserByUuid(src.getUserId()));
-			dst.setExpectedEndDate(null);
-			dst.setEditUrl(src.calcEditUrl());
-			
-			dst.setProcessInstanceUuid(null);
-			dst.setActivityInstanceUuid(null);
-			dst.setActivityDefinitionUuid(null);
-		} catch (RuntimeException re) {
-			log.severe("Cannot convert ProcessActivityFormInstance " + src
-					+ " to ActivityInstancePendingItem. RuntimeException: "
-					+ re);
-			throw re;
-		}
 
-		return dst;
-	}
 
-	/**
-	 * This is only valid on orbeon forms
-	 * @param formPath
-	 * @param userId
-	 * @return
-	 * @throws Exception
-	 */
-	private ActivityInstanceItem initializeStartForm(FormInstance startFormInstance,
-			String userId) throws Exception {
-
-		// lookup the process this start form is configured to start.
-
-		try {
-			StartFormDefinition startFormDefinition = taskFormDb
-					.getStartFormDefinitionByFormPath( startFormInstance.getDefinitionKey());
-
-			// generate a type 4 UUID
-			String docId = java.util.UUID.randomUUID().toString();
-
-			// store the start form activity
-			ProcessActivityFormInstance activityInstance = new ProcessActivityFormInstance();
-			activityInstance.setFormDocId( startFormInstance.getInstanceId());
-			activityInstance.setStartFormDefinition(startFormDefinition);
-			activityInstance.setFormTypeId(startFormDefinition.getFormTypeId());
-			activityInstance.setFormConnectionKey(startFormDefinition.getFormConnectionKey());
-			activityInstance.setProcessInstanceUuid(null);
-			activityInstance.setActivityInstanceUuid(null);
-			activityInstance.setSubmitted(null);
-			activityInstance.setUserId(userId);
-
-			taskFormDb.saveProcessActivityFormInstance(activityInstance);
-			return processActivityFormInstance2ActivityInstancePendingItem(activityInstance);
-		} finally {
-
-		}
-	}
 
 	/**
 	 * submit form
@@ -545,6 +360,52 @@ public class TaskFormService {
 		return submitActivityForm(docId, userId, null);
 	}
 			
+	public FormInstance submitSignForm(String formInstanceId, String userId, String docboxRef, String signature) throws Exception {
+		DocBoxFacade docBox = new DocBoxFacade();
+        DocBoxFormData docBoxFormData = docBox.addDocBoxSignature(docboxRef, signature);
+        FormInstance signedForm = null;
+        
+        if (docBoxFormData != null) {
+        	// save DocboxRef as formDocId. 
+			try {
+				signedForm = submitActivityForm(formInstanceId, userId, docBoxFormData);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+		return signedForm;
+	}
+
+	/*
+	 *
+	 * DocBoxFacade docBox = new DocBoxFacade();
+        DocBoxFormData docBoxFormData = docBox.addDocBoxSignature(docboxRef, signature);
+		        
+        if (docBoxFormData != null) {
+        	// save DocboxRef as formDocId. 
+        	FormInstance signedForm = null;
+			try {
+				signedForm = engine.submitActivityForm(instanceId, userUuid, docBoxFormData.getDocboxRef());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+    		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();
+    		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
+    		String pdfUrl = protocolStr + "://" + request.getServerName() + portStr +  "/docbox/doc/ref/" + docBoxFormData.getDocboxRef();
+    		
+    		request.setAttribute("pdfUrl", pdfUrl);
+
+    		InboxTaskItem nextTask = null;
+    		if (signedForm!=null && !UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
+    	        nextTask = engine.getNextActivityInstanceItemByDocId(signedForm, user.getUuid());
+    	        appendChannelLabels(request, nextTask);
+    		}
+    		request.setAttribute("nextTask", nextTask);
+        }
+	 */
 	
 	/**
 	 * submit form
@@ -554,14 +415,14 @@ public class TaskFormService {
 	 * @param newDocId Replace docId with a new one on submit. 
 	 * @return confirmation form instance. null if submission fails.
 	 */
-	public FormInstance submitActivityForm(String docId, String userId, String newDocId)
+	public FormInstance submitActivityForm(String docId, String userId, DocBoxFormData docBoxFormData)
 			throws Exception {
 		FormInstance formInstance;
 		
 		// TODO, när userId är null 1) kolla om det finns i formulärdata i xpath angiven av startformdef 2) anonymous om startformdef tillåter anonym
-		log.info("submitActivityForm docId=" + docId + " userId=" + userId + " newDocId=" + newDocId);
+		log.info("submitActivityForm docId=" + docId + " userId=" + userId + " docBoxFormData=" + docBoxFormData);
 		try {
-			formInstance = activitiEngineService.submitForm(docId, userId, newDocId);
+			formInstance = activitiEngineService.submitForm(docId, userId, docBoxFormData);
 			if (formInstance == null) {
 
 				// maybe a start form
@@ -570,10 +431,6 @@ public class TaskFormService {
 					Date tstamp = new Date();
 					activity.setSubmitted(tstamp);
 					activity.setUserId(userId);
-					
-					if (newDocId != null) {
-						activity.setFormDocId(newDocId);
-					}
 					
 					if (activity.isStartForm()) {
 						String startFormUser = null;
@@ -629,10 +486,12 @@ public class TaskFormService {
 						variables.put(FormEngine.START_FORM_ASSIGNEE, userId); // set another user later (starta å invpånares vägnar)
 						variables.put(FormEngine.START_FORM_DEFINITIONKEY, activity.getFormConnectionKey());
 						variables.put(FormEngine.START_FORM_INSTANCEID, activity.getFormDocId());
-						variables.put(FormEngine.START_FORM_DATA_URI, "TODO");
+						variables.put(FormEngine.START_FORM_DATA_URI, activity.getFormDataUri());
 						
 						String processInstanceUuid = activitiEngineService.startProcess(pDefUuid, variables, userId);
 						activity.setProcessInstanceUuid(processInstanceUuid);
+						
+						taskFormDb.saveProcessActivityFormInstance(activity);
 						
 						formInstance = activitiEngineService.getFormEngine().getStartLogItem(activitiEngineService.getEngine().getHistoryService().createHistoricProcessInstanceQuery().processInstanceId(processInstanceUuid).includeProcessVariables().singleResult(), userId);
 
@@ -900,4 +759,13 @@ public class TaskFormService {
 		}
 		return result;
 	}
+	
+	public DocBoxFormData getDocBoxFormDataToSign(ActivityInstanceItem activity, Locale locale) {
+		return activitiEngineService.getDocBoxFormDataToSign(activity, locale);
+	}
+
+	public ActivityInstanceLogItem getActivityInstanceLogItemToNotify(ActivityInstanceItem activity, Locale locale) {
+		return activitiEngineService.getActivityInstanceLogItemToNotify(activity, locale);
+	}
+
 }

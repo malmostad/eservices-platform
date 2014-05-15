@@ -9,9 +9,6 @@ CONTAINER_ROOT=${HOME}/motrice-14.4
 # ROOT of Hippo jcr content repository
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
 
-# ROOT of Hippo jcr content repository
-CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
-
 TOMCAT_DIR=apache-tomcat-7.0.53
 TOMCAT_TGZ=${TOMCAT_DIR}.tar.gz
 TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/bin/${TOMCAT_TGZ}
@@ -21,14 +18,19 @@ TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/
 #####################################################################
 
 ESERVICE=hippo-eservice-tomcat        # PATH in CONTAINER_ROOT
-ESERVICE_SSL=TRUE                     # TRUE/FALSE
+ESERVICE_SSL=true                     # true/false
 ESERVICE_HOST=eservice.malmo.se       # DNS name
 ESERVICE_PORT=443                     # external port normally 80 or 443
 
 KSERVICE=hippo-kservice-tomcat        # PATH in CONTAINER_ROOT
-KSERVICE_SSL=TRUE                     # TRUE/FALSE
+KSERVICE_SSL=true                     # true/false
 KSERVICE_HOST=kservice.malmo.se       # DNS name
 KSERVICE_PORT=443                     # external port normally 80 or 443
+
+CMSSERVICE=hippo-cmsservice-tomcat    # PATH in CONTAINER_ROOT
+CMSSERVICE_SSL=false                  #
+CMSSERVICE_HOST=kservice.malmo.se     # DNS name
+CMSSERVICE_PORT=80                    # external port normally 80 or 443
 
 ESERVICEPATCH=${ESERVICE_HOST}
 KSERVICEPATCH=${KSERVICE_HOST}
@@ -36,8 +38,10 @@ PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch
 
 ESERVICE_PORT=38080                   # internal port i.e. tomcat port
 KSERVICE_PORT=8080                    # internal port i.e. tomcat port
+CMSSERVICE_PORT=48080                 # internal port i.e. tomcat port
 
 WITH_KSERVICES=true
+WITH_CMSSERVICES=true
 
 #####################################################################
 # Open AM config

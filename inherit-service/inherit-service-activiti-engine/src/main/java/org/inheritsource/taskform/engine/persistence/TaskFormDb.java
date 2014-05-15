@@ -1,25 +1,28 @@
-/* 
- *  Process Aware Web Application Platform 
+/* == Motrice Copyright Notice == 
  * 
- *  Copyright (C) 2011-2013 Inherit S AB 
+ * Motrice Service Platform 
  * 
- *  This program is free software: you can redistribute it and/or modify 
- *  it under the terms of the GNU Affero General Public License as published by 
- *  the Free Software Foundation, either version 3 of the License, or 
- *  (at your option) any later version. 
+ * Copyright (C) 2011-2014 Motrice AB 
  * 
- *  This program is distributed in the hope that it will be useful, 
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- *  GNU Affero General Public License for more details. 
+ * This program is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU Affero General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
  * 
- *  You should have received a copy of the GNU Affero General Public License 
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * GNU Affero General Public License for more details. 
  * 
- *  e-mail: info _at_ inherit.se 
- *  mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
- *  phone: +46 8 641 64 14 
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * 
+ * e-mail: info _at_ motrice.se 
+ * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+ * phone: +46 8 641 64 14 
+ 
  */ 
+ 
  
 package org.inheritsource.taskform.engine.persistence;
 
@@ -115,27 +118,6 @@ public class TaskFormDb {
 		}
 		return result;
 	}	
-
-	public ProcessActivityFormInstance getSubmittedStartProcessActivityFormInstanceByProcessInstanceUuid(String processInstanceUuid) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-				    .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) // identifies the start form
-				    .add( Restrictions.isNull("activityInstanceUuid")) // only start forms
-				    .list();
-		}
-		catch (Exception e) {
-			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return filterUniqueProcessActivityFormInstanceFromList(result);
-	}
-
 	
 	public ProcessActivityFormInstance getStartProcessActivityFormInstanceByFormPathAndUser(String formPath, String userId) {
 		List<ProcessActivityFormInstance> result = null;
@@ -159,110 +141,7 @@ public class TaskFormDb {
 		}
 		return filterUniqueProcessActivityFormInstanceFromList(result);
 	}
-
-	public ProcessActivityFormInstance getStartProcessActivityFormInstanceByProcessInstanceUuid(String processInstanceUuid) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-				    .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) ) // identifies the start form
-				    .add( Restrictions.isNull("activityInstanceUuid")) // only start forms
-				    .add( Restrictions.isNotNull("submitted")) // only submitted forms
-				    .list();
-		}
-		catch (Exception e) {
-			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return filterUniqueProcessActivityFormInstanceFromList(result);
-	}
 	
-   @SuppressWarnings("unchecked")
-   public List<ProcessActivityFormInstance> getProcessActivityFormInstances(String processInstanceUuid) {
-           List<ProcessActivityFormInstance> result = null;
-           
-           Session session = HibernateUtil.getSessionFactory().openSession();
-           
-           try {
-                   //result = (List<ProcessDefinition>)session.createQuery(hql).list();
-                   result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-                                   .add( Restrictions.eq("processInstanceUuid", processInstanceUuid) )  
-                                   .list();
-           }
-           catch (Exception e) {
-                   log.severe("Exception in getProcessActivityFormInstances: processInstanceUuid="  + processInstanceUuid + " exception: " + e);
-           }
-           finally {
-                   session.close();
-           }
-           return result;
-   }
-
-	
-	public ProcessActivityFormInstance getProcessActivityFormInstanceByActivityInstanceUuid(String activityInstanceUuid) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-				    .add( Restrictions.eq("activityInstanceUuid", activityInstanceUuid) )
-				    .list();
-		}
-		catch (Exception e) {
-			log.severe("activityInstanceUuid=[" + activityInstanceUuid + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return filterUniqueProcessActivityFormInstanceFromList(result);
-	}
-
-	
-	public ProcessActivityFormInstance getProcessActivityFormInstanceById(Long id) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-					                                   .add( Restrictions.eq("processActivityFormInstanceId", id) )
-				                                       .list();
-
-		}
-		catch (Exception e) {
-			log.severe("id=[" + id + "] Exception: " + e);
-		}
-		finally {		
-			session.close();
-		}
-		return filterUniqueProcessActivityFormInstanceFromList(result);
-	}
-	
-	public ProcessActivityFormInstance getProcessActivityFormInstanceById(Session session, Long id) {
-		ProcessActivityFormInstance result = null;
-		result = (ProcessActivityFormInstance)session.load(ProcessActivityFormInstance.class, id);
-		return result;
-	}
-
-
-	public ProcessActivityFormInstance getProcessStartFormInstanceById(String processInstanceUuid) {
-		ProcessActivityFormInstance result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		result = getProcessStartFormInstanceById(session, processInstanceUuid);
-		
-		session.close();
-		
-		return result;
-	}
-
 	public ProcessActivityFormInstance getProcessStartFormInstanceById(Session session, String processInstanceUuid) {
 		List<ProcessActivityFormInstance> result = null;
 				
@@ -375,43 +254,6 @@ public class TaskFormDb {
 		}
 		return result;
 	}
-
-	
-	@SuppressWarnings("unchecked")
-	public List<ProcessActivityFormInstance> getPendingProcessActivityFormInstances(String userId) {
-		List<ProcessActivityFormInstance> result = null;
-		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		
-		try {
-			//result = (List<ProcessDefinition>)session.createQuery(hql).list();
-			result = (List<ProcessActivityFormInstance>) session.createCriteria(ProcessActivityFormInstance.class)
-					.add( Restrictions.eq("userId", userId) )  // this user is last writer
-					.add(Restrictions.isNull("submitted"))     // not submitted
-				    .list();
-		}
-		catch (Exception e) {
-			log.severe("Exception in getProcessActivityFormInstances: userId="  + userId + " exception: " + e);
-		}
-		finally {
-			session.close();
-		}
-		return result;
-	}
-
-	
-	public StartFormDefinition getStartFormDefinition(String activityDefinitionUuid, String processInstanceUuid) {
-		StartFormDefinition result = null;
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		ProcessActivityFormInstance startForm = getProcessStartFormInstanceById(session, processInstanceUuid);
-		if (startForm != null) {
-			String startFormPath = startForm.getFormConnectionKey();
-			result = getStartFormDefinitionByFormPath(session, startFormPath);
-		}
-		session.close();
-		return result;
-	}
-	
 	
 	/**
 	 * Returns 
@@ -480,7 +322,7 @@ public class TaskFormDb {
 	}
 
 
-	private void saveProcessActivityTag(ProcessActivityTag processActivityTag) {
+	public void saveProcessActivityTag(ProcessActivityTag processActivityTag) {
 		Session session = HibernateUtil.getSessionFactory().openSession();
 		session.beginTransaction();
 		

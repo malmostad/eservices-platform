@@ -75,11 +75,17 @@ class ActDefController {
       if (activity != actDefInst) activityList << activity
     }
 
+    // TODO Hakan, Bjorns work-around with notify
+    def allActivitiesList = []
+    actDefInst.process.activities.each {activity ->
+      allActivitiesList << activity
+    }
+
     // Note that activityFormdef may be null, no error
     def activityConnection = new TaskFormSpec(actDefInst, actDefInst?.activityFormdef)
     def formMap = formService.activityFormSelection(activityConnection)
     
-    [actDefInst: actDefInst, activityList: activityList,
+    [actDefInst: actDefInst, activityList: activityList, allActivitiesList: allActivitiesList,
     activityConnection: activityConnection, formList: formMap.formList,
     selectedFormId: formMap.selectedFormId]
   }

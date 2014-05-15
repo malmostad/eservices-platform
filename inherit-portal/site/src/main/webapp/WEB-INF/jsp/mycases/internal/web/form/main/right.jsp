@@ -1,25 +1,28 @@
-<%-- 
-    Process Aware Web Application Platform 
+<%-- == Motrice Copyright Notice == 
  
-    Copyright (C) 2011-2013 Inherit S AB 
+  Motrice Service Platform 
  
-    This program is free software: you can redistribute it and/or modify 
-    it under the terms of the GNU Affero General Public License as published by 
-    the Free Software Foundation, either version 3 of the License, or 
-    (at your option) any later version. 
+  Copyright (C) 2011-2014 Motrice AB 
  
-    This program is distributed in the hope that it will be useful, 
-    but WITHOUT ANY WARRANTY; without even the implied warranty of 
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
-    GNU Affero General Public License for more details. 
+  This program is free software: you can redistribute it and/or modify 
+  it under the terms of the GNU Affero General Public License as published by 
+  the Free Software Foundation, either version 3 of the License, or 
+  (at your option) any later version. 
  
-    You should have received a copy of the GNU Affero General Public License 
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+  This program is distributed in the hope that it will be useful, 
+  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+  GNU Affero General Public License for more details. 
  
-    e-mail: info _at_ inherit.se 
-    mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
-    phone: +46 8 641 64 14 
- --%> 
+  You should have received a copy of the GNU Affero General Public License 
+  along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ 
+  e-mail: info _at_ motrice.se 
+  mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+  phone: +46 8 641 64 14 
+ 
+--%> 
+ 
  
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
 <!-- Workflow add candidate -->
@@ -30,6 +33,22 @@
 			<div id="Hogerspalt">
 				<!-- HÃ¶gerspalt -->
 			</div>
+			
+			<div id="svid12_1d8b012512b3897f473800038730">
+				<div id="Text3-0">
+					<!-- Text 3 -->
+				</div>
+				<div id="h-Omduvill">
+					<!-- Om du vill: -->
+				</div>
+				<h2>
+					<fmt:message key="mycases.actlist.lbl" />
+				</h2>
+
+				<tag:actlist timelineItems="${processInstanceDetails.timeline.items}" viewMode="full"/>
+
+			</div>
+			
 			<div id="svid10_1d8b012512b3897f473800038728">
 				<div id="Text-1">
 					<!-- Text -->
@@ -76,6 +95,7 @@
 					</div>
 				</div>
 			</div>
+			
 			<div id="svid12_1d8b012512b3897f473800038730">
 				<div id="Text3-0">
 					<!-- Text 3 -->

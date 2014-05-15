@@ -1,25 +1,28 @@
-/* 
- *  Process Aware Web Application Platform 
+/* == Motrice Copyright Notice == 
  * 
- *  Copyright (C) 2011-2013 Inherit S AB 
+ * Motrice Service Platform 
  * 
- *  This program is free software: you can redistribute it and/or modify 
- *  it under the terms of the GNU Affero General Public License as published by 
- *  the Free Software Foundation, either version 3 of the License, or 
- *  (at your option) any later version. 
+ * Copyright (C) 2011-2014 Motrice AB 
  * 
- *  This program is distributed in the hope that it will be useful, 
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- *  GNU Affero General Public License for more details. 
+ * This program is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU Affero General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
  * 
- *  You should have received a copy of the GNU Affero General Public License 
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * GNU Affero General Public License for more details. 
  * 
- *  e-mail: info _at_ inherit.se 
- *  mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
- *  phone: +46 8 641 64 14 
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * 
+ * e-mail: info _at_ motrice.se 
+ * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+ * phone: +46 8 641 64 14 
+ 
  */ 
+ 
  
 package org.inheritsource.service.rest.client;
 
@@ -39,6 +42,7 @@ import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.ActivityWorkflowInfo;
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.domain.DashOpenActivities;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.MyProfile;
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
@@ -51,7 +55,6 @@ import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.common.util.ConfigUtil;
 import org.inheritsource.service.common.util.ParameterEncoder;
-import org.inheritsource.service.rest.client.domain.DocBoxFormData;
 import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;

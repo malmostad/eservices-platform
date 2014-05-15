@@ -6,21 +6,20 @@
 #
 ################################################################
 
-# CONFIG #######################################################
-# Select one config to deploy below                            #
+################################################################
+# CONFIG                                                #
 ################################################################
 
-###### Prod in Malmo ###########################################
-# . config_deploy_eservice.sh
+###### current_config.sh  #####
+# symlink to actual config of current installation
+. current_config.sh
 
-###### Test in Malmo ###########################################
-# . config_deploy_eservicetest.sh
-
-###### Funkar på min burk - developer's workstation config #####
-. config_deploy_minburk.sh
+################################################################
+# END OF CONFIG                                                #
+################################################################
 
 
-if [ "${ESERVICE_SSL}" = "TRUE" ]; then
+if ${ESERVICE_SSL}; then
    if [ -n "$ESERVICE_PORT" ]; then
      ESERVICE_SITE_URL=https://${ESERVICE_HOST}:${ESERVICE_PORT}/site
    else 
@@ -28,13 +27,13 @@ if [ "${ESERVICE_SSL}" = "TRUE" ]; then
    fi
 else
    if [ -n "$ESERVICE_PORT" ]; then
-     ESERVICE_SITE_URL=https://${ESERVICE_HOST}:${ESERVICE_PORT}/site
+     ESERVICE_SITE_URL=http://${ESERVICE_HOST}:${ESERVICE_PORT}/site
    else 
-     ESERVICE_SITE_URL=https://${ESERVICE_HOST}:80/site
+     ESERVICE_SITE_URL=http://${ESERVICE_HOST}:80/site
    fi
 fi
 
-if [ "${KSERVICE_SSL}" = "TRUE" ]; then
+if ${KSERVICE_SSL}; then
    if [ -n "$KSERVICE_PORT" ]; then
      KSERVICE_SITE_URL=https://${KSERVICE_HOST}:${KSERVICE_PORT}/site
    else 
@@ -42,9 +41,9 @@ if [ "${KSERVICE_SSL}" = "TRUE" ]; then
    fi
 else
    if [ -n "$KSERVICE_PORT" ]; then
-     KSERVICE_SITE_URL=https://${KSERVICE_HOST}:${KSERVICE_PORT}/site
+     KSERVICE_SITE_URL=http://${KSERVICE_HOST}:${KSERVICE_PORT}/site
    else 
-     KSERVICE_SITE_URL=https://${KSERVICE_HOST}:80/site
+     KSERVICE_SITE_URL=http://${KSERVICE_HOST}:80/site
    fi
 fi
 
@@ -61,9 +60,14 @@ then
    exit 0;
 fi
 
-if [ ! -f ${OPENAM_POLICY_AGENT_PWD_FILE} ]; then 
-  echo "Missing file OPENAM_POLICY_AGENT_PWD_FILE=${OPENAM_POLICY_AGENT_PWD_FILE}"
-   exit 0;
+if [ ! -f ${OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE} ]; then 
+  echo "Missing file OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE=${OPENAM_POLICY_AGENT_PWD_FILE_ESERVICE}"
+   exit 1;
+fi
+
+if [ ! -f ${OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE} ]; then 
+  echo "Missing file OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE=${OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE}"
+   exit 1;
 fi
 
 mkdir -p ${CONTAINER_ROOT}
@@ -100,44 +104,61 @@ sed -e 's/\(common\.loader=\)\(.*\)$/\1\2,\${catalina.base}\/common\/classes,\${
 ################################################################
 
 cp -r  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${ESERVICE}
+cp -r  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${CMSSERVICE}
 mv  ${TOMCAT_DIR} ${CONTAINER_ROOT}/${KSERVICE}
-cp ${BUILD_DIR}/conf/repository.xml ${CONTAINER_ROOT}/${KSERVICE}/conf/
+### NOTE Check this
+## cp ${BUILD_DIR}/conf/repository.xml ${CONTAINER_ROOT}/${KSERVICE}/conf/
+cp ${BUILD_DIR}/conf/repository.xml ${CONTAINER_ROOT}/${CMSSERVICE}/conf/
 
 ################################################################
 # Write kservice Tomcat setenv.sh due to Hippo and Motrice requirements 
 ################################################################
 
-echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo REP_OPTS=\"-Drepo.upgrade=false -Drepo.path=${CONTENT_ROOT} -Drepo.config=file:\${CATALINA_BASE}/conf/repository.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${REP_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
-echo export CATALINA_OPTS >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+##  use for "cms service 
+echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo REP_OPTS=\"-Drepo.upgrade=false -Drepo.path=${CONTENT_ROOT} -Drepo.config=file:\${CATALINA_BASE}/conf/repository.xml\" >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${REP_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
+echo export CATALINA_OPTS >>  ${CONTAINER_ROOT}/${CMSSERVICE}/bin/setenv.sh
 
 ################################################################
 # Write eservice Tomcat setenv.sh due to Hippo and Motrice requirements 
 #   the diff is repo conf and policy agent conf
 ################################################################
 
+##  use for KSERVICE and ESERVICE 
 echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 echo export CATALINA_OPTS >>  ${CONTAINER_ROOT}/${ESERVICE}/bin/setenv.sh
 
-# copy one policy agent config per tomcat
+echo "export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" > ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo L4J_OPTS=\"-Dlog4j.configuration=file:\${CATALINA_BASE}/conf/log4j.xml\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo JVM_OPTS=\"-server -Xmx2048m -Xms1024m -XX:PermSize=256m\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo CATALINA_OPTS=\"\$CATALINA_OPTS -Dfile.encoding=UTF-8 \${JVM_OPTS} \${L4J_OPTS} -XX:+HeapDumpOnOutOfMemoryError\" >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+echo export CATALINA_OPTS >>  ${CONTAINER_ROOT}/${KSERVICE}/bin/setenv.sh
+
+# copy one policy agent config per tomcat ( only  KSERVICE and ESERVICE )
 unzip -uq downloads/${FORGEROCK_POLICY_AGENT_ZIP}
 mv j2ee_agents  ${CONTAINER_ROOT}/
 cp -r ${CONTAINER_ROOT}/j2ee_agents/tomcat_v6_agent ${CONTAINER_ROOT}/j2ee_agents/eservice-tomcat_v6_agent
 mv ${CONTAINER_ROOT}/j2ee_agents/tomcat_v6_agent ${CONTAINER_ROOT}/j2ee_agents/kservice-tomcat_v6_agent
-# copy the top secret pwd file to j2ee_agents
-cp ${OPENAM_POLICY_AGENT_PWD_FILE} ${CONTAINER_ROOT}/j2ee_agents/
 
 ################################################################
 # change port on eservice tomcat
 ################################################################
 mv  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml.orig
 sed -e 's/8080/38080/g' -e 's/8009/38009/g' -e 's/8005/38005/g'  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml.orig >  ${CONTAINER_ROOT}/${ESERVICE}/conf/server.xml
+#  use 4XXXX for CMS 
+
+################################################################
+# change port on cmsservice tomcat
+################################################################
+mv  ${CONTAINER_ROOT}/${CMSSERVICE}/conf/server.xml  ${CONTAINER_ROOT}/${CMSSERVICE}/conf/server.xml.orig
+sed -e 's/8080/48080/g' -e 's/8009/48009/g' -e 's/8005/48005/g'  ${CONTAINER_ROOT}/${CMSSERVICE}/conf/server.xml.orig >  ${CONTAINER_ROOT}/${CMSSERVICE}/conf/server.xml
+#  use 4XXXX for CMS 
 
 ################################################################
 # eservice - Agent install configuration
@@ -195,6 +216,6 @@ sed -e "s/\(com\.sun\.identity\.agents\.config\.organization\.name\s=\s\/\).*$/\
 popd
 
 # prepare a directory for hippo jcr
-mkdir ${CONTENT_ROOT}
+mkdir -p ${CONTENT_ROOT}
 
 

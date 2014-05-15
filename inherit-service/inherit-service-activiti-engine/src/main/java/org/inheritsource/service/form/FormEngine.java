@@ -1,3 +1,28 @@
+/* == Motrice Copyright Notice == 
+ * 
+ * Motrice Service Platform 
+ * 
+ * Copyright (C) 2011-2014 Motrice AB 
+ * 
+ * This program is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU Affero General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * GNU Affero General Public License for more details. 
+ * 
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * 
+ * e-mail: info _at_ motrice.se 
+ * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+ * phone: +46 8 641 64 14 
+ 
+ */ 
+ 
 package org.inheritsource.service.form;
 
 import java.util.ArrayList;
@@ -12,15 +37,19 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.history.HistoricVariableInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
 import org.inheritsource.service.common.domain.FormInstance;
+import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.StartForm;
 import org.inheritsource.service.common.domain.StartLogItem;
 import org.inheritsource.service.coordinatrice.ProcessDefinitionState;
+import org.inheritsource.service.delegates.DelegateUtil;
 import org.inheritsource.service.identity.IdentityService;
 import org.inheritsource.service.processengine.ActivitiEngineService;
 import org.inheritsource.service.processengine.ActivitiEngineUtil;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
+import org.inheritsource.taskform.engine.persistence.entity.ProcessActivityFormInstance;
 import org.inheritsource.taskform.engine.persistence.entity.StartFormDefinition;
 
 public class FormEngine {
@@ -28,21 +57,21 @@ public class FormEngine {
 	public static final Logger log = Logger.getLogger(FormEngine.class.getName());
 	
 	// motrice start process instance variables by convention
-	public static final String START_FORM_TYPEID        = "motrice.start.form.typeId";
-	public static final String START_FORM_DEFINITIONKEY = "motrice.start.form.definitionKey";
-	public static final String START_FORM_INSTANCEID    = "motrice.start.form.instanceId";
-	public static final String START_FORM_ASSIGNEE      = "motrice.start.form.assignee";
-	public static final String START_FORM_DATA_URI      = "motrice.start.form.dataUri";
-	public static final String START_FORM_DOCBOXREF		= "motrice.start.form.preservation.docbox.ref";
-	public static final String START_FORM_ACT_URI       = "motrice.start.form.preservation.act.uri";
+	public static final String START_FORM_TYPEID        = "motriceStartFormTypeId";
+	public static final String START_FORM_DEFINITIONKEY = "motriceStartFormDefinitionKey";
+	public static final String START_FORM_INSTANCEID    = "motriceStartFormInstanceId";
+	public static final String START_FORM_ASSIGNEE      = "motriceStartFormAssignee";
+	public static final String START_FORM_DATA_URI      = "motriceStartFormDataUri";
+	public static final String START_FORM_DOCBOXREF		= "motriceStartFormPreservationDocboxRef";
+	public static final String START_FORM_ACT_URI       = "motriceStartFormPreservationActUri";
 	
 	// motrice task local instance variables by convention
-	public static final String FORM_TYPEID              = "motrice.form.typeId";
-	public static final String FORM_DEFINITIONKEY       = "motrice.form.definitionKey";
-	public static final String FORM_INSTANCEID          = "motrice.form.instanceId";
-	public static final String FORM_DATA_URI            = "motrice.form.dataUri";
-	public static final String FORM_DOCBOXREF			= "motrice.form.preservation.docbox.ref";
-	public static final String FORM_ACT_URI             = "motrice.form.preservation.act.uri";
+	public static final String FORM_TYPEID              = "motriceFormTypeId";
+	public static final String FORM_DEFINITIONKEY       = "motriceFormDefinitionKey";
+	public static final String FORM_INSTANCEID          = "motriceFormInstanceId";
+	public static final String FORM_DATA_URI            = "motriceFormDataUri";
+	public static final String FORM_DOCBOXREF			= "motriceFormPreservationDocboxRef";
+	public static final String FORM_ACT_URI             = "motriceFormPreservationActUri";
 	
 
 	ActivitiEngineService activitiEngineService;
@@ -121,7 +150,7 @@ public class FormEngine {
 				formInstance.setSubmitted(historicTask.getEndTime());
 				formInstance.setSubmittedBy(identityService.getUserByUuid(historicTask.getAssignee()));
 	
-				String taskDocActVarName = FormEngine.FORM_ACT_URI + "[" + historicTask.getId() + "]";
+				String taskDocActVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, historicTask.getId());
 				
 				HistoricVariableInstance historicVar = activitiEngineService.getEngine().getHistoryService().createHistoricVariableInstanceQuery().variableName(taskDocActVarName).singleResult();
 				if (historicVar != null) {
@@ -153,7 +182,7 @@ public class FormEngine {
 	public FormInstance getFormInstance(Task task, String userId, FormInstance initialInstance) {
 		FormInstance formInstance = null;
 		
-		Map <String, Object> localVars = ActivitiEngineUtil.getTaskLocalVarables(activitiEngineService.getEngine(), task);
+		Map <String, Object> localVars = ActivitiEngineUtil.getTaskLocalVariables(activitiEngineService.getEngine(), task);
 		
 		Long typeId = (Long)localVars.get(FORM_TYPEID);
 		if (typeId != null) {
@@ -201,23 +230,128 @@ public class FormEngine {
 	 * Get existing FormInstance if form already is initialized.
 	 * @return FormInstance of task, new initialized or existing if already initialized.
 	 */ 
-	public FormInstance getStartFormInstance(Long formTypeId, String formConnectionKey, String userId, FormInstance initialInstance) {
-		FormInstance formInstance = null;
+	public FormInstance getStartFormInstance(Long formTypeId, String formConnectionKey, String userId, FormInstance initialInstance, Locale locale) {
+		FormInstance result = null;
 		
-		// initialize form instance
-			
-		// find form handler
+		ProcessActivityFormInstance startPafi = taskFormDb.getStartProcessActivityFormInstanceByFormPathAndUser(formConnectionKey, userId);
 		TaskFormHandler handler = getTaskFormHandler(formTypeId);
-			
+		
 		if (handler != null) {
-			// initialize form and store task local variables
-			formInstance = handler.initializeStartFormInstance(formTypeId, formConnectionKey, userId, initialInstance);
+			if (startPafi != null) {
+				result = processActivityFormInstance2ActivityInstancePendingItem(startPafi, locale);
+				handler.getPendingFormInstance(result, null, userId);
+			}
+			else {
+				// initialize new start form instance
+				FormInstance formInstance = null;
+				// find form handler
+				
+				
+				// initialize form and store task local variables
+				formInstance = handler.initializeStartFormInstance(formTypeId, formConnectionKey, userId, initialInstance);
+				
+				StartFormDefinition startFormDefinition;
+				try {
+					startFormDefinition = taskFormDb
+								.getStartFormDefinitionByFormPath(formInstance.getDefinitionKey());
+					// store the start form activity
+					startPafi = new ProcessActivityFormInstance();
+					startPafi.setFormDocId(formInstance.getInstanceId());
+					startPafi.setStartFormDefinition(startFormDefinition);
+					startPafi.setFormDataUri(formInstance.getDataUri());
+					startPafi.setFormTypeId(startFormDefinition.getFormTypeId());
+					startPafi.setFormConnectionKey(startFormDefinition.getFormConnectionKey());
+					startPafi.setProcessInstanceUuid(null);
+					startPafi.setActivityInstanceUuid(null);
+					startPafi.setSubmitted(null);
+					startPafi.setUserId(userId);
+	
+					taskFormDb.saveProcessActivityFormInstance(startPafi);
+					
+					
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			
+				result = formInstance;
+			}
 		}
 		
-		return formInstance;
+		return result;
 	}
 	
+	public List<InboxTaskItem> getPendingStartFormInstances(String userId, Locale locale) {
+		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
+		List<ProcessActivityFormInstance> startPafis = taskFormDb.getPendingStartformFormInstances(userId);
+		for (ProcessActivityFormInstance startPafi : startPafis) {
+			InboxTaskItem item = new InboxTaskItem();
+			
+			item.setInstanceId(startPafi.getFormDocId());
+			item.setTypeId(startPafi.getFormTypeId());
+			item.setDefinitionKey(startPafi.getFormConnectionKey());
+			item.setDataUri(startPafi.getFormDataUri());
+			
+			// TODO move default values to resource bundles 
+			item.setProcessLabel(activitiEngineService.getCoordinatriceFacade().getStartFormLabelByStartFormDefinitionKey(startPafi.getFormConnectionKey(), locale, "Ansökan"));
+			item.setActivityLabel("Påbörjad ansökan");
+
+			TaskFormHandler handler = getTaskFormHandler(item.getTypeId());
+			
+			if (handler != null) {
+				handler.getPendingFormInstance(item, null, userId);
+			}
+			
+			result.add(item);
+		}
+		return result;
+	}
 	
+	/**
+	 * This conversion is only valid on StartForms
+	 * 
+	 * @param src
+	 * @return
+	 */
+	private ActivityInstancePendingItem processActivityFormInstance2ActivityInstancePendingItem(
+			ProcessActivityFormInstance src, Locale locale) {
+		// TODO this method name is confusing, it is only working on start
+		// forms...
+		ActivityInstancePendingItem dst = new ActivityInstancePendingItem();
+		try {
+			dst.setInstanceId(src.getFormDocId());
+			dst.setTypeId(src.getFormTypeId());
+			dst.setDefinitionKey(src.getFormConnectionKey());
+			dst.setDataUri(src.getFormDataUri());
+
+			
+			dst.setProcessDefinitionUuid(src.getStartFormDefinition()
+					.getProcessDefinitionUuid());
+			dst.setActivityName("Ansökan");
+			dst.setActivityLabel(activitiEngineService.getCoordinatriceFacade().getStartFormLabelByStartFormDefinitionKey(src.getFormConnectionKey(), locale, "Ansökan"));
+			dst.setStartDate(null);
+			dst.setCurrentState("TODO");
+			dst.setLastStateUpdate(null);
+			dst.setLastStateUpdateByUserId(src.getUserId());
+			dst.setExpectedEndDate(null);
+			dst.setPriority(0);
+			dst.setStartedBy("");
+			dst.setAssignedUser(taskFormDb.getUserByUuid(src.getUserId()));
+			dst.setExpectedEndDate(null);
+			dst.setEditUrl(src.calcEditUrl());
+			
+			dst.setProcessInstanceUuid(null);
+			dst.setActivityInstanceUuid(null);
+			dst.setActivityDefinitionUuid(null);
+		} catch (RuntimeException re) {
+			log.severe("Cannot convert ProcessActivityFormInstance " + src
+					+ " to ActivityInstancePendingItem. RuntimeException: "
+					+ re);
+			throw re;
+		}
+
+		return dst;
+	}
 	
 	public StartLogItem getStartLogItem(HistoricProcessInstance historicProcessInstance, String userId) {
 		StartLogItem startFormInstance = null;
@@ -232,6 +366,8 @@ public class FormEngine {
 			startFormInstance.setDataUri((String)processVars.get(START_FORM_DATA_URI));
 			startFormInstance.setActUri((String)processVars.get(FormEngine.START_FORM_ACT_URI));
 			startFormInstance.setSubmittedBy(identityService.getUserByUuid((String)processVars.get(START_FORM_ASSIGNEE)));
+			startFormInstance.setProcessInstanceUuid(historicProcessInstance.getId());
+			startFormInstance.setProcessDefinitionUuid(historicProcessInstance.getProcessDefinitionId());
 			
 			if (historicProcessInstance != null) {
 				startFormInstance.setSubmitted(historicProcessInstance.getStartTime());

@@ -1,25 +1,28 @@
-/* 
- *  Process Aware Web Application Platform 
+/* == Motrice Copyright Notice == 
  * 
- *  Copyright (C) 2011-2013 Inherit S AB 
+ * Motrice Service Platform 
  * 
- *  This program is free software: you can redistribute it and/or modify 
- *  it under the terms of the GNU Affero General Public License as published by 
- *  the Free Software Foundation, either version 3 of the License, or 
- *  (at your option) any later version. 
+ * Copyright (C) 2011-2014 Motrice AB 
  * 
- *  This program is distributed in the hope that it will be useful, 
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- *  GNU Affero General Public License for more details. 
+ * This program is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU Affero General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
  * 
- *  You should have received a copy of the GNU Affero General Public License 
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * GNU Affero General Public License for more details. 
  * 
- *  e-mail: info _at_ inherit.se 
- *  mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
- *  phone: +46 8 641 64 14 
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * 
+ * e-mail: info _at_ motrice.se 
+ * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+ * phone: +46 8 641 64 14 
+ 
  */ 
+ 
  
 package org.inheritsource.portal.components.mycases;
 
@@ -27,11 +30,11 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.docbox.DocBoxFacade;
-import org.inheritsource.service.docbox.DocBoxFormData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +54,7 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		String docNo = getPublicRequestParameter(request, "docNo"); 
 		String status = getPublicRequestParameter(request, "status"); 
 		String signature = getPublicRequestParameter(request, "signature"); 
-		String formDocId = getPublicRequestParameter(request, "formDocId");
+		String instanceId = getPublicRequestParameter(request, "instance_id");
 
 		log.info("SignFormConfirm:" + docboxRef + " docNo=" + docNo + " status=" + status + " signature=" + signature);
 
@@ -77,31 +80,24 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 		}
 		request.setAttribute("document",doc);
 
-		DocBoxFacade docBox = new DocBoxFacade();
-        DocBoxFormData docBoxFormData = docBox.addDocBoxSignature(docboxRef, signature);
-		        
-        if (docBoxFormData != null) {
-        	// save DocboxRef as formDocId. 
-        	FormInstance signedForm = null;
-			try {
-				signedForm = engine.submitActivityForm(formDocId, userUuid, docBoxFormData.getDocboxRef());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-    		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443) ? "" : ":" + request.getLocalPort();
-    		String protocolStr = request.getLocalPort() == 443 ? "https" : ":" + "http";
-    		String pdfUrl = protocolStr + "://" + request.getServerName() + portStr +  "/docbox/doc/ref/" + docBoxFormData.getDocboxRef();
+		FormInstance signedForm = null;
+		try {
+			signedForm = engine.submitSignForm(instanceId, userUuid, docboxRef, signature);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+        if (signedForm != null) {
+            		
+    		request.setAttribute("pdfUrl", signedForm.getActUri());
     		
-    		request.setAttribute("pdfUrl", pdfUrl);
-
     		InboxTaskItem nextTask = null;
-    		if (signedForm!=null && !UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
-    	        nextTask = engine.getNextActivityInstanceItemByDocId(signedForm, user.getUuid());
-    	        appendChannelLabels(request, nextTask);
-    		}
-    		request.setAttribute("nextTask", nextTask);
+            if (signedForm!=null && !UserInfo.ANONYMOUS_UUID.equals(userUuid)) {
+            	nextTask = engine.getNextActivityInstanceItemByDocId(signedForm, request.getLocale(), user.getUuid());
+            }
+            request.setAttribute("nextTask", nextTask);
         }
 		// utför aktivitet i processmotor och lagra signatur ... om signaturen är ok....
 		

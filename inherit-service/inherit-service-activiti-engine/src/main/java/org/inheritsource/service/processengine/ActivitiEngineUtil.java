@@ -1,3 +1,28 @@
+/* == Motrice Copyright Notice == 
+ * 
+ * Motrice Service Platform 
+ * 
+ * Copyright (C) 2011-2014 Motrice AB 
+ * 
+ * This program is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU Affero General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
+ * 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * GNU Affero General Public License for more details. 
+ * 
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * 
+ * e-mail: info _at_ motrice.se 
+ * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+ * phone: +46 8 641 64 14 
+ 
+ */ 
+ 
 package org.inheritsource.service.processengine;
 
 import java.io.FileInputStream;
@@ -74,7 +99,7 @@ public class ActivitiEngineUtil {
 	 * @param task
 	 * @return
 	 */
-	public static Map<String, Object> getTaskLocalVarables(ProcessEngine engine, Task task) {
+	public static Map<String, Object> getTaskLocalVariables(ProcessEngine engine, Task task) {
 		Map <String, Object> localVars = task.getTaskLocalVariables();
 		
 		// variables empty, try to load them
@@ -84,4 +109,23 @@ public class ActivitiEngineUtil {
 		
 		return localVars;
 	}
+	
+	/**
+	 * Use preloaded process variables from task object, 
+	 * try to load variables from engine if empty
+	 * @param engine
+	 * @param task
+	 * @return
+	 */
+	public static Map<String, Object> getProcessVariables(ProcessEngine engine, Task task) {
+		Map <String, Object> processVars = task.getProcessVariables();
+		
+		// variables empty, try to load them
+		if (processVars == null || processVars.size()==0) {
+			processVars = engine.getRuntimeService().getVariables(task.getExecutionId());
+		}
+		
+		return processVars;
+	}
+
 }

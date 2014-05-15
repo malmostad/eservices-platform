@@ -1,35 +1,35 @@
-/* 
- *  Process Aware Web Application Platform 
+/* == Motrice Copyright Notice == 
  * 
- *  Copyright (C) 2011-2013 Inherit S AB 
+ * Motrice Service Platform 
  * 
- *  This program is free software: you can redistribute it and/or modify 
- *  it under the terms of the GNU Affero General Public License as published by 
- *  the Free Software Foundation, either version 3 of the License, or 
- *  (at your option) any later version. 
+ * Copyright (C) 2011-2014 Motrice AB 
  * 
- *  This program is distributed in the hope that it will be useful, 
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of 
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the 
- *  GNU Affero General Public License for more details. 
+ * This program is free software: you can redistribute it and/or modify 
+ * it under the terms of the GNU Affero General Public License as published by 
+ * the Free Software Foundation, either version 3 of the License, or 
+ * (at your option) any later version. 
  * 
- *  You should have received a copy of the GNU Affero General Public License 
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+ * This program is distributed in the hope that it will be useful, 
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of 
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the 
+ * GNU Affero General Public License for more details. 
  * 
- *  e-mail: info _at_ inherit.se 
- *  mail: Inherit S AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
- *  phone: +46 8 641 64 14 
+ * You should have received a copy of the GNU Affero General Public License 
+ * along with this program. If not, see <http://www.gnu.org/licenses/>. 
+ * 
+ * e-mail: info _at_ motrice.se 
+ * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+ * phone: +46 8 641 64 14 
+ 
  */ 
  
-package org.inheritsource.service.docbox;
+package org.inheritsource.service.common.domain;
 
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 @XmlRootElement(name="docboxformdata")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -43,6 +43,9 @@ public class DocBoxFormData implements Serializable {
 	String docNo;
 	String checkSum;
 	int signCount;
+	
+	String docUri;
+	String signText;
 	
 	public DocBoxFormData() {
 		
@@ -87,6 +90,22 @@ public class DocBoxFormData implements Serializable {
 	public void setSignCount(int signCount) {
 		this.signCount = signCount;
 	}
+	
+	public String getDocUri() {
+		return docUri;
+	}
+
+	public void setDocUri(String docUri) {
+		this.docUri = docUri;
+	}
+
+	public String getSignText() {
+		return signText;
+	}
+
+	public void setSignText(String signText) {
+		this.signText = signText;
+	}
 
 	@Override
 	public int hashCode() {
@@ -95,11 +114,14 @@ public class DocBoxFormData implements Serializable {
 		result = prime * result
 				+ ((checkSum == null) ? 0 : checkSum.hashCode());
 		result = prime * result + ((docNo == null) ? 0 : docNo.hashCode());
+		result = prime * result + ((docUri == null) ? 0 : docUri.hashCode());
 		result = prime * result
 				+ ((docboxRef == null) ? 0 : docboxRef.hashCode());
 		result = prime * result
 				+ ((formDataUuid == null) ? 0 : formDataUuid.hashCode());
 		result = prime * result + signCount;
+		result = prime * result
+				+ ((signText == null) ? 0 : signText.hashCode());
 		return result;
 	}
 
@@ -122,6 +144,11 @@ public class DocBoxFormData implements Serializable {
 				return false;
 		} else if (!docNo.equals(other.docNo))
 			return false;
+		if (docUri == null) {
+			if (other.docUri != null)
+				return false;
+		} else if (!docUri.equals(other.docUri))
+			return false;
 		if (docboxRef == null) {
 			if (other.docboxRef != null)
 				return false;
@@ -134,6 +161,11 @@ public class DocBoxFormData implements Serializable {
 			return false;
 		if (signCount != other.signCount)
 			return false;
+		if (signText == null) {
+			if (other.signText != null)
+				return false;
+		} else if (!signText.equals(other.signText))
+			return false;
 		return true;
 	}
 
@@ -141,7 +173,8 @@ public class DocBoxFormData implements Serializable {
 	public String toString() {
 		return "DocBoxFormData [formDataUuid=" + formDataUuid + ", docboxRef="
 				+ docboxRef + ", docNo=" + docNo + ", checkSum=" + checkSum
-				+ ", signCount=" + signCount + "]";
+				+ ", signCount=" + signCount + ", docUri=" + docUri
+				+ ", signText=" + signText + "]";
 	}
 	
 }

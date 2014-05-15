@@ -41,6 +41,7 @@ CREATE TABLE mtf_process_activity_form_instance (
     formdocid character varying(255) NOT NULL,
     form_type_id	bigint NOT NULL REFERENCES mtf_form_type (formtypeid),
     form_connection_key   character varying(511),
+    form_data_uri  character varying(2048),
     processinstanceuuid character varying(255),
     submitted timestamp without time zone,
     userid character varying(255) NOT NULL,
