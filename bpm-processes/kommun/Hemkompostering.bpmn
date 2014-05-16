@@ -25,7 +25,11 @@
         <activiti:executionListener event="start" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
       </extensionElements>
     </startEvent>
-    <userTask id="registrering" name="Registrering" activiti:candidateUsers="admin" activiti:candidateGroups="Registrator"></userTask>
+    <userTask id="registrering" name="Registrering" activiti:candidateUsers="admin" activiti:candidateGroups="Registrator">
+      <extensionElements>
+        <activiti:executionListener event="start" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:executionListener>
+      </extensionElements>
+    </userTask>
     <userTask id="handlaggning" name="Handläggning" activiti:candidateUsers="admin" activiti:candidateGroups="Handlaggare">
       <extensionElements>
         <activiti:executionListener event="end" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
