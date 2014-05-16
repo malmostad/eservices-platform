@@ -310,8 +310,7 @@
 </form>
 
 <!-- jquery scripts for dialogs etc TODO move to separate js file -->
-<script src="http://malsup.github.com/jquery.form.js"></script>
-
+<script type="text/javascript" src="/site/js/form/jquery.form.min.js"></script>
 <script type="text/javascript" charset="utf-8">
   var $jq = jQuery.noConflict();
 
