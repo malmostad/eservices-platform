@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <collaboration id="Collaboration">
+    <participant id="poolHemkompostering" name="Ansökan om hemkompostering av matavfall (Test)" processRef="procHemkompostering"></participant>
+  </collaboration>
+  <process id="procHemkompostering" name="Hemkompostering (Test)" isExecutable="true">
+    <laneSet id="laneSet_procHemkompostering">
+      <lane id="laneMedborgare" name="Medborgare">
+        <flowNodeRef>startevent1</flowNodeRef>
+        <flowNodeRef>endevent1</flowNodeRef>
+        <flowNodeRef>callForenkladDelgivning</flowNodeRef>
+      </lane>
+      <lane id="laneRegistrator" name="Registrator">
+        <flowNodeRef>registrering</flowNodeRef>
+      </lane>
+      <lane id="laneHandlaggare" name="Handläggare">
+        <flowNodeRef>handlaggning</flowNodeRef>
+      </lane>
+      <lane id="laneAssistent" name="Assistent">
+        <flowNodeRef>expediering</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="startevent1" name="Start">
+      <extensionElements>
+        <activiti:executionListener event="start" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
+      </extensionElements>
+    </startEvent>
+    <userTask id="registrering" name="Registrering" activiti:candidateUsers="admin" activiti:candidateGroups="Registrator">
+      <extensionElements>
+        <activiti:taskListener event="create" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="handlaggning" name="Handläggning" activiti:candidateUsers="admin" activiti:candidateGroups="Handlaggare">
+      <extensionElements>
+        <activiti:taskListener event="create" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:taskListener>
+        <activiti:executionListener event="end" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
+        <activiti:executionListener event="end" class="org.inheritsource.service.delegates.SetDecisionAct"></activiti:executionListener>
+      </extensionElements>
+    </userTask>
+    <userTask id="expediering" name="Expediering" activiti:assignee="admin"  activiti:candidateUsers="admin" activiti:candidateGroups="Assistent">
+      <extensionElements>
+        <activiti:taskListener event="create" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow12" sourceRef="handlaggning" targetRef="expediering"></sequenceFlow>
+    <sequenceFlow id="flow14" sourceRef="registrering" targetRef="handlaggning"></sequenceFlow>
+    <sequenceFlow id="flow15" sourceRef="startevent1" targetRef="registrering"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="expediering" targetRef="callForenkladDelgivning"></sequenceFlow>
+    <callActivity id="callForenkladDelgivning" name="Förenklad delgivning" calledElement="procForenkladDelgivning">
+      <extensionElements>
+        <activiti:in source="decisionActUri" target="serviceDocUri"></activiti:in>
+        <activiti:in source="motriceStartFormAssignee" target="recipientUserId"></activiti:in>
+      </extensionElements>
+    </callActivity>
+    <sequenceFlow id="flow17" sourceRef="callForenkladDelgivning" targetRef="endevent1"></sequenceFlow>
+    <textAnnotation id="annotationRegistrering">
+      <text>Registrator skapar och fördelar ärendet i Miljöreda</text>
+    </textAnnotation>
+    <association id="association3" sourceRef="annotationRegistrering" targetRef="registrering"></association>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="poolHemkompostering" id="BPMNShape_poolHemkompostering">
+        <omgdc:Bounds height="841.0" width="1301.0" x="10.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneMedborgare" id="BPMNShape_laneMedborgare">
+        <omgdc:Bounds height="211.0" width="1281.0" x="30.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneRegistrator" id="BPMNShape_laneRegistrator">
+        <omgdc:Bounds height="210.0" width="1281.0" x="30.0" y="241.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneHandlaggare" id="BPMNShape_laneHandlaggare">
+        <omgdc:Bounds height="210.0" width="1281.0" x="30.0" y="451.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneAssistent" id="BPMNShape_laneAssistent">
+        <omgdc:Bounds height="210.0" width="1281.0" x="30.0" y="661.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="140.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="registrering" id="BPMNShape_registrering">
+        <omgdc:Bounds height="55.0" width="105.0" x="230.0" y="330.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="handlaggning" id="BPMNShape_handlaggning">
+        <omgdc:Bounds height="55.0" width="105.0" x="380.0" y="540.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="expediering" id="BPMNShape_expediering">
+        <omgdc:Bounds height="55.0" width="105.0" x="610.0" y="750.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="1130.0" y="130.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="callForenkladDelgivning" id="BPMNShape_callForenkladDelgivning">
+        <omgdc:Bounds height="55.0" width="141.0" x="890.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="annotationRegistrering" id="BPMNShape_annotationRegistrering">
+        <omgdc:Bounds height="50.0" width="161.0" x="370.0" y="333.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="485.0" y="567.0"></omgdi:waypoint>
+        <omgdi:waypoint x="531.0" y="568.0"></omgdi:waypoint>
+        <omgdi:waypoint x="531.0" y="777.0"></omgdi:waypoint>
+        <omgdi:waypoint x="610.0" y="777.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="282.0" y="385.0"></omgdi:waypoint>
+        <omgdi:waypoint x="282.0" y="567.0"></omgdi:waypoint>
+        <omgdi:waypoint x="380.0" y="567.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="175.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="281.0" y="137.0"></omgdi:waypoint>
+        <omgdi:waypoint x="282.0" y="330.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="715.0" y="777.0"></omgdi:waypoint>
+        <omgdi:waypoint x="755.0" y="775.0"></omgdi:waypoint>
+        <omgdi:waypoint x="770.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="890.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="1031.0" y="147.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1130.0" y="147.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="association3" id="BPMNEdge_association3">
+        <omgdi:waypoint x="370.0" y="358.0"></omgdi:waypoint>
+        <omgdi:waypoint x="335.0" y="357.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
