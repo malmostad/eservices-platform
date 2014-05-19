@@ -27,7 +27,7 @@
     </startEvent>
     <userTask id="registrering" name="Registrering" activiti:candidateUsers="admin" activiti:candidateGroups="Registrator">
       <extensionElements>
-        <activiti:executionListener event="start" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:executionListener>
+        <activiti:taskListener event="create" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:taskListener>
       </extensionElements>
     </userTask>
     <userTask id="handlaggning" name="Handläggning" activiti:candidateUsers="admin" activiti:candidateGroups="Handlaggare">
