@@ -44,16 +44,19 @@ public class UserDirectoryService {
 	private String protocol 				= null;
 	private String pwd						= null;
 	private String securityPrincipal	    = null;
-	private String queryBaseDn 				= null; // concatenate with baseDN as resulting baseDn for query
+	private String queryBaseDn 				= null; // concatenate with baseDN as resulting baseDn for user query
+	private String groupBaseDn 				= "ou=eserviceRoller,OU=074 Miljöförvaltningen,OU=IDMGroups,ou=Organisation,ou=Malmo"; // concatenate with baseDN as resulting baseDn for group query
 	private String baseDn 	        		= null; 
 	private String keystorePwd          	= null;
 
+	/*
 	private final int CN=0;
 	private final int SN=1;
 	private final int MAIL=2;
 	private final int GIVENNAME=3;
 	private final int DEPARTMENT=4;
 	private final int COMPANY=5;
+	*/
 	
 	private final String[] filterComponentArray = {
 			// the indices must match the order in the filterArgs array
@@ -74,6 +77,8 @@ public class UserDirectoryService {
 	private Hashtable<String, String> env = null;
 	private DirContext dirCtx 		= null;
 	private String filterExpr;
+	
+	
 
 	public UserDirectoryService() {
 		host        	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.host");
@@ -90,6 +95,7 @@ public class UserDirectoryService {
 		System.out.println("port: [" + port + "]" );
 		System.out.println("protocol:[" + protocol + "]" );
 		System.out.println("queryBaseDn: [" + queryBaseDn + "]" );
+		System.out.println("groupBaseDn: [" + groupBaseDn + "]" );
 		System.out.println("baseDn: [" + baseDn + "]" );
 		System.out.println("keystorePwd: [" + keystorePwd + "]" );
 		System.out.println("pwd: [" + pwd + "]" );
@@ -139,7 +145,7 @@ public class UserDirectoryService {
 		return result;
 	}
 	
-	public void printAttrs(Attributes attrs) {
+	private void printAttrs(Attributes attrs) {
 		if (attrs != null) {
 			/* Print each attribute */
 			try {
@@ -158,7 +164,7 @@ public class UserDirectoryService {
 		}
 	}
 
-	public Attributes getAttributesForCn(String cn) throws NamingException {
+	private Attributes getAttributesForCn(String cn) throws NamingException {
 		Attributes result = null;
 		if ( dirCtx != null ) {
 			result = dirCtx.getAttributes("cn=" + cn + "," + queryBaseDn + "," + baseDn);
@@ -170,7 +176,53 @@ public class UserDirectoryService {
 		return result;
 	}
 
-	public Attribute getAttributeForCnByAttributeName(String cn, String attributeName) {
+	private Attributes getAttributesFromEntry(String dn) throws NamingException {
+		Attributes result = null;
+		if ( dirCtx != null ) {
+			result = dirCtx.getAttributes(dn);
+		}
+		else {
+			System.out.println("Severe, getAttributesFromEntry: dirCtx null");
+			//log.("Severe, getAttributesFromEntry: dirCtx null");
+		}
+		return result;
+	}
+
+	private ArrayList<UserDirectoryEntry> lookupUserEntriesByGroup (String group) throws NamingException {
+
+		ArrayList<UserDirectoryEntry> result = new ArrayList<UserDirectoryEntry>();
+		ArrayList<String> userList = new ArrayList<String>();
+		
+		//System.out.println("group dn:" + "cn=" + group + "," + groupBaseDn + "," + baseDn);
+
+		Attributes groupAttrs = getAttributesFromEntry("cn=" + group + "," + groupBaseDn + "," + baseDn);
+
+		if (groupAttrs != null) {
+			for ( NamingEnumeration<?> attributeEnum = groupAttrs.getAll(); attributeEnum.hasMore(); ) {
+				Attribute attr = (Attribute) attributeEnum.next();
+				if ( attr.getID().equals("member")) {
+					for ( NamingEnumeration<?> memberEnum = attr.getAll(); memberEnum.hasMore(); ) {
+						String memberStr = memberEnum.next().toString();
+						//System.out.println("memberStr: " + memberStr);
+						//System.out.println("memberUid: " + memberStr.substring(3,memberStr.indexOf(',')).trim());
+						// extracting uid component of member attribute
+						userList.add(memberStr.substring(3,memberStr.indexOf(',')).trim());
+					}
+				}
+			}
+		}
+		for (String uidElement : userList) {
+		    //System.out.println("uidElement: " + uidElement);
+		    UserDirectoryEntry ude = lookupUserByCn(uidElement);
+		    if ( ude != null) {
+		    	//System.out.println("mail address" + ude.getMail());
+		    	result.add(ude);
+		    }
+		}
+		return result;
+	}
+
+	private Attribute getAttributeForCnByAttributeName(String cn, String attributeName) {
 		Attribute result = null;
 		try {
 			Attributes attrs = getAttributesForCn(cn);
@@ -191,7 +243,7 @@ public class UserDirectoryService {
 	}
 
 	// Require non null argument
-	public Attribute getAttributeByName(Attributes attrs, String attributeName) {
+	private Attribute getAttributeByName(Attributes attrs, String attributeName) {
 		Attribute result = null;
 		try {
 			for ( NamingEnumeration<? extends Attribute> attributeEnum = attrs.getAll(); attributeEnum.hasMore(); ) {
@@ -264,6 +316,28 @@ public class UserDirectoryService {
 		return result;
 	}
 
+	public ArrayList<UserDirectoryEntry> lookupUserEntriesByGroupAndDepartmentNo(String groupName) {
+		ArrayList<UserDirectoryEntry> result = new ArrayList<UserDirectoryEntry>();
+/*
+		try {
+			for (String cn : cnArray ) {
+				UserDirectoryEntry ue = new UserDirectoryEntry();
+				Attributes attrs = getAttributesForCn(cn);
+				ue.setCn(cn);
+				ue.setGivenName(  getAttributeByName(attrs,"givenName"));
+				ue.setSn(         getAttributeByName(attrs,"sn"));
+				ue.setMail(       getAttributeByName(attrs,"mail"));
+				ue.setDepartment( getAttributeByName(attrs,"department"));
+				ue.setCompany(    getAttributeByName(attrs,"company"));
+				result.add(ue);
+			}
+		} catch (NamingException ne) {
+			ne.printStackTrace();
+		}
+		*/
+		return result;
+	}
+	
 	public UserDirectoryEntry lookupUserByCn(String cn) {
 		UserDirectoryEntry result = null;
 		Attributes attrs;
@@ -320,6 +394,15 @@ public class UserDirectoryService {
 		ArrayList<UserDirectoryEntry> lookupEntriesResult = queryInstance.lookupUserEntries(userList);
 
 		for ( UserDirectoryEntry ue : lookupEntriesResult) {
+			ue.print();
+		}
+		
+		System.out.println("========================================================");
+		System.out.println("Group lookup result: ");
+
+		ArrayList<UserDirectoryEntry> groupMembers = queryInstance.lookupUserEntriesByGroup("Registrator");
+
+		for ( UserDirectoryEntry ue : groupMembers) {
 			ue.print();
 		}
 
