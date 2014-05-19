@@ -67,13 +67,11 @@ public class TaskMessageListener implements TaskListener {
 	public static String ACT_VAR_SUBJECT = "emailSubject";
 
 	public void notify(DelegateTask execution) {
-	
 
 		log.info("SimplifiedServiceMessageDelegate called from "
 				+ execution.getProcessInstanceId() + " at " + new Date());
 
 		Boolean isPublic = false; // NOTE
-
 
 		Properties props = ConfigUtil.getConfigProperties();
 
@@ -82,12 +80,14 @@ public class TaskMessageListener implements TaskListener {
 		String SMTPSERVER = (String) props.get("mail.smtp.host");
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
-		String inbox = "";
+		String inbox = (String) props.get("site.base.intranet");
 
 		if (messageText == null || messageText.trim().length() == 0) {
 			messageText = "Du har ett ärende i din inkorg ";
 		}
 
+		String taskName = execution.getName();
+		messageText = messageText + "( " + taskName + " ) \n";
 		if ((siteUri != null) && (inbox != null)) {
 			messageText = messageText + " " + siteUri + "/" + inbox;
 		}
@@ -111,13 +111,18 @@ public class TaskMessageListener implements TaskListener {
 			ArrayList<UserDirectoryEntry> userDirectoryEntries = new ArrayList<UserDirectoryEntry>();
 			if (assignee != null) {
 				// send mail to Assignee
-				log.info("sending email to assignee" ) ; 
+				log.info("sending email to assignee");
 				String[] userIds = { assignee };
 				userDirectoryEntries.addAll(userDirectoryService
 						.lookupUserEntries(userIds));
+				for (UserDirectoryEntry user : userDirectoryEntries) {
+					to = user.getMail();
+					if (to != null) {
+						sendEmail(to, from, messageSubject, messageText,
+								siteUri, inbox, SMTPSERVER);
 
-				sendEmail(to, from, messageSubject, messageText, siteUri,
-						inbox, SMTPSERVER);
+					}
+				}
 			} else {
 
 				// go through list and send mail to all candidates
@@ -126,35 +131,52 @@ public class TaskMessageListener implements TaskListener {
 				for (IdentityLink identityLink : identityLinks) {
 					String groupId = identityLink.getGroupId();
 					if (groupId != null) {
-						log.info("looking up group "+ groupId) ;
-						userDirectoryEntries.addAll(userDirectoryService
-								.lookupUserEntriesByGroup(groupId));
+						log.info("looking up group " + groupId);
+						try {
+							ArrayList<UserDirectoryEntry> userDirectoryEntry = userDirectoryService
+									.lookupUserEntriesByGroup(groupId);
+							if (userDirectoryEntry != null) {
+								userDirectoryEntries.addAll(userDirectoryEntry);
+								log.info("add1 :"
+										+ userDirectoryEntries.toString());
+							}
+						}
+
+						catch (Exception e) {
+							log.severe(e.toString());
+						}
 
 					} else {
 						String userId = identityLink.getUserId();
 						String[] userIds = { userId };
 
 						if (userId != null) {
-							log.info("looking up userId "+userId  ) ;
-							userDirectoryEntries.addAll(userDirectoryService
-									.lookupUserEntries(userIds));
+							log.info("looking up userId " + userId);
+							ArrayList<UserDirectoryEntry> userDirectoryEntry = userDirectoryService
+									.lookupUserEntries(userIds);
+							if (userDirectoryEntry != null) {
+								userDirectoryEntries.addAll(userDirectoryEntry);
+								log.info("add2 :"
+										+ userDirectoryEntries.toString());
+							}
 
 						}
 					}
-					// make unique
-					HashSet<UserDirectoryEntry> users = new HashSet<UserDirectoryEntry>();
-					users.addAll(userDirectoryEntries);
-					for (UserDirectoryEntry user : users) {
-						to = user.getMail();
-						if (to != null) {
-							sendEmail(to, from, messageSubject, messageText,
-									siteUri, inbox, SMTPSERVER);
-
-						}
+				}
+				// make unique
+				HashSet<UserDirectoryEntry> users = new HashSet<UserDirectoryEntry>();
+				users.addAll(userDirectoryEntries);
+				log.info("add3 :" + users.toString());
+				for (UserDirectoryEntry user : users) {
+					to = user.getMail();
+					if (to != null) {
+						sendEmail(to, from, messageSubject, messageText,
+								siteUri, inbox, SMTPSERVER);
 
 					}
 
 				}
+
 			}
 
 		}

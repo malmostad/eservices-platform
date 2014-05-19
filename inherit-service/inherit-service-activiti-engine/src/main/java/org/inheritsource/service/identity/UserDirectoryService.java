@@ -188,7 +188,7 @@ public class UserDirectoryService {
 		return result;
 	}
 
-	private ArrayList<UserDirectoryEntry> lookupUserEntriesByGroup (String group) throws NamingException {
+	public ArrayList<UserDirectoryEntry> lookupUserEntriesByGroup (String group) throws NamingException {
 
 		ArrayList<UserDirectoryEntry> result = new ArrayList<UserDirectoryEntry>();
 		ArrayList<String> userList = new ArrayList<String>();
