@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
+
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -50,6 +50,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 
 	public static final Logger log = Logger
 			.getLogger(SimplifiedServiceMessageDelegate.class.getName());
+
 
 	public static String PROC_VAR_RECIPIENT_USER_ID = "recipientUserId";
 	public static String PROC_VAR_SERVICE_DOC_URI = "serviceDocUri";
@@ -76,7 +77,6 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		}
 
 		Properties props = ConfigUtil.getConfigProperties();
-		Properties mailprops = new Properties();
 
 		String messageText = (String) props.get("mail.text.messageText");
 		String siteUri = (String) props.get("site.base.uri");
@@ -84,31 +84,6 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
 		String inbox = "";
-
-		if (isPublic) {
-			inbox = (String) props.get("site.base.public");
-			// read from configuration
-			if (service == null) {
-				log.severe("failed to get service, unable to determine emailadress ");
-				return;
-			} else {
-				to = service.getMyProfile(recipientUserId).getEmail();
-
-			}
-
-		} else {
-			inbox = (String) props.get("site.base.intranet");
-			// read from ldap
-			log.severe("ldap connection not implemented, unable to determine emailadress ");
-			return;
-		}
-		log.info("to: " + to);
-		// check email address
-		// might like to replace this with EmailValidator from apache.commons
-		if (!rfc2822.matcher(to).matches()) {
-			log.severe("Invalid address");
-			return;
-		}
 
 		if (messageText == null || messageText.trim().length() == 0) {
 			messageText = "Du har ett beslut i din inkorg ";
@@ -123,14 +98,56 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 			messageSubject = "Delgivning";
 		}
 
+		log.info("Email to: " + recipientUserId);
+		if (isPublic) {
+			inbox = (String) props.get("site.base.public");
+			// read from configuration
+			if (service == null) {
+				log.severe("failed to get service, unable to determine emailadress ");
+				return;
+			} else {
+				try {
+					to = service.getMyProfile(recipientUserId).getEmail();
+					sendEmail(to, from, messageSubject, messageText, siteUri,
+							inbox, SMTPSERVER);
+				} catch (Exception e) {
+					log.severe(e.toString());
+
+				}
+			}
+
+		} else {
+			inbox = (String) props.get("site.base.intranet");
+			// read from ldap
+
+			log.severe("ldap connection not implemented, unable to determine emailadress ");
+
+			// send email in separate method
+
+		}
+
+		return;
+	}
+
+	private void sendEmail(String to, String from, String messageSubject,
+			String messageText, String siteUri, String inbox, String SMTPSERVER) {
+		log.info("to: " + to);
+		// check email address
+		// might like to replace this with EmailValidator from apache.commons
+		if (!rfc2822.matcher(to).matches()) {
+			log.severe("Invalid address");
+			return;
+		}
+
 		log.info("siteUri:" + siteUri);
 		log.info("inbox:" + inbox);
 		log.info("SMTPSERVER:" + SMTPSERVER);
-		log.info("Email to: " + recipientUserId);
+
 		log.info("Email subject: " + messageSubject);
 		log.info("Email text: " + messageText);
 
 		// Setup mail server
+		Properties mailprops = new Properties();
 		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
 
 		try {
@@ -150,7 +167,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 					+ " via smtpserver: " + SMTPSERVER);
 			log.info((String) message.getContent());
 			Transport.send(message);
-		} catch (MessagingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return;

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <collaboration id="Collaboration">
-    <participant id="poolHemkompostering" name="Ansökan om hemkompostering av matavfall" processRef="procHemkompostering"></participant>
+    <participant id="poolHemkompostering" name="Ansökan om hemkompostering av matavfall (Test)" processRef="procHemkompostering"></participant>
   </collaboration>
-  <process id="procHemkompostering" name="Hemkompostering" isExecutable="true">
+  <process id="procHemkompostering" name="Hemkompostering (Test)" isExecutable="true">
     <laneSet id="laneSet_procHemkompostering">
       <lane id="laneMedborgare" name="Medborgare">
         <flowNodeRef>startevent1</flowNodeRef>
@@ -32,11 +32,16 @@
     </userTask>
     <userTask id="handlaggning" name="Handläggning" activiti:candidateUsers="admin" activiti:candidateGroups="Handlaggare">
       <extensionElements>
+        <activiti:taskListener event="create" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:taskListener>
         <activiti:executionListener event="end" class="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener"></activiti:executionListener>
         <activiti:executionListener event="end" class="org.inheritsource.service.delegates.SetDecisionAct"></activiti:executionListener>
       </extensionElements>
     </userTask>
-    <userTask id="expediering" name="Expediering" activiti:candidateUsers="admin" activiti:candidateGroups="Assistent"></userTask>
+    <userTask id="expediering" name="Expediering" activiti:assignee="admin"  activiti:candidateUsers="admin" activiti:candidateGroups="Assistent">
+      <extensionElements>
+        <activiti:taskListener event="create" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:taskListener>
+      </extensionElements>
+    </userTask>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow12" sourceRef="handlaggning" targetRef="expediering"></sequenceFlow>
     <sequenceFlow id="flow14" sourceRef="registrering" targetRef="handlaggning"></sequenceFlow>
