@@ -44,8 +44,8 @@ public class UserDirectoryService {
 	private String protocol 				= null;
 	private String pwd						= null;
 	private String securityPrincipal	    = null;
-	private String queryBaseDn 				= null; // concatenate with baseDN as resulting baseDn for user query
-	private String groupBaseDn 				= "ou=eserviceRoller,OU=074 Miljöförvaltningen,OU=IDMGroups,ou=Organisation,ou=Malmo"; // concatenate with baseDN as resulting baseDn for group query
+	private String userBaseDn 				= null; // concatenate with baseDN as resulting baseDn for user query
+    private String groupBaseDn 				= null; // concatenate with baseDN as resulting baseDn for group query
 	private String baseDn 	        		= null; 
 	private String keystorePwd          	= null;
 
@@ -86,21 +86,22 @@ public class UserDirectoryService {
 		protocol    	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.protocol");
 		pwd           	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.pwd");
 		securityPrincipal = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.securityPrincipal");
-		queryBaseDn 	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.queryBaseDn");
+		userBaseDn 	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.userBaseDn");
+		groupBaseDn 	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.groupBaseDn");
 		baseDn      	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.baseDn");
 		keystorePwd  	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.keystorePwd");
 
-		System.out.println("=========================================================================================================" );
-		System.out.println("host: [" + host + "]" );
-		System.out.println("port: [" + port + "]" );
-		System.out.println("protocol:[" + protocol + "]" );
-		System.out.println("queryBaseDn: [" + queryBaseDn + "]" );
-		System.out.println("groupBaseDn: [" + groupBaseDn + "]" );
-		System.out.println("baseDn: [" + baseDn + "]" );
-		System.out.println("keystorePwd: [" + keystorePwd + "]" );
-		System.out.println("pwd: [" + pwd + "]" );
-		System.out.println("securityPrincipal: [" + securityPrincipal + "]" );
-		System.out.println("=========================================================================================================" );
+		log.fine("=========================================================================================================" );
+		log.fine("host: [" + host + "]" );
+		log.fine("port: [" + port + "]" );
+		log.fine("protocol:[" + protocol + "]" );
+		log.fine("userBaseDn: [" + userBaseDn + "]" );
+		log.fine("groupBaseDn: [" + groupBaseDn + "]" );
+		log.fine("baseDn: [" + baseDn + "]" );
+		log.fine("keystorePwd: [" + keystorePwd + "]" );
+		log.fine("pwd: [" + pwd + "]" );
+		log.fine("securityPrincipal: [" + securityPrincipal + "]" );
+		log.fine("=========================================================================================================" );
 
 
 		// Set up initial dirContext
@@ -115,16 +116,16 @@ public class UserDirectoryService {
                 // Avoid setting  up LDAP machinery if LDAP parameters are non existant or empty
                 // This should be configured more explicitely
 		try {
-			if (queryBaseDn != null && queryBaseDn.trim().length()>0 &&
+			if (userBaseDn != null && userBaseDn.trim().length()>0 &&
 					baseDn != null && baseDn.trim().length()>0) {
 				// Get access to trusted cert store (for ldaps)
 				System.setProperty("javax.net.ssl.trustStorePassword", keystorePwd);
 
-				System.out.println("creating initital context");
+				log.fine("creating initital context");
 				dirCtx = new InitialDirContext(env);
 			}
 			else {
-				System.out.println("Missing baseDn or queryBaseDn. Skip creation of initial context.");
+				log.info("Missing baseDn or userBaseDn. Skip creation of initial context.");
 			}
 		} catch (NamingException ne) {
 			ne.printStackTrace();
@@ -167,10 +168,10 @@ public class UserDirectoryService {
 	private Attributes getAttributesForCn(String cn) throws NamingException {
 		Attributes result = null;
 		if ( dirCtx != null ) {
-			result = dirCtx.getAttributes("cn=" + cn + "," + queryBaseDn + "," + baseDn);
+			result = dirCtx.getAttributes("cn=" + cn + "," + userBaseDn + "," + baseDn);
 		}
 		else {
-			System.out.println("Severe, getAttributes: dirCtx null");
+			log.info("Severe, getAttributes: dirCtx null");
 			//log.("Severe, getAttributes: dirCtx null");
 		}
 		return result;
@@ -182,7 +183,7 @@ public class UserDirectoryService {
 			result = dirCtx.getAttributes(dn);
 		}
 		else {
-			System.out.println("Severe, getAttributesFromEntry: dirCtx null");
+			log.info("Severe, getAttributesFromEntry: dirCtx null");
 			//log.("Severe, getAttributesFromEntry: dirCtx null");
 		}
 		return result;
@@ -261,19 +262,18 @@ public class UserDirectoryService {
 	}
 
 	public ArrayList<UserDirectoryEntry> searchForUserEntries(String[] filterArgs) {
-		String base = queryBaseDn + ", " + baseDn;
+		String base = userBaseDn + ", " + baseDn;
 		ArrayList<UserDirectoryEntry> result = new ArrayList<UserDirectoryEntry>();
 		SearchControls sc = new SearchControls();
-		System.out.println("UserDirectoryService.searchForUserEntries:");
+		log.fine("UserDirectoryService.searchForUserEntries:");
 
 		filterExpr = buildFilterExpr(filterArgs);
-		System.out.println("filterExpr: " + filterExpr);
+		log.fine("filterExpr: " + filterExpr);
 
-		System.out.println("filterArgs");
+		log.fine("filterArgs");
 		int i = 0;
 		for (String str : filterArgs) {
-			System.out.print("filterArgs[" + i + "]: ");
-			System.out.println("[" + str + "]");
+			log.fine("filterArgs[" + i + "]: [" + str + "]");
 			i++;
 		}
 
