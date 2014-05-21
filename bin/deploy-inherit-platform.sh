@@ -12,6 +12,10 @@
 # END OF CONFIG                                                #
 ################################################################
 
+PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
+SITE_WEB_XML_BEFOREPATCH=web.xml.beforepatch 
+SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH=hst-config.properties.beforepatch
+
 ERRORSTATUS=0
 
 # 1. Sanity check of supplied parameters
@@ -60,30 +64,65 @@ then
     exit $ERRORSTATUS
 fi
 
-# 2. Patching properties-local.xml for eservicetest and kservicetest
+# 2. Patching files for usage in production like environment
+#    (the original versions are suitable in a test environment with
+#    mvn -P cargo.run)
+
+# 2a. Patching properties-local.xml for eservicetest and kservicetest
 if [ -d ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config ]
 then
     pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-       mv properties-local.xml $PROPERTIES_LOCAL_BEFOREPATCH
-       cp $PROPERTIES_LOCAL_BEFOREPATCH properties-local.xml # thereby conserving mod date of properties-local.xml
+    mv properties-local.xml $PROPERTIES_LOCAL_BEFOREPATCH
+    cp $PROPERTIES_LOCAL_BEFOREPATCH properties-local.xml # thereby conserving mod date of properties-local.xml
                                                              # when $PROPERTIES_LOCAL_BEFOREPATCH is renamed
                                                              # back to properties-local.xml in step 8
-if ${ESERVICE_SSL}; then
-   sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/https:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
-else
-    sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
-fi
+    if ${ESERVICE_SSL}; then
+	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/https:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
+    else
+	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
+    fi
 
-if ${KSERVICE_SSL}; then
-   sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/https:\/\/${KSERVICE_HOST}:${KSERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
-else
-    sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${KSERVICE_HOST}:${KSERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
-fi
-
-       mv properties-local.xml.eservicepatch properties-local.xml
+    if ${KSERVICE_SSL}; then
+	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/https:\/\/${KSERVICE_HOST}:${KSERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
+    else
+	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${KSERVICE_HOST}:${KSERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
+    fi
+    mv properties-local.xml.eservicepatch properties-local.xml
     popd
 else
-    echo "${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
+    echo "Directory ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
+
+# 2b. Patching web.xml - Including OpenAM filter in site.war for eservicetest and kservicetest
+if [ -f  ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml ]
+then
+    pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+    mv web.xml $SITE_WEB_XML_BEFOREPATCH
+    cp $SITE_WEB_XML_BEFOREPATCH web.xml  # thereby conserving mod date of web.xml
+                                          # when $SITE_WEB_XML_BEFOREPATCH is renamed
+                                          # back to web.xml in step 8b
+    sed -i -e 's/\(OPENAM_FILTER_BEGIN.*$\)/\1 -->/g' -e 's/\(^.*OPENAM_FILTER_END\)/<!-- \1/g' web.xml
+    popd
+else
+    echo "File ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml does not exist. Aborting execution"
+    ERRORSTATUS=1
+    exit $ERRORSTATUS
+fi
+
+# 2c. Patching hst-config.properties - changing to rmi for access to hipporepository
+if [ -f  ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/hst-config.properties ]
+then
+    pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+    mv hst-config.properties $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH
+    cp $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH hst-config.properties  # thereby conserving mod date of
+                                          # hst-config.properties when $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH
+                                          # is renamed back to hst-config.properties in step 8c
+    sed -i -e 's/=\s\+vm:\/\//= rmi:\/\/127.0.0.1:1099\/hipporepository/g' hst-config.properties
+    popd
+else
+    echo "File ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/hst-config.properties does not exist. Aborting execution"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
@@ -146,11 +185,26 @@ then
 fi
 
 
+#8. Restore to original state the patched files from step 2 in order to be able to run
+#   the deployment script multiple times
 
-# 8. Restore original properties-local.xml to original state. Necessary to make step 2 (patching properties-local.xml)
-#     work correctly next time script is run
+# 8a. Restore original properties-local.xml to original state. Necessary to make step 2a
+#    (patching properties-local.xml) work correctly next time script is run
     pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
        mv $PROPERTIES_LOCAL_BEFOREPATCH properties-local.xml
+    popd
+
+# 8b. Restore original web.xml.beforepatch  to original state. Necessary to make step 2b
+#     (patching web.xml of site.war) work correctly next time script is run
+    pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+       mv $SITE_WEB_XML_BEFOREPATCH web.xml
+    popd
+
+# 8c. Restore original hst-config.properties.beforepatch to original state. Necessary to
+#      make step 2c (patching hst-config.properties of site.war) work correctly next time
+#      script is run
+    pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+       mv $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH hst-config.properties
     popd
 
 # 9. Stop j2ee containers
