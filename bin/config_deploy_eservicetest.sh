@@ -16,7 +16,6 @@ KSERVICE=hippo-kservice-tomcat-6.0.36
 
 ESERVICEPATCH=eservicetest.malmo.se
 KSERVICEPATCH=kservicetest.malmo.se
-PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
 
 BOS_PORT=58080
 ESERVICE_PORT=38080

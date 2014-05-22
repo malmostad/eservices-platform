@@ -34,7 +34,6 @@ CMSSERVICE_PORT=80                    # external port normally 80 or 443
 
 ESERVICEPATCH=${ESERVICE_HOST}
 KSERVICEPATCH=${KSERVICE_HOST}
-PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
 
 ESERVICE_PORT=38080                   # internal port i.e. tomcat port
 KSERVICE_PORT=8080                    # internal port i.e. tomcat port
