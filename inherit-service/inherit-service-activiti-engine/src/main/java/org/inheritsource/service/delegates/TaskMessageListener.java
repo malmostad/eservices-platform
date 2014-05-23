@@ -109,6 +109,7 @@ public class TaskMessageListener implements TaskListener {
 			UserDirectoryService userDirectoryService = new UserDirectoryService();
 			String assignee = execution.getAssignee();
 			ArrayList<UserDirectoryEntry> userDirectoryEntries = new ArrayList<UserDirectoryEntry>();
+
 			if (assignee != null) {
 				// send mail to Assignee
 				log.info("sending email to assignee");
@@ -127,54 +128,73 @@ public class TaskMessageListener implements TaskListener {
 
 				// go through list and send mail to all candidates
 				Set<IdentityLink> identityLinks = execution.getCandidates();
+				if (identityLinks == null) {
+					log.severe("no candidates found");
+					return;
+				} else {
 
-				for (IdentityLink identityLink : identityLinks) {
-					String groupId = identityLink.getGroupId();
-					if (groupId != null) {
-						log.info("looking up group " + groupId);
-						try {
-							ArrayList<UserDirectoryEntry> userDirectoryEntry = userDirectoryService
-									.lookupUserEntriesByGroup(groupId);
-							if (userDirectoryEntry != null) {
-								userDirectoryEntries.addAll(userDirectoryEntry);
-								log.info("add1 :"
-										+ userDirectoryEntries.toString());
-							}
-						}
-
-						catch (Exception e) {
-							log.severe(e.toString());
-						}
-
-					} else {
-						String userId = identityLink.getUserId();
-						String[] userIds = { userId };
-
-						if (userId != null) {
-							log.info("looking up userId " + userId);
-							ArrayList<UserDirectoryEntry> userDirectoryEntry = userDirectoryService
-									.lookupUserEntries(userIds);
-							if (userDirectoryEntry != null) {
-								userDirectoryEntries.addAll(userDirectoryEntry);
-								log.info("add2 :"
-										+ userDirectoryEntries.toString());
+					for (IdentityLink identityLink : identityLinks) {
+						String groupId = identityLink.getGroupId();
+						if (groupId != null) {
+							log.info("looking up group " + groupId);
+							try {
+								ArrayList<UserDirectoryEntry> userDirectoryEntry = userDirectoryService
+										.lookupUserEntriesByGroup(groupId);
+								if (userDirectoryEntry != null) {
+									userDirectoryEntries
+											.addAll(userDirectoryEntry);
+									log.info("add1 :"
+											+ userDirectoryEntries.toString());
+								}
 							}
 
+							catch (Exception e) {
+								log.severe(e.toString());
+							}
+
+						} else {
+							String userId = identityLink.getUserId();
+							String[] userIds = { userId };
+
+							if (userId != null) {
+								log.info("looking up userId " + userId);
+								try {
+									ArrayList<UserDirectoryEntry> userDirectoryEntry = userDirectoryService
+											.lookupUserEntries(userIds);
+									if (userDirectoryEntry != null) {
+										userDirectoryEntries
+												.addAll(userDirectoryEntry);
+										log.info("add2 :"
+												+ userDirectoryEntries
+														.toString());
+									}
+
+								}
+
+								catch (Exception e) {
+									log.severe(e.toString());
+								}
+							}
 						}
 					}
 				}
 				// make unique
-				HashSet<UserDirectoryEntry> users = new HashSet<UserDirectoryEntry>();
-				users.addAll(userDirectoryEntries);
-				log.info("add3 :" + users.toString());
-				for (UserDirectoryEntry user : users) {
-					to = user.getMail();
-					if (to != null) {
-						sendEmail(to, from, messageSubject, messageText,
-								siteUri, inbox, SMTPSERVER);
+				if (userDirectoryEntries.isEmpty()) {
+					log.severe("No candidates found ");
+					return;
+				} else {
+					HashSet<UserDirectoryEntry> users = new HashSet<UserDirectoryEntry>();
+					users.addAll(userDirectoryEntries);
+					log.info("add3 :" + users.toString());
+					for (UserDirectoryEntry user : users) {
+						to = user.getMail();
+						if (to != null) {
+							sendEmail(to, from, messageSubject, messageText,
+									siteUri, inbox, SMTPSERVER);
+
+						}
 
 					}
-
 				}
 
 			}

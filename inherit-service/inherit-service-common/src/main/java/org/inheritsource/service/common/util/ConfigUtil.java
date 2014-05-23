@@ -71,8 +71,8 @@ public class ConfigUtil {
 		String filePath = null;
 
 		try {
-			confFilePath = System.getenv(MOTRICE_CONF_ENV);
-			homeFilePath = System.getenv(MOTRICE_HOME_ENV);
+			confFilePath = System.getProperty(MOTRICE_CONF_ENV);
+			homeFilePath = System.getProperty(MOTRICE_HOME_ENV);
 		} catch (NullPointerException exc) {
 			// Ignore
 		}

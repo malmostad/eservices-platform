@@ -78,13 +78,8 @@
   <!-- Define all the routes in RESTlet-->
   
   <bean name="/getDashOpenActivitiesByUserId/{userid}/{remainingDays}" class="org.inheritsource.service.rest.server.DashOpenActivitiesByUserId" scope="singleton" autowire="byName" />
-  <bean name="/getStartActivityInstanceItem/{formPath}/{userId}" class="org.inheritsource.service.rest.server.StartActivityInstanceItemByFormPath" scope="singleton" autowire="byName" />
   <bean name="/processInstanceDetailsByActivityInstanceUuid/{activityInstanceUuid}" class="org.inheritsource.service.rest.server.ProcessInstanceDetailByActivityInstanceUuid" scope="singleton" autowire="byName" /> 
   <bean name="/processInstanceDetailsByUuid/{processInstanceUuid}" class="org.inheritsource.service.rest.server.ProcessInstanceDetailByUuid" scope="singleton" autowire="byName" /> 
-  <bean name="/getPreviousActivityDataByDocId/{currentActivityFormDocId}/{previousActivityName}/{uniqueXPathExpr}" class="org.inheritsource.service.rest.server.GetPreviousActivityDataByDocId" scope="singleton" autowire="byName" /> 
-  <bean name="/getPreviousActivityDataByInstanceUuid/{currentActivityInstanceUuid}/{previousActivityName}/{uniqueXPathExpr}" class="org.inheritsource.service.rest.server.GetPreviousActivityDataByInstanceUuid" scope="singleton" autowire="byName" /> 
-  <bean name="/getPreviousActivitiesDataByDocId/{currentActivityFormDocId}" class="org.inheritsource.service.rest.server.GetPreviousActivitiesDataByDocId" scope="singleton" autowire="byName" />
-  <bean name="/getPreviousActivityDataByProcessInstanceUuid/{processInstanceUuid}/{previousActivityName}/{uniqueXPathExpr}" class="org.inheritsource.service.rest.server.GetPreviousActivityDataByProcessInstanceUuid" scope="singleton" autowire="byName" />
   
   <!-- TODO take user from login instead of parameter userid -->
   <bean name="/addComment/{activityInstanceUuid}/{comment}/{userid}" class="org.inheritsource.service.rest.server.AddComment" scope="singleton" autowire="byName" /> 
