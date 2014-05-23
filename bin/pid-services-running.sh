@@ -1,37 +1,34 @@
-#!/bin/sh
+#!/bin/bash
 
-# Name of container roots
-   EXIST=orbeon-tomcat-6.0.36
-     BOS=BOS-5.9-Tomcat-6.0.35
-ESERVICE=hippo-eservice-tomcat-6.0.36
-KSERVICE=hippo-kservice-tomcat-6.0.36
+function getPidByPort () {
+   local _outvar=$1
+   local _result # Use some naming convention to avoid OUTVARs to clash
+   _result=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${2} | awk '{print substr($7,1,match($7,"/")-1)}')
+   eval $_outvar=\$_result # Instead of just =$_result
+}
 
-# Name of container roots
-EXIST_PORT=48080
-BOS_PORT=58080
-ESERVICE_PORT=8080
-KSERVICE_PORT=38080
+function services_running () {
+    getPidByPort ESERVICE_PID ${ESERVICE_PORT}
+    if [ -n "${ESERVICE_PID}" ] 
+    then 
+	echo -e "Eservice:   ${ESERVICE} \t port: ${ESERVICE_PORT} \t pid: ${ESERVICE_PID}"
+    fi
 
-EXIST_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${EXIST_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ -n "${EXIST_PID}" ] 
-then 
-  echo "eXist service: "${EXIST}"          port: "${EXIST_PORT}"   pid: "${EXIST_PID}
-fi
+    getPidByPort KSERVICE_PID ${KSERVICE_PORT}
+    if [ -n "${KSERVICE_PID}" ] 
+    then 
+	echo -e "Kservice:   ${KSERVICE} \t port: ${KSERVICE_PORT} \t pid: ${KSERVICE_PID}"
+    fi
 
-BOS_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${BOS_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ -n "${BOS_PID}" ] 
-then 
-  echo "BOS service:   "${BOS}"         port: "${BOS_PORT}"   pid: "${BOS_PID}
-fi
+    getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
+    if [ -n "${CMSSERVICE_PID}" ] 
+    then 
+	echo -e "CMSservice: ${CMSSERVICE} \t port: ${CMSSERVICE_PORT} \t pid: ${CMSSERVICE_PID}"
+    fi
+}
 
-ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ -n "${ESERVICE_PID}" ] 
-then 
-  echo "Eservice:      "${ESERVICE}"  port: "${ESERVICE_PORT}"    pid: "${ESERVICE_PID}
-fi
+###### current_config.sh  #####
+# symlink to actual config of current installation
+. current_config.sh
 
-KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ -n "${KSERVICE_PID}" ] 
-then 
-  echo "Kservice:      "${KSERVICE}"  port: "${KSERVICE_PORT}"   pid: "${KSERVICE_PID}
-fi
+services_running

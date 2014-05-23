@@ -1,5 +1,42 @@
 #!/bin/bash
 
+function getPidByPort () {
+   local _outvar=$1
+   local _result # Use some naming convention to avoid OUTVARs to clash
+   _result=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${2} | awk '{print substr($7,1,match($7,"/")-1)}')
+   eval $_outvar=\$_result # Instead of just =$_result
+}
+
+function shutdownContainer () {
+    if [ "$1" ] 
+    then 
+	echo "Shutting down eservice, pid: " $1
+	./shutdown.sh
+	sleep 1
+	LOOPVAR=0
+	while ps -p $1 && [ ${LOOPVAR} -lt 6  ]
+	do
+	    LOOPVAR=$(expr ${LOOPVAR} + 1)
+	    sleep 1
+	done
+
+    # If proper shutdown did not bite
+	if ps -p $1
+	then 
+	    echo "Force shutting down eservice, pid: " $1
+	    kill  $1
+	    sleep 6
+	fi
+
+    # If still did not bite
+	if ps -p $1
+	then 
+	    echo "Failed to shut down eservice, pid: " $1
+	    ERRORSTATUS=1
+	fi
+    fi
+}
+
 ################################################################
 # CONFIG                                                #
 ################################################################
@@ -184,7 +221,6 @@ then
     popd
 fi
 
-
 #8. Restore to original state the patched files from step 2 in order to be able to run
 #   the deployment script multiple times
 
@@ -212,39 +248,14 @@ fi
 
 cd ${ESERVICE}/bin/
 
-ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
-if [ "${ESERVICE_PID}" ] 
-then 
-    echo "Shutting down eservice, pid: " ${ESERVICE_PID}
-    ./shutdown.sh
-    sleep 1
-    LOOPVAR=0
-    while ps -p ${ESERVICE_PID} && [ ${LOOPVAR} -lt 6  ]
-    do
-	LOOPVAR=$(expr ${LOOPVAR} + 1)
-	sleep 1
-    done
+getPidByPort ESERVICE_PID ${ESERVICE_PORT}
 
-    # If proper shutdown did not bite
-    if ps -p ${ESERVICE_PID}
-    then 
-	echo "Force shutting down eservice, pid: " ${ESERVICE_PID}
-	kill  ${ESERVICE_PID}
-	sleep 6
-    fi
-
-    # If still did not bite
-    if ps -p ${ESERVICE_PID}
-    then 
-	echo "Failed to shut down eservice, pid: " ${ESERVICE_PID}
-	ERRORSTATUS=1
-    fi
-fi
+shutdownContainer "${ESERVICE_PID}"
 
 if ${WITH_KSERVICES}
 then
     cd ../../${KSERVICE}/bin/
-    KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+    getPidByPort KSERVICE_PID ${KSERVICE_PORT}
     if [ "${KSERVICE_PID}" ] 
     then 
 	echo "Shutting down kservice, pid: " ${KSERVICE_PID}
@@ -273,11 +284,10 @@ then
     fi
 fi
 
-
 if ${WITH_CMSSERVICES}
 then
     cd ../../${CMSSERVICE}/bin/
-    CMSSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${CMSSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+    getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
     if [ "${CMSSERVICE_PID}" ] 
     then 
 	echo "Shutting down CMSservice, pid: " ${CMSSERVICE_PID}
@@ -346,7 +356,6 @@ then
     fi
 fi
 
-
 # 12   Install on cmsservice container
 if ${WITH_CMSSERVICES}
 then
@@ -381,12 +390,12 @@ echo "Restart eservice container..."
 cd ${ESERVICE}/bin/
 ./startup.sh 
 LOOPVAR=0
-ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+getPidByPort ESERVICE_PID ${ESERVICE_PORT}
 while [ -z "${ESERVICE_PID}" -a  ${LOOPVAR} -lt 30  ]
 do
     LOOPVAR=$(expr ${LOOPVAR} + 1)
     sleep 1
-    ESERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${ESERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+    getPidByPort ESERVICE_PID ${ESERVICE_PORT}
 done
 
 if [ -z "${ESERVICE_PID}" ]
@@ -402,12 +411,12 @@ then
     cd ${KSERVICE}/bin/
     ./startup.sh 
     LOOPVAR=0
-    KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+    getPidByPort KSERVICE_PID ${KSERVICE_PORT}
     while [ -z "${KSERVICE_PID}" -a  ${LOOPVAR} -lt 30  ]
     do
 	LOOPVAR=$(expr ${LOOPVAR} + 1)
 	sleep 1
-	KSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${KSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+	getPidByPort KSERVICE_PID ${KSERVICE_PORT}
     done
 
     if [ -z "${KSERVICE_PID}" ]
@@ -419,19 +428,18 @@ fi
 
 cd ../..
 
-
 if ${WITH_CMSSERVICES}
 then
     echo "Restart CMSservice container..."
     cd ${CMSSERVICE}/bin/
     ./startup.sh 
     LOOPVAR=0
-    CMSSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${CMSSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+    getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
     while [ -z "${CMSSERVICE_PID}" -a  ${LOOPVAR} -lt 30  ]
     do
 	LOOPVAR=$(expr ${LOOPVAR} + 1)
 	sleep 1
-	CMSSERVICE_PID=$(netstat -ntlp 2> /dev/null | grep '0 \:\:\:'${CMSSERVICE_PORT} | awk '{print substr($7,1,match($7,"/")-1)}')
+	getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
     done
 
     if [ -z "${CMSSERVICE_PID}" ]
@@ -441,9 +449,5 @@ then
     fi
 fi
 popd
-
-
-
-
 
 exit ${ERRORSTATUS}

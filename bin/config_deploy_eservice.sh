@@ -4,7 +4,7 @@
 BUILD_DIR=${HOME}/inherit-platform-gitclone/eservices-platform
 
 # ROOT of directory holding the j2ee containers
-CONTAINER_ROOT=${HOME}/motrice-14.4
+CONTAINER_ROOT=${HOME}/motrice-0.5
 
 # ROOT of Hippo jcr content repository
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
@@ -20,17 +20,17 @@ TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/
 ESERVICE=hippo-eservice-tomcat        # PATH in CONTAINER_ROOT
 ESERVICE_SSL=true                     # true/false
 ESERVICE_HOST=eservice.malmo.se       # DNS name
-ESERVICE_PORT=443                     # external port normally 80 or 443
+ESERVICE_EXTERNAL_PORT=443                     # external port normally 80 or 443
 
 KSERVICE=hippo-kservice-tomcat        # PATH in CONTAINER_ROOT
 KSERVICE_SSL=true                     # true/false
 KSERVICE_HOST=kservice.malmo.se       # DNS name
-KSERVICE_PORT=443                     # external port normally 80 or 443
+KSERVICE_EXTERNAL_PORT=443                     # external port normally 80 or 443
 
 CMSSERVICE=hippo-cmsservice-tomcat    # PATH in CONTAINER_ROOT
 CMSSERVICE_SSL=false                  #
 CMSSERVICE_HOST=kservice.malmo.se     # DNS name
-CMSSERVICE_PORT=80                    # external port normally 80 or 443
+CMSSERVICE_EXTERNAL_PORT=80                    # external port normally 80 or 443
 
 ESERVICEPATCH=${ESERVICE_HOST}
 KSERVICEPATCH=${KSERVICE_HOST}

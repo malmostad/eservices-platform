@@ -212,7 +212,6 @@ cd ../Agent_001/config/
 mv OpenSSOAgentBootstrap.properties OpenSSOAgentBootstrap.properties.orig
 sed -e "s/\(com\.sun\.identity\.agents\.config\.organization\.name\s=\s\/\).*$/\1${OPENAM_REALM_KSERVICE}/" OpenSSOAgentBootstrap.properties.orig > OpenSSOAgentBootstrap.properties
 
-
 popd
 
 # prepare a directory for hippo jcr
