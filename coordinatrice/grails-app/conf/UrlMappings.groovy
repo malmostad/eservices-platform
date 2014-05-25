@@ -41,6 +41,9 @@ class UrlMappings {
     "/rest/startformlabel/$appname/$formname/$locale"(controller: 'RestI18n') {
       action = [GET: 'startFormLabelGet']
     }
+    "/rest/migration/file/$filepath"(controller: 'RestMigration') {
+      action = [PUT: 'installPackageFromFile']
+    }
 
     "/"(controller: 'Procdef', action:'/index')
     "500"(controller: 'errors', action: 'internalServerError')

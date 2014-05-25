@@ -145,7 +145,7 @@ log4j = {
 	   //trace 'org.hibernate.type'
 	   //debug 'org.hibernate.SQL'
 
-	   error 'grails.app.controllers', 'org.motrice.coordinatrice.FormService', 'org.motrice.coordinatrice.ProcessEngineService', 'org.motrice.coordinatrice', 'org.motrice.migratrice.PackageService'
+	   debug 'grails.app.controllers', 'org.motrice.coordinatrice.FormService', 'org.motrice.coordinatrice.ProcessEngineService', 'org.motrice.coordinatrice', 'org.motrice.migratrice.PackageService'
 }
 
 // Common timestamp display format
