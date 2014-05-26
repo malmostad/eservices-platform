@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory
 import org.codehaus.groovy.grails.web.metaclass.BindDynamicMethod
 import org.codehaus.groovy.grails.commons.metaclass.GroovyDynamicMethodsInterceptor
 import org.springframework.transaction.annotation.Transactional
+import org.xml.sax.SAXParseException
 
 import org.motrice.coordinatrice.ServiceException
 import org.motrice.zip.ZipBuilder
@@ -321,7 +322,12 @@ class PackageService {
       log.warn "Problem uploading file: ${exc}"
       throw new MigratriceException('migPackage.import.error', exc.message, exc)
     }
-    assert ename?.startsWith('package')
+
+    if (!ename?.startsWith('package')) {
+      log.warn "Invalid package file (found: ${ename})"
+      throw new MigratriceException('migPackage.import.invalid', 'Invalid package file')
+    }
+
     def baos = ZipUtil.read(zipInput)
     def xml = baos.toString('UTF-8')
     if (log.debugEnabled) log.debug "importPackage xml ${xml.size()}"
@@ -869,10 +875,10 @@ class PackageService {
       result = worker.putBytes(bytes)
     } catch (ConnectException exc) {
       log.error "Postxdb connection problem: ${exc}"
-      throw new MigratriceException('postxdb.connect.problem', exc.message)
+      throw new MigratriceException('postxdb.connect.problem', exc.message, exc)
     } catch (IOException exc) {
       log.error "Postxdb writing problem: ${exc}"
-      throw new MigratriceException('postxdb.write.problem', exc.message)
+      throw new MigratriceException('postxdb.write.problem', exc.message, exc)
     }
 
     return result
@@ -939,8 +945,16 @@ class PackageService {
    * The maps are property maps where all values are strings.
    */
   private Map parseXmlString(String xml) {
-    def root = new XmlSlurper().parseText(xml)
-    return parseXmlList(root)
+    def result = null
+    try {
+      def root = new XmlSlurper().parseText(xml)
+      result = parseXmlList(root)
+    } catch (SAXParseException exc) {
+      log.warn "Parsing problem: ${exc.message}"
+      throw new MigratriceException('migPackage.import.error', exc.message, exc)
+    }
+
+    return result
   }
 
   /**
@@ -972,9 +986,15 @@ class PackageService {
    * The map is the one returned by parseXmlList
    */
   private parseImportedMetadata(String xml) {
-    def outer = new XmlSlurper().parseText(xml)
-    def mapList = outer.'*'.collect {list ->
-      parseXmlList(list)
+    def mapList = null
+    try {
+      def outer = new XmlSlurper().parseText(xml)
+      mapList = outer.'*'.collect {list ->
+	parseXmlList(list)
+      }
+    } catch (SAXParseException exc) {
+      log.warn "Parsing problem: ${exc.message}"
+      throw new MigratriceException('migPackage.import.error', exc.message, exc)
     }
 
     return mapList

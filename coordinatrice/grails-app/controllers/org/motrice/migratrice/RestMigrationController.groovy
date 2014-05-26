@@ -33,7 +33,12 @@ class RestMigrationController {
 
   /**
    * Upload and install a migration package from a file.
-   * The file must be stored locally in 
+   * The file must be stored locally in the Tomcat root directory.
+   * PUT $PREFIX/rest/migration/file/$filepath [?mode=installMode]
+   * The install mode may be one of:
+   * latestPublished
+   * allPublished
+   * compareVersions
    */
   def installPackageFromFile(String filepath) {
     if (log.debugEnabled) log.debug "INSTALL PACKAGE FROM FILE ${params}"
@@ -44,35 +49,53 @@ class RestMigrationController {
     try {
       pack = packageService.importPackageFromFile(filepath)
     } catch (MigratriceException exc) {
+      response.status = 409
       msg = message(code: exc.code)
     }
 
     if (msg) {
-      request.status = 409
       responseMap.status = 'Not installed'
       responseMap.message = msg
       render responseMap as JSON
       return
     }
+    def installModeCode = params.mode
+    def installMode = 'migPackage.install.option.compareVersions'
+
+    switch (params.mode) {
+    case 'allPublished':
+    installMode = 'migPackage.install.option.allPublished'
+    break
+    case 'latestPublished':
+    installMode = 'migPackage.install.option.latestPublished'
+    break
+    case 'compareVersions':
+    installMode = 'migPackage.install.option.compareVersions'
+    }
+
+    def installModeMsg = message(code: installMode)
 
     def lw = null
-    def installMode = 'migPackage.install.option.compareVersions'
-    def installModeMsg = message(code: installMode)
     try {
       lw = packageService.installPackage(pack, installMode, installModeMsg)
       def reportText = lw.toString()
       pack.createReport(reportText)
-      msg = message(code: lw.code, args: lw.args)
-      request.status = 200
-      responseMap.status = 'Installed'
       responseMap.report = reportText
+      response.status = 200
+      responseMap.status = 'Installed'
+
+      if (lw?.code) {
+	msg = message(code: lw.code, args: lw.args)
+	response.status = 409
+	responseMap.status = 'Conflict'
+      }
     } catch (MigratriceException exc) {
-      request.status = 409
+      response.status = 409
       responseMap.status = 'Conflict'
-      msg = message(code: exc.code)
+      if (lw?.code) msg = message(code: lw.code, args: lw.args)
     }
 
-    responseMap.message = msg
+    if (msg) responseMap.message = msg
     render responseMap as JSON
   }
 
