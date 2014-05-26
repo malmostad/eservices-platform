@@ -340,7 +340,9 @@ class ProcdefService {
       def entity = activitiRepositoryService.getProcessDefinition(id)
       procdef = createFullProcdef(entity)
     } catch (ActivitiObjectNotFoundException exc) {
-      // Ignore and return null
+      // Cannot prevent Activiti from logging an ERROR
+      // Make sure we do not cache this process definition
+      doEnsureNotCached(id)
     }
 
     if (log.debugEnabled) log.debug "findProcessDefinition >> ${procdef}"
@@ -361,11 +363,28 @@ class ProcdefService {
       def entity = activitiRepositoryService.getProcessDefinition(id)
       procdef = createProcdef(entity)
     } catch (ActivitiObjectNotFoundException exc) {
-      // Ignore and return null
+      // Cannot prevent Activiti from logging an ERROR
+      // Make sure we do not cache this process definition
+      doEnsureNotCached(id)
     }
 
     if (log.debugEnabled) log.debug "findShallowProcdef >> ${procdef}"
     return procdef
+  }
+
+  /**
+   * Make sure that a process definition is not cached in the crd_procdef table.
+   * Invoke only after explicitly requesting it from Activiti and getting
+   * ActivitiObjectNotFoundException.
+   * This is theoretically a "should not happen" condition, but the cache
+   * is not completely air tight.
+   * After this operation form connections may remain.
+   * Too difficult to fix here -- for the moment at least.
+   */
+  private doEnsureNotCached(String id) {
+    def procstate = CrdProcdef.get(id)
+    if (log.debugEnabled) log.debug "doEnsureNotCached: ${procstate?'CACHED':'NOT cached'} (${id})"
+    if (procstate) procstate.delete()
   }
 
   /**
