@@ -38,7 +38,7 @@ class MigPackageController {
   }
 
   def list(Integer max) {
-    params.max = Math.min(max ?: 10, 100)
+    params.max = Math.min(max ?: 18, 100)
     [migPackageInstList: MigPackage.list(params), migPackageInstTotal: MigPackage.count()]
   }
 

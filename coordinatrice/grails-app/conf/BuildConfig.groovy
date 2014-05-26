@@ -88,6 +88,7 @@ grails.project.dependency.resolution = {
     runtime "org.activiti:activiti-bpmn-converter:5.14"
     runtime "org.activiti:activiti-spring:5.14"
     runtime "org.mybatis:mybatis:3.2.3"
+    runtime "joda-time:joda-time:2.2"
   }
 
   plugins {
