@@ -100,7 +100,7 @@ class ProcdefController {
    */
   def list(Integer max) {
     if (log.debugEnabled) log.debug "LIST ${params}"
-    params.max = Math.min(max ?: 15, 100)
+    params.max = Math.min(max ?: 18, 100)
     params.offset = params.offset as Integer ?: 0
     // Sorting is disabled
     def procdefList = procdefService.allProcessDefinitionsGroupByName()
