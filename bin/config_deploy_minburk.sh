@@ -42,6 +42,7 @@ CMSSERVICE_PORT=48080                 # internal port i.e. tomcat port
 
 WITH_KSERVICES=true
 WITH_CMSSERVICES=true
+WITH_OPENAM=true
 
 #####################################################################
 # Open AM config

@@ -1,5 +1,23 @@
 #!/bin/bash
 
+################################################################
+# CONFIG                                                #
+################################################################
+
+###### current_config.sh  #####
+# symlink to actual config of current installation
+. current_config.sh
+
+################################################################
+# END OF CONFIG                                                #
+################################################################
+
+PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
+SITE_WEB_XML_BEFOREPATCH=web.xml.beforepatch 
+SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH=hst-config.properties.beforepatch
+
+ERRORSTATUS=0
+
 function getPidByPort () {
    local _outvar=$1
    local _result # Use some naming convention to avoid OUTVARs to clash
@@ -7,8 +25,9 @@ function getPidByPort () {
    eval $_outvar=\$_result # Instead of just =$_result
 }
 
-function shutdownContainer () {
-    if [ "$1" ] 
+function shutdownContainer () { 
+    #if no argument, then NOOP
+    if [ -n "$1" ] 
     then 
 	echo "Shutting down eservice, pid: " $1
 	./shutdown.sh
@@ -32,28 +51,78 @@ function shutdownContainer () {
 	if ps -p $1
 	then 
 	    echo "Failed to shut down eservice, pid: " $1
-	    ERRORSTATUS=1
+	    ERRORSTATUS=1;
 	fi
+    else
+	echo "shutdownContainer: No container argument"
     fi
 }
 
-################################################################
-# CONFIG                                                #
-################################################################
+function installInContainer () {
+    echo "Installing on $1 container"
+    if [ -d  ${CONTAINER_ROOT}/$1 ]
+    then
+	pushd ${CONTAINER_ROOT}/$1
+	if [[ "$1" == "${ESERVICE}" ]]
+	then
+	    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
+	    cd webapps
+	    rm -fr cms site orbeon exist docbox coordinatrice
+	     # deploy cms at cmsservice and coordinatrice only at kservice and share the same JCR
+	    rm cms.war coordinatrice.war
+	elif [[ "$1" == "${KSERVICE}" ]]
+        then
+	    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
+	    cd webapps
+	    rm -fr cms site orbeon exist docbox coordinatrice
+            rm cms.war 
+        elif  [[ "$1" == "${CMSSERVICE}" ]]
+        then
+	    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
+	    cd webapps
+	    rm -fr site orbeon exist docbox coordinatrice cms  restrice
+            rm site.war orbeon.war exist.war docbox.war coordinatrice.war restrice.war
+        else
+  	  echo "Unknown Directory ${CONTAINER_ROOT}/$1. Halting."
+	  exit 1
+        fi
+	popd
+    else
+	echo "Directory ${CONTAINER_ROOT}/$1 does not exist. Halting."
+	exit 1
+    fi
+}
 
-###### current_config.sh  #####
-# symlink to actual config of current installation
-. current_config.sh
+function restartContainer () {
+  local SERVICE_PID
+  local LOOPCOUNTER=0
 
-################################################################
-# END OF CONFIG                                                #
-################################################################
+  case $1 in
+    ${ESERVICE} )   CURRENT_PORT=${ESERVICE_PORT}   ;;
+    ${KSERVICE} )   CURRENT_PORT=${KSERVICE_PORT}   ;;
+    ${CMSSERVICE} ) CURRENT_PORT=${CMSSERVICE_PORT} ;;
+    *) echo "Unknown Service, halting..." ; exit 1 ;;
+  esac
 
-PROPERTIES_LOCAL_BEFOREPATCH=properties-local.xml.beforepatch 
-SITE_WEB_XML_BEFOREPATCH=web.xml.beforepatch 
-SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH=hst-config.properties.beforepatch
+  pushd ${CONTAINER_ROOT}
+    echo "Restarting container $1..."
+    cd ${1}/bin/
+    ./startup.sh 
+    getPidByPort SERVICE_PID ${CURRENT_PORT}
+    while [ -z "${SERVICE_PID}" -a  ${LOOPCOUNTER} -lt 30  ]
+    do
+      LOOPCOUNTER=$(expr ${LOOPCOUNTER} + 1)
+      sleep 1
+      getPidByPort SERVICE_PID ${CURRENT_PORT}
+    done
 
-ERRORSTATUS=0
+    if [ -z "${SERVICE_PID}" ]
+    then
+      echo "Error: could not start $1"
+      ERRORSTATUS=1
+    fi
+  popd
+}
 
 # 1. Sanity check of supplied parameters
 
@@ -133,19 +202,22 @@ else
 fi
 
 # 2b. Patching web.xml - Including OpenAM filter in site.war for eservicetest and kservicetest
-if [ -f  ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml ]
+if ${WITH_OPENAM}
 then
-    pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
-    mv web.xml $SITE_WEB_XML_BEFOREPATCH
-    cp $SITE_WEB_XML_BEFOREPATCH web.xml  # thereby conserving mod date of web.xml
-                                          # when $SITE_WEB_XML_BEFOREPATCH is renamed
-                                          # back to web.xml in step 8b
-    sed -i -e 's/\(OPENAM_FILTER_BEGIN.*$\)/\1 -->/g' -e 's/\(^.*OPENAM_FILTER_END\)/<!-- \1/g' web.xml
-    popd
-else
-    echo "File ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml does not exist. Aborting execution"
-    ERRORSTATUS=1
-    exit $ERRORSTATUS
+  if [ -f  ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml ]
+  then
+      pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+      mv web.xml $SITE_WEB_XML_BEFOREPATCH
+      cp $SITE_WEB_XML_BEFOREPATCH web.xml  # thereby conserving mod date of web.xml
+					    # when $SITE_WEB_XML_BEFOREPATCH is renamed
+					    # back to web.xml in step 8b
+      sed -i -e 's/\(OPENAM_FILTER_BEGIN.*$\)/\1 -->/g' -e 's/\(^.*OPENAM_FILTER_END\)/<!-- \1/g' web.xml
+      popd
+  else
+      echo "File ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml does not exist. Aborting execution"
+      ERRORSTATUS=1
+      exit $ERRORSTATUS
+  fi
 fi
 
 # 2c. Patching hst-config.properties - changing to rmi for access to hipporepository
@@ -232,9 +304,12 @@ fi
 
 # 8b. Restore original web.xml.beforepatch  to original state. Necessary to make step 2b
 #     (patching web.xml of site.war) work correctly next time script is run
-    pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
-       mv $SITE_WEB_XML_BEFOREPATCH web.xml
-    popd
+if ${WITH_OPENAM}
+then
+  pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+    mv $SITE_WEB_XML_BEFOREPATCH web.xml
+  popd
+fi
 
 # 8c. Restore original hst-config.properties.beforepatch to original state. Necessary to
 #      make step 2c (patching hst-config.properties of site.war) work correctly next time
@@ -249,71 +324,20 @@ fi
 cd ${ESERVICE}/bin/
 
 getPidByPort ESERVICE_PID ${ESERVICE_PORT}
-
 shutdownContainer "${ESERVICE_PID}"
 
 if ${WITH_KSERVICES}
 then
     cd ../../${KSERVICE}/bin/
     getPidByPort KSERVICE_PID ${KSERVICE_PORT}
-    if [ "${KSERVICE_PID}" ] 
-    then 
-	echo "Shutting down kservice, pid: " ${KSERVICE_PID}
-	./shutdown.sh
-	sleep 1
-	LOOPVAR=0
-	while ps -p ${KSERVICE_PID} &&  [ ${LOOPVAR} -lt 6  ]
-	do
-  	    LOOPVAR=$(expr ${LOOPVAR} + 1)
-  	    sleep 1
-	done
-    # If proper shutdown did not bite
-	if ps -p ${KSERVICE_PID}
-	then 
-	    echo "Force shutting down kservice, pid: " ${KSERVICE_PID}
-	    kill  ${KSERVICE_PID}
-	    sleep 6
-	fi
-
-   # If still did not bite
-	if ps -p ${KSERVICE_PID}
-	then 
-	    echo "Failed to shut down kservice, pid: " ${KSERVICE_PID}
-	    ERRORSTATUS=1
-	fi
-    fi
+    shutdownContainer "${KSERVICE_PID}"
 fi
 
 if ${WITH_CMSSERVICES}
 then
     cd ../../${CMSSERVICE}/bin/
     getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
-    if [ "${CMSSERVICE_PID}" ] 
-    then 
-	echo "Shutting down CMSservice, pid: " ${CMSSERVICE_PID}
-	./shutdown.sh
-	sleep 1
-	LOOPVAR=0
-	while ps -p ${CMSSERVICE_PID} &&  [ ${LOOPVAR} -lt 6  ]
-	do
-  	    LOOPVAR=$(expr ${LOOPVAR} + 1)
-  	    sleep 1
-	done
-    # If proper shutdown did not bite
-	if ps -p ${CMSSERVICE_PID}
-	then 
-	    echo "Force shutting down cmsservice, pid: " ${CMSSERVICE_PID}
-	    kill  ${CMSSERVICE_PID}
-	    sleep 6
-	fi
-
-   # If still did not bite
-	if ps -p ${CMSSERVICE_PID}
-	then 
-	    echo "Failed to shut down CMSservice, pid: " ${CMSSERVICE_PID}
-	    ERRORSTATUS=1
-	fi
-    fi
+    shutdownContainer "${CMSSERVICE_PID}"
 fi
 
 popd
@@ -325,52 +349,21 @@ then
 fi
 
 # 10. Install on eservice container
-echo "Installing on eservice container"
-if [ -d  ${CONTAINER_ROOT}/${ESERVICE} ]
-then
-    pushd ${CONTAINER_ROOT}/${ESERVICE}
-    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
-    cd webapps
-    rm -fr cms site orbeon exist docbox coordinatrice
-    rm cms.war coordinatrice.war # deploy cms at cmsservice and coordinatrice only at kservice and share the same JCR
-    popd
-else
-    echo "Directory ${CONTAINER_ROOT}/${ESERVICE} does not exist. Halting."
-    exit 1
-fi
+echo "Installing wars in ${ESERVICE} container"
+installInContainer ${ESERVICE}
 
 # 11. Install on kservice container
 if ${WITH_KSERVICES}
 then
-    if [ -d ${CONTAINER_ROOT}/${KSERVICE} ]
-    then
-	echo "Installing on kservice container"
-	pushd ${CONTAINER_ROOT}/${KSERVICE}
-	tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
-	cd webapps
-	rm -fr cms site orbeon exist docbox coordinatrice cms.war 
-	popd
-    else
-	echo "Directory ${CONTAINER_ROOT}/${KSERVICE} does not exist. Halting."
-	exit 1
-    fi
+  echo "Installing wars in ${KSERVICE} container"
+  installInContainer ${KSERVICE}
 fi
 
 # 12   Install on cmsservice container
 if ${WITH_CMSSERVICES}
 then
-    if [ -d ${CONTAINER_ROOT}/${CMSSERVICE} ]
-    then
-	echo "Installing on CMSservice container"
-	pushd ${CONTAINER_ROOT}/${CMSSERVICE}
-	tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
-	cd webapps
-	rm -fr site orbeon exist docbox coordinatrice cms site.war orbeon.war exist.war docbox.war coordinatrice.war restrice.war restrice
-	popd
-    else
-	echo "Directory ${CONTAINER_ROOT}/${CMSSERVICE} does not exist. Halting."
-	exit 1
-    fi
+  echo "Installing wars in ${CMSSERVICE} container"
+  installInContainer ${CMSSERVICE}
 fi
 
 # 13. Clean up content repositories
@@ -384,70 +377,18 @@ popd
 #popd
 
 # 14. Restart containers
-pushd ${CONTAINER_ROOT}
+#pushd ${CONTAINER_ROOT}
 
-echo "Restart eservice container..."
-cd ${ESERVICE}/bin/
-./startup.sh 
-LOOPVAR=0
-getPidByPort ESERVICE_PID ${ESERVICE_PORT}
-while [ -z "${ESERVICE_PID}" -a  ${LOOPVAR} -lt 30  ]
-do
-    LOOPVAR=$(expr ${LOOPVAR} + 1)
-    sleep 1
-    getPidByPort ESERVICE_PID ${ESERVICE_PORT}
-done
-
-if [ -z "${ESERVICE_PID}" ]
-then
-    echo "Error: could not start Eservicetest"
-    ERRORSTATUS=1
-fi
-cd ../..
+restartContainer ${ESERVICE}
 
 if ${WITH_KSERVICES}
 then
-    echo "Restart kservice container..."
-    cd ${KSERVICE}/bin/
-    ./startup.sh 
-    LOOPVAR=0
-    getPidByPort KSERVICE_PID ${KSERVICE_PORT}
-    while [ -z "${KSERVICE_PID}" -a  ${LOOPVAR} -lt 30  ]
-    do
-	LOOPVAR=$(expr ${LOOPVAR} + 1)
-	sleep 1
-	getPidByPort KSERVICE_PID ${KSERVICE_PORT}
-    done
-
-    if [ -z "${KSERVICE_PID}" ]
-    then
-	echo "Error: could not start Kservicetest"
-	ERRORSTATUS=1
-    fi
+  restartContainer ${KSERVICE}
 fi
-
-cd ../..
 
 if ${WITH_CMSSERVICES}
 then
-    echo "Restart CMSservice container..."
-    cd ${CMSSERVICE}/bin/
-    ./startup.sh 
-    LOOPVAR=0
-    getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
-    while [ -z "${CMSSERVICE_PID}" -a  ${LOOPVAR} -lt 30  ]
-    do
-	LOOPVAR=$(expr ${LOOPVAR} + 1)
-	sleep 1
-	getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
-    done
-
-    if [ -z "${CMSSERVICE_PID}" ]
-    then
-	echo "Error: could not start CMSservicetest"
-	ERRORSTATUS=1
-    fi
+  restartContainer ${CMSSERVICE}
 fi
-popd
 
 exit ${ERRORSTATUS}
