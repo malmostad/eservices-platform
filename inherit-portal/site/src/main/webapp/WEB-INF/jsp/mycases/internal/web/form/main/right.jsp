@@ -312,6 +312,13 @@
 <!-- jquery scripts for dialogs etc TODO move to separate js file -->
 <script type="text/javascript" src="/site/js/form/jquery.form.min.js"></script>
 <script type="text/javascript" charset="utf-8">
+<!-- http://stackoverflow.com/questions/11219731/trim-function-doesnt-work-in-ie8 -->
+if(typeof String.prototype.trim !== 'function') {
+  String.prototype.trim = function() {
+    return this.replace(/^\s+|\s+$/g, ''); 
+  };
+}
+
   var $jq = jQuery.noConflict();
 
 	$jq(document).ready(function() {
@@ -441,7 +448,7 @@
           "/site/restservices/site-ajax/getActivityWorkflowInfo",
           "activityInstanceUuid=${activity.activityInstanceUuid}",
           function(data) {
-              var assignedUserUid = data.assignedUser.uuid;
+              var assignedUserUid = data.assignedUser.uuid ;
               if ( assignedUserUid.trim() ) { // not null, not empty and not only WS
                 // first check if assignedUserUid is present in candidate array
                 // if not, add it to the candidate array
