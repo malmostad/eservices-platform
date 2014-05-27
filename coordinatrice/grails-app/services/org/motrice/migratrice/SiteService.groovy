@@ -26,7 +26,7 @@ package org.motrice.migratrice
 import org.motrice.coordinatrice.pxd.PxdFormdef
 
 /**
- * A service just to provide the local site name.
+ * A service to provide the local site name and other configuration items.
  * No database access, not transactional.
  */
 class SiteService {

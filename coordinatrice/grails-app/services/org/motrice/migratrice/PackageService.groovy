@@ -34,10 +34,18 @@ import org.apache.commons.logging.LogFactory
 
 import org.codehaus.groovy.grails.web.metaclass.BindDynamicMethod
 import org.codehaus.groovy.grails.commons.metaclass.GroovyDynamicMethodsInterceptor
+import org.springframework.transaction.annotation.Transactional
+import org.xml.sax.SAXParseException
 
 import org.motrice.coordinatrice.ServiceException
 import org.motrice.zip.ZipBuilder
 
+/**
+ * Service for migration package operations.
+ * Because of a bug somewhere we have to declare the service transactional
+ * explicitly.
+ */
+@Transactional
 class PackageService {
   def grailsApplication
   def siteService
@@ -292,6 +300,11 @@ class PackageService {
     return result
   }
 
+  /**
+   * Import a package file.
+   * inputStream must be the contents of the package file.
+   * Return the imported package.
+   */
   MigPackage importPackage(InputStream inputStream) {
     if (log.debugEnabled) log.debug "importPackage << ${inputStream?.class?.name}"
     def zipInput = new ZipInputStream(inputStream)
@@ -309,7 +322,12 @@ class PackageService {
       log.warn "Problem uploading file: ${exc}"
       throw new MigratriceException('migPackage.import.error', exc.message, exc)
     }
-    assert ename?.startsWith('package')
+
+    if (!ename?.startsWith('package')) {
+      log.warn "Invalid package file (found: ${ename})"
+      throw new MigratriceException('migPackage.import.invalid', 'Invalid package file')
+    }
+
     def baos = ZipUtil.read(zipInput)
     def xml = baos.toString('UTF-8')
     if (log.debugEnabled) log.debug "importPackage xml ${xml.size()}"
@@ -322,8 +340,9 @@ class PackageService {
     objMap.versions.values().each {doSaveImportedObject(it)}
     objMap.items.values().each {doSaveImportedObject(it)}
     
+    // Log a little more than the actual return value.
     if (log.debugEnabled) log.debug "importPackage >> ${objMap}"
-    return null
+    return objMap.pack
   }
 
   /**
@@ -345,7 +364,7 @@ class PackageService {
     pack.originLocal = false
     def dbPackage = MigPackage.findBySiteNameAndPackageName(pack.siteName, pack.packageName)
     check(dbPackage != null, 'migPackage.upload.file.duplicate',
-	"Package already exists, not imported: ${pack.siteName}-${pack.packageName}")
+	"Package already exists, not imported: ${pack.siteName}-${pack.packageName}" as String)
     return pack
   }
 
@@ -503,6 +522,26 @@ class PackageService {
   }
 
   /**
+   * Read and unpack a migration package file.
+   * path must be the file path relative to "here".
+   * This is a security measure.
+   * Only trusted users can store a file "here".
+   */
+  MigPackage importPackageFromFile(String path) {
+    if (log.debugEnabled) log.debug "importPackageFromFile << ${path}"
+    // Get hold of the package file with sanity checks
+    def packageFile = checkPackageFile(path)
+    // Import the file
+    def pack = null
+    packageFile.withInputStream {stream ->
+      pack = importPackage(stream)
+    }
+
+    if (log.debugEnabled) log.debug "importPackageFromFile >> ${pack}"
+    return pack
+  }
+
+  /**
    * Install a form definition.
    * localMap key is formdef path (app/form), value is MigFormdef.
    * installMode is one of
@@ -609,6 +648,30 @@ class PackageService {
 
     localMap['errorCount'] = errorCount
     return localMap
+  }
+
+  /**
+   * Remove all directories from a file path.
+   * Check that the file exists and is readable.
+   * Return the file.
+   */
+  private File checkPackageFile(String path) {
+    File result = null
+    def here = new File('.')
+    def idx = path.lastIndexOf('/')
+    if (idx >= 0 && idx + 1 < path.length()) {
+      result = new File(here, path.substring(idx + 1))
+    } else {
+      result = new File(here, path)
+    }
+
+    if (!result || !result.file || !result.canRead()) {
+      def msg = "A package file named ${path} does not exist or is not readable"
+      log.error msg
+      throw new MigratriceException('migPackage.import.error', msg)
+    }
+
+    return result
   }
 
   /**
@@ -812,10 +875,10 @@ class PackageService {
       result = worker.putBytes(bytes)
     } catch (ConnectException exc) {
       log.error "Postxdb connection problem: ${exc}"
-      throw new MigratriceException('postxdb.connect.problem', exc.message)
+      throw new MigratriceException('postxdb.connect.problem', exc.message, exc)
     } catch (IOException exc) {
       log.error "Postxdb writing problem: ${exc}"
-      throw new MigratriceException('postxdb.write.problem', exc.message)
+      throw new MigratriceException('postxdb.write.problem', exc.message, exc)
     }
 
     return result
@@ -882,8 +945,16 @@ class PackageService {
    * The maps are property maps where all values are strings.
    */
   private Map parseXmlString(String xml) {
-    def root = new XmlSlurper().parseText(xml)
-    return parseXmlList(root)
+    def result = null
+    try {
+      def root = new XmlSlurper().parseText(xml)
+      result = parseXmlList(root)
+    } catch (SAXParseException exc) {
+      log.warn "Parsing problem: ${exc.message}"
+      throw new MigratriceException('migPackage.import.error', exc.message, exc)
+    }
+
+    return result
   }
 
   /**
@@ -915,9 +986,15 @@ class PackageService {
    * The map is the one returned by parseXmlList
    */
   private parseImportedMetadata(String xml) {
-    def outer = new XmlSlurper().parseText(xml)
-    def mapList = outer.'*'.collect {list ->
-      parseXmlList(list)
+    def mapList = null
+    try {
+      def outer = new XmlSlurper().parseText(xml)
+      mapList = outer.'*'.collect {list ->
+	parseXmlList(list)
+      }
+    } catch (SAXParseException exc) {
+      log.warn "Parsing problem: ${exc.message}"
+      throw new MigratriceException('migPackage.import.error', exc.message, exc)
     }
 
     return mapList

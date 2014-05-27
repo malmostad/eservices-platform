@@ -51,19 +51,29 @@
 	<tbody>
 	  <g:each in="${startFormdefList}" status="i" var="startFormdefInst">
 	    <g:set var="procdefId" value="${startFormdefInst?.procdefId}"/>
-	    <g:set var="startFormChangeAllowed" value="${startFormdefInst?.tmpProcdef?.state?.startFormChangeAllowed}"/>
+	    <g:set var="tmpProcdef" value="${startFormdefInst?.tmpProcdef}"/>
+	    <g:set var="linkedProcessName" value="${tmpProcdef?.nameOrKey}"/>
+	    <g:set var="startFormChangeAllowed" value="${tmpProcdef?.state?.startFormChangeAllowed}"/>
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 	      <td><g:link controller="pxdFormdefVer" action="show" id="${startFormdefInst?.formdefId}">${fieldValue(bean: startFormdefInst, field: "formConnectionKey")}</g:link></td>
 	      <td><g:link controller="crdI18nFormLabel" action="listkey" id="${formdefMap[startFormdefInst?.id]?.id}">
 		  <g:img uri="/images/silk/tag_blue.png" title="${message(code: 'pxdFormdef.i18n.start.labels.label')}"/>
 	      </g:link></td>
-	      <td><g:link controller="procdef" action="show" id="${procdefId}">${startFormdefInst?.tmpProcdef?.nameOrKey?.encodeAsHTML()}</g:link></td>
-	      <td>${startFormdefInst?.tmpProcdef?.vno}</td>
-	      <td><g:pdefstate state="${startFormdefInst?.tmpProcdef?.state}"/></td>
-	      <g:if test="${startFormChangeAllowed}">
-		<td><g:link action="delete" id="${startFormdefInst?.id}" params="[procdefId: procdefId]"><g:img uri="/images/silk/delete.png" title="${message(code: 'startform.disconnect.label')}"/></g:link></td>
+	      <g:if test="${linkedProcessName}">
+		<td><g:link controller="procdef" action="show" id="${procdefId}">${linkedProcessName?.encodeAsHTML()}</g:link></td>
+		<td>${tmpProcdef?.vno}</td>
+		<td><g:pdefstate state="${tmpProcdef?.state}"/></td>
+		<g:if test="${startFormChangeAllowed}">
+		  <td><g:link action="delete" id="${startFormdefInst?.id}" params="[procdefId: procdefId]"><g:img uri="/images/silk/delete.png" title="${message(code: 'startform.disconnect.label')}"/></g:link></td>
+		</g:if>
+		<g:else>
+		  <td> </td>
+		</g:else>
 	      </g:if>
 	      <g:else>
+		<td><g:message code="startform.procdef.missing.label"/></td>
+		<td> </td>
+		<td><g:img uri="/images/silk/cross.png" title="${message(code: 'startform.procdef.explanation')}"/></td>
 		<td> </td>
 	      </g:else>
 	    </tr>
