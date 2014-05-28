@@ -2,7 +2,7 @@
 
 ################################################################
 # The great create deploy server config                        #
-#
+# Must be run from ${BUILD_DIR}/bin
 #
 ################################################################
 
@@ -13,7 +13,6 @@
 ###### current_config.sh  #####
 # symlink to actual config of current installation
 . current_config.sh
-
 ################################################################
 # END OF CONFIG                                                #
 ################################################################
@@ -52,7 +51,6 @@ fi
 #    i.e. do not overwrite CONTAINER_ROOT
 #         check that open am policy agent password file exists 
 ################################################################
-TMP_DIR=tmp
 
 if [ -d ${CONTAINER_ROOT} ];
 then
@@ -77,9 +75,10 @@ mkdir -p ${CONTAINER_ROOT}
 ################################################################
 
 # Work from temporary directory
+TMP_DIR=${BUILD_DIR}/bin/tmp
 mkdir -p ${TMP_DIR}
 pushd ${TMP_DIR}
-mkdir -p downloads
+mkdir downloads
 
 # download not already downloaded stuff 
 if [ ! -f downloads/${TOMCAT_TGZ} ]; then
@@ -213,8 +212,26 @@ mv OpenSSOAgentBootstrap.properties OpenSSOAgentBootstrap.properties.orig
 sed -e "s/\(com\.sun\.identity\.agents\.config\.organization\.name\s=\s\/\).*$/\1${OPENAM_REALM_KSERVICE}/" OpenSSOAgentBootstrap.properties.orig > OpenSSOAgentBootstrap.properties
 
 popd
+################################################################
+# Install opendj
+################################################################
+if ${WITH_OPENDJ}
+then
+  pushd ${TMP_DIR}
 
+  if [ ! -f downloads/${OPENDJ_ZIP} ]
+  then
+       curl -o downloads/${OPENDJ_ZIP} ${OPENDJ_URL}
+  fi
+
+  unzip -d $CONTAINER_ROOT downloads/${OPENDJ_ZIP} && cd $CONTAINER_ROOT/opendj
+
+  ./setup --cli --propertiesFilePath $OPENDJ_SETUP_PROPERTIES --acceptLicense --no-prompt
+
+  popd
+fi
+
+################################################################
 # prepare a directory for hippo jcr
+################################################################
 mkdir -p ${CONTENT_ROOT}
-
-

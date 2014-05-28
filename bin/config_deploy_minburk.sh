@@ -43,6 +43,7 @@ CMSSERVICE_PORT=48080                 # internal port i.e. tomcat port
 WITH_KSERVICES=true
 WITH_CMSSERVICES=true
 WITH_OPENAM=true
+WITH_OPENDJ=true
 
 #####################################################################
 # Open AM config
@@ -62,3 +63,10 @@ OPENAM_POLICY_AGENT_PWD_FILE_KSERVICE=~/tmp/pwd.txt
 OPENAM_SERVER_URL_KSERVICE=https://eservicetest.malmo.se:443/openam
 OPENAM_POLICY_AGENT_KSERVICE=kserviceTestAgent
 OPENAM_REALM_KSERVICE=kominrealm
+
+#####################################################################
+# OpenDJ config
+#####################################################################
+OPENDJ_ZIP=OpenDJ-2.6.0.zip
+OPENDJ_URL=file:///home/rol/download/${OPENDJ_ZIP}
+OPENDJ_SETUP_PROPERTIES=/usr/local/etc/motrice/opendj_setup.properties
