@@ -76,9 +76,13 @@ mkdir -p ${CONTAINER_ROOT}
 
 # Work from temporary directory
 TMP_DIR=${BUILD_DIR}/bin/tmp
-mkdir -p ${TMP_DIR}
+
+if [ -d $TMP_DIR/downloads ]
+then
+  mkdir -p ${TMP_DIR}/downloads
+fi
+
 pushd ${TMP_DIR}
-mkdir downloads
 
 # download not already downloaded stuff 
 if [ ! -f downloads/${TOMCAT_TGZ} ]; then

@@ -1,6 +1,17 @@
 #!/bin/bash
+### BEGIN INIT INFO
+# Provides: Auto start of motrice services
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start motrice services
+# Description: Starts the containers for openam,opendj,kservice,eservice
+#  NB!! The containers are started as user 'inherit'
+### END INIT INFO
 
-#!/bin/bash
+# Source function library.
+. /lib/lsb/init-functions
 
 ################################################################
 # CONFIG                                                #
@@ -23,7 +34,7 @@ function getPidByPort () {
    eval $_outvar=\$_result # Instead of just =$_result
 }
 
-function startContainer () {
+function startTomcatContainer () {
   local SERVICE_PID
   local LOOPCOUNTER=0
 
@@ -54,7 +65,7 @@ function startContainer () {
   popd
 }
 
-function shutdownContainer () { 
+function shutdownTomcatContainer () { 
     #if no argument, then NOOP
     pushd ${CONTAINER_ROOT}
     if [ -n "$2" ] 
@@ -85,12 +96,12 @@ function shutdownContainer () {
 	    ERRORSTATUS=1;
 	fi
     else
-	echo "shutdownContainer: No container argument"
+	echo "shutdownTomcatContainer: No container argument"
     fi
     popd
 }
 
-function restartContainer () {
+function restartTomcatContainer () {
   local SERVICE_PID
   local LOOPCOUNTER=0
 
@@ -102,12 +113,11 @@ function restartContainer () {
   esac
 
   getPidByPort SERVICE_PID ${CURRENT_PORT}
-  shutdownContainer $1 ${SERVICE_PID}
-  startContainer ${SERVICE}
+  shutdownTomcatContainer $1 ${SERVICE_PID}
+  startTomcatContainer ${SERVICE}
 }
 
 function listContainers () {
-    local CURRENT_SERVICE
     local CURRENT_PID
 
     for i in  ${ESERVICE}  ${KSERVICE}  ${CMSSERVICE}
@@ -130,9 +140,20 @@ function listContainers () {
 	    
 	if [ -n "${CURRENT_PID}" ] 
 	then 
-	    echo -e "Service:   ${CURRENT_SERVICE} \t port: ${CURRENT_PORT} \t pid: ${CURRENT_PID}"
+	    echo -e "Service: ${i} \t port: ${CURRENT_PORT} \t pid: ${CURRENT_PID}"
 	fi
    done
+
+   if ${WITH_OPENDJ}
+   then 
+       # TODO
+       # get opendj port number by looking up ${OPENDJ_SETUP_PROPERTIES} file
+       getPidByPort CURRENT_PID 1389
+       if [ -n "${CURRENT_PID}" ] 
+       then 
+	   echo -e "Service: opendj \t\t port: 1389 \t pid: ${CURRENT_PID}"
+       fi
+   fi
 }
 
 function shutdownContainers() {
@@ -157,14 +178,24 @@ function shutdownContainers() {
 	esac
 
 	echo -e "Shutting down service container $i with pid: $CURRENT_PID" at port ${CURRENT_PORT}
-	shutdownContainer $i $CURRENT_PID
+	shutdownTomcatContainer $i $CURRENT_PID
     done
+
+    if ${WITH_OPENDJ}
+    then 
+      $CONTAINER_ROOT/opendj/bin/stop-ds
+    fi
 }
 
 function startContainers() {
+    if ${WITH_OPENDJ}
+    then 
+      $CONTAINER_ROOT/opendj/bin/start-ds
+    fi
+
     for i in  ${ESERVICE}  ${KSERVICE}  ${CMSSERVICE}
     do
-	startContainer $i
+      startTomcatContainer $i
     done
 }
 
@@ -177,7 +208,7 @@ function restartContainers() {
 }
 
 function usage () {
-  echo "Usage: $1 l|s|r|x (One of:  -l = list, -x = stop, -r = restart, -s = start )"
+  echo "Usage: $1 {start|stop|restart|status}"
   exit 1 ;
 }
 
@@ -186,20 +217,40 @@ then
  usage $0
 fi
 
-arglength=${#1}
+case "$1" in
+    start )
+    startContainers
+  ;;
 
-if [ $arglength != 2 ]
-then
- usage $0
-fi
+  stop )
+    shutdownContainers
+  ;;
 
-while getopts lxsr opt
-do
-	case $opt in
-		l )  listContainers ; break     ;;
-		s )  startContainers ; break    ;;
-		r )  restartContainers ; break  ;;
-		x )  shutdownContainers ; break ;;
-	       \? )  usage $0 ; exit 1 ;;
-	esac
-done
+  status )
+    listContainers
+  ;;
+
+  restart )
+    shutdownContainers
+    startContainers
+  ;;
+
+  reload )
+    echo "Not applied to service"
+  ;;
+
+  condrestart )
+    echo "Not applied to service"
+  ;;
+
+  probe )
+    echo "Not applied to service"
+  ;;
+
+  *)
+    usage $1
+    exit 1
+  ;;
+esac
+
+exit ${ERRORSTATUS}
