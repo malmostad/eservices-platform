@@ -41,7 +41,37 @@
 						</transformSchema>
 					</transformSchemas>
 					<includes>
-						<include>**/*.java</include>
+						<!-- <include>**/*.java</include>    --> 
+						<include>
+                                                        ./src/test/java/org/inheritsource/test/service/common/AppTest.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ProcessDefinitionInfo.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/StartForm.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ProcessInstanceListItem.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/InboxTaskItem.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ActivityDefinitionInfo.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/CommentFeedItem.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ActivityInstanceItem.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ActivityInstanceLogItem.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ActivityFormInfo.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/GroupInfo.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/StartLogItem.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/DashOpenActivities.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ProcessInstanceDetails.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ActivityInstancePendingItem.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/Tag.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/UserInfo.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/Timeline.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/MyProfile.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ProcessDefinitionDetails.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/FormInstance.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/ActivityWorkflowInfo.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/UserDirectoryEntry.java
+                                                        ./src/main/java/org/inheritsource/service/common/domain/PagedProcessInstanceSearchResult.java
+                                                        ./src/main/java/org/inheritsource/service/common/util/UrlUtil.java
+                                                        ./src/main/java/org/inheritsource/service/common/util/ParameterEncoder.java
+                                                        ./src/main/java/org/inheritsource/service/common/util/ConfigUtil.java
+                                                        ./src/main/java/org/inheritsource/service/common/util/TimelineItemComparator.java
+                                             </include>
 					</includes>
 				</configuration>
 
