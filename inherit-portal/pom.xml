@@ -22,36 +22,15 @@
     DO NOT remove these tags but instead fill them in appropriately as needed, 
     UNLESS the inherited values are valid for your project.
   -->
-  <url>http://www.motrice.org</url>
-
-  <inceptionYear>2014</inceptionYear>
-
- <organization>
-    <name>Motrice AB</name>
-    <url>http://www.motrice.org/</url>
-  </organization>
-
-    <licenses>
-    <license>
-      <name>The GNU Affero General Public License, Version 3.0</name>
-      <url>http://www.gnu.org/licenses/</url>
-      <distribution>repo</distribution>
-    </license>
+  <url/>
+  <inceptionYear/>
+  <organization/>
+  <licenses>
+    <license/>
   </licenses>
-
- <mailingLists>
-   <mailingList>
-    <name>Motrice User Forums</name>
-    <subscribe>TBD</subscribe>
-    <unsubscribe>TBD</unsubscribe>
-    <archive>TBD</archive>
-   </mailingList>
-   <mailingList>
-    <name>Motrice mailing list</name>
-    <archive>TBD</archive>
-   </mailingList>
+  <mailingLists>
+    <mailingList/>
   </mailingLists>
-
   <developers>
     <developer/>
   </developers>
@@ -89,7 +68,7 @@
     <maven.plugins.filesync.version>1.0.0</maven.plugins.filesync.version>
 
     <cargo.tomcat.major.version>7</cargo.tomcat.major.version> 
-    <cargo.tomcat.full.version>7.0.54</cargo.tomcat.full.version>
+    <cargo.tomcat.full.version>7.0.53</cargo.tomcat.full.version>
   </properties>
 
   <repositories>
