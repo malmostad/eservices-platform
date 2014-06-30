@@ -300,7 +300,7 @@
                 <properties>
                 	<cargo.jvmargs>-Xmx1024m -Xms512m -XX:PermSize=512m -XX:MaxPermSize=512m
                 	-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -Xnoagent -Djava.compiler=NONE
-			</cargo.jvmargs>
+					</cargo.jvmargs>
                 </properties>
               </configuration>
               <container>

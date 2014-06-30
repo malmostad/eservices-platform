@@ -21,12 +21,12 @@ TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/
 ESERVICE=hippo-eservice-tomcat        # PATH in CONTAINER_ROOT
 ESERVICE_SSL=true                     # true/false
 ESERVICE_HOST=eminburk.malmo.se       # DNS name
-ESERVICE_EXTERNAL_PORT=80            # external port normally 80 or 443
+ESERVICE_EXTERNAL_PORT=443            # external port normally 80 or 443
 
 KSERVICE=hippo-kservice-tomcat        # PATH in CONTAINER_ROOT
 KSERVICE_SSL=true                     # true/false
 KSERVICE_HOST=kminburk.malmo.se       # DNS name
-KSERVICE_EXTERNAL_PORT=80            # external port normally 80 or 443
+KSERVICE_EXTERNAL_PORT=443            # external port normally 80 or 443
 
 CMSSERVICE=hippo-cmsservice-tomcat    # PATH in CONTAINER_ROOT
 CMSSERVICE_SSL=false                  #
@@ -42,7 +42,7 @@ CMSSERVICE_PORT=48080                 # internal port i.e. tomcat port
 
 WITH_KSERVICES=true
 WITH_CMSSERVICES=true
-WITH_OPENAM=false
+WITH_OPENAM=true
 WITH_OPENDJ=true
 
 #####################################################################
