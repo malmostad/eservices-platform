@@ -438,6 +438,7 @@ if(typeof String.prototype.trim !== 'function') {
 //             $jq(this).closest("tr").remove();
              $jq(entryrow).remove();
              refreshActualCandidates();
+             refreshActivityWorkflowInfo(data);
 	   }); 
        });
     }
@@ -524,6 +525,7 @@ if(typeof String.prototype.trim !== 'function') {
                     function(data) {
                       // if success, refreshActualCandidates(), else leave as is
                       refreshActualCandidates();
+                      refreshActivityWorkflowInfo(data);
                     });
 		   });
 

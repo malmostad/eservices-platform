@@ -53,6 +53,13 @@ public class ServletUserNameUtil {
 	public static UserInfo getUserName(final HttpServletRequest request) {
 		UserInfo result = null;
 
+		/*
+		log.error("ServletUserNameUtil:error");
+		log.warn("ServletUserNameUtil:warn");
+		log.info("ServletUserNameUtil:info");
+		log.debug("ServletUserNameUtil:debug");
+		log.trace("ServletUserNameUtil:trace");
+		*/
 		checkEngine();
 		
 	    String dn = request.getHeader("x-ipl-dn");
@@ -88,11 +95,11 @@ public class ServletUserNameUtil {
 	    }
 
 	    if (result == null) {
-			log.error("userName header not found, get user principal instead"); 
-			log.error("Only one of header x-ipl-dn and x-ipl-ser should be used");
-			log.error("x-ipl-dn=[" + dn + "]");
-			log.error("x-ipl-ser=[" + ser + "]");
-			log.error("x-ipl-cer-sub=[" + certificateSubject + "]");
+			log.info("userName header not found, get user principal instead"); 
+			log.info("Only one of header x-ipl-dn and x-ipl-ser should be used");
+			log.info("x-ipl-dn=[" + dn + "]");
+			log.info("x-ipl-ser=[" + ser + "]");
+			log.info("x-ipl-cer-sub=[" + certificateSubject + "]");
 			
 			Principal principal = request.getUserPrincipal();
 			if (principal != null) {
@@ -102,7 +109,7 @@ public class ServletUserNameUtil {
 			}
 	    }
 	    
-	    log.debug("Render page with userInfo=[" + result + "]");
+	    log.info("Render page with userInfo=[" + result + "]");
 	   
 	    return result;
 	}

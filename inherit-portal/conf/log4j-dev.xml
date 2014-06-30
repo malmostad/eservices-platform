@@ -78,7 +78,7 @@
 
   <!-- Site logging -->
   <logger additivity="false" name="org.hippoecm.hst">
-    <level value="warn"/>
+    <level value="debug"/>
     <appender-ref ref="site"/>
     <appender-ref ref="console"/>
   </logger>
@@ -155,7 +155,8 @@
   </logger>
 
   <root>
-    <level value="warn"/>
+    <!-- <level value="warn"/> -->
+    <level value="debug"/>
     <appender-ref ref="cms"/>
     <appender-ref ref="console"/>
   </root>
