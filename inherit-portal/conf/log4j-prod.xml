@@ -152,6 +152,33 @@
   <logger name="org.hippoecm.repository.updater">
     <level value="info"/>
   </logger>
+  <logger name="org.inheritsource.portal.mycases.util.ServletUserNameUtil">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.portal.components.mycases.Form">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.portal.components.mycases.Confirm">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.portal.components.mycases.ConfirmDispatcher">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.service.coordinatrice.CoordinatriceFacade">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.service.rest.server.IdentityService">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.service.rest.server.InheritServiceApplication">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.service.delegates.CreateDocBoxActExecutionListener">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.service.delegates.SetDecisionAct">
+    <level value="info"/>
+  </logger>
 
   <root>
     <level value="warn"/>

@@ -26,7 +26,8 @@
  
 package org.inheritsource.service.rest.server;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
 import org.inheritsource.service.common.util.ParameterEncoder;
@@ -39,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class ProcessInstanceDetailByActivityInstanceUuid extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(ProcessInstanceDetailByActivityInstanceUuid.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(ProcessInstanceDetailByActivityInstanceUuid.class.getName());
 	
 	@Autowired
 	TaskFormService engine;	
@@ -48,7 +49,7 @@ public class ProcessInstanceDetailByActivityInstanceUuid extends ServerResource 
 	public ProcessInstanceDetails getProcessInstanceDetailsByActivityInstance() {
 		String activityInstanceUuid = ParameterEncoder.decode((String)getRequestAttributes().get("activityInstanceUuid"));
 		
-		log.fine("REST getProcessInstanceDetailsByActivityInstance with parameter activityInstanceUuid=[" + activityInstanceUuid + "]" );
+		log.info("REST getProcessInstanceDetailsByActivityInstance with parameter activityInstanceUuid=[{}]" ,activityInstanceUuid );
 		
 		return engine.getProcessInstanceDetailsByActivityInstance(activityInstanceUuid, null);
 	}

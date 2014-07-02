@@ -29,7 +29,8 @@ package org.inheritsource.taskform.engine.persistence;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
@@ -46,7 +47,7 @@ import org.inheritsource.taskform.engine.persistence.entity.UserEntity;
 
 public class TaskFormDb {
 	
-	public static final Logger log = Logger.getLogger(TaskFormDb.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(TaskFormDb.class.getName());
 		
 	public TaskFormDb() {
 		
@@ -63,7 +64,7 @@ public class TaskFormDb {
 			result = getStartFormDefinition(session, id);
 		}
 		catch (Exception e) {
-			log.severe("id=[" + id + "] Exception: " + e);
+			log.error("id=[" + id + "] Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -88,7 +89,7 @@ public class TaskFormDb {
 			}
 		}
 		catch (Exception e) {
-			log.severe("Exception: " + e);
+			log.error("Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -110,7 +111,7 @@ public class TaskFormDb {
 			result = getStartFormDefinitionByFormPath(session, formPath);
 		}
 		catch (Exception e) {
-			log.severe("formPath=[" + formPath + "] Exception: " + e);
+			log.error("formPath=[" + formPath + "] Exception: " + e.toString());
 			throw e;
 		}
 		finally {		
@@ -134,7 +135,7 @@ public class TaskFormDb {
 				    .list();
 		}
 		catch (Exception e) {
-			log.severe("formPath=[" + formPath + "] Exception: " + e);
+			log.error("formPath=[" + formPath + "] Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -153,7 +154,7 @@ public class TaskFormDb {
 				    .list();
 		}
 		catch (Exception e) {
-			log.severe("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e);
+			log.error("processInstanceUuid=[" + processInstanceUuid + "] Exception: " + e.toString());
 		}
 
 		return filterUniqueProcessActivityFormInstanceFromList(result);
@@ -169,7 +170,7 @@ public class TaskFormDb {
 				    .add( Restrictions.eq("formDocId", formDocId) ).uniqueResult();
 		}
 		catch (Exception e) {
-			log.severe("formDocId=[" + formDocId + "] Exception: " + e);
+			log.error("formDocId=[" + formDocId + "] Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -184,9 +185,9 @@ public class TaskFormDb {
 				result = list.get(0);
 			}
 			if (list.size() > 1) {
-				log.severe("Unique value is expected");
+				log.error("Unique value is expected");
 				for (StartFormDefinition o : list) {
-					log.severe(" value: " + o);
+					log.error(" value: " + o);
 				}
 			}
 		}
@@ -201,9 +202,9 @@ public class TaskFormDb {
 				result = list.get(0);
 			}
 			if (list.size() > 1) {
-				log.severe("Unique value is expected");
+				log.error("Unique value is expected");
 				for (ProcessActivityFormInstance o : list) {
-					log.severe(" value: " + o);
+					log.error(" value: " + o);
 				}
 			}
 		}
@@ -225,7 +226,7 @@ public class TaskFormDb {
 			session.getTransaction().commit();
 		}
 		catch (Exception e) {
-			log.severe("Exception in saveProcessActivityFormInstance: Exception " + e);
+			log.error("Exception in saveProcessActivityFormInstance: Exception " + e.toString());
 		}
 		finally {
 			session.close();
@@ -247,7 +248,7 @@ public class TaskFormDb {
 				    .list();
 		}
 		catch (Exception e) {
-			log.severe("Exception in getPendingStartformFormInstances: userId="  + userId + " exception: " + e);
+			log.error("Exception in getPendingStartformFormInstances: userId="  + userId + " exception: " + e.toString());
 		}
 		finally {
 			session.close();
@@ -270,7 +271,7 @@ public class TaskFormDb {
 			result = getActivityFormDefinition(session, procdefId, actdefId);
 		}
 		catch (Exception e) {
-			log.severe("actdefId=[" + actdefId + "] procdefId=[" + procdefId + "] Exception: " + e);
+			log.error("actdefId=[" + actdefId + "] procdefId=[" + procdefId + "] Exception: " + e.toString());
 		}
 		finally {
 			session.close();
@@ -299,9 +300,9 @@ public class TaskFormDb {
 				result = list.get(0);
 			}
 			if (list.size() > 1) {
-				log.severe("Unique value is expected");
+				log.error("Unique value is expected");
 				for (ActivityFormDefinition o : list) {
-					log.severe(" value: " + o);
+					log.error(" value: " + o);
 				}
 			}
 		}
@@ -358,7 +359,7 @@ public class TaskFormDb {
 			session.getTransaction().commit();
 		}
 		catch (Exception e) {
-			log.severe("actinstId=[" + actinstId + "] tagTypeId=[" + tagTypeId + "] value=[" + value  + "] userId=[" + userId + "] Exception: " + e);
+			log.error("actinstId=[" + actinstId + "] tagTypeId=[" + tagTypeId + "] value=[" + value  + "] userId=[" + userId + "] Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -380,7 +381,7 @@ public class TaskFormDb {
 			result = true;
 		}
 		catch (Exception e) {
-			log.severe("processActivityTagId=[" + processActivityTagId + "] userId=[" + userId + "] Exception: " + e);
+			log.error("processActivityTagId=[" + processActivityTagId + "] userId=[" + userId + "] Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -408,7 +409,7 @@ public class TaskFormDb {
 			session.getTransaction().commit();
 		}
 		catch (Exception e) {
-			log.severe("procinstId=[" + procinstId + "] value=[" + value + "] userId=[" + userId + "] Exception: " + e);
+			log.error("procinstId=[" + procinstId + "] value=[" + value + "] userId=[" + userId + "] Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -430,7 +431,7 @@ public class TaskFormDb {
 			}
 		}
 		catch (Exception e) {
-			log.severe("procinstId=[" + procinstId + "] Exception: " + e);
+			log.error("procinstId=[" + procinstId + "] Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -455,7 +456,7 @@ public class TaskFormDb {
 			}
 		}
 		catch (Exception e) {
-			log.severe("tagValue=[" + tagValue + "] Exception: " + e);
+			log.error("tagValue=[" + tagValue + "] Exception: " + e.toString());
 		}
 		finally {		
 			session.close();
@@ -486,7 +487,7 @@ public class TaskFormDb {
 			result = convertUser(user);
 		}
 		catch (Exception e) {
-			log.severe("uuid=[" + uuid + "] Exception: " + e);
+			log.error("uuid=[" + uuid + "] Exception: " + e.toString());
 		}
 		finally {
 			session.close();
@@ -502,7 +503,7 @@ public class TaskFormDb {
 			result = convertUser(user);
 		}
 		catch (Exception e) {
-			log.severe("dn=[" + dn + "] Exception: " + e);
+			log.error("dn=[" + dn + "] Exception: " + e.toString());
 		}
 		finally {
 			session.close();
@@ -518,7 +519,7 @@ public class TaskFormDb {
 			result = convertUser(user);
 		}
 		catch (Exception e) {
-			log.severe("serial=[" + serial + "] Exception: " + e);
+			log.error("serial=[" + serial + "] Exception: " + e.toString());
 		}
 		finally {
 			session.close();
@@ -544,7 +545,7 @@ public class TaskFormDb {
 			user = (UserEntity) session.createCriteria(UserEntity.class).add(Restrictions.eq("uuid", uuid)).uniqueResult();
 		}
 		catch (Exception e) {
-			log.severe("uuid=[" + uuid + "] Exception: " + e);
+			log.error("uuid=[" + uuid + "] Exception: " + e.toString());
 			throw e;
 		}
 		return user;
@@ -562,12 +563,12 @@ public class TaskFormDb {
 					user = users.get(0);
 				}
 				if (users.size()>1) {
-					log.severe("dn should identify a unique user. dn=[" + dn + "] identifies " + users.size() + " users");
+					log.error("dn should identify a unique user. dn=[" + dn + "] identifies " + users.size() + " users");
 				}
 			}
 		}
 		catch (Exception e) {
-			log.severe("dn=[" + dn + "] Exception: " + e);
+			log.error("dn=[" + dn + "] Exception: " + e.toString());
 			throw e;
 		}
 		
@@ -586,12 +587,12 @@ public class TaskFormDb {
 					user = users.get(0);
 				}
 				if (users.size()>1) {
-					log.severe("serial should identify a unique user. serial=[" + serial + "] identifies " + users.size() + " users");
+					log.error("serial should identify a unique user. serial=[" + serial + "] identifies " + users.size() + " users");
 				}
 			}
 		}
 		catch (Exception e) {
-			log.severe("serial=[" + serial + "] Exception: " + e);
+			log.error("serial=[" + serial + "] Exception: " + e.toString());
 			throw e;
 		}
 		

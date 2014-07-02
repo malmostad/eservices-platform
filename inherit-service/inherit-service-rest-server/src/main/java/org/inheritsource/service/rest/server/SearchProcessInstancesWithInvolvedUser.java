@@ -26,7 +26,8 @@
  
 package org.inheritsource.service.rest.server;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.inheritsource.service.common.util.ParameterEncoder;
@@ -39,7 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class SearchProcessInstancesWithInvolvedUser extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(SearchProcessInstancesWithInvolvedUser.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(SearchProcessInstancesWithInvolvedUser.class.getName());
 	
 	@Autowired
 	TaskFormService engine;	
@@ -57,7 +58,7 @@ public class SearchProcessInstancesWithInvolvedUser extends ServerResource {
 		int fromIndex = Integer.parseInt(fromIndexStr);
 		int pageSize = Integer.parseInt(pageSizeStr);
 		
-		log.fine("REST searchProcessInstancesWithInvolvedUser with parameter searchForUserId=[" + searchForUserId + "] fromIndex=[" + fromIndex + "] pageSize=[" + pageSize + "] sortBy=["  + sortBy + "] sortOrder=[" + sortOrder + "] filter=[" + filter + "] userId=[" + userId + "]");
+		log.info("REST searchProcessInstancesWithInvolvedUser with parameter searchForUserId=[" + searchForUserId + "] fromIndex=[" + fromIndex + "] pageSize=[" + pageSize + "] sortBy=["  + sortBy + "] sortOrder=[" + sortOrder + "] filter=[" + filter + "] userId=[" + userId + "]");
 		
 		return engine.searchProcessInstancesWithInvolvedUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder, filter, null, userId);
 	}

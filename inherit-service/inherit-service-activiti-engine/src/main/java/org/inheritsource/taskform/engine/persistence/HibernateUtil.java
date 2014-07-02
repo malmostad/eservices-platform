@@ -26,8 +26,10 @@
 
 package org.inheritsource.taskform.engine.persistence;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.Properties;
 import java.io.File;
 import java.io.FileReader;
@@ -43,7 +45,7 @@ public class HibernateUtil {
 	public static final Logger log;
 
 	static {
-		log = Logger.getLogger(HibernateUtil.class.getName());
+		log = LoggerFactory.getLogger(HibernateUtil.class.getName());
 		init();
 	}
 
@@ -51,7 +53,7 @@ public class HibernateUtil {
 
 	private static void init() {
 		// A SessionFactory is set up once for an application
-		log.fine("Init hibernate");
+		log.info("Init hibernate");
 		try {
 			Configuration cfg = new AnnotationConfiguration()
 					.addAnnotatedClass(
@@ -74,11 +76,11 @@ public class HibernateUtil {
 							" jdbc:postgresql://localhost/InheritPlatform");
 			overrideProperties(cfg);
 			sessionFactory = cfg.buildSessionFactory();
-			log.fine("Init hibernate finished");
+			log.info("Init hibernate finished");
 		} catch (Exception e) {
-			log.severe("Could not initialize Hibernate SessionFactory: "
+			log.error("Could not initialize Hibernate SessionFactory: "
 					+ e.getMessage());
-			log.severe("Could not initialize Hibernate SessionFactory: "
+			log.error("Could not initialize Hibernate SessionFactory: "
 					+ e.toString());
 		}
 	}
@@ -108,7 +110,7 @@ public class HibernateUtil {
 			cfg.addProperties(hibernateProps);
 		} catch (Exception exc) {
 			// Warn and ignore
-			log.warning("Db default connect params (got "
+			log.warn("Db default connect params (got "
 					+ exc.getClass().getName() + ")");
 		}
 

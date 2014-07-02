@@ -33,7 +33,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.ActivityDefinitionInfo;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
@@ -76,7 +77,7 @@ import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
  */
 public class InheritServiceClient {
 
-	public static final Logger log = Logger.getLogger(InheritServiceClient.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(InheritServiceClient.class.getName());
 	
 	String serverBaseUrl;
 	XStream xstream;
@@ -311,7 +312,7 @@ public class InheritServiceClient {
 		try {
 			result = (String) call(uri);
 		} catch (ResourceException e) {
-			log.severe("submitStartForm uri: " + uri);
+			log.error("submitStartForm uri: " + uri);
 			System.out.println("Status description: " + e.getStatus().getDescription());
 			System.out.println("Uri: " + e.getStatus().getUri());
 			e.printStackTrace();
@@ -329,7 +330,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "submitForm/" 
 				+ ParameterEncoder.encode(docId) + "/" 
 				+ ParameterEncoder.encode(userId) + "?media=xml";
-		log.severe("submitStartForm uri: " + uri);
+		log.error("submitStartForm uri: " + uri);
 		/* ROL let the caller take care of the exception */
 		//result = (String) callAndCatchRE(uri);
 		result = (String) call(uri);
@@ -343,7 +344,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "submitForm/" 
 				+ ParameterEncoder.encode(docId) + "/" 
 				+ ParameterEncoder.encode(userId) + "/" + ParameterEncoder.encode(newDocId) + "?media=xml";
-		log.severe("submitStartForm uri: " + uri);
+		log.error("submitStartForm uri: " + uri);
 		/* ROL let the caller take care of the exception */
 		//result = (String) callAndCatchRE(uri);
 		result = (String) call(uri);
@@ -356,7 +357,7 @@ public class InheritServiceClient {
 		uri = serverBaseUrl + "getDashOpenActivitiesByUserId/" 
 				+ ParameterEncoder.encode(userid) + "/" 
 				+ ParameterEncoder.encode(remainingDays) + "?media=xml";
-		log.severe("getDashOpenActivitiesByUserId uri: " + uri);
+		log.error("getDashOpenActivitiesByUserId uri: " + uri);
 		String response = callAndCatchRE(uri);
 		
 		if (response != null) {
@@ -378,10 +379,10 @@ public class InheritServiceClient {
 		
 		uri = serverBaseUrl + "addComment/" + ParameterEncoder.encode(activityInstanceUuid) + 
 					"/" + ParameterEncoder.encode(comment) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		log.severe("addComment uri: " + uri);
+		log.error("addComment uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
-		log.severe("response addComment: [" + response + "]");
+		log.error("response addComment: [" + response + "]");
 		result = parseIntResponse(response);
 
 		return result;
@@ -393,10 +394,10 @@ public class InheritServiceClient {
 		
 		uri = serverBaseUrl + "getCommentFeed/" + ParameterEncoder.encode(activityInstanceUuid) + 
 					"/" + ParameterEncoder.encode(userId) + "?media=xml";
-		log.severe("getCommentFeed uri: " + uri);
+		log.error("getCommentFeed uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
-		log.severe("response addComment: [" + response + "]");
+		log.error("response addComment: [" + response + "]");
 		if (response != null) {
 			result = (ArrayList<CommentFeedItem>)xstream.fromXML(response);
 		}
@@ -410,7 +411,7 @@ public class InheritServiceClient {
 		
 		uri = serverBaseUrl + "assignTask/" + ParameterEncoder.encode(activityInstanceUuid) + 
 					"/" + ParameterEncoder.encode(action) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		log.severe("addComment uri: " + uri);
+		log.error("addComment uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
 		if (response != null) {
@@ -426,7 +427,7 @@ public class InheritServiceClient {
 		
 		uri = serverBaseUrl + "setActivityPriority/" + ParameterEncoder.encode(activityInstanceUuid) + 
 					"/" + priority + "?media=xml";
-		log.severe("setActivityPriority uri: " + uri);
+		log.error("setActivityPriority uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
 		if (response != null) {
@@ -441,7 +442,7 @@ public class InheritServiceClient {
 		String uri;
 		
 		uri = serverBaseUrl + "getActivityWorkflowInfo/" + ParameterEncoder.encode(activityInstanceUuid) + "?media=xml";
-		log.severe("getActivityWorkflowInfo uri: " + uri);
+		log.error("getActivityWorkflowInfo uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
 		if (response != null) {
@@ -456,7 +457,7 @@ public class InheritServiceClient {
 		String uri;
 		
 		uri = serverBaseUrl + "addTag/" + processActivityFormInstanceId + "/" + tagTypeId + "/" + ParameterEncoder.encode(value) + "/" + ParameterEncoder.encode(userid) + "?media=xml";
-		log.severe("addTag uri: " + uri);
+		log.error("addTag uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
 		if (response != null) {
@@ -472,10 +473,10 @@ public class InheritServiceClient {
 		
 		uri = serverBaseUrl + "deleteTag/" + ParameterEncoder.encode(processInstanceUuid) + 
 					"/" + ParameterEncoder.encode(value) + "/" + ParameterEncoder.encode(userId) + "?media=xml";
-		log.severe("deleteTag uri: " + uri);
+		log.error("deleteTag uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
-		log.severe("response deleteTag: [" + response + "]");
+		log.error("response deleteTag: [" + response + "]");
 		result = parseBooleanResponse(response);
 
 		return result;
@@ -486,10 +487,10 @@ public class InheritServiceClient {
 		String uri;
 		
 		uri = serverBaseUrl + "getTagsByProcessInstance/" + ParameterEncoder.encode(processInstanceUuid) +  "?media=xml";
-		log.severe("getTagsByProcessInstance uri: " + uri);
+		log.error("getTagsByProcessInstance uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
-		log.severe("response getTagsByProcessInstance: [" + response + "]");
+		log.error("response getTagsByProcessInstance: [" + response + "]");
 		if (response != null) {
 			result = (ArrayList<Tag>)xstream.fromXML(response);
 		}
@@ -509,9 +510,9 @@ public class InheritServiceClient {
 			"/" + ParameterEncoder.encode(activityInstanceUuidStr) +
 			"/" + ParameterEncoder.encode(mailSubjectLine) +
 			"/" + ParameterEncoder.encode(mailBodyText) + "?media=xml";
-		log.severe("emailToInitiator uri: " + uri);
+		log.error("emailToInitiator uri: " + uri);
 		String response = callAndCatchRE(uri);
-		log.severe("response emailToInitiator: [" + response + "]");
+		log.error("response emailToInitiator: [" + response + "]");
 		//result = parseIntResponse(response);
 		//return result;
 		return;
@@ -527,9 +528,9 @@ public class InheritServiceClient {
 			"/" + ParameterEncoder.encode(mailFrom) +
 			"/" + ParameterEncoder.encode(mailSubject) +
 			"/" + ParameterEncoder.encode(mailBody) + "?media=xml";
-		log.severe("emailTo uri: " + uri);
+		log.error("emailTo uri: " + uri);
 		String response = callAndCatchRE(uri);
-		log.severe("response emailTo: [" + response + "]");
+		log.error("response emailTo: [" + response + "]");
 		return;
 	}
 	
@@ -538,10 +539,10 @@ public class InheritServiceClient {
 		String uri;
 		
 		uri = serverBaseUrl + "getUsersByRoleAndActivity/" + ParameterEncoder.encode(roleName) + "/" + ParameterEncoder.encode(activityInstanceUuid) +  "?media=xml";
-		log.severe("getUsersByRoleAndActivity uri: " + uri);
+		log.error("getUsersByRoleAndActivity uri: " + uri);
 		
 		String response = callAndCatchRE(uri);
-		log.severe("response getUsersByRoleAndActivity: [" + response + "]");
+		log.error("response getUsersByRoleAndActivity: [" + response + "]");
 		if (response != null) {
 			result = (HashSet<String>)xstream.fromXML(response);
 		}
@@ -581,7 +582,7 @@ public class InheritServiceClient {
 		
 		uri = serverBaseUrl + "getUserByDn/" 
 				+ ParameterEncoder.encode(dn) + "?media=xml";
-		log.severe("getUserByDn uri: " + uri);
+		log.error("getUserByDn uri: " + uri);
 		String response = callAndCatchRE(uri);
 		
 		if (response != null) {
@@ -597,7 +598,7 @@ public class InheritServiceClient {
 		
 		uri = serverBaseUrl + "getUserBySerial/" 
 				+ ParameterEncoder.encode(serial) + "/" + ParameterEncoder.encode(certificateSubject) +  "?media=xml";
-		log.severe("getUserBySerial uri: " + uri);
+		log.error("getUserBySerial uri: " + uri);
 		String response = callAndCatchRE(uri);
 		
 		if (response != null) {
@@ -614,7 +615,7 @@ public class InheritServiceClient {
 		
 		uri = serverBaseUrl + "getPreviousActivitiesDataByDocId/" 
 				+ ParameterEncoder.encode(currentActivityFormDocId) + "?media=xml";
-		log.severe("getPreviousActivitiesDataByDocId uri: " + uri);
+		log.error("getPreviousActivitiesDataByDocId uri: " + uri);
 		result = (String) call(uri);
 		return result;
 	}
@@ -627,7 +628,7 @@ public class InheritServiceClient {
 				+ ParameterEncoder.encode(currentActivityFormDocId) + "/" 
 				+ ParameterEncoder.encode(previousActivityName)  + "/" 
 				+ ParameterEncoder.encode(uniqueXPathExpr) + "?media=xml";
-		log.severe("getPreviousActivityDataByDocId uri: " + uri);
+		log.error("getPreviousActivityDataByDocId uri: " + uri);
 		result = (String) call(uri);
 		return result;
 	}
@@ -641,7 +642,7 @@ public class InheritServiceClient {
 				+ ParameterEncoder.encode(processInstanceUuid) + "/" 
 				+ ParameterEncoder.encode(previousActivityName)  + "/" 
 				+ ParameterEncoder.encode(uniqueXPathExpr) + "?media=xml";
-		log.severe("getPreviousActivityDataByProcessInstanceUuid uri: " + uri);
+		log.error("getPreviousActivityDataByProcessInstanceUuid uri: " + uri);
 		result = (String) call(uri);
 		return result;
 	}
@@ -655,7 +656,7 @@ public class InheritServiceClient {
 				+ ParameterEncoder.encode(currentActivityInstanceUuid) + "/" 
 				+ ParameterEncoder.encode(previousActivityName)  + "/" 
 				+ ParameterEncoder.encode(uniqueXPathExpr) + "?media=xml";
-		log.severe("getPreviousActivityDataByInstanceUuid uri: " + uri);
+		log.error("getPreviousActivityDataByInstanceUuid uri: " + uri);
 		result = (String) call(uri);
 		return result;
 	}
@@ -667,12 +668,12 @@ public class InheritServiceClient {
 		uri = "http://localhost:8080/docbox/doc/formdata/" 
 				+ ParameterEncoder.encode(formDataUuid);
 		
-		log.severe("getDocBoxFormData uri: " + uri);
+		log.error("getDocBoxFormData uri: " + uri);
 		
 		String response = putAndCatchRE(uri, new DocBoxFormData());
 		
 		if (response != null) {
-			log.severe("response: " + response);
+			log.error("response: " + response);
 			response = "{DocBoxFormData: " + response + "}";
 			result = (DocBoxFormData)jsonxstream
 					.fromXML(response);
@@ -716,20 +717,20 @@ public class InheritServiceClient {
 			else if (Status.CLIENT_ERROR_FORBIDDEN.equals(e.getStatus())) {
 				// 403 (Forbidden) if the document number and/or the checksum 
 				// in the signed text do not agree with the document being signed
-				log.warning("the document number and/or the checksum in the signed text do not agree with the document being signed. uri=[" +
+				log.warn("the document number and/or the checksum in the signed text do not agree with the document being signed. uri=[" +
 						 uri + "] and response = [" + response + "]");
 				result = null;
 					
 			} 
 			else if (Status.CLIENT_ERROR_NOT_FOUND.equals(e.getStatus())) {
 				 // 404 (Not found) if the document was not found
-				log.severe("the document was not found. uri=[" +
+				log.error("the document was not found. uri=[" +
 						 uri + "] and response = [" + response + "]");
 				result = null;
 					
 			} 
 			else {
-				log.severe("Exception uri=[" +
+				log.error("Exception uri=[" +
 						 uri + "] and response = [" + response + "] exception: " + e);
 				result = null;
 			}
@@ -737,7 +738,7 @@ public class InheritServiceClient {
 		}
 		
 		if (response != null) {
-			log.severe("response: " + response);
+			log.error("response: " + response);
 			response = "{DocBoxFormData: " + response + "}";
 			result = (DocBoxFormData)jsonxstream
 					.fromXML(response);
@@ -754,7 +755,7 @@ public class InheritServiceClient {
 			}
 		}
 		catch (Exception nfe) {
-			log.warning("Cannot parse boolean value from val: " + val);
+			log.warn("Cannot parse boolean value from val: " + val);
 			result = false;
 		}
 		return result;
@@ -770,7 +771,7 @@ public class InheritServiceClient {
 			}
 		}
 		catch (Exception nfe) {
-			log.warning("Cannot parse integer value from val: " + val);
+			log.warn("Cannot parse integer value from val: " + val);
 			result = -1001;
 		}
 		return result;
@@ -798,7 +799,7 @@ public class InheritServiceClient {
 	        result = (String)cr.post(null, String.class);
 	        			
 		} catch (ResourceException e) {
-			log.severe("call ResourceException: " + e);
+			log.error("call ResourceException: " + e);
 			e.printStackTrace();
 		}
 		
@@ -825,7 +826,7 @@ public class InheritServiceClient {
 	        //headers.add("options", "user:" + bonitaUser); 
 	        
 	        Representation r = cr.put(null);
-	        log.severe("r=" + r);
+	        log.error("r=" + r);
 	        if (r != null) {
 	        	try {
 					result = r.getText();
@@ -836,7 +837,7 @@ public class InheritServiceClient {
 	        }
 	        			
 		} catch (ResourceException e) {
-			log.severe("call ResourceException: " + e);
+			log.error("call ResourceException: " + e);
 			e.printStackTrace();
 		}
 		

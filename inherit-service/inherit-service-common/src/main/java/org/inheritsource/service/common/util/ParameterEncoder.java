@@ -30,7 +30,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ParameterEncoder {
 
@@ -38,7 +39,7 @@ public class ParameterEncoder {
 		
 		public static final String NULL_REPLACE_STR = "---NULL---";
 	
-		public static final Logger log = Logger.getLogger(ParameterEncoder.class.getName());
+		public static final Logger log = LoggerFactory.getLogger(ParameterEncoder.class.getName());
 	
 		public static String encode(String s) {
 			String result = s;
@@ -54,7 +55,7 @@ public class ParameterEncoder {
 				result = URLEncoder.encode(tmpStr, "UTF-8");
 				
 			} catch (UnsupportedEncodingException e) {
-				log.severe("This should never happen....: " + e.toString());
+				log.error("This should never happen....: " + e.toString());
 			}
 			
 			return result;
@@ -77,7 +78,7 @@ public class ParameterEncoder {
 				
 				
 			} catch (UnsupportedEncodingException e) {
-				log.severe("This should never happen....: " + e.toString());
+				log.error("This should never happen....: " + e.toString());
 			}
 			return result;
 		}

@@ -27,7 +27,8 @@
 package org.inheritsource.service.rest.server;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.util.ParameterEncoder;
@@ -40,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class GetTagsByProcessInstance extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(GetTagsByProcessInstance.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(GetTagsByProcessInstance.class.getName());
 	
 	@Autowired
 	TaskFormService engine;	
@@ -50,7 +51,7 @@ public class GetTagsByProcessInstance extends ServerResource {
 		
 		String processInstanceUuid = ParameterEncoder.decode((String)getRequestAttributes().get("processInstanceUuid"));
 		
-		log.fine("REST getTagsByProcessInstance with parameter processInstanceUuid=[" + processInstanceUuid +  "]" );
+		log.info("REST getTagsByProcessInstance with parameter processInstanceUuid=[" + processInstanceUuid +  "]" );
 		
 		return engine.getTagsByProcessInstance(processInstanceUuid); 
 	}

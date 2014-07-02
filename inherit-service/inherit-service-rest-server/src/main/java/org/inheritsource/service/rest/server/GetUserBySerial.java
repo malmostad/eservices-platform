@@ -26,7 +26,8 @@
  
 package org.inheritsource.service.rest.server;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.UserInfo;
@@ -41,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class GetUserBySerial extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(GetUserBySerial.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(GetUserBySerial.class.getName());
 	
 	@Autowired
 	TaskFormService engine;	
@@ -52,7 +53,7 @@ public class GetUserBySerial extends ServerResource {
 		String serial = ParameterEncoder.decode((String)getRequestAttributes().get("serial"));
 		String certificateSubject = ParameterEncoder.decode((String)getRequestAttributes().get("certificateSubject"));
 				
-		log.fine("REST getUserBySerial with parameter serial=[" + serial + "] certificateSubject=[" + certificateSubject + "]" );
+		log.info("REST getUserBySerial with parameter serial=[{}] certificateSubject=[{}]", serial , certificateSubject );
 		
 		return engine.getUserBySerial(serial, certificateSubject);
 	}

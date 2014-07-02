@@ -50,7 +50,7 @@ public class FormWithDetails extends Form  {
 		String activityInstanceUuid = getPublicRequestParameter(request,
 				"taskUuid"); // TODO change to activityInstanceUuid???
 
-		log.debug("activityInstanceUuid=" + activityInstanceUuid);
+		log.debug("activityInstanceUuid= {}" , activityInstanceUuid);
 		
 		ProcessInstanceDetails piDetails = null;
 		if (activityInstanceUuid != null && activityInstanceUuid.trim().length() > 0) {
@@ -65,20 +65,20 @@ public class FormWithDetails extends Form  {
 		appendChannelLabels(request, piDetails);
 		
 		request.setAttribute("processInstanceDetails", piDetails);
-		log.error("XXX FormWithDetails details:" + piDetails);
+		log.error("XXX FormWithDetails details: {} ",  piDetails);
 		
 		if (piDetails != null && piDetails.getProcessInstanceUuid() != null) {
 			List<Tag> tags = engine.getTagsByProcessInstance(piDetails.getProcessInstanceUuid());
 			request.setAttribute("tags", tags);
 			
-			log.error("XXX FormWithDetails tags:" + tags);
+			log.error("XXX FormWithDetails tags: {} " , tags);
 		}
 		
 		if (piDetails != null && piDetails.getTimeline() != null) {
 			request.setAttribute("timelineByDay", piDetails.getTimeline().getTimelineByDay());
-			log.debug("timeline=" + piDetails.getTimeline().getTimelineByDay());
+			log.debug("timeline= {}" , piDetails.getTimeline().getTimelineByDay());
 			
-			log.error("XXX FormWithDetails timeline:" + piDetails.getTimeline().getTimelineByDay());
+			log.error("XXX FormWithDetails timeline:{} ",  piDetails.getTimeline().getTimelineByDay());
 		}
     }
 	

@@ -26,7 +26,8 @@
  
 package org.inheritsource.service.rest.server;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.util.ParameterEncoder;
 import org.restlet.Application;
@@ -41,9 +42,9 @@ import org.restlet.routing.Router;
  */
 public class InheritServiceApplication extends Application {
 	
-	public static final Logger log = Logger.getLogger(InheritServiceApplication.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(InheritServiceApplication.class.getName());
 	
 	public InheritServiceApplication() {
-		log.severe("Init InheritServiceApplication");
+		log.info("Init InheritServiceApplication");
 	}
 }

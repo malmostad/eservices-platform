@@ -28,13 +28,14 @@ package org.inheritsource.service.common.util;
 
 import java.util.Comparator;
 import java.util.Date;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.TimelineItem;
 
 public class TimelineItemComparator<T> implements Comparator<T> {
 	
-	public static final Logger log = Logger.getLogger(TimelineItemComparator.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(TimelineItemComparator.class.getName());
 	
 	@Override
 	public int compare(T o1, T o2) {

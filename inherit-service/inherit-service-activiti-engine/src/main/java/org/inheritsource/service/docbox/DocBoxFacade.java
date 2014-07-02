@@ -25,7 +25,8 @@
  
 package org.inheritsource.service.docbox;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -42,7 +43,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 public class DocBoxFacade {
 	
-	public static final Logger log = Logger.getLogger(DocBoxFacade.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(DocBoxFacade.class.getName());
 	
 	public DocBoxFacade() {
 		
@@ -61,7 +62,7 @@ public class DocBoxFacade {
 					.put(DocBoxFormData.class);
 		}
 		catch (Exception e) {
-			log.severe("Exception: " + e);
+			log.error("Exception: {}" , e.toString());
 		}
 		return label;
 	}
@@ -79,7 +80,7 @@ public class DocBoxFacade {
 					.post(DocBoxFormData.class, signature);
 		}
 		catch (UniformInterfaceException e) {
-			log.severe("Exception: " + e);
+			log.error("Exception: {}" , e.toString());
 			switch (e.getResponse().getStatus()) {
 			case 409:
 				// 409 (Conflict) on concurrent update conflict 
@@ -90,20 +91,20 @@ public class DocBoxFacade {
 			
 			case 403:
 				// 409 (Conflict) on concurrent update conflict 
-				log.warning("the document number and/or the checksum in the signed text do not agree with the document being signed. docBoxRef=[" +
+				log.warn("the document number and/or the checksum in the signed text do not agree with the document being signed. docBoxRef=[" +
 						docBoxRef + "] signature=[" + signature + "] and response = [" + label + "]");
 				label = null;
 				break;
 			
 			case 404:
 				// 409 (Conflict) on concurrent update conflict 
-				log.severe("the document was not found. docBoxRef=[" +
+				log.error("the document was not found. docBoxRef=[" +
 						docBoxRef + "] signature=[" + signature + "] and response = [" + label + "]");
 				label = null;
 				break;
 			
 			default:
-				log.severe("Exception docBoxRef=[" +
+				log.error("Exception docBoxRef=[" +
 						docBoxRef + "] signature=[" + signature + "] and response = [" + label + "]");
 				label = null;
 				break;

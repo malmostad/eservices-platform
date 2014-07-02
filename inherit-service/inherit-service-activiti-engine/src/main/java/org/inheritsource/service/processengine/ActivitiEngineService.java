@@ -40,7 +40,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
@@ -105,7 +106,7 @@ public class ActivitiEngineService {
 	private IdentityService identityService = null;
 	private TaskFormDb taskFormDb = null;
 	
-	public static final Logger log = Logger.getLogger(ActivitiEngineService.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(ActivitiEngineService.class.getName());
 	public static String docboxBaseUrl = ConfigUtil.getConfigProperties().getProperty("docbox.doc.base.url");
 	
 	public ActivitiEngineService() {		
@@ -291,8 +292,7 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getMainProcessInstanceByProcessInstanceId with processInstanceId: " +
-					processInstanceId);
+			log.error("Unable to getMainProcessInstanceByProcessInstanceId with processInstanceId: {}" , processInstanceId);
 		}
 		
 		return mainProcessInstance;
@@ -381,7 +381,7 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getHistoricMainProcessInstanceByProcessInstanceId with processInstanceId: " +
+			log.error("Unable to getHistoricMainProcessInstanceByProcessInstanceId with processInstanceId: {}" ,
 					processInstanceId);
 		}
 		
@@ -407,8 +407,7 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getActivityInstanceUuid with processInstanceId: " + processInstanceId +
-					" and taskName: " + taskName);
+			log.error("Unable to getActivityInstanceUuid with processInstanceId: {} and taskName:{} ",processInstanceId , taskName);
 		}
 			
 		return taskId;
@@ -440,7 +439,7 @@ public class ActivitiEngineService {
 			}
 			
 		} catch (Exception e) {
-			log.severe("Unable to getActivityInstanceItem with taskId: " + actinstId + " Exception: " + e);
+			log.error("Unable to getActivityInstanceItem with taskId: " + actinstId + " Exception: " + e);
 		}
 		return result;
 	}
@@ -515,7 +514,7 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getActivityTypeByExecutionIdTaskId with executionId: " + executionId +
+			log.error("Unable to getActivityTypeByExecutionIdTaskId with executionId: " + executionId +
 					" and taskId: " + taskId + "exception: " + e);
 		}
 		
@@ -660,7 +659,7 @@ public class ActivitiEngineService {
 			dashOpenActivities.setOverdue(overdue);
 		
 		} catch (Exception e) {
-			log.severe("Unable to getDashOpenActivitiesByUserId with userId: " + userId +
+			log.error("Unable to getDashOpenActivitiesByUserId with userId: " + userId +
 					" and remaining days: " + remainingDays + 
 					" execption: " + e);
 			dashOpenActivities = null;
@@ -833,7 +832,7 @@ public class ActivitiEngineService {
 			processInstanceDetails.getTimeline().sort();
 			
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceDetails with processInstanceId: " + processInstanceId + 
+			log.error("Unable to getProcessInstanceDetails with processInstanceId: " + processInstanceId + 
 					" execption: " + e);
 			processInstanceDetails = null;	
 		}
@@ -852,7 +851,7 @@ public class ActivitiEngineService {
 				processInstanceDetails = getProcessInstanceDetails(task.getProcessInstanceId(), locale);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceDetailsByActivityInstance with taskId: " + taskId + 
+			log.error("Unable to getProcessInstanceDetailsByActivityInstance with taskId: " + taskId + 
 					" execption: " + e);
 			processInstanceDetails = null;	
 		}
@@ -879,7 +878,7 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to addComment with taskId: " + taskId + 
+			log.error("Unable to addComment with taskId: " + taskId + 
 				" and userId: " + userId + 
 				" execption: " + e);
 			retVal = -1;	
@@ -952,7 +951,7 @@ public class ActivitiEngineService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceCommentFeedByActivity with taskId: " + taskId);
+			log.error("Unable to getProcessInstanceCommentFeedByActivity with taskId: " + taskId);
 			commentFeedItems = new ArrayList<CommentFeedItem>();
 		}
 		return commentFeedItems;
@@ -970,7 +969,7 @@ public class ActivitiEngineService {
 			activityWorkflowInfo.setAssignedUser(userId2UserInfo(task.getAssignee()));
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));
 		} catch (Exception e) {
-			log.severe("Unable to getActivityWorkflowInfo with taskId: " + taskId + 
+			log.error("Unable to getActivityWorkflowInfo with taskId: " + taskId + 
 					" execption: " + e);
 			activityWorkflowInfo = null;
 		}
@@ -996,7 +995,7 @@ public class ActivitiEngineService {
 		try {
 			engine.getTaskService().setAssignee(taskId, null);
 		} catch (Exception e) {
-			log.severe("Unable to unassignTask with taskId: " + taskId + 
+			log.error("Unable to unassignTask with taskId: " + taskId + 
 					" execption: " + e);
 		}
 		
@@ -1008,7 +1007,7 @@ public class ActivitiEngineService {
 		try {
 			engine.getTaskService().addCandidateUser(taskId, userId);
 		} catch (Exception e) {
-			log.severe("Unable to addCandidate with taskId: " + taskId +
+			log.error("Unable to addCandidate with taskId: " + taskId +
 					" and userId: " + userId + 
 					" execption: " + e);
 		}
@@ -1020,7 +1019,7 @@ public class ActivitiEngineService {
 		try {
 			engine.getTaskService().deleteCandidateUser(taskId, userId);
 		} catch (Exception e) {
-			log.severe("Unable to removeCandidate with taskId: " + taskId +
+			log.error("Unable to removeCandidate with taskId: " + taskId +
 					" and userId: " + userId + 
 					" execption: " + e);
 		}
@@ -1032,7 +1031,7 @@ public class ActivitiEngineService {
 		try {
 			engine.getTaskService().setPriority(taskId, priority);
 		} catch (Exception e) {
-			log.severe("Unable to setPriority with taskId: " + taskId +
+			log.error("Unable to setPriority with taskId: " + taskId +
 					" and priority: " + priority + 
 					" execption: " + e);
 		}
@@ -1079,7 +1078,7 @@ public class ActivitiEngineService {
 			ProcessInstance processInstance = engine.getRuntimeService().startProcessInstanceById(processDefinitionId, variables);
 			processInstanceId = processInstance.getId();
 		} catch (Exception e) {
-			log.severe("Unable to start process instance with processDefinitionId: " + processDefinitionId + 
+			log.error("Unable to start process instance with processDefinitionId: " + processDefinitionId + 
 					" exeception: " + e);
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
@@ -1097,15 +1096,15 @@ public class ActivitiEngineService {
 			engine.getTaskService().complete(taskId, variables);
 			successful = true;
 		} catch (ActivitiTaskAlreadyClaimedException e) {
-			log.fine("Could not claim in executeTask with taskId: " + taskId + 
+			log.info("Could not claim in executeTask with taskId: " + taskId + 
 				" exception: " + e);
 			successful = false;
 		}  catch (ActivitiObjectNotFoundException e) {
-			log.fine("Could not claim task in executeTask with taskId: " + taskId + 
+			log.info("Could not claim task in executeTask with taskId: " + taskId + 
 					" exception: " + e);
 			successful = false;	
 		} catch (Exception e) {
-			log.severe("Could not executeTask with taskId: " + taskId + 
+			log.error("Could not executeTask with taskId: " + taskId + 
 				" exception: " + e);
 			successful = false;
 		} finally {
@@ -1230,7 +1229,7 @@ public class ActivitiEngineService {
 			}
 			
 		} catch (Exception e) {
-			log.severe("Unable to getPagedProcessInstanceSearchResult with startedByUserId: " + searchForUserId +
+			log.error("Unable to getPagedProcessInstanceSearchResult with startedByUserId: " + searchForUserId +
 					" by userId: " + userId + 
 					" exeception: " + e);
 			pagedProcessInstanceSearchResult = null;	
@@ -1360,7 +1359,7 @@ public class ActivitiEngineService {
 				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getHistoricPagedProcessInstanceSearchResult with searchForUserId: " + searchForUserId +
+			log.error("Unable to getHistoricPagedProcessInstanceSearchResult with searchForUserId: " + searchForUserId +
 					" by userId: " + userId + 
 					" exeception: " + e);
 			pagedProcessInstanceSearchResult = null;	
@@ -1455,7 +1454,7 @@ public class ActivitiEngineService {
 			}
 			
 		} catch (Exception e) {
-			log.severe("Unable to getPagedProcessInstanceSearchResultByUuids with processInstanceIdList: " + processInstanceIdList.toString() +
+			log.error("Unable to getPagedProcessInstanceSearchResultByUuids with processInstanceIdList: " + processInstanceIdList.toString() +
 					" by userId: " + userId  + 
 					" exeception: " + e);
 			pagedProcessInstanceSearchResult = null;	
@@ -1529,7 +1528,7 @@ public class ActivitiEngineService {
 				pagedProcessInstanceSearchResult.setHits(processInstanceListItems);
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getHistoricPagedProcessInstanceSearchResultByUuids  processInstanceIdList: " + 
+			log.error("Unable to getHistoricPagedProcessInstanceSearchResultByUuids  processInstanceIdList: " + 
 					processInstanceIdList.toString() + " by userId: " + userId  + 
 					" exeception: " + e);
 			pagedProcessInstanceSearchResult = null;	
@@ -1548,7 +1547,7 @@ public class ActivitiEngineService {
 			engine.getIdentityService().saveUser(user);
 			successful = true;
 		} catch (Exception e) {
-			log.severe("Could not createUser with userId: " + userId +  " exception: " + e);
+			log.error("Could not createUser with userId: " + userId +  " exception: " + e);
 		}
 		
 		return successful;
@@ -1565,7 +1564,7 @@ public class ActivitiEngineService {
 				 processDefinitions.add(new ProcessDefinitionInfo(pDItem.getId(), pDItem.getName(), pDItem.getName()));
 			 }
 		} catch (Exception e) {
-			log.severe("Unable to getProcessDefinitions" + 
+			log.error("Unable to getProcessDefinitions" + 
 					" exeception: " + e);
 			processDefinitions = null;
 		}
@@ -1632,7 +1631,7 @@ public class ActivitiEngineService {
 				 processDefinitionDetails.setActivities(activityDefinitionInfos);
 			 }
 		} catch (Exception e) {
-			log.severe("Unable to getProcessDefinitionDetailsByUuid with processDefinitionId: " +
+			log.error("Unable to getProcessDefinitionDetailsByUuid with processDefinitionId: " +
 					processDefinitionId + " execption: " + e);
 			processDefinitionDetails = null;
 		}
@@ -1662,7 +1661,7 @@ public class ActivitiEngineService {
 				parentProcessInstanceId = processInstance.getProcessInstanceId();
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getParentProcessInstanceIdByProcessInstanceId with processInstanceId: " +
+			log.error("Unable to getParentProcessInstanceIdByProcessInstanceId with processInstanceId: " +
 				processInstanceId  + 
 				" exeception: " + e);
 		}
@@ -1697,7 +1696,7 @@ public class ActivitiEngineService {
 				parentProcessInstanceId = processInstance.getSuperProcessInstanceId();
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getHistoricMainProcessInstanceByProcessInstanceId with processInstanceId: " +
+			log.error("Unable to getHistoricMainProcessInstanceByProcessInstanceId with processInstanceId: " +
 					processInstanceId + 
 					" exeception: " + e);
 		}
@@ -1745,7 +1744,7 @@ public class ActivitiEngineService {
 			}
 			
 		} catch (Exception e) {
-			log.severe("Unable to getNextInboxTaskItem with currentProcessInstance: " 
+			log.error("Unable to getNextInboxTaskItem with currentProcessInstance: " 
 					+ currentProcessInstance + " userId: " + userId + " exception: " + e);
 		}
 		
@@ -1764,10 +1763,10 @@ public class ActivitiEngineService {
 		Deployment deployment;
 		
 		deployment = activitiEngineService.deployBpmn("../../bpm-processes/kommun/Forenklad_delgivning.bpmn");
-		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
+		log.error("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
 		
 		deployment = activitiEngineService.deployBpmn("../../bpm-processes/kommun/Hemkompostering.bpmn");
-		log.severe("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
+		log.error("Deployment with id: " + deployment.getId() + " (" + deployment.getName() + ")");
 		
 		System.exit(0);
 	}
@@ -1895,7 +1894,7 @@ public class ActivitiEngineService {
 				addInputStream(resourceName, new FileInputStream(bpmnFile)).deploy();
 			
 		} catch (Exception e) {
-			log.severe("File '" + bpmnFile + "' not found: " + e.getMessage() + 
+			log.error("File '" + bpmnFile + "' not found: " + e.getMessage() + 
 					" exeception: " + e);
 		}
 		return deployment;
@@ -1908,7 +1907,7 @@ public class ActivitiEngineService {
 		try {
 			processInstance = runtimeService.startProcessInstanceByKey(key, variables);
 		} catch (Exception e) {
-			log.severe("Unable to start process instance with key: " + key + 
+			log.error("Unable to start process instance with key: " + key + 
 					" exeception: " + e);
 		}
 		return processInstance;
@@ -1922,7 +1921,7 @@ public class ActivitiEngineService {
 			engine.getIdentityService().setAuthenticatedUserId(userId);
 			processInstance = runtimeService.startProcessInstanceByKey(key, new HashMap<String, Object>());
 		} catch (Exception e) {
-			log.severe("Unable to start process instance with key: " + key + 
+			log.error("Unable to start process instance with key: " + key + 
 					" exeception: " + e);
 		} finally {
 			engine.getIdentityService().setAuthenticatedUserId(null);
@@ -1944,7 +1943,7 @@ public class ActivitiEngineService {
 				name = "";
 			}
 		} catch (Exception e) {
-			log.severe("Unable to getProcessInstanceByProcessInstanceId with processDefinitionId: " + processDefinitionId + 
+			log.error("Unable to getProcessInstanceByProcessInstanceId with processDefinitionId: " + processDefinitionId + 
 					" exeception: " + e);
 		}
 		

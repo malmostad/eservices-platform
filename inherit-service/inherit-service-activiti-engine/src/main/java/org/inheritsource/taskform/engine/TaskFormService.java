@@ -34,7 +34,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
@@ -70,7 +71,7 @@ import org.inheritsource.taskform.engine.persistence.entity.UserEntity;
 
 public class TaskFormService {
 
-	public static final Logger log = Logger.getLogger(TaskFormService.class
+	public static final Logger log = LoggerFactory.getLogger(TaskFormService.class
 			.getName());
 
 	private static final String MYPROFILEFORMPATH="malmo/profil";
@@ -262,7 +263,7 @@ public class TaskFormService {
 	public String submitStartForm(String formPath, String docId, String userId)
 			throws Exception {
 		String result;
-		log.severe("formPath=[" + formPath + "] docId=[" + docId + "] userId=["
+		log.error("formPath=[" + formPath + "] docId=[" + docId + "] userId=["
 				+ userId + "]");
 		// lookup the process this start form is configured to start.
 		try {
@@ -323,7 +324,7 @@ public class TaskFormService {
 			//result = activitiEngineService.getNextInboxTaskItem(currentProcessInstance, userId);
 		}
 		catch (Exception e) {
-			log.severe("getNextActivityInstanceItemByDocId currentFormInstance=" + currentFormInstance + " Exception: " + e);
+			log.error("getNextActivityInstanceItemByDocId currentFormInstance=" + currentFormInstance + " Exception: " + e);
 		}
 		
 		return result;
@@ -472,7 +473,7 @@ public class TaskFormService {
 								userId = UserInfo.ANONYMOUS_UUID;
 								break;
 							default:
-								log.severe("Unknown AuthTypeReq in StartFormDefinition, this should never happen...");
+								log.error("Unknown AuthTypeReq in StartFormDefinition, this should never happen...");
 								break;
 						}
 						
@@ -499,7 +500,7 @@ public class TaskFormService {
 				}
 			}
 		} catch (Exception e) {
-			log.severe("Exception while submitting activity with docId=[" + docId + "] as userId=[" + userId + "] Exception: " + e);
+			log.error("Exception while submitting activity with docId=[" + docId + "] as userId=[" + userId + "] Exception: " + e);
 			// ROL cleanup inconsistencies...
 			throw e;
 		}
@@ -599,7 +600,7 @@ public class TaskFormService {
 			result = aSelectorDirUtils.getUsersByDepartmentAndRole(
 					"Miljöförvaltningen", roleName);
 		} catch (Exception e) {
-			log.severe("getUsersByRoleAndActivity roleName=" + roleName + 
+			log.error("getUsersByRoleAndActivity roleName=" + roleName + 
 					" activityInstanceUuid=" + activityInstanceUuid + 
 					" Exception: " + e.toString());
 		}
@@ -739,7 +740,7 @@ public class TaskFormService {
                     // (userDirectoryService==null ? "null" : "nonull"));
 		    result = userDirectoryService.searchForUserEntries(filterParams);
 		} catch (Exception e) {
-			log.severe("TaskFormService.dirSearchUserEntries: " + 
+			log.error("TaskFormService.dirSearchUserEntries: " + 
                            (userDirectoryService==null ? "null" : "nonull") +
 					" Exception:" + e.toString());
 		}
@@ -753,7 +754,7 @@ public class TaskFormService {
                         //  + (userDirectoryService==null ? "null" : "nonull"));
 			result = userDirectoryService.lookupUserEntries(cnArray);
 		} catch (Exception e) {
-			log.severe("TaskFormService.dirLookupUserEntries: " +
+			log.error("TaskFormService.dirLookupUserEntries: " +
 				   (userDirectoryService==null ? "null" : "nonull") +
 				   " Exception:" + e.toString());
 		}

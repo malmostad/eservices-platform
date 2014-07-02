@@ -51,7 +51,7 @@ public class MyProfile extends MyCasesBaseComponent {
 		} else {
 			request.setAttribute("document",doc);
 			UserInfo user = getUserName(request);
-			log.debug("user: " + request.getUserPrincipal());
+			log.debug("user: {}",   request.getUserPrincipal());
 			request.setAttribute("user", user);
 		}
 	}

@@ -27,7 +27,8 @@
 package org.inheritsource.service.rest.server;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.util.ParameterEncoder;
@@ -40,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class InboxByUserId extends ServerResource{
 
-	public static final Logger log = Logger.getLogger(InboxByUserId.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(InboxByUserId.class.getName());
 	
 	@Autowired
 	TaskFormService engine;	
@@ -49,7 +50,7 @@ public class InboxByUserId extends ServerResource{
 	public List<InboxTaskItem> getInboxTaskList() {
 		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
 		
-		log.fine("REST getUserInstancesList with parameter userid=[" + userId + "]" );
+		log.info("REST getUserInstancesList with parameter userid=[{}]" , userId );
 		
 		return engine.getInboxTaskItems(null, userId);
 	}

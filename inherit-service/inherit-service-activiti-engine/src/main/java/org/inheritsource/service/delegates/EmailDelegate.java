@@ -26,13 +26,14 @@
 package org.inheritsource.service.delegates;
 
 import java.util.Date;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.delegate.DelegateExecution;
 
 public class EmailDelegate implements JavaDelegate {
-	public static final Logger log = Logger.getLogger(EmailDelegate.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(EmailDelegate.class.getName());
 
 	public static String ACT_VAR_RECIPIENT_USER_ID = "emailRecipientUserId";
 	public static String ACT_VAR_MESSAGE_TEXT = "emailMessageText";

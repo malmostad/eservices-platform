@@ -96,7 +96,7 @@ public class Confirm extends MyCasesBaseComponent {
 		}
 
 		
-		log.error("XXX Confirm " + formInstance);
+		log.info("XXX Confirm " + formInstance);
 		
 		if (formInstance!=null) {
 			request.setAttribute("formUrl", formInstance.getViewUrl());
@@ -108,6 +108,6 @@ public class Confirm extends MyCasesBaseComponent {
 		}
 		request.setAttribute("nextTask", nextTask);
 		
-		log.error("XXX Confirm " + nextTask);
+		log.info("XXX Confirm " + nextTask);
 	}
 }

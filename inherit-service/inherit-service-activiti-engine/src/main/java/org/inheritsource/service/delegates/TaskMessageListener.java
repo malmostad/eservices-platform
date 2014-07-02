@@ -30,7 +30,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.regex.Pattern;
 
 import javax.mail.Message;
@@ -57,8 +58,8 @@ public class TaskMessageListener implements TaskListener {
 	 * 
 	 */
 
-	public static final Logger log = Logger
-			.getLogger(SimplifiedServiceMessageDelegate.class.getName());
+	public static final Logger log = LoggerFactory
+			.getLogger(TaskMessageListener.class);
 
 	public static String PROC_VAR_RECIPIENT_USER_ID = "recipientUserId";
 	public static String PROC_VAR_SERVICE_DOC_URI = "serviceDocUri";
@@ -101,7 +102,7 @@ public class TaskMessageListener implements TaskListener {
 		// log.info("Email to: " + recipientUserId);
 		if (isPublic) {
 			//
-			log.severe("public not implemented ");
+			log.error("public not implemented ");
 		} else {
 			inbox = (String) props.get("site.base.intranet");
 			// read info for task
@@ -129,7 +130,7 @@ public class TaskMessageListener implements TaskListener {
 				// go through list and send mail to all candidates
 				Set<IdentityLink> identityLinks = execution.getCandidates();
 				if (identityLinks == null) {
-					log.severe("no candidates found");
+					log.error("no candidates found");
 					return;
 				} else {
 
@@ -149,7 +150,7 @@ public class TaskMessageListener implements TaskListener {
 							}
 
 							catch (Exception e) {
-								log.severe(e.toString());
+								log.error(e.toString());
 							}
 
 						} else {
@@ -172,7 +173,7 @@ public class TaskMessageListener implements TaskListener {
 								}
 
 								catch (Exception e) {
-									log.severe(e.toString());
+									log.error(e.toString());
 								}
 							}
 						}
@@ -180,7 +181,7 @@ public class TaskMessageListener implements TaskListener {
 				}
 				// make unique
 				if (userDirectoryEntries.isEmpty()) {
-					log.severe("No candidates found ");
+					log.error("No candidates found ");
 					return;
 				} else {
 					HashSet<UserDirectoryEntry> users = new HashSet<UserDirectoryEntry>();
@@ -210,7 +211,7 @@ public class TaskMessageListener implements TaskListener {
 		// check email address
 		// might like to replace this with EmailValidator from apache.commons
 		if (!rfc2822.matcher(to).matches()) {
-			log.severe("Invalid address");
+			log.error("Invalid address");
 			return;
 		}
 

@@ -27,7 +27,8 @@ package org.inheritsource.service.delegates;
 
 import java.util.Date;
 import java.util.Properties;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.regex.Pattern;
 
 import javax.mail.Message;
@@ -48,8 +49,7 @@ import org.springframework.context.ApplicationContextAware;
 public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		ApplicationContextAware {
 
-	public static final Logger log = Logger
-			.getLogger(SimplifiedServiceMessageDelegate.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(SimplifiedServiceMessageDelegate.class);
 
 
 	public static String PROC_VAR_RECIPIENT_USER_ID = "recipientUserId";
@@ -71,7 +71,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 				.getRuntimeService()
 				.getVariable(execution.getId(), PROC_VAR_RECIPIENT_USER_ID);
 		if (recipientUserId == null || recipientUserId.trim().length() == 0) {
-			log.severe("Invalid use of SimplifiedServiceMessageDelegate, the task local variable "
+			log.error("Invalid use of SimplifiedServiceMessageDelegate, the task local variable "
 					+ PROC_VAR_RECIPIENT_USER_ID
 					+ "is expected to have a value");
 		}
@@ -98,12 +98,12 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 			messageSubject = "Delgivning";
 		}
 
-		log.info("Email to: " + recipientUserId);
+		log.info("Email to: {}" , recipientUserId);
 		if (isPublic) {
 			inbox = (String) props.get("site.base.public");
 			// read from configuration
 			if (service == null) {
-				log.severe("failed to get service, unable to determine emailadress ");
+				log.error("failed to get service, unable to determine emailadress ");
 				return;
 			} else {
 				try {
@@ -111,16 +111,16 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 					sendEmail(to, from, messageSubject, messageText, siteUri,
 							inbox, SMTPSERVER);
 				} catch (Exception e) {
-					log.severe(e.toString());
+					log.error(e.toString());
 
 				}
 			}
 
 		} else {
-			inbox = (String) props.get("site.base.intranet");
+			// inbox = (String) props.get("site.base.intranet");
 			// read from ldap
 
-			log.severe("ldap connection not implemented, unable to determine emailadress ");
+			log.error("ldap connection not implemented, unable to determine emailadress ");
 
 			// send email in separate method
 
@@ -131,20 +131,20 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 
 	private void sendEmail(String to, String from, String messageSubject,
 			String messageText, String siteUri, String inbox, String SMTPSERVER) {
-		log.info("to: " + to);
+		log.info("to: {}" ,to);
 		// check email address
 		// might like to replace this with EmailValidator from apache.commons
 		if (!rfc2822.matcher(to).matches()) {
-			log.severe("Invalid address");
+			log.error("Invalid address");
 			return;
 		}
 
-		log.info("siteUri:" + siteUri);
-		log.info("inbox:" + inbox);
-		log.info("SMTPSERVER:" + SMTPSERVER);
+		log.info("siteUri:{}" , siteUri);
+		log.info("inbox:{}" , inbox);
+		log.info("SMTPSERVER:{}" , SMTPSERVER);
 
-		log.info("Email subject: " + messageSubject);
-		log.info("Email text: " + messageText);
+		log.info("Email subject: {}" , messageSubject);
+		log.info("Email text: {}" , messageText);
 
 		// Setup mail server
 		Properties mailprops = new Properties();

@@ -29,7 +29,8 @@ import org.activiti.ldap.LDAPQueryBuilder;
 import org.activiti.ldap.LDAPTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import java.util.logging.Logger;
+//import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  */
 public class IDMG_LDAPQueryBuilder extends org.activiti.ldap.LDAPQueryBuilder {
 
-	//public static final Logger log = Logger.getLogger(IDMG_LDAPQueryBuilder.class.getName());
+	//public static final Logger log = LoggerFactory.getLogger(IDMG_LDAPQueryBuilder.class.getName());
 	protected static final Logger LOGGER = LoggerFactory.getLogger(IDMG_LDAPQueryBuilder.class);
 
 	public IDMG_LDAPQueryBuilder() {

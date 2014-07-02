@@ -26,7 +26,8 @@
  
 package org.inheritsource.service.rest.server;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.util.ParameterEncoder;
@@ -40,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class DashOpenActivitiesByUserId extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(DashOpenActivitiesByUserId.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(DashOpenActivitiesByUserId.class.getName());
 	
 	@Autowired
 	TaskFormService engine;	
@@ -53,7 +54,7 @@ public class DashOpenActivitiesByUserId extends ServerResource {
 		
 		int remainingDays = Integer.parseInt(remainingDaysStr);
 		
-		log.fine("REST getUserInstancesList with parameter userid=[" + userid + "] remainingDays=[" + remainingDaysStr + "]" );
+		log.info("REST getUserInstancesList with parameter userid=[" + userid + "] remainingDays=[" + remainingDaysStr + "]" );
 		
 		return engine.getDashOpenActivitiesByUserId(userid, remainingDays);
 	}

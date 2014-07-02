@@ -26,7 +26,8 @@
  
 package org.inheritsource.service.rest.server;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.DashOpenActivities;
 import org.inheritsource.service.common.domain.UserInfo;
@@ -41,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class GetUserByDn extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(GetUserByDn.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(GetUserByDn.class.getName());
 	
 	@Autowired
 	TaskFormService engine;	
@@ -51,7 +52,7 @@ public class GetUserByDn extends ServerResource {
 	public UserInfo getUserByDn() {
 		String dn = ParameterEncoder.decode((String)getRequestAttributes().get("dn"));
 				
-		log.fine("REST getUserByDn with parameter dn=[" + dn + "]" );
+		log.info("REST getUserByDn with parameter dn=[" + dn + "]" );
 		
 		return engine.getUserByDn(dn);
 	}

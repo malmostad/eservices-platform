@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -68,7 +69,7 @@ import org.xml.sax.SAXException;
  */
 public class OrbeonService {
 
-	public static final Logger log = Logger.getLogger(OrbeonService.class
+	public static final Logger log = LoggerFactory.getLogger(OrbeonService.class
 			.getName());
 
 	private String persistenceApiBaseUrl = "http://localhost:8080/exist/rest/db/orbeon-pe/fr/";
@@ -97,21 +98,21 @@ public class OrbeonService {
 				retVal = nodes.item(0).getTextContent();
 			}
 			if (nodes.getLength() > 1) {
-				log.warning("uniqueXPathExpr: " + uniqueXPathExpr
+				log.warn("uniqueXPathExpr: " + uniqueXPathExpr
 						+ "is not unique in uri: " + xmlDataUri
 						+ " => Using first node's data: " + retVal);
 			}
 		} catch (ParserConfigurationException e) {
-			log.severe("uri=" + xmlDataUri + ", uniqueXPathExpr: "
+			log.error("uri=" + xmlDataUri + ", uniqueXPathExpr: "
 					+ uniqueXPathExpr + " Exception: " + e.toString());
 		} catch (SAXException e) {
-			log.severe("uri=" + xmlDataUri + ", uniqueXPathExpr: "
+			log.error("uri=" + xmlDataUri + ", uniqueXPathExpr: "
 					+ uniqueXPathExpr + " Exception: " + e.toString());
 		} catch (IOException e) {
-			log.severe("uri=" + xmlDataUri + ", uniqueXPathExpr: "
+			log.error("uri=" + xmlDataUri + ", uniqueXPathExpr: "
 					+ uniqueXPathExpr + " Exception: " + e.toString());
 		} catch (XPathExpressionException e) {
-			log.severe("uri=" + xmlDataUri + ", uniqueXPathExpr: "
+			log.error("uri=" + xmlDataUri + ", uniqueXPathExpr: "
 					+ uniqueXPathExpr + " Exception: " + e.toString());
 		}
 
@@ -148,19 +149,19 @@ public class OrbeonService {
 			}
 
 		} catch (ParserConfigurationException e) {
-			log.severe("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
+			log.error("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
 					+ " Exception: " + e.toString());
 		} catch (SAXException e) {
-			log.severe("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
+			log.error("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
 					+ " Exception: " + e.toString());
 		} catch (IOException e) {
-			log.severe("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
+			log.error("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
 					+ " Exception: " + e.toString());
 		} catch (XPathExpressionException e) {
-			log.severe("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
+			log.error("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
 					+ " Exception: " + e.toString());
 		} catch (TransformerException e) {
-			log.severe("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
+			log.error("uri=" + xmlDataUri + ", xPathExpr: " + xPathExpr
 					+ " Exception: " + e.toString());
 		}
 
@@ -275,8 +276,8 @@ public class OrbeonService {
 						variableMap.put(fullVariableName, elementValue);
 					}
 					if (xmlLevel > xmlTargetLevel) {
-						log.warning("This xml form seems to have more levels than expected.");
-						log.warning("xmlLevel =" + xmlLevel
+						log.warn("This xml form seems to have more levels than expected.");
+						log.warn("xmlLevel =" + xmlLevel
 								+ " xmlTargetLevel =" + xmlTargetLevel);
 					}
 
@@ -289,7 +290,7 @@ public class OrbeonService {
 
 			}
 		} catch (XMLStreamException e) {
-			log.severe("uri =" + uri 
+			log.error("uri =" + uri 
 					+ " Exception: " + e.toString());
 
 		}

@@ -27,7 +27,8 @@ package org.inheritsource.service.identity;
 
 import java.util.Hashtable;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.naming.*;
 import javax.naming.directory.*;
@@ -36,7 +37,7 @@ import org.inheritsource.service.common.domain.UserDirectoryEntry;
 import org.inheritsource.service.common.util.ConfigUtil;
 
 public class UserDirectoryService {
-	public static final Logger log = Logger.getLogger(UserDirectoryService.class
+	public static final Logger log = LoggerFactory.getLogger(UserDirectoryService.class
 			.getName());
 
 	private String host 					= null;
@@ -91,17 +92,17 @@ public class UserDirectoryService {
 		baseDn      	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.baseDn");
 		keystorePwd  	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.keystorePwd");
 
-		log.fine("=========================================================================================================" );
-		log.fine("host: [" + host + "]" );
-		log.fine("port: [" + port + "]" );
-		log.fine("protocol:[" + protocol + "]" );
-		log.fine("userBaseDn: [" + userBaseDn + "]" );
-		log.fine("groupBaseDn: [" + groupBaseDn + "]" );
-		log.fine("baseDn: [" + baseDn + "]" );
-		log.fine("keystorePwd: [" + keystorePwd + "]" );
-		log.fine("pwd: [" + pwd + "]" );
-		log.fine("securityPrincipal: [" + securityPrincipal + "]" );
-		log.fine("=========================================================================================================" );
+		log.debug("=========================================================================================================" );
+		log.debug("host: [" + host + "]" );
+		log.debug("port: [" + port + "]" );
+		log.debug("protocol:[" + protocol + "]" );
+		log.debug("userBaseDn: [" + userBaseDn + "]" );
+		log.debug("groupBaseDn: [" + groupBaseDn + "]" );
+		log.debug("baseDn: [" + baseDn + "]" );
+		log.debug("keystorePwd: [" + keystorePwd + "]" );
+		log.debug("pwd: [" + pwd + "]" );
+		log.debug("securityPrincipal: [" + securityPrincipal + "]" );
+		log.debug("=========================================================================================================" );
 
 
 		// Set up initial dirContext
@@ -121,7 +122,7 @@ public class UserDirectoryService {
 				// Get access to trusted cert store (for ldaps)
 				System.setProperty("javax.net.ssl.trustStorePassword", keystorePwd);
 
-				log.fine("creating initital context");
+				log.debug("creating initital context");
 				dirCtx = new InitialDirContext(env);
 			}
 			else {
@@ -265,15 +266,15 @@ public class UserDirectoryService {
 		String base = userBaseDn + ", " + baseDn;
 		ArrayList<UserDirectoryEntry> result = new ArrayList<UserDirectoryEntry>();
 		SearchControls sc = new SearchControls();
-		log.fine("UserDirectoryService.searchForUserEntries:");
+		log.debug("UserDirectoryService.searchForUserEntries:");
 
 		filterExpr = buildFilterExpr(filterArgs);
-		log.fine("filterExpr: " + filterExpr);
+		log.debug("filterExpr: " + filterExpr);
 
-		log.fine("filterArgs");
+		log.debug("filterArgs");
 		int i = 0;
 		for (String str : filterArgs) {
-			log.fine("filterArgs[" + i + "]: [" + str + "]");
+			log.debug("filterArgs[" + i + "]: [" + str + "]");
 			i++;
 		}
 
@@ -351,7 +352,7 @@ public class UserDirectoryService {
 			result.setDepartment( getAttributeByName(attrs,"department"));
 			result.setCompany(    getAttributeByName(attrs,"company"));
 		} catch (NamingException ne) {
-			log.severe("lookupUserByCn, cn=" + cn + 
+			log.error("lookupUserByCn, cn=" + cn + 
 					" Exception: " + ne.toString());
 		}
 		return result;

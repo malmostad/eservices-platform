@@ -85,7 +85,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 			String canonicalContentPath = getMount(request).getCanonicalContentPath();
 			String processContentPath = processDefinitionUuid.toLowerCase().replace(':', '-');
     		String guidePath = canonicalContentPath + "/mycases/processes/" + processContentPath + "/" + activityDefinitionUuid.toLowerCase();
-    		log.debug("getJcrTaskLabel look upp label from guide path: " + guidePath );
+    		log.debug("getJcrTaskLabel look upp label from guide path: {}" , guidePath );
     		
     		try {
     			TextDocument guide = (TextDocument) getObjectBeanManager(request).getObject(guidePath);
@@ -94,7 +94,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
     			}
 			} catch (ObjectBeanManagerException e) {
 				// It is ok that no label can be found in jcr, log exception and continue
-				log.warn("Error while searching for activity guide with path=[" + guidePath + "] Exception: " + e);
+				log.warn("Error while searching for activity guide with path=[ {} ] Exception: {}", guidePath,  e.toString());
 			}
 		}	    		
 		return jcrActivityLabel;
@@ -113,7 +113,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 		String canonicalContentPath = getMount(request).getCanonicalContentPath();
 		String startFormContentPath =  canonicalContentPath + "/mycases/startforms/" + startedByFormPath;
 		
-		log.debug("getJcrProcessInstanceLabel look upp label from startFormContentPath: " + startFormContentPath );
+		log.debug("getJcrProcessInstanceLabel look upp label from startFormContentPath: {}",  startFormContentPath );
 		
 		try {
 			EServiceDocument startForm = (EServiceDocument) getObjectBeanManager(request).getObject(startFormContentPath);
@@ -122,7 +122,7 @@ public class MyCasesBaseComponent extends BaseHstComponent {
 			}
 		} catch (Exception e) {
 			// It is ok that no label can be found in jcr, log exception and continue
-			log.warn("Error while searching for start form with path=[" + startFormContentPath + "] Exception: " + e);
+			log.warn("Error while searching for start form with path=[ {} ] + ] Exception: {}" ,startFormContentPath , e.toString());
 		}
 		
 		return processLabel;

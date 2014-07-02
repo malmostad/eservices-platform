@@ -27,7 +27,8 @@ package org.inheritsource.service.delegates;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Date;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.activiti.engine.delegate.DelegateExecution;
 import org.activiti.engine.delegate.ExecutionListener;
@@ -36,7 +37,7 @@ import org.inheritsource.service.orbeon.OrbeonService;
 
 public class CreateVariablesFlowListener implements ExecutionListener {
 
-	public static final Logger log = Logger.getLogger(CreateVariablesFlowListener.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(CreateVariablesFlowListener.class.getName());
 	private static final long serialVersionUID = 593974194188510980L;
 
 	public void notify(DelegateExecution execution) {
@@ -48,7 +49,7 @@ public class CreateVariablesFlowListener implements ExecutionListener {
 				+ execution.getProcessInstanceId() + " at " + new Date());
 
 		if (activityId == null) {
-			log.warning("activityId = null     ");
+			log.warn("activityId = null     ");
 		} else {
 			String persistenceApiBaseUrl = "http://localhost:8080/exist/rest/db/orbeon-pe/fr/";
 

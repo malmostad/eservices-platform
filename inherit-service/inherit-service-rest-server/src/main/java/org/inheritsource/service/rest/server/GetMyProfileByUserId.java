@@ -26,7 +26,8 @@
 
 package org.inheritsource.service.rest.server;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.util.ParameterEncoder;
 import org.inheritsource.service.common.domain.MyProfile;
@@ -38,7 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class GetMyProfileByUserId extends ServerResource{
 
-	public static final Logger log = Logger.getLogger(GetMyProfileByUserId.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(GetMyProfileByUserId.class.getName());
 
 	@Autowired
 	TaskFormService engine;	
@@ -47,7 +48,7 @@ public class GetMyProfileByUserId extends ServerResource{
 	public MyProfile getMyProfile() {
 		MyProfile result = null; 
 		String userId = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
-		log.fine("REST getMyProfile with parameter userid=[" + userId + "]" );
+		log.info("REST getMyProfile with parameter userid=[" + userId + "]" );
 		result = engine.getMyProfile(userId);
 		return result;
 	}

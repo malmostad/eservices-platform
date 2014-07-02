@@ -27,7 +27,8 @@
 package org.inheritsource.service.rest.server;
 
 import java.util.List;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.CommentFeedItem;
 import org.inheritsource.service.common.util.ParameterEncoder;
@@ -40,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class GetCommentFeed extends ServerResource {
 
-	public static final Logger log = Logger.getLogger(GetCommentFeed.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(GetCommentFeed.class.getName());
 	
 	@Autowired
 	TaskFormService engine;	
@@ -51,7 +52,7 @@ public class GetCommentFeed extends ServerResource {
 		String activityInstanceUuid = ParameterEncoder.decode((String)getRequestAttributes().get("activityInstanceUuid"));
 		String userid = ParameterEncoder.decode((String)getRequestAttributes().get("userid"));
 		
-		log.fine("REST getCommentFeed with parameter activityInstanceUuid=[" + activityInstanceUuid + "] userid=[" + userid + "]" );
+		log.info("REST getCommentFeed with parameter activityInstanceUuid=[" + activityInstanceUuid + "] userid=[" + userid + "]" );
 		
 		return engine.getCommentFeed(activityInstanceUuid, userid, null); 
 	}

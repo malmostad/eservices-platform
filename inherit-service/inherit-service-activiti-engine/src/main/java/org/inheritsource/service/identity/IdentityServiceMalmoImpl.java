@@ -27,7 +27,8 @@ package org.inheritsource.service.identity;
 
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.inheritsource.service.common.domain.UserDirectoryEntry;
 import org.inheritsource.service.common.domain.UserInfo;
@@ -36,7 +37,7 @@ import org.inheritsource.taskform.engine.persistence.entity.UserEntity;
 
 public class IdentityServiceMalmoImpl implements IdentityService {
 	
-	public static final Logger log = Logger.getLogger(IdentityServiceMalmoImpl.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(IdentityServiceMalmoImpl.class.getName());
 			
 	ActorSelectorDirUtils aSelectorDirUtils;
 	TaskFormDb taskFormDb;
@@ -80,7 +81,7 @@ public class IdentityServiceMalmoImpl implements IdentityService {
 			result = aSelectorDirUtils.getUsersByDepartmentAndRole(
 					"Miljöförvaltningen", roleName);
 		} catch (Exception e) {
-			log.severe("getUsersByRoleAndActivity roleName" + 	roleName + 
+			log.error("getUsersByRoleAndActivity roleName" + 	roleName + 
 					" activityInstanceUuid=" + activityInstanceUuid + 
 					"Exception: " + e.toString());
 		}

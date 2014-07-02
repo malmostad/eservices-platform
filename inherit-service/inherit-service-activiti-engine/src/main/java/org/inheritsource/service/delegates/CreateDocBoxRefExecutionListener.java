@@ -37,17 +37,20 @@ import org.activiti.engine.task.Task;
 import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.docbox.DocBoxFacade;
 import org.inheritsource.service.form.FormEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CreateDocBoxRefExecutionListener implements ExecutionListener {
 
 	private static final long serialVersionUID = -1522506737389383556L;
+	public static final Logger log = LoggerFactory.getLogger(CreateDocBoxRefExecutionListener.class.getName());
 	
 	protected DocBoxFacade docBoxFacade = new DocBoxFacade();
 
 	
 	@Override
 	public void notify(DelegateExecution execution) throws Exception {
-		System.out.println("CreateDocBoxActExecutionListener called from " + execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date()); 
+		log.debug("CreateDocBoxActExecutionListener called from {}",  execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date()); 
 		
 		
 		TaskService taskService = execution.getEngineServices().getTaskService();
@@ -67,7 +70,7 @@ public class CreateDocBoxRefExecutionListener implements ExecutionListener {
 						// there is an instance
 						DocBoxFormData docBoxFormData = docBoxFacade.getDocBoxFormData(formInstanceId);
 						
-						System.out.println("XXXXXXXXXXX task docBoxFormData" + docBoxFormData);
+						log.debug("XXXXXXXXXXX task docBoxFormData {}" , docBoxFormData);
 
 						if (docBoxFormData != null) {
 							String docBoxRef = docBoxFormData.getDocboxRef();
@@ -82,7 +85,7 @@ public class CreateDocBoxRefExecutionListener implements ExecutionListener {
 			}
 		}
 		else {
-			System.out.println("XXXXXXXXXXX start! CreateDocBoxRefExecutionListener");
+			log.debug("XXXXXXXXXXX start! CreateDocBoxRefExecutionListener");
 			// no task
 			if (ExecutionListener.EVENTNAME_START.equals(execution.getEventName())) {
 				

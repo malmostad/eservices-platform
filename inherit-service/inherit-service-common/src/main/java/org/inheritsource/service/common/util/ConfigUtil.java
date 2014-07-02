@@ -29,7 +29,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfigUtil {
 	public static final Logger log;
@@ -43,7 +44,7 @@ public class ConfigUtil {
 	private static Properties props;
 	
 	static {
-		log = Logger.getLogger(ConfigUtil.class.getName());
+		log = LoggerFactory.getLogger(ConfigUtil.class.getName());
 		init();
 	}
 
@@ -55,7 +56,7 @@ public class ConfigUtil {
 		try {
 			props = loadProperties();
 		} catch (IOException e) {
-			log.severe("Could not read configuration: " + e.getMessage());
+			log.error("Could not read configuration: " + e.getMessage());
 		}
 		
 		if (props == null) {

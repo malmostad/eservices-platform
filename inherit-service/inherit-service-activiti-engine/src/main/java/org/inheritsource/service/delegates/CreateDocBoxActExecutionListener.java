@@ -27,7 +27,8 @@ package org.inheritsource.service.delegates;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -40,7 +41,7 @@ import org.inheritsource.service.form.FormEngine;
 public class CreateDocBoxActExecutionListener extends CreateDocBoxRefExecutionListener {
 
 	private static final long serialVersionUID = 3567118234556647844L;	
-	public static final Logger log = Logger.getLogger(CreateDocBoxActExecutionListener.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(CreateDocBoxActExecutionListener.class.getName());
 	
 	private String actBaseUri = null;
 	
@@ -51,13 +52,13 @@ public class CreateDocBoxActExecutionListener extends CreateDocBoxRefExecutionLi
 			actBaseUri = actBaseUri.trim();
 		}
 		
-		log.info("Using actBaseUri=[" + actBaseUri + "]");
+		log.info("Using actBaseUri=[{}]", actBaseUri );
 	}
 	
 	@Override
 	public void notify(DelegateExecution execution) throws Exception {
 		super.notify(execution);
-		System.out.println("CreateDocBoxActExecutionListener called from " + execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date());
+		log.debug("CreateDocBoxActExecutionListener called from {}" , execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date());
 		
 		TaskService taskService = execution.getEngineServices().getTaskService();
 		Task task = taskService.createTaskQuery().executionId(execution.getId()).singleResult();
@@ -73,7 +74,7 @@ public class CreateDocBoxActExecutionListener extends CreateDocBoxRefExecutionLi
 					execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), taskDocActVarName, actUri);
 				}
 				else {
-					log.severe("Could not create act for task with taskId=[" + task.getId() + "] actBaseUri=[" + actBaseUri + "] and docBoxRef=[" + docBoxRef + "]" );
+					log.error("Could not create act for task with taskId=[" + task.getId() + "] actBaseUri=[" + actBaseUri + "] and docBoxRef=[" + docBoxRef + "]" );
 				}
 			}
 		}
@@ -87,7 +88,7 @@ public class CreateDocBoxActExecutionListener extends CreateDocBoxRefExecutionLi
 					execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), FormEngine.START_FORM_ACT_URI, actUri);
 				}
 				else {
-					log.severe("Could not create act for start form with executionId=[" + execution.getId() + "] actBaseUri=[" + actBaseUri + "] and docBoxRef=[" + docBoxRef + "]" );
+					log.error("Could not create act for start form with executionId=[" + execution.getId() + "] actBaseUri=[" + actBaseUri + "] and docBoxRef=[" + docBoxRef + "]" );
 				}
 			}
 		}

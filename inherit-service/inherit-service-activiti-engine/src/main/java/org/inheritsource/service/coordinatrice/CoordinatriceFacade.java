@@ -26,7 +26,8 @@
 package org.inheritsource.service.coordinatrice;
 
 import java.util.Locale;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 
@@ -41,7 +42,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 public class CoordinatriceFacade {
 	
-	public static final Logger log = Logger.getLogger(CoordinatriceFacade.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(CoordinatriceFacade.class.getName());
 	
 	private ProcessEngine engine = null; 
 
@@ -76,14 +77,14 @@ public class CoordinatriceFacade {
 					.get(ActivityLabel.class);
 		}
 		catch (Exception e) {
-			log.severe("Exception: " + e);
+			log.error("Exception: {}" , e);
 		}
 		return label;
 	}
 	
 	
 	public String getLabel(String processDefinitionId, String activityname, Locale locale) {
-		log.severe("XXXXX " + processDefinitionId + " : " + activityname + " : " + (locale != null ? locale.getLanguage() : "null"));
+		log.info("XXXXX " + processDefinitionId + " : " + activityname + " : " + (locale != null ? locale.getLanguage() : "null"));
 		String result = activityname;
 		
 		ProcessDefinition procDef = engine.getRepositoryService().getProcessDefinition(processDefinitionId);
@@ -116,25 +117,25 @@ public class CoordinatriceFacade {
 					.get(StartFormLabel.class);
 		}
 		catch (Exception e) {
-			log.severe("Exception: " + e);
+			log.error("Exception: {}", e);
 		}
 		return label;
 	}
 	
 	public String getStartFormLabelByStartFormDefinitionKey(String defKey, Locale locale, String defaultValue) {
 		String label = null;
-		System.out.println("Find name for: " + defKey);
+		log.debug("Find name for: {}" , defKey);
 		if (defKey != null) {
 			String[] parts = defKey.split("/");
 			
 			if (parts.length == 2) {
 				String appName = parts[0];
-				System.out.println("appname: " + appName);
+				log.debug("appname: {}" , appName);
 				if (parts[1].length()>6) {
 					String formName = parts[1].substring(0, parts[1].length()-6);
 					int formdefversion = Integer.parseInt(parts[1].substring(parts[1].length()-3, parts[1].length()));
-					System.out.println("formName: " + formName);
-					System.out.println("formdefversion: " + formdefversion);
+					log.debug("formName: {}" , formName);
+					log.debug("formdefversion: " , formdefversion);
 					StartFormLabel startFormLabel = getStartFormLabel(appName, formName, locale.getLanguage(), formdefversion);
 					if (startFormLabel != null) {
 						label = startFormLabel.label;
@@ -194,7 +195,7 @@ public class CoordinatriceFacade {
 					.get(ProcessDefinitionState.class);
 		}
 		catch (Exception e) {
-			log.severe("Exception: " + e);
+			log.error("Exception: {}" , e.toString());
 		}
 		return state;
 	}

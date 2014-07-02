@@ -25,8 +25,10 @@
  
 package org.inheritsource.service.rest.server.services;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
@@ -44,13 +46,13 @@ import org.inheritsource.taskform.engine.TaskFormService;
 @Path("/identity")
 public class IdentityService {
 
-	public static final Logger log = Logger.getLogger(IdentityService.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(IdentityService.class.getName());
 	
 	@Autowired
 	TaskFormService engine;
 	
 	public IdentityService() {
-		log.severe("Creating IdentityService");
+		log.info("Creating IdentityService");
 	}
 	
 	/**
@@ -63,7 +65,7 @@ public class IdentityService {
     @Consumes({"application/xml","application/json"})
     @Produces({"application/xml","application/json"})
 	public UserInfo getUser(@PathParam("userUuid") String userUuid) {
-		log.finest("userUuid=" + userUuid);
+		log.debug("userUuid=" + userUuid);
 		return engine.getUserByUuid(userUuid);
 	}
 
@@ -78,7 +80,7 @@ public class IdentityService {
     @Consumes({"application/xml","application/json"})
     @Produces({"application/xml","application/json"})
 	public UserInfo getUserByDn(@PathParam("userDn") String userDn) {
-		log.finest("userDn=" + userDn);
+		log.debug("userDn={}",  userDn);
 		return engine.getUserByDn(userDn);
 	}
 
@@ -95,7 +97,7 @@ public class IdentityService {
     @Consumes({"application/xml","application/json"})
     @Produces({"application/xml","application/json"})
 	public UserInfo getUserBySerial(@PathParam("serial") String serial, @PathParam("certificateSubject") String certificateSubject) {
-		log.finest("serial=" + serial + ", certificateSubject=" + certificateSubject);
+		log.debug("serial={} certificateSubject={}" , serial ,certificateSubject);
 		return engine.getUserBySerial(serial, certificateSubject);
 	}
 		

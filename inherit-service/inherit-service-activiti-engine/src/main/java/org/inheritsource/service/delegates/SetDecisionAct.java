@@ -27,7 +27,8 @@ package org.inheritsource.service.delegates;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.activiti.engine.TaskService;
 import org.activiti.engine.delegate.DelegateExecution;
@@ -37,7 +38,7 @@ import org.inheritsource.service.form.FormEngine;
 
 public class SetDecisionAct implements ExecutionListener {
 
-	public static final Logger log = Logger.getLogger(SetDecisionAct.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(SetDecisionAct.class.getName());
 	
 	private static final long serialVersionUID = -1522506737389383556L;
 	
@@ -45,13 +46,13 @@ public class SetDecisionAct implements ExecutionListener {
 	
 	@Override
 	public void notify(DelegateExecution execution) throws Exception {
-		System.out.println("CreateDocBoxActExecutionListener called from " + execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date()); 
+		log.debug("SetDecisionAct called from {}", execution.getCurrentActivityName() + " in process " + execution.getProcessInstanceId() + " at " + new Date()); 
 		
 		Map<String, Object> procVars = execution.getEngineServices().getRuntimeService().getVariables(execution.getId());
 		
 		String prevVal = (String)procVars.get(DECISION_ACT_URI);
 		if (prevVal != null && prevVal.trim().length()>0) {
-			log.warning("The process variable " + DECISION_ACT_URI + " is already set to '" + prevVal + "' ond will probably be overwritten");
+			log.warn("The process variable " + DECISION_ACT_URI + " is already set to '" + prevVal + "' ond will probably be overwritten");
 		}
 		
 		TaskService taskService = execution.getEngineServices().getTaskService();
@@ -68,11 +69,11 @@ public class SetDecisionAct implements ExecutionListener {
 					execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), DECISION_ACT_URI, formActUri);
 				}
 				else {
-					log.severe("Invalid use of SetDecisionAct ExecutionListener, the task local variable " + FormEngine.FORM_ACT_URI + "is expected to have a value");
+					log.error("Invalid use of SetDecisionAct ExecutionListener, the task local variable " + FormEngine.FORM_ACT_URI + "is expected to have a value");
 				}	
 			}
 			else {
-				log.severe("Invalid use of SetDecisionAct ExecutionListener, the task local variable " + FormEngine.FORM_ACT_URI + "is expected to be triggered by an end event");
+				log.error("Invalid use of SetDecisionAct ExecutionListener, the task local variable " + FormEngine.FORM_ACT_URI + "is expected to be triggered by an end event");
 			}
 		}
 		else {
@@ -84,11 +85,11 @@ public class SetDecisionAct implements ExecutionListener {
 					execution.getEngineServices().getRuntimeService().setVariable(execution.getId(), DECISION_ACT_URI, formActUri);
 				}
 				else {
-					log.severe("Invalid use of SetDecisionAct ExecutionListener, the process variable " + FormEngine.START_FORM_ACT_URI + "is expected to have a value");
+					log.error("Invalid use of SetDecisionAct ExecutionListener, the process variable " + FormEngine.START_FORM_ACT_URI + "is expected to have a value");
 				}	
 			}
 			else {
-				log.severe("Invalid use of SetDecisionAct ExecutionListener, the task local variable " + FormEngine.FORM_ACT_URI + "is expected to be triggered by an end event");
+				log.error("Invalid use of SetDecisionAct ExecutionListener, the task local variable " + FormEngine.FORM_ACT_URI + "is expected to be triggered by an end event");
 			}
 		}
 	}

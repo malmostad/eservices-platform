@@ -28,7 +28,8 @@ package org.inheritsource.service.processengine;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.ProcessEngineConfiguration;
@@ -39,7 +40,7 @@ import org.activiti.engine.task.Task;
 
 public class ActivitiEngineUtil {
 
-	public static final Logger log = Logger.getLogger(ActivitiEngineUtil.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(ActivitiEngineUtil.class.getName());
 	
 	public static ProcessEngineConfiguration loadConfigFromFile(String fileName) {
 		ProcessEngineConfiguration engineConfig = null;
@@ -48,7 +49,7 @@ public class ActivitiEngineUtil {
 				createProcessEngineConfigurationFromInputStream(new FileInputStream(fileName));
 		}
 		catch (Exception e) {
-			log.severe("Could not find config file: " + fileName + 
+			log.error("Could not find config file: " + fileName + 
 					" exeception: " + e);
 		}
 		return engineConfig;
@@ -62,7 +63,7 @@ public class ActivitiEngineUtil {
 					  .setJobExecutorActivate(true);
 		}
 		catch (Exception e) {
-			log.severe("Could not find config resource: " + resource + 
+			log.error("Could not find config resource: " + resource + 
 					" exeception: " + e);
 		}
 		return engineConfig;

@@ -77,8 +77,8 @@ public class ServletUserNameUtil {
 	    	}
 	    	else {
 	    		log.debug("Only one of header x-ipl-dn and x-ipl-ser should be used");
-	    		log.debug("x-ipl-dn=[" + dn + "]");
-	    		log.debug("x-ipl-ser=[" + ser + "]");
+	    		log.debug("x-ipl-dn=[  {} ]", dn );
+	    		log.debug("x-ipl-ser=[  {} ]", ser);
 	    		
 	    		/** 
 	    		 * TODO workaround to detect by path komin/extern
@@ -97,9 +97,9 @@ public class ServletUserNameUtil {
 	    if (result == null) {
 			log.info("userName header not found, get user principal instead"); 
 			log.info("Only one of header x-ipl-dn and x-ipl-ser should be used");
-			log.info("x-ipl-dn=[" + dn + "]");
-			log.info("x-ipl-ser=[" + ser + "]");
-			log.info("x-ipl-cer-sub=[" + certificateSubject + "]");
+			log.info("x-ipl-dn=[{} ]",dn );
+			log.info("x-ipl-ser=[{}  ]",ser );
+			log.info("x-ipl-cer-sub=[{}]",certificateSubject );
 			
 			Principal principal = request.getUserPrincipal();
 			if (principal != null) {
@@ -109,7 +109,7 @@ public class ServletUserNameUtil {
 			}
 	    }
 	    
-	    log.info("Render page with userInfo=[" + result + "]");
+	    log.info("Render page with userInfo=[ {} ]", result );
 	   
 	    return result;
 	}

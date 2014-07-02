@@ -104,9 +104,9 @@ public class SiteAjaxApplication extends AbstractResource {
 				
 		String userId = getUserUuid(servletRequest);
 
-		log.debug("activityInstanceUuid: " + activityInstanceUuid);
-		log.debug("comment: " + comment);
-		log.debug("userId: " + userId);
+		log.debug("activityInstanceUuid: {}" , activityInstanceUuid);
+		log.debug("comment: {}" , comment);
+		log.debug("userId: {}" , userId);
 
 		if (userId != null) {
 			result = engine.addComment(activityInstanceUuid, comment, userId);
@@ -133,10 +133,10 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		String userId = getUserUuid(servletRequest);
 		
-		log.debug("activityInstanceUuid: " + activityInstanceUuid);
-		log.debug("comment: " + action);
-		log.debug("targetUserId: " + targetUserId);
-		log.debug("userId: " + userId);
+		log.debug("activityInstanceUuid: {}", activityInstanceUuid);
+		log.debug("comment: {}", action);
+		log.debug("targetUserId: {}", targetUserId);
+		log.debug("userId: {}", userId);
 		
 //		if (userId != null) {
 			// user is authenticated
@@ -166,8 +166,8 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		String userId = getUserUuid(servletRequest);
 		
-		log.debug("activityInstanceUuid: " + activityInstanceUuid);
-		log.debug("priority: " + priority);
+		log.debug("activityInstanceUuid: {}",  activityInstanceUuid);
+		log.debug("priority: {}",  priority);
 		
 //		if (userId != null) {
 			// user is authenticated
@@ -196,8 +196,8 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		String userId = getUserUuid(servletRequest);
 		
-		log.debug("activityInstanceUuid: " + activityInstanceUuid);
-		log.debug("userId: " + userId);
+		log.debug("activityInstanceUuid: {}",  activityInstanceUuid);
+		log.debug("userId: {}", userId);
 		
 //		if (userId != null) {
 			// user is authenticated
@@ -225,8 +225,8 @@ public class SiteAjaxApplication extends AbstractResource {
 		
 		String userId = getUserUuid(servletRequest);
 		
-		log.debug("activityInstanceUuid: " + activityInstanceUuid);
-		log.debug("userId: " + userId);
+		log.debug("activityInstanceUuid: {}" , activityInstanceUuid);
+		log.debug("userId: {}", userId);
 		
 //		if (userId != null) {
 			// user is authenticated
@@ -340,10 +340,10 @@ public class SiteAjaxApplication extends AbstractResource {
 				
 		String userId = getUserUuid(servletRequest);
 
-		log.debug("actinstId: " + actinstId);
-		log.debug("tagTypeId: " + tagTypeId);
-		log.debug("value: " + value);
-		log.debug("userId: " + userId);
+		log.debug("actinstId: {}" , actinstId);
+		log.debug("tagTypeId: {}" , tagTypeId);
+		log.debug("value: {}" , value);
+		log.debug("userId: {}" , userId);
 
 //		if (userId != null) {
 			result = engine.addTag(actinstId, tagTypeId, value, userId);
@@ -369,9 +369,9 @@ public class SiteAjaxApplication extends AbstractResource {
 				
 		String userId = getUserUuid(servletRequest);
 
-		log.debug("processInstanceUuid: " + processInstanceUuid);
-		log.debug("value: " + value);
-		log.debug("userId: " + userId);
+		log.debug("processInstanceUuid: {}" , processInstanceUuid);
+		log.debug("value: {}",  value);
+		log.debug("userId: {}", userId);
 
 //		if (userId != null) {
 			result = engine.deleteTag(processInstanceUuid, value, userId);

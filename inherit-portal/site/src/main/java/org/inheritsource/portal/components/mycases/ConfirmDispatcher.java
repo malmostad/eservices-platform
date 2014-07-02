@@ -59,7 +59,7 @@ public class ConfirmDispatcher extends MyCasesBaseComponent {
 	
 		String referrer = request.getHeader("referer");
 		
-		log.error("referrer: " + referrer);
+		log.info("referrer: " + referrer);
 		
 		// some sample confirm urls with referrer urls
 		
@@ -89,13 +89,13 @@ public class ConfirmDispatcher extends MyCasesBaseComponent {
 			path = confirmUrl.toString() + "/form/confirm";
 		}
 		
-		log.error("path: " + path + " isSecure=" + request.isSecure() + " protocol=" + request.getProtocol());
+		log.info("path: " + path + " isSecure=" + request.isSecure() + " protocol=" + request.getProtocol());
 		
 		String portStr = (request.getLocalPort() == 80 || request.getLocalPort() == 443)? "" : ":" + request.getLocalPort();
 		String protocolStr = request.getLocalPort() == 443 ? "https" : "http";
 		String redirectUrl = protocolStr + "://" + request.getServerName() + portStr +  "/site" + path + "?document=" + docIdParam;
 
-		log.error("portStr: " + portStr + " protocolStr=" + protocolStr + " redirectUrl=" + redirectUrl + " request.getLocalPort()" + request.getLocalPort());
+		log.info("portStr: " + portStr + " protocolStr=" + protocolStr + " redirectUrl=" + redirectUrl + " request.getLocalPort()" + request.getLocalPort());
 
 		try {
 			response.sendRedirect(redirectUrl);

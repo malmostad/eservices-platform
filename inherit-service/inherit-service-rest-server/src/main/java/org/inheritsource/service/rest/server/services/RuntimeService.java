@@ -25,7 +25,8 @@
  
 package org.inheritsource.service.rest.server.services;
 
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -43,7 +44,7 @@ import org.inheritsource.taskform.engine.TaskFormService;
 @Path("/runtime")
 public class RuntimeService {
 	
-	public static final Logger log = Logger.getLogger(RuntimeService.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(RuntimeService.class.getName());
 		
 	@Autowired
 	TaskFormService engine;	
@@ -63,13 +64,13 @@ public class RuntimeService {
 	public ActivityInstanceItem getStartActivityInstanceItemByFormPath(@FormParam("formPath") String formPath, @FormParam("userId") String userId) {
 		ActivityInstanceItem result = null;
 		
-		log.fine("REST call with parameter formPath=[" + formPath + "] by userId=[" + userId + "]");
+		log.info("REST call with parameter formPath=[{}] by userId=[{}]",formPath, userId );
 		
 		try {
 			result = engine.getStartActivityInstanceItem(formPath, null, userId);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			log.severe(e.toString());
+			log.error(e.toString());
 		}
 		return result;
 	}

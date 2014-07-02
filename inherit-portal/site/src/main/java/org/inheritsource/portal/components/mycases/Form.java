@@ -53,7 +53,7 @@ public class Form extends MyCasesBaseComponent {
         UserInfo user = getUserName(request);
         
         
-        log.debug("user: " + request.getUserPrincipal());
+        log.debug("user: {}" , request.getUserPrincipal());
         
         String instanceId = getPublicRequestParameter(request, "instanceId");
         String actinstId = getPublicRequestParameter(request, "actinstId");
@@ -86,25 +86,25 @@ public class Form extends MyCasesBaseComponent {
         } 
         
     	request.setAttribute("activity", activity);
-    	log.error("XXX Form activity" + activity);
+    	log.info("XXX Form activity{}", activity);
     	
     	HippoBean guide = null;
     	if (activity != null && activity.getGuideUri() != null) {
     		String guidePath = getMount(request).getCanonicalContentPath() + "/mycases/processes/" + activity.getGuideUri();
-    		log.debug("guide path: " + guidePath );
+    		log.debug("guide path: {}" , guidePath );
     		
     		try {
 				guide = (HippoBean) getObjectBeanManager(request).getObject(guidePath);
 			} catch (ObjectBeanManagerException e) {
 				// TODO Auto-generated catch block
-				log.error("Error while searching for activity guide with path=[" + guidePath + "] Exception: " + e);
+				log.error("Error while searching for activity guide with path=[{}] Exception: {}" ,guidePath , e.toString());
 			}
     	}
     	request.setAttribute("guide", guide);
     	request.setAttribute("user", user);
     	
-    	log.info("Guide:" + guide);
-    	log.info("Form activity:" + activity);
+    	log.info("Guide:{}" , guide);
+    	log.info("Form activity:{}" , activity);
 	}
 	
 	/**

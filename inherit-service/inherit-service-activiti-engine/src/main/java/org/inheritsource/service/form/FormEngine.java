@@ -30,7 +30,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
@@ -54,7 +55,7 @@ import org.inheritsource.taskform.engine.persistence.entity.StartFormDefinition;
 
 public class FormEngine {
 	
-	public static final Logger log = Logger.getLogger(FormEngine.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(FormEngine.class.getName());
 	
 	// motrice start process instance variables by convention
 	public static final String START_FORM_TYPEID        = "motriceStartFormTypeId";
@@ -112,7 +113,7 @@ public class FormEngine {
 		TaskFormHandler result = formTypeId2Handler.get(typeId.toString());
 		
 		if (result == null) {
-			log.severe("Cannot find TaskFormHandler for typeId=" + typeId);
+			log.error("Cannot find TaskFormHandler for typeId={}" , typeId);
 		}
 		
 		return result;
@@ -344,7 +345,7 @@ public class FormEngine {
 			dst.setActivityInstanceUuid(null);
 			dst.setActivityDefinitionUuid(null);
 		} catch (RuntimeException re) {
-			log.severe("Cannot convert ProcessActivityFormInstance " + src
+			log.error("Cannot convert ProcessActivityFormInstance " + src
 					+ " to ActivityInstancePendingItem. RuntimeException: "
 					+ re);
 			throw re;
@@ -419,7 +420,7 @@ public class FormEngine {
 						 }
 					}
 				} catch (Exception e) {
-					log.severe("Could not load StartFormDefinition by formConnectionKey: " + form.getDefinitionKey());
+					log.error("Could not load StartFormDefinition by formConnectionKey: {}" , form.getDefinitionKey());
 				}
 
 				

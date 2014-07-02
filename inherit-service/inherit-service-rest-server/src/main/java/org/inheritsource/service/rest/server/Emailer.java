@@ -30,15 +30,16 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.restlet.resource.ServerResource;
 
 public abstract class Emailer extends ServerResource {
 
-	public static final String MOTRICE_PROPERTIES_DEFAULT_PATH = "/usr/local/etc/inherit/motrice.properties";
+	public static final String MOTRICE_PROPERTIES_DEFAULT_PATH = "/usr/local/etc/motrice/motrice.properties";
 	public static final String MOTRICE_HOME = "MOTRICE_HOME";
-	public static final Logger log = Logger.getLogger(Emailer.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(Emailer.class.getName());
 
 	protected static String SENDERADDRESS  = null;
 	protected static String SMTPSERVER     = null;

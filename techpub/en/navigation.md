@@ -27,3 +27,4 @@
   * [Forms with the Activiti Engine](pages/MotriceFormsWithActiviti.md)
   * [JMX in Motrice](pages/JmxIntro.md)
   * [Signed Forms in Motrice](pages/MotriceSignedForms.md)
+  * [Logging in Motrice](pages/Logging.md)

@@ -33,7 +33,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.inheritsource.service.common.util.TimelineItemComparator;
@@ -44,7 +45,7 @@ import org.inheritsource.service.common.util.TimelineItemComparator;
  *
  */
 public class Timeline {
-	public static final Logger log = Logger.getLogger(Timeline.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(Timeline.class.getName());
 	
 	private List<TimelineItem> items = new ArrayList<TimelineItem>();
 	private boolean sorted;
@@ -129,7 +130,7 @@ public class Timeline {
 			for (TimelineItem item : items) {
 				if (item != null) {
 					if (item.getTimestamp()==null) {
-						log.severe("Timestamp in TimelineItem is not expected to be null: " + item);
+						log.error("Timestamp in TimelineItem is not expected to be null: " + item);
 					}
 					else {
 						if (keyDay==null || !DateUtils.isSameDay(keyDay, item.getTimestamp())) {
@@ -143,7 +144,7 @@ public class Timeline {
 							dayItems.add(item);
 						}
 						else {
-							log.severe("dayItems should never be null on add");
+							log.error("dayItems should never be null on add");
 						}
 					}
 				}

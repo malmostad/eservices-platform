@@ -27,7 +27,8 @@
 package org.inheritsource.service.rest.server;
 
 import java.util.*;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
 import javax.mail.internet.*;

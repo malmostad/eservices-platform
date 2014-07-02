@@ -27,7 +27,8 @@ package org.inheritsource.service.delegates;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -40,7 +41,7 @@ import org.inheritsource.service.form.FormEngine;
 
 public class DocBoxDelegate implements JavaDelegate {
 
-	public static final Logger log = Logger.getLogger(DocBoxDelegate.class.getName());
+	public static final Logger log = LoggerFactory.getLogger(DocBoxDelegate.class.getName());
 	
 	private DocBoxFacade docBoxFacade = new DocBoxFacade(); 
 	
