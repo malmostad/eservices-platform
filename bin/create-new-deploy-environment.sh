@@ -77,7 +77,7 @@ mkdir -p ${CONTAINER_ROOT}
 # Work from temporary directory
 TMP_DIR=${BUILD_DIR}/bin/tmp
 
-if [ -d $TMP_DIR/downloads ]
+if [ ! -d $TMP_DIR/downloads ]
 then
   mkdir -p ${TMP_DIR}/downloads
 fi
