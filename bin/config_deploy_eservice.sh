@@ -4,14 +4,14 @@
 BUILD_DIR=${HOME}/inherit-platform-gitclone/eservices-platform
 
 # ROOT of directory holding the j2ee containers
-CONTAINER_ROOT=${HOME}/motrice-0.5
+CONTAINER_ROOT=${HOME}/motrice-0.6
 
 # ROOT of Hippo jcr content repository
 CONTENT_ROOT=${CONTAINER_ROOT}/jcr-inherit-portal
 
-TOMCAT_DIR=apache-tomcat-7.0.53
+TOMCAT_DIR=apache-tomcat-7.0.54
 TOMCAT_TGZ=${TOMCAT_DIR}.tar.gz
-TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.53/bin/${TOMCAT_TGZ}
+TOMCAT_DOWNLOAD_URL=http://apache.mirrors.spacedump.net/tomcat/tomcat-7/v7.0.54/bin/${TOMCAT_TGZ}
 
 #####################################################################
 # Container config 

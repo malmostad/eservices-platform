@@ -86,7 +86,13 @@ pushd ${TMP_DIR}
 
 # download not already downloaded stuff 
 if [ ! -f downloads/${TOMCAT_TGZ} ]; then
-    curl -o downloads/${TOMCAT_TGZ} ${TOMCAT_DOWNLOAD_URL}
+    response=$(curl --write-out %{http_code} --silent -o  downloads/${TOMCAT_TGZ}  ${TOMCAT_DOWNLOAD_URL})
+    if [ "$response" = "404" ] ; 
+    then
+       echo "Failed to fetch ${TOMCAT_DOWNLOAD_URL}"
+       echo "Maybe the version is not available and the config file needs to be updated."
+       exit 1 
+    fi
 fi
 
 if [ ! -f downloads/${FORGEROCK_POLICY_AGENT_ZIP} ]; then
