@@ -12,8 +12,60 @@ then
  usage $0
 fi
 pushd $HOME/workspaces/inheritsource-develop/pawap/bin 
+
+# update from git 
+git pull
+if [ $? != 0 ]
+then
+  echo "Failed to do git pull. Conflicts?"
+  exit 1
+fi
+
 # try to stop any running deployment
 ./motrice_services.sh stop 
+
+
+# check if deployment is running anyway, maybe by another user
+ESERVICE_PORT=$(grep ESERVICE_PORT= current_config.sh | cut -d = -f 2  | cut -d \#  -f 1 | tr -d \[:blank:\])
+RESPONSE=$(nmap localhost -p ${ESERVICE_PORT} | grep ${ESERVICE_PORT} | grep -v closed |  tr -d \[:blank:\])
+if [ "${RESPONSE}" != "" ]
+then
+  echo "ESERVICE_PORT ${ESERVICE_PORT} already in use?"
+  exit 1
+fi
+
+KSERVICE_PORT=$(grep KSERVICE_PORT= current_config.sh | cut -d = -f 2  | cut -d \#  -f 1| tr -d \[:blank:\])
+RESPONSE=$(nmap localhost -p ${KSERVICE_PORT} | grep ${KSERVICE_PORT} | grep -v closed |  tr -d \[:blank:\])
+if [ "${RESPONSE}" != "" ]
+then
+  echo "KSERVICE_PORT ${KSERVICE_PORT} already in use?"
+  exit 1
+fi
+
+CMSSERVICE_PORT=$(grep CMSSERVICE_PORT= current_config.sh | cut -d = -f 2  | cut -d \#  -f 1| tr -d \[:blank:\])
+RESPONSE=$(nmap localhost -p ${CMSSERVICE_PORT} | grep ${CMSSERVICE_PORT} | grep -v closed |  tr -d \[:blank:\])
+if [ "${RESPONSE}" != "" ]
+then
+  echo "CMSSERVICE_PORT ${CMSSERVICE_PORT} already in use?"
+  exit 1
+fi
+
+
+RMI_PORT="1099"
+RESPONSE=$(nmap localhost -p ${RMI_PORT} | grep ${RMI_PORT} | grep -v closed |  tr -d \[:blank:\])
+if [ "${RESPONSE}" != "" ]
+then
+  echo "RMI port ${RMI_PORT} already in use?"
+  exit 1
+fi
+
+LDAP_PORT="1389"
+RESPONSE=$(nmap localhost -p ${LDAP_PORT} | grep ${LDAP_PORT} | grep -v closed |  tr -d \[:blank:\])
+if [ "${RESPONSE}" != "" ]
+then
+  echo "LDAP port ${LDAP_PORT} already in use?"
+  exit 1
+fi
 
 # create a new one 
 DEPLOYMENTNAME="${HOME}/motrice"`date  +%Y%m%d%H%M`
