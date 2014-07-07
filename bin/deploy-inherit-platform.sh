@@ -237,8 +237,12 @@ else
 fi
 
 # 3. Build eservice-platform
+if [ -z ${MVN_SKIP_TEST} ] 
+then 
+    MVN_SKIP_TEST=true 
+fi 
 pushd ${BUILD_DIR}
-if mvn -DskipTests=true clean install
+if mvn -DskipTests=${MVN_SKIP_TEST} clean install
 then
     echo "Executing mvn -DskipTests=true clean install - patched for eservicetest..."
 else
