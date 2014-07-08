@@ -49,8 +49,8 @@ import org.springframework.context.ApplicationContextAware;
 public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		ApplicationContextAware {
 
-	public static final Logger log = LoggerFactory.getLogger(SimplifiedServiceMessageDelegate.class);
-
+	public static final Logger log = LoggerFactory
+			.getLogger(SimplifiedServiceMessageDelegate.class);
 
 	public static String PROC_VAR_RECIPIENT_USER_ID = "recipientUserId";
 	public static String PROC_VAR_SERVICE_DOC_URI = "serviceDocUri";
@@ -98,18 +98,20 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 			messageSubject = "Delgivning";
 		}
 
-		log.info("Email to: {}" , recipientUserId);
+		log.info("Email to: {}", recipientUserId);
 		if (isPublic) {
 			inbox = (String) props.get("site.base.public");
 			// read from configuration
+			log.info("siteUri:{}", siteUri);
+			log.info("inbox:{}", inbox);
+
 			if (service == null) {
 				log.error("failed to get service, unable to determine emailadress ");
 				return;
 			} else {
 				try {
 					to = service.getMyProfile(recipientUserId).getEmail();
-					sendEmail(to, from, messageSubject, messageText, siteUri,
-							inbox, SMTPSERVER);
+					sendEmail(to, from, messageSubject, messageText, SMTPSERVER);
 				} catch (Exception e) {
 					log.error(e.toString());
 
@@ -129,9 +131,9 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		return;
 	}
 
-	private void sendEmail(String to, String from, String messageSubject,
-			String messageText, String siteUri, String inbox, String SMTPSERVER) {
-		log.info("to: {}" ,to);
+	private static void sendEmail(String to, String from,
+			String messageSubject, String messageText, String SMTPSERVER) {
+		log.info("to: {}", to);
 		// check email address
 		// might like to replace this with EmailValidator from apache.commons
 		if (!rfc2822.matcher(to).matches()) {
@@ -139,12 +141,10 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 			return;
 		}
 
-		log.info("siteUri:{}" , siteUri);
-		log.info("inbox:{}" , inbox);
-		log.info("SMTPSERVER:{}" , SMTPSERVER);
+		log.info("SMTPSERVER:{}", SMTPSERVER);
 
-		log.info("Email subject: {}" , messageSubject);
-		log.info("Email text: {}" , messageText);
+		log.info("Email subject: {}", messageSubject);
+		log.info("Email text: {}", messageText);
 
 		// Setup mail server
 		Properties mailprops = new Properties();
@@ -187,5 +187,50 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 
 	private static final Pattern rfc2822 = Pattern
 			.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+
+	public static void main(String[] args) {
+		System.out.println("Hello World!");
+		// some tests to see the impact of Swedish letters
+		// in string in java from the properties
+	
+		// Setup mail server
+		Properties mailprops = new Properties();
+
+		String SMTPSERVER = "localhost" ;
+		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
+		
+		Properties props = ConfigUtil.getConfigProperties();
+
+		String from = (String) props.get("mail.text.from");
+
+		String to = "none@nowhere.com";
+	
+
+
+		String messageTaskSubject = (String) props
+				.get("mail.text.messageTaskSubject");
+		String messageSubject = (String) props
+				.get("mail.text.messageSubject");
+		String messageText = (String) props.get("mail.text.messageText");
+		String messageTaskText = (String) props.get("mail.text.messageTaskText");
+		String siteUri = (String) props.get("site.base.uri");
+		String inbox = (String) props.get("site.base.public");
+		String inbox2 = (String) props.get("site.base.intranet");	
+		
+		
+
+		if ((siteUri != null) && (inbox != null)) {
+			messageText = messageText + " " + siteUri + "/" + inbox;
+		}
+		
+
+		if ((siteUri != null) && (inbox != null)) {
+			messageTaskText = messageTaskText  + " " + siteUri + "/" + inbox2;
+		}
+			
+
+		sendEmail(to, from, messageSubject+" / "+messageTaskSubject, messageText+" \n"+messageTaskText , SMTPSERVER);
+
+	}
 
 }
