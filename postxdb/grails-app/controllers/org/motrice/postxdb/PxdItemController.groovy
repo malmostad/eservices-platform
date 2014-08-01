@@ -28,6 +28,8 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class PxdItemController {
 
+  def itemService
+
   static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
   def index() {
@@ -35,8 +37,26 @@ class PxdItemController {
   }
 
   def list(Integer max) {
-    params.max = Math.min(max ?: 10, 100)
+    params.max = Math.min(max ?: 15, 100)
     [pxdItemObjList: PxdItem.list(params), pxdItemObjTotal: PxdItem.count()]
+  }
+
+  /**
+   * A limited list: items where the formDef attribute equals the path of a
+   * form definition version.
+   * id must be the id of a PxdFormdefVer
+   */
+  def listVersion(Long id) {
+    def pxdFormdefVerObj = PxdFormdefVer.get(id)
+    if (!pxdFormdefVerObj) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'pxdFormdefVer.label', default: 'PxdFormdefVer'), id])
+      redirect(action: "list")
+      return
+    }
+
+    def itemList = PxdItem.findAllByFormDef(pxdFormdefVerObj.path)
+    def total = itemList.size()
+    render(view: 'list', model: [pxdItemObjList: itemList, pxdItemObjTotal:total])
   }
 
   def create() {
@@ -87,6 +107,7 @@ class PxdItemController {
   }
 
   def edit(Long id) {
+    if (log.debugEnabled) log.debug "EDIT ${params}"
     def pxdItemObj = PxdItem.get(id)
     if (!pxdItemObj) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'pxdItem.label', default: 'PxdItem'), id])
@@ -97,9 +118,12 @@ class PxdItemController {
     [pxdItemObj: pxdItemObj]
   }
 
-  def update(Long id, Long version) {
-    def pxdItemObj = PxdItem.get(id)
-    if (!pxdItemObj) {
+  def update(SearchReplaceCommand cmd, Long version) {
+    if (log.debugEnabled) log.debug "UPDATE ${params}: ${cmd}"
+    def pxdItemObj = PxdItem.get(cmd?.id)
+    if (pxdItemObj) {
+      cmd.pxdItemObj = pxdItemObj
+    } else {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'pxdItem.label', default: 'PxdItem'), id])
       redirect(action: "list")
       return
@@ -115,14 +139,20 @@ class PxdItemController {
       }
     }
 
-    pxdItemObj.properties = params
-
-    if (!pxdItemObj.save(flush: true)) {
-      render(view: "edit", model: [pxdItemObj: pxdItemObj])
-      return
+    String editedText = itemService.searchReplace(cmd)
+    if (editedText != null) {
+      pxdItemObj.text = editedText
+      
+      if (!pxdItemObj.save(flush: true)) {
+	render(view: "edit", model: [pxdItemObj: pxdItemObj])
+	return
+      } else {
+	flash.message = message(code: 'default.updated.message', args: [message(code: 'pxdItem.label', default: 'PxdItem'), pxdItemObj.id])
+      }
+    } else {
+      flash.message = message(code: 'pxdItem.no.update')
     }
 
-    flash.message = message(code: 'default.updated.message', args: [message(code: 'pxdItem.label', default: 'PxdItem'), pxdItemObj.id])
     redirect(action: "show", id: pxdItemObj.id)
   }
 
@@ -143,5 +173,18 @@ class PxdItemController {
       flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'pxdItem.label', default: 'PxdItem'), id])
       redirect(action: "show", id: id)
     }
+  }
+
+}
+
+class SearchReplaceCommand {
+  Long id
+  PxdItem pxdItemObj
+  String search
+  String replace
+  Boolean globalFlag
+
+  String toString() {
+    "[SearchReplaceCmd: ${id}, ${pxdItemObj}, '${search}'/'${replace}', global: ${globalFlag}]"
   }
 }
