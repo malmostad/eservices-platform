@@ -106,7 +106,9 @@
 	  <g:hiddenField name="id" value="${pxdItemObj?.id}" />
 	  <g:link class="download" action="downloadContent" id="${pxdItemObj?.id}">
 	    <g:message code="default.button.download.label" default="Download" /></g:link>
-	  <g:link class="edit" action="edit" id="${pxdItemObj?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+	  <g:if test="${pxdItemObj?.text}">
+	    <g:link class="edit" action="edit" id="${pxdItemObj?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
+	  </g:if>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 	</fieldset>
       </g:form>

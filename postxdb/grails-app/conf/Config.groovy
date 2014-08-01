@@ -141,7 +141,7 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-    error 'org.motrice.postxdb', 'grails.app.controllers', 'org.motrice.postxdb.RestService' , 'org.motrice.postxdb.PostxdbService'
+    error 'org.motrice.postxdb', 'grails.app.controllers', 'org.motrice.postxdb.RestService' , 'org.motrice.postxdb.PostxdbService', 'org.motrice.postxdb.ItemService'
 }
 
 // Timestamp format in responses to Orbeon

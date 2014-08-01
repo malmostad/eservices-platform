@@ -27,7 +27,8 @@ package org.motrice.postxdb
 import org.apache.commons.logging.LogFactory
 
 /**
- * Methods for supporting the postxdb Rest methods.
+ * Methods for supporting the postxdb Rest methods, i.e. methods
+ * not in the eXist db interface.
  * There is essentially a one-to-one correspondance between Rest methods
  * and the methods of this service.
  */
