@@ -84,6 +84,7 @@ class RestI18nController {
       render map as JSON
     } else {
       if (log.debugEnabled) log.debug "START FORM LABEL GET >> 404 appname=${appname}, formname=${formname}, locale=${locale}, version=${params.version}"
+      render(status: 404)
     }
   }
 
