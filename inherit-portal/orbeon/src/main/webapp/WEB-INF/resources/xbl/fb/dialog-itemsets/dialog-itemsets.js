@@ -2,7 +2,7 @@
   var Document;
   Document = ORBEON.xforms.Document;
   $(function() {
-    return $('#dialog-itemsets' + XF_COMPONENT_SEPARATOR + 'dialog').on('change', '.fb-itemset-label-input', function(event) {
+    return $(document).on('change.orbeon', '#dialog-itemsets' + XF_COMPONENT_SEPARATOR + 'dialog .fb-itemset-label-input', function(event) {
       var label, newValue, value;
       label = $(event.target);
       value = label.closest('tr').find('.fb-itemset-value-input')[0];

@@ -14,8 +14,8 @@
       button: {
         selector: '.fr-grid-content > .xforms-trigger-appearance-full',
         editInputSelector: '#fb-edit-label',
-        placeholderOutputSelector: '#fb-placeholder-label',
-        placeholderContainerSelector: '.btn',
+        placeholderOutputSelector: '.fb-message-enter-label',
+        placeholderContainerSelector: 'span.btn',
         initialValueSelector: 'button',
         createMock: function(element) {
           var button, mockButton;
@@ -32,7 +32,7 @@
       link: {
         selector: '.fr-grid-content > .xforms-trigger-appearance-minimal',
         editInputSelector: '#fb-edit-label',
-        placeholderOutputSelector: '#fb-placeholder-label',
+        placeholderOutputSelector: '.fb-message-enter-label',
         placeholderContainerSelector: '.fb-mock-link',
         initialValueSelector: 'a',
         createMock: function(element) {
@@ -252,7 +252,7 @@
           grid = f$.closest('.fr-grid', container);
           if (f$.is('.fr-repeat-single-row', grid)) {
             position = 1 + f$.length(f$.prevAll(container));
-            thContainer = f$.nth(position, f$.children(f$.find('tr.fr-dt-master-row', grid)));
+            thContainer = f$.nth(position, f$.children(f$.find('tr.fr-grid-master-row', grid)));
             return f$.add(thContainer, container);
           } else {
             return container;

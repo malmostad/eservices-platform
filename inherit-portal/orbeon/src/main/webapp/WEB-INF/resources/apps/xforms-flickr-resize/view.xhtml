@@ -1,0 +1,163 @@
+<!--
+  Copyright (C) 2009 Orbeon, Inc.
+
+  This program is free software; you can redistribute it and/or modify it under the terms of the
+  GNU Lesser General Public License as published by the Free Software Foundation; either version
+  2.1 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
+
+  The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+  -->
+<xh:html xmlns:xf="http://www.w3.org/2002/xforms"
+            xmlns:f="http://orbeon.org/oxf/xml/formatting"
+            xmlns:xh="http://www.w3.org/1999/xhtml"
+            xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+            xmlns:widget="http://orbeon.org/oxf/xml/widget"
+            xmlns:ev="http://www.w3.org/2001/xml-events"
+            xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xh:head>
+        <xh:title>Resizing Images With XForms and Flickr</xh:title>
+        <xf:model>
+            <xf:instance id="request-instance">
+                <instanceData xmlns="">
+                    <method>flickr.photos.search</method>
+                    <api_key>4dbabf4e2dbdb812e99a34838e6705dd</api_key>
+                    <tags>mountains</tags>
+                    <per_page>12</per_page>
+                </instanceData>
+            </xf:instance>
+            <xf:instance id="response-instance">
+                <dummy xmlns=""/>
+            </xf:instance>
+            <xf:instance id="control-instance">
+                <instanceData xmlns="">
+                    <size>75</size>
+                </instanceData>
+            </xf:instance>
+            <xf:submission id="flickr-submission"
+                               method="get" action="http://www.flickr.com/services/rest/" separator="&amp;"
+                               replace="instance" instance="response-instance">
+                <xf:toggle case="case-busy" ev:event="xforms-submit"/>
+                <xf:toggle case="case-done" ev:event="xforms-submit-done"/>
+            </xf:submission>
+            <xf:bind ref="instance('control-instance')/size" type="xs:integer"/>
+
+            <!-- Perform the submission upon initialization -->
+            <xf:send ev:event="xforms-model-construct-done" submission="flickr-submission"/>
+        </xf:model>
+        <xh:style type="text/css">
+
+            .orbeon .flickr-main-body {
+                background-color : #eee;
+                border : 5px solid #333;
+                margin: 0;
+                padding : 10px;
+                display : block;
+            }
+
+            .orbeon .flickr-image div { display: inline }
+
+            .orbeon .flickr-image img {
+                border : 1px solid black;
+                margin: 5px;
+            }
+
+            .orbeon .xforms-label {
+                display: none;
+                margin-right: 1em;
+            }
+
+            .orbeon .flicker-slider-table {
+                padding: 0;
+                margin: 0;
+            }
+
+            .orbeon .flicker-slider-table th {
+                text-align: right;
+                vertical-align: middle;
+                padding-right: 0.5em;
+            }
+
+            .orbeon .flicker-slider-table td {
+                vertical-align: middle;
+            }
+
+        </xh:style>
+    </xh:head>
+    <xh:body>
+        <xf:group class="flickr-main-body">
+            <xh:p style="background: white; padding: 0.5em">
+                Enter one or more Flickr tags below (for example "mountains") and press "enter" or
+                the "Find" button. You can then use the slider to resize the images returned.
+            </xh:p>
+            <xh:table class="flicker-slider-table">
+                <xh:tr>
+                    <xh:th>
+                        Flickr tags:
+                    </xh:th>
+                    <xh:td colspan="2">
+                        <xf:input ref="tags">
+                            <xf:label>Tags:</xf:label>
+                            <xf:send ev:event="DOMActivate" submission="flickr-submission"/>
+                        </xf:input>
+                        <xf:submit submission="flickr-submission">
+                            <xf:label>Find</xf:label>
+                        </xf:submit>
+                    </xh:td>
+                </xh:tr>
+                <xh:tr>
+                    <xh:th>
+                        Image size:
+                    </xh:th>
+                    <xh:td>
+                        <xf:range ref="instance('control-instance')/size" incremental="true" start="10" end="200" id="image-size">
+                            <xf:label>Size:</xf:label>
+                        </xf:range>
+                    </xh:td>
+                    <xh:td>
+                        <xf:output ref="instance('control-instance')/size"/>
+                    </xh:td>
+                </xh:tr>
+            </xh:table>
+            <xf:switch>
+                <xf:case id="case-start"/>
+                <xf:case id="case-busy">
+                    <xh:img src="/images/loading.gif" alt="Busy"/>
+                </xf:case>
+                <xf:case id="case-done" selected="true">
+                    <xf:group ref="instance('response-instance')">
+                        <xf:repeat ref="photos/photo">
+                            <xf:output
+                                value="concat(
+                                        '&lt;img',
+                                          ' src=&#34;http://static.flickr.com/',
+                                            @server, '/',
+                                            @id, '_',
+                                            @secret,
+                                            '_',
+                                            if (instance('control-instance')/size &lt; 100)
+                                              then 's' else  'm',
+                                            '.jpg&#34;',
+                                          ' style=&#34;',
+                                            'width:', instance('control-instance')/size, 'px;',
+                                            ' height:', instance('control-instance')/size, 'px;&#34;',
+                                        '/&gt;'
+                                       )"
+                                    mediatype="text/html"
+                                    class="flickr-image"/>
+                        </xf:repeat>
+                    </xf:group>
+                </xf:case>
+            </xf:switch>
+            <xf:output ref="instance('response-instance')/err/@msg">
+                <xf:label>Error:</xf:label>
+            </xf:output>
+            <xh:p style="font-size: smaller">
+                This XForms example is based on a tutorial by Mark Birbeck.
+            </xh:p>
+        </xf:group>
+    </xh:body>
+</xh:html>

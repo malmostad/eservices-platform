@@ -1,0 +1,103 @@
+<!--
+  Copyright (C) 2009 Orbeon, Inc.
+
+  This program is free software; you can redistribute it and/or modify it under the terms of the
+  GNU Lesser General Public License as published by the Free Software Foundation; either version
+  2.1 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
+
+  The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+  -->
+<xh:html xmlns:xf="http://www.w3.org/2002/xforms" xmlns:xh="http://www.w3.org/1999/xhtml"
+    xmlns:xxf="http://orbeon.org/oxf/xml/xforms" xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xi="http://www.w3.org/2001/XInclude"
+    xmlns:xxi="http://orbeon.org/oxf/xml/xinclude" xmlns:xbl="http://www.w3.org/ns/xbl"
+    xmlns:fr="http://orbeon.org/oxf/xml/form-runner">
+
+    <xh:head>
+        <xh:title>XForms Controls</xh:title>
+        <xh:link type="text/css" rel="stylesheet" href="/ops/yui/logger/assets/logger.css"/>
+        <xh:script type="text/javascript" src="/ops/yui/logger/logger.js"/>
+        <xh:script type="text/javascript" src="/ops/yui/event-simulate/event-simulate.js"/>
+        <xh:script type="text/javascript" src="/ops/yui/yuitest/yuitest.js"/>
+        <xh:script type="text/javascript">
+            <![CDATA[
+                (function() {
+                    var Test = ORBEON.util.Test;
+                    var Assert = YAHOO.util.Assert;
+                    var Controls = ORBEON.xforms.Controls;
+                    var Page = ORBEON.xforms.Page;
+
+                    var YD = YAHOO.util.Dom;
+
+                    YAHOO.tool.TestRunner.add(new YAHOO.tool.TestCase({
+
+                        name: "Loading indicator",
+
+                        /**
+                         * [ #315495 ] Loading indicator is hidden after 2s even if the request lasts longer
+                         * http://forge.ow2.org/tracker/index.php?func=detail&aid=315495&group_id=168&atid=350207
+                         *
+                         * This is basic test for the loading indicator, checking that it is shown when a long request
+                         * runs and that it is hidden afterwards.
+                         */
+                        testLoadingIndicatorShown: function() {
+                            var loadingIndicatorOverlay;
+                            Test.executeCausingAjaxRequest(this, function() {
+                                // Run long submission
+                                Test.click("run-long-submission");
+                                // After 5 seconds check the loading indicator is visible
+                                window.setTimeout(function() {
+                                    var htmlForm = Controls.getForm(YD.get("run-long-submission"));
+                                    loadingIndicatorOverlay = Page.getForm(htmlForm.id).getLoadingIndicator().loadingOverlay;
+                                    Assert.isTrue(loadingIndicatorOverlay.cfg.getProperty("visible"), "loading indicator visible after 5 s");
+                                }, 5000);
+                            }, function() {
+                                // When done, indicator should be hidden
+                                Assert.isFalse(loadingIndicatorOverlay.cfg.getProperty("visible"), "loading indicator hidden after the request");
+                                Assert.areEqual("1", ORBEON.xforms.Document.getValue("counter"), "submission ran and counter was incremented");
+                           });
+                        }
+                    }));
+
+                    Test.onOrbeonLoadedRunTest();
+                })();
+            ]]>
+        </xh:script>
+        <xf:model id="model" xxf:external-events="load-initial-data">
+            <xf:instance id="main-instance">
+                <instance>0</instance>
+            </xf:instance>
+            <xf:submission id="sleep" method="post" resource="/xforms-sandbox/service/sleep-5-seconds" replace="none">
+                <xf:setvalue ev:event="xforms-submit-done" value=". + 1"/>
+            </xf:submission>
+            <xf:submission id="slow-page" method="post" resource="/xforms-sandbox/service/sleep-5-seconds" replace="all"
+                    xxf:show-progress="false"/>
+        </xf:model>
+        <xh:style type="text/css">
+            .actions { margin-bottom: 2em }
+        </xh:style>
+    </xh:head>
+    <xh:body>
+
+        <xh:div class="actions">
+            <xf:trigger id="run-long-submission">
+                <xf:label>Run long submission</xf:label>
+                <xf:send ev:event="DOMActivate" submission="sleep"/>
+            </xf:trigger>
+            <xf:trigger id="go-to-slow-page">
+                <xf:label>Go to slow page</xf:label>
+                <xf:send ev:event="DOMActivate" submission="slow-page"/>
+            </xf:trigger>
+        </xh:div>
+        <xh:div>
+            <xf:output ref="." id="counter">
+                <xf:label>Counter: </xf:label>
+            </xf:output>
+        </xh:div>
+
+    </xh:body>
+</xh:html>

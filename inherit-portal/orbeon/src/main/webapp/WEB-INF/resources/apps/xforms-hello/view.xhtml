@@ -1,0 +1,42 @@
+<!--
+    Copyright (C) 2004 Orbeon, Inc.
+
+    This program is free software; you can redistribute it and/or modify it under the terms of the
+    GNU Lesser General Public License as published by the Free Software Foundation; either version
+    2.1 of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+    without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Lesser General Public License for more details.
+
+    The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+-->
+<xh:html xmlns:xh="http://www.w3.org/1999/xhtml"
+      xmlns:xf="http://www.w3.org/2002/xforms"
+      xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+      xmlns:ev="http://www.w3.org/2001/xml-events"
+      xmlns:xs="http://www.w3.org/2001/XMLSchema"
+      xmlns:fr="http://orbeon.org/oxf/xml/form-runner">
+    <xh:head>
+        <xh:title>XForms Hello</xh:title>
+        <xf:model>
+            <xf:instance>
+                <first-name xmlns=""/>
+            </xf:instance>
+        </xf:model>
+    </xh:head>
+    <xh:body>
+        <xh:p>
+            <xh:i>This example is described in details in the <xh:a href="http://wiki.orbeon.com/forms/doc/developer-guide/orbeon-forms-xforms-tutorial">Orbeon
+            Forms Tutorial</xh:a>.</xh:i>
+        </xh:p>
+        <xh:p>
+            <xf:input ref="/first-name" incremental="true">
+                <xf:label>Please enter your first name:</xf:label>
+            </xf:input>
+        </xh:p>
+        <xh:p>
+            <xf:output value="if (normalize-space(/first-name) = '') then '' else concat('Hello, ', /first-name, '!')"/>
+        </xh:p>
+    </xh:body>
+</xh:html>
