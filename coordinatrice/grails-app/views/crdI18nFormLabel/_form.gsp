@@ -23,12 +23,12 @@
 
 --%>
 <%@ page import="org.motrice.coordinatrice.CrdI18nFormLabel" %>
-<g:set var="formdefPath" value="${formdefInst?.path}"/>
+<g:set var="formdefPath" value="${formLabelInst?.formdef?.path}"/>
 <div class="fieldcontain ${hasErrors(bean: formLabelInst, field: 'formdefId', 'error')} ">
   <label for="formdefId">
     <g:message code="crdI18nFormLabel.formdefPath.label" default="Formdef Path" />
   </label>
-  <g:textField name="formdefPath" cols="40" rows="5" maxlength="255" value="${formdefPath}" readonly="true"/>
+  <g:textField name="formdefPath" cols="40" rows="5" maxlength="255" value="${formdefPath?.encodeAsHTML()}" readonly="true"/>
 </div>
 <div class="fieldcontain ${hasErrors(bean: formLabelInst, field: 'locale', 'error')} ">
   <label for="locale">

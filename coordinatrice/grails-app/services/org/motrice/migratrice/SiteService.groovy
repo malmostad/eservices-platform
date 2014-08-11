@@ -66,6 +66,8 @@ class SiteService {
 		       grailsApplication.metadata.'app.version' ?: null)
     list << configItem('config.item.siteName',
 		       grailsApplication.config.motrice.site.name ?: null)
+    list << configItem('config.item.guideBaseUri',
+		       grailsApplication.config.coordinatrice.guide.base.uri ?: null)
     def item = configItem('config.item.dataSource',
 			  grailsApplication.config.dataSource.url ?: null)
     dataSourceLive(list, item)
