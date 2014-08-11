@@ -93,9 +93,6 @@ class RestService {
     // Modify the XML to contain the new version number
     MetaEditor editor = new MetaEditor(xml)
     editor.opAssignVersion(path.version, path.draft)
-    // A draft must use English, otherwise the title and the description are
-    // hidden in the editor
-    editor.opLangEdit('en')
     editor.edit()
     item.assignText(editor.formdefOut)
     if (!item.save()) log.error "Item save: ${item.errors.allErrors.join(',')}"
@@ -225,8 +222,6 @@ class RestService {
     // Modify the XML to contain the new version number
     MetaEditor editor = new MetaEditor(xml)
     editor.opAssignVersion(publishedPath.version, publishedPath.draft)
-    // Set language Swedish in the published version
-    editor.opLangEdit('sv')
     editor.edit()
     // Previous meta is replaced by meta of the published form
     meta = editor.metadata
