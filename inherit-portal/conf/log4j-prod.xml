@@ -179,6 +179,15 @@
   <logger name="org.inheritsource.service.delegates.SetDecisionAct">
     <level value="info"/>
   </logger>
+  <logger name="org.inheritsource.service.delegates.CreateVariablesFlowListener">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.service.delegates.CreateVariablesTaskListener">
+    <level value="info"/>
+  </logger>
+  <logger name="org.inheritsource.service.delegates.SimplifiedServiceMessageDelegate">
+    <level value="info"/>
+  </logger>
 
   <root>
     <level value="warn"/>
