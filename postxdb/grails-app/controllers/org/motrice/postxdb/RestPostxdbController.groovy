@@ -123,4 +123,60 @@ class RestPostxdbController {
     }
   }
 
+  /**
+   * Get the read-only status of a form instance.
+   * GET $POSTXDB/readonly/$uuid
+   * NOTE: Only checks the XML item.
+   */
+  def readonlyget() {
+    if (log.debugEnabled) log.debug "READONLY_GET: ${Util.clean(params)}, ${request.forwardURI}"
+    def item = postxdbService.instItemGetXml(params.uuid)
+    if (item) {
+      def map = [uuid: params.uuid, path: item.path, readOnly: new Boolean(item.readOnly)]
+      response.status = 200
+      render map as JSON
+    } else {
+      response.status = 404
+    }
+  }
+
+  /**
+   * Set the read-only status of a form instance.
+   * PUT $POSTXDB/readonly/$uuid[?ro=true|false]
+   * Sets all items belonging to this instance to the given read-only status.
+   * The default is ro=true.
+   */
+  def readonlyset(String ro) {
+    if (log.debugEnabled) log.debug "READONLY_SET: ${Util.clean(params)}, ${request.forwardURI}"
+    String uuid = params.uuid
+    def items = postxdbService.instItemGetAll(uuid)
+    if (items) {
+      try {
+	boolean readOnly = 'false'.equalsIgnoreCase(params.ro)? false : true
+	def count = postxdbService.makeInstanceReadOnly(items, readOnly)
+	def map = [uuid: uuid, itemCount: count, readOnly: readOnly]
+	response.status = 200
+	render map as JSON
+      } catch (PostxdbException exc) {
+	log.error(exc.message)
+	response.status = exc.http
+	render(status: exc.http, contentType: 'text/plain', text: message(code: exc.code))
+      }
+    } else {
+      render(status: 404)
+    }
+  }
+
+  /**
+   * Duplicate a form instance, i.e. all its items.
+   * By default set the source instance read-only.
+   * PUT $POSTXDB/duplicate/$app/$form/data/$srcuuid/$tgtuuid
+   */
+  def duplicateinstance(String ro) {
+    if (log.debugEnabled) log.debug "DUPLICATE: ${Util.clean(params)}, ${request.forwardURI}"
+    def map = [appName: params.app, formName: params.form, from: params.srcuuid, to: params.tgtuuid]
+    response.status = 200
+    render map as JSON
+  }
+
 }

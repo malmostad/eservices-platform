@@ -370,21 +370,24 @@ class RestService {
   PxdItem createInstanceItem(String appName, String formName, String uuid,
 			     String resource, String xml)
   {
-    String itemPath = "${uuid}/data.xml"
     String formDef = "${appName}/${formName}"
-    // Check if this item already exists
+    String itemPath = "${uuid}/data.xml"
+    if (log.debugEnabled) log.debug "createInstanceItem << ${formDef}/${uuid}/${resource}"
+
     def item = PxdItem.findByPath(itemPath)
     if (item) {
-      if (log.debugEnabled) log.debug "createInstanceItem EXISTING item (${resource})"
+      if (log.debugEnabled) log.debug "createInstanceItem EXISTING (${item?.id})"
+      doCheckReadOnly(item)
     } else {
       item = new PxdItem(path: itemPath, uuid: uuid, formDef: formDef, instance: true,
       format: 'xml')
-      if (log.debugEnabled) log.debug "createInstanceItem NEW item (${resource})"
+      if (log.debugEnabled) log.debug "createInstanceItem NEW (${resource})"
     }
 
     // If the item was created now or existed previously, update the xml
     item.assignText(xml)
     if (!item.save()) log.error "createInstanceItem save: ${item.errors.allErrors.join(',')}"
+    if (log.debugEnabled) log.debug "createInstanceItem >> ${item}"
     return item
   }
 
@@ -395,22 +398,34 @@ class RestService {
   PxdItem createInstanceResource(String appName, String formName, String uuid,
 				 String resource, request)
   {
-    if (log.debugEnabled) {
-      log.debug "createInstanceResource << ${appName}/${formName}/${resource}"
-    }
-    def item = null
-    item = PxdItem.findByPath(resource)
-    if (log.debugEnabled) log.debug "createInstanceResource.item ${item}"
+    String formDef = "${appName}/${formName}"
+    if (log.debugEnabled) log.debug "createInstanceResource << ${formDef}/${uuid}/${resource}"
+    def item = PxdItem.findByPath(resource)
 
-    if (!item) {
-      String formDef = "${appName}/${formName}"
+    if (item) {
+      doCheckReadOnly(item)
+      if (log.debugEnabled) log.debug "createInstanceResource EXISTING item (${item?.id})"
+    } else {
       item = new PxdItem(path: resource, uuid: uuid, formDef: formDef, instance: true,
       format: 'binary')
-      item.assignStream(request.inputStream.bytes).save()
     }
 
+    item.assignStream(request.inputStream.bytes)
+    if (!item.save()) log.error "createInstanceResource save: ${item.errors.allErrors.join(',')}"
     if (log.debugEnabled) log.debug "createInstanceResource >> ${item}"
     return item
+  }
+
+  /**
+   * Checks if an item is read-only. Throws exception in such case.
+   */
+  private doCheckReadOnly(PxdItem item) {
+    if (item.readOnly) {
+      def exc = new PostxdbException('pxdItem.update.readonly', 'Read-only item')
+      // HTTP Forbidden
+      exc.http = 403
+      throw exc
+    }
   }
 
   /**

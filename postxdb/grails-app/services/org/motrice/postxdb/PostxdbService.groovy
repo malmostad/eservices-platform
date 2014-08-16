@@ -223,11 +223,45 @@ class PostxdbService {
     return result
   }
 
+  PxdItem instItemGetXml(String uuid) {
+    if (log.debugEnabled) log.debug "instItemGetXml << ${uuid}"
+    def item = PxdItem.findByPath(uuid + '/data.xml')
+    if (log.debugEnabled) log.debug "instItemGetXml >> ${item}"
+    return item
+  }
+
+  List instItemGetAll(String uuid) {
+    if (log.debugEnabled) log.debug "instItemGetAll << ${uuid}"
+    def items = PxdItem.findAllByUuid(uuid)
+    if (log.debugEnabled) log.debug "instItemGetAll >> ${items?.size()}"
+    return items
+  }
+
   PxdItem itemGet(Long id) {
     if (log.debugEnabled) log.debug "itemGet << ${id}"
     def item = PxdItem.get(id)
     if (log.debugEnabled) log.debug "itemGet >> ${item}"
     return item
+  }
+
+  /**
+   * Set the read-only state of all items belonging to a form instance.
+   * itemList must be a list of all items of the instance.
+   * RETURN the number of processed items
+   */
+  int makeInstanceReadOnly(List itemList, boolean readOnlyFlag) {
+    int count = itemList.size()
+    if (log.debugEnabled) log.debug "makeInstanceReadOnly << ${count}"
+    itemList.each {item ->
+      item.readOnly = readOnlyFlag
+      if (!item.save()) {
+	def msg = item.errors.allErrors.join(',')
+	throw new PostxdbException('pxdItem.update.problem', msg)
+      }
+    }
+
+    if (log.debugEnabled) log.debug "makeInstanceReadOnly >> ${count}"
+    return count
   }
 
 }

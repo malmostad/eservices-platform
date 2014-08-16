@@ -61,6 +61,12 @@ class PxdItem {
   // A purist would do this by subclassing.
   Boolean instance
 
+  // If true, this item may not be overwritten.
+  Boolean readOnly
+
+  // The item from which this item was created, or null.
+  PxdItem origin
+
   // Auto timestamping
   Date dateCreated
   Date lastUpdated
@@ -91,6 +97,8 @@ class PxdItem {
     path nullable: false, unique: true
     uuid nullable: true, maxSize: 200
     formDef nullable: true, maxSize: 400
+    readOnly nullable: true
+    origin nullable: true
     dateCreated nullable: true
     lastUpdated nullable: true
     format nullable: false, maxSize: 80
