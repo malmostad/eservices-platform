@@ -52,7 +52,7 @@ class UrlMappings {
     "/postxdb/readonly/$uuid"(controller: 'RestPostxdb') {
       action = [GET: 'readonlyget', PUT: 'readonlyset']
     }
-    "/postxdb/duplicate/$app/$form/data/$srcuuid/$tgtuuid"(controller: 'RestPostxdb') {
+    "/postxdb/duplicate/$srcuuid/$tgtuuid"(controller: 'RestPostxdb') {
       action = [PUT: 'duplicateinstance']
     }
     "/$controller/$action?/$id?"{

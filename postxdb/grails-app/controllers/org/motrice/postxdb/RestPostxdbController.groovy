@@ -132,9 +132,14 @@ class RestPostxdbController {
     if (log.debugEnabled) log.debug "READONLY_GET: ${Util.clean(params)}, ${request.forwardURI}"
     def item = postxdbService.instItemGetXml(params.uuid)
     if (item) {
-      def map = [uuid: params.uuid, path: item.path, readOnly: new Boolean(item.readOnly)]
       response.status = 200
-      render map as JSON
+	render (status: 200, contentType: 'application/xml;charset=UTF-8') {
+	  pxdItem {
+	    uuid(params.uuid)
+	    path(item.path)
+	    readOnly(new Boolean(item.readOnly))
+	  }
+	}
     } else {
       response.status = 404
     }
@@ -148,15 +153,23 @@ class RestPostxdbController {
    */
   def readonlyset(String ro) {
     if (log.debugEnabled) log.debug "READONLY_SET: ${Util.clean(params)}, ${request.forwardURI}"
-    String uuid = params.uuid
-    def items = postxdbService.instItemGetAll(uuid)
+    String instanceUuid = params.uuid
+    def items = postxdbService.instItemGetAll(instanceUuid)
     if (items) {
       try {
-	boolean readOnly = 'false'.equalsIgnoreCase(params.ro)? false : true
-	def count = postxdbService.makeInstanceReadOnly(items, readOnly)
-	def map = [uuid: uuid, itemCount: count, readOnly: readOnly]
-	response.status = 200
-	render map as JSON
+	boolean roState = 'false'.equalsIgnoreCase(params.ro)? false : true
+	def count = postxdbService.makeInstanceReadOnly(items, roState)
+	render (status: 200, contentType: 'application/xml;charset=UTF-8') {
+	  list(size: count) {
+	    items.each {item ->
+	      pxdItem {
+		uuid(item.uuid)
+		path(item.path)
+		readOnly(item.readOnly)
+	      }
+	    }
+	  }
+	}
       } catch (PostxdbException exc) {
 	log.error(exc.message)
 	response.status = exc.http
@@ -170,13 +183,26 @@ class RestPostxdbController {
   /**
    * Duplicate a form instance, i.e. all its items.
    * By default set the source instance read-only.
-   * PUT $POSTXDB/duplicate/$app/$form/data/$srcuuid/$tgtuuid
+   * PUT $POSTXDB/duplicate/$srcuuid/$tgtuuid
    */
   def duplicateinstance(String ro) {
     if (log.debugEnabled) log.debug "DUPLICATE: ${Util.clean(params)}, ${request.forwardURI}"
-    def map = [appName: params.app, formName: params.form, from: params.srcuuid, to: params.tgtuuid]
-    response.status = 200
-    render map as JSON
+    String srcuuid = params.srcuuid
+    String tgtuuid = params.tgtuuid
+    boolean readOnly = 'false'.equalsIgnoreCase(params.ro)? false : true
+    def item = postxdbService.instItemGetXml(srcuuid)
+
+    if (item) {
+      try {
+	def itemList = [postxdbService.duplicateInstance(item, tgtuuid, readOnly)]
+	render(status: 200, text: itemList as XML, encoding:'UTF-8')
+      } catch (RuntimeException exc) {
+	response.status = 409
+	render exc.errors as XML
+      }
+    } else {
+      render(status: 404)
+    }
   }
 
 }

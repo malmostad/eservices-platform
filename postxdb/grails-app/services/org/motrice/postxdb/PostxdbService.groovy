@@ -223,6 +223,9 @@ class PostxdbService {
     return result
   }
 
+  /**
+   * Get the item containing XML form data for a given instance uuid.
+   */
   PxdItem instItemGetXml(String uuid) {
     if (log.debugEnabled) log.debug "instItemGetXml << ${uuid}"
     def item = PxdItem.findByPath(uuid + '/data.xml')
@@ -230,6 +233,9 @@ class PostxdbService {
     return item
   }
 
+  /**
+   * Get all items belonging to a form instance.
+   */
   List instItemGetAll(String uuid) {
     if (log.debugEnabled) log.debug "instItemGetAll << ${uuid}"
     def items = PxdItem.findAllByUuid(uuid)
@@ -237,11 +243,31 @@ class PostxdbService {
     return items
   }
 
+  /**
+   * Get an item given its database id.
+   */
   PxdItem itemGet(Long id) {
     if (log.debugEnabled) log.debug "itemGet << ${id}"
     def item = PxdItem.get(id)
     if (log.debugEnabled) log.debug "itemGet >> ${item}"
     return item
+  }
+
+  /**
+   * Duplicate a form instance identified by its XML form data item.
+   */
+  PxdItem duplicateInstance(PxdItem srcItem, String tgtuuid, boolean readOnlyFlag) {
+    if (log.debugEnabled) log.debug "duplicateInstance << ${srcItem?.id}, ${tgtuuid}, ${readOnlyFlag}"
+    def tgtItem = PxdItem.formDataCopy(srcItem, tgtuuid)
+    if (!tgtItem.save(failOnError: true)) log.error "duplicateInstance tgtItem: ${tgtItem.errors.allErrors.join(',')}"
+    srcItem.readOnly = readOnlyFlag
+    if (!srcItem.save()) {
+      srcItem.errors.allErrors.each {err ->
+	log.error "WOW: field[${err.field}], value[${err.rejectedValue}], d-msg[${err.defaultMessage}]"
+      }
+    }
+    if (log.debugEnabled) log.debug "duplicateInstance >> ${tgtItem}"
+    return tgtItem
   }
 
   /**

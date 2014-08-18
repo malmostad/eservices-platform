@@ -421,6 +421,7 @@ class RestService {
    */
   private doCheckReadOnly(PxdItem item) {
     if (item.readOnly) {
+      if (log.debugEnabled) log.debug "READ-ONLY item exception (${item?.id})"
       def exc = new PostxdbException('pxdItem.update.readonly', 'Read-only item')
       // HTTP Forbidden
       exc.http = 403
