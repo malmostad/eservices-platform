@@ -73,20 +73,24 @@ class RestFormdataController {
   def putop() {
     if (log.debugEnabled) log.debug "PUTOP: ${Util.clean(params)}, ${request.forwardURI}"
     def itemObj = null
+    def status = null
     // Two distinct flows depending on the input
-    if (request.format == 'xml') {
-      if (log.debugEnabled) log.debug "putop XML >> createInstanceItem"
-      itemObj = restService.createInstanceItem(params.app, params.form, params.uuid,
-					       params.resource, request.reader.text)
-      if (log.debugEnabled) log.debug "putop XML << ${itemObj}"
-    } else {
-      if (log.debugEnabled) log.debug "putop BIN >> createFormdefResource"
-      itemObj = restService.createInstanceResource(params.app, params.form, params.uuid,
-						   params.resource, request)
-      if (log.debugEnabled) log.debug "putop BIN << ${itemObj}"
+    try {
+      if (request.format == 'xml') {
+	itemObj = restService.createInstanceItem(params.app, params.form, params.uuid,
+						 params.resource, request.reader.text)
+      } else {
+	itemObj = restService.createInstanceResource(params.app, params.form, params.uuid,
+						     params.resource, request)
+      }
+    } catch (PostxdbException exc) {
+      status = exc.http
+      if (log.debugEnabled) log.debug "PUTOP >> ${status} ${message(code: exc?.code)}"
     }
 
-    if (itemObj) {
+    if (status) {
+      render(status: status)
+    } else if (itemObj) {
       // The response must be empty.
       render(status: 201)
     } else {
