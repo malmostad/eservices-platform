@@ -261,11 +261,7 @@ class PostxdbService {
     def tgtItem = PxdItem.formDataCopy(srcItem, tgtuuid)
     if (!tgtItem.save(failOnError: true)) log.error "duplicateInstance tgtItem: ${tgtItem.errors.allErrors.join(',')}"
     srcItem.readOnly = readOnlyFlag
-    if (!srcItem.save()) {
-      srcItem.errors.allErrors.each {err ->
-	log.error "WOW: field[${err.field}], value[${err.rejectedValue}], d-msg[${err.defaultMessage}]"
-      }
-    }
+    if (!srcItem.save()) log.error "duplicateInstance srcItem: ${srcItem.errors.allErrors.join(',')}"
     if (log.debugEnabled) log.debug "duplicateInstance >> ${tgtItem}"
     return tgtItem
   }

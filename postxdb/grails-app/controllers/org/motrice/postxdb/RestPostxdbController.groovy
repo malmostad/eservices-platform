@@ -132,7 +132,6 @@ class RestPostxdbController {
     if (log.debugEnabled) log.debug "READONLY_GET: ${Util.clean(params)}, ${request.forwardURI}"
     def item = postxdbService.instItemGetXml(params.uuid)
     if (item) {
-      response.status = 200
 	render (status: 200, contentType: 'application/xml;charset=UTF-8') {
 	  pxdItem {
 	    uuid(params.uuid)
