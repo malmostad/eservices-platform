@@ -248,6 +248,8 @@ public class ActivitiEngineService {
 			item.setProcessDefinitionUuid(task.getProcessDefinitionId());
 			item.setProcessInstanceUuid(task.getProcessInstanceId());
 			
+			List<Tag> tags = taskFormDb.getTagsByProcessInstance(task.getProcessInstanceId());
+			item.setTags(tags);
 						
 			ProcessInstance pI = getMainProcessInstanceByProcessInstanceId
 				(task.getProcessInstanceId());
@@ -965,6 +967,7 @@ public class ActivitiEngineService {
 			Task task = engine.getTaskService().createTaskQuery().taskId(taskId).singleResult();
 			
 			activityWorkflowInfo = new ActivityWorkflowInfo();
+			activityWorkflowInfo.setTaskId(taskId);
 			activityWorkflowInfo.setPriority(task.getPriority());
 			activityWorkflowInfo.setAssignedUser(userId2UserInfo(task.getAssignee()));
 			activityWorkflowInfo.setCandidates(getCandidatesByTaskId(taskId));

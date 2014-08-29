@@ -26,7 +26,9 @@
 package org.inheritsource.service.common.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
@@ -45,6 +47,8 @@ public class InboxTaskItem extends FormInstance implements Serializable, Compara
 	String rootProcessDefinitionUuid;
 	String processDefinitionUuid;
 	String activityDefinitionUuid;
+	
+	List<Tag> tags;
 	
 	public InboxTaskItem() {
 		
@@ -143,6 +147,14 @@ public class InboxTaskItem extends FormInstance implements Serializable, Compara
 		return serialVersionUID;
 	}
 	
+	public List<Tag> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
+
 	@Override
 	public int compareTo(InboxTaskItem other) {
 		int result = -1;
@@ -198,6 +210,7 @@ public class InboxTaskItem extends FormInstance implements Serializable, Compara
 				* result
 				+ ((rootProcessInstanceUuid == null) ? 0
 						: rootProcessInstanceUuid.hashCode());
+		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
 		return result;
 	}
 
@@ -257,6 +270,11 @@ public class InboxTaskItem extends FormInstance implements Serializable, Compara
 		} else if (!rootProcessInstanceUuid
 				.equals(other.rootProcessInstanceUuid))
 			return false;
+		if (tags == null) {
+			if (other.tags != null)
+				return false;
+		} else if (!tags.equals(other.tags))
+			return false;
 		return true;
 	}
 
@@ -270,8 +288,7 @@ public class InboxTaskItem extends FormInstance implements Serializable, Compara
 				+ ", rootProcessDefinitionUuid=" + rootProcessDefinitionUuid
 				+ ", processDefinitionUuid=" + processDefinitionUuid
 				+ ", activityDefinitionUuid=" + activityDefinitionUuid
-			    + super.toString() + "]";
+				+ ", tags=" + tags + "]";
 	}
-
 
 }

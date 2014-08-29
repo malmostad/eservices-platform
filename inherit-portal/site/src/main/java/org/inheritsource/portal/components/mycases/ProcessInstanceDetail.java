@@ -26,10 +26,13 @@
  
 package org.inheritsource.portal.components.mycases;
 
+import java.util.List;
+
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.ProcessInstanceDetails;
+import org.inheritsource.service.common.domain.Tag;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +63,11 @@ public class ProcessInstanceDetail extends MyCasesBaseComponent {
 		appendChannelLabels(request, piDetails);
 		
 		request.setAttribute("processInstanceDetails", piDetails);
+		
+		if (piDetails != null && piDetails.getProcessInstanceUuid() != null) {
+			List<Tag> tags = engine.getTagsByProcessInstance(piDetails.getProcessInstanceUuid());
+			request.setAttribute("tags", tags);
+		}
 		
 		if (piDetails != null && piDetails.getTimeline() != null) {
 			request.setAttribute("timelineByDay", piDetails.getTimeline().getTimelineByDay());

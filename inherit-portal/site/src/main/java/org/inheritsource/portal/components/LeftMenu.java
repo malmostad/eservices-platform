@@ -30,12 +30,41 @@ import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.hippoecm.hst.core.sitemenu.HstSiteMenu;
+import org.hippoecm.hst.core.sitemenu.HstSiteMenuItem;
+import org.inheritsource.portal.domain.NavigationItem;
+import org.inheritsource.portal.domain.NavigationItems;
 
 public class LeftMenu  extends BaseHstComponent{
 
     @Override
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
-        request.setAttribute("menu",request.getRequestContext().getHstSiteMenus().getSiteMenu("main"));
+        
+    	HstSiteMenu  menu = request.getRequestContext().getHstSiteMenus().getSiteMenu("main");
+    	
+    	request.setAttribute("menu", menu);
+        
+     // Start with sub navigation links 
+    	NavigationItems subnavigation = new NavigationItems();
+    	HstSiteMenuItem selectedItem = menu.getSelectSiteMenuItem();
+    	if (selectedItem != null && selectedItem.getChildMenuItems()!=null && selectedItem.getChildMenuItems().size()>0) {
+    		for (HstSiteMenuItem child : selectedItem.getChildMenuItems()) {
+    			NavigationItem item = new NavigationItem(child.getHstLink(), child.getName());
+    			subnavigation.getItems().add(item);
+    		}
+    	}
+    	
+    // Top level navigation
+    	NavigationItems topnavigation = new NavigationItems();
+    	if (menu.getSiteMenuItems() != null) {
+			for (HstSiteMenuItem child : menu.getSiteMenuItems()) {
+    			NavigationItem item = new NavigationItem(child.getHstLink(), child.getName());
+    			topnavigation.getItems().add(item);
+    		}
+    	}
+    	
+    	request.setAttribute("subnavigation", subnavigation);
+    	request.setAttribute("topnavigation", topnavigation);
     }
 
 }

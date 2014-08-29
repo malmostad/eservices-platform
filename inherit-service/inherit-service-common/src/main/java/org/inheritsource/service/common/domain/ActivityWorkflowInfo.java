@@ -44,6 +44,7 @@ public class ActivityWorkflowInfo implements Serializable {
 	UserInfo assignedUser;
 	Set<CandidateInfo> candidates;
 	int priority;
+	String taskId;
 	
 	public ActivityWorkflowInfo() {
 		
@@ -72,6 +73,14 @@ public class ActivityWorkflowInfo implements Serializable {
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
+	
+	public String getTaskId() {
+		return taskId;
+	}
+
+	public void setTaskId(String taskId) {
+		this.taskId = taskId;
+	}
 
 	@Override
 	public int hashCode() {
@@ -82,6 +91,7 @@ public class ActivityWorkflowInfo implements Serializable {
 		result = prime * result
 				+ ((candidates == null) ? 0 : candidates.hashCode());
 		result = prime * result + priority;
+		result = prime * result + ((taskId == null) ? 0 : taskId.hashCode());
 		return result;
 	}
 
@@ -106,13 +116,19 @@ public class ActivityWorkflowInfo implements Serializable {
 			return false;
 		if (priority != other.priority)
 			return false;
+		if (taskId == null) {
+			if (other.taskId != null)
+				return false;
+		} else if (!taskId.equals(other.taskId))
+			return false;
 		return true;
 	}
 
 	@Override
 	public String toString() {
 		return "ActivityWorkflowInfo [assignedUser=" + assignedUser
-				+ ", candidates=" + candidates + ", priority=" + priority + "]";
+				+ ", candidates=" + candidates + ", priority=" + priority
+				+ ", taskId=" + taskId + "]";
 	}
 	
 }

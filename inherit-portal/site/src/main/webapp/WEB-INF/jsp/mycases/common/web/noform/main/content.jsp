@@ -28,10 +28,6 @@
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
 
 
-	<div class="row-fluid">
-		<div class="span12">
-
-
 <c:choose>
   <c:when test="${empty document}">
     <tag:pagenotfound/>
@@ -53,19 +49,17 @@
   </c:otherwise>  
 </c:choose>
 
-		    <c:if test="${not empty activity}">
-		       <c:choose>
-		         <c:when test="${activity.typeId eq 6}">
-	    		<form method="post" action="noform/confirm">
-						<input type="hidden" name="document" value="${activity.instanceId}" />
-						<input type="submit" value="Klart! Skicka vidare"/>
-				</form>
-				</c:when>
-			  	<c:otherwise>
-			  	   <fmt:message key="mycases.noform.cannothandle"/>
-			  	</c:otherwise>
-			  </c:choose>
-			</c:if>
-		</div>
-	</div>    
+<c:if test="${not empty activity}">
+   <c:choose>
+     <c:when test="${activity.typeId eq 6}">
+	<form method="post" action="noform/confirm">
+			<input type="hidden" name="document" value="${activity.instanceId}" />
+			<input type="submit" value="Klart! Skicka vidare"/>
+	</form>
+	</c:when>
+  	<c:otherwise>
+  	   <fmt:message key="mycases.noform.cannothandle"/>
+  	</c:otherwise>
+  </c:choose>
+</c:if>
 

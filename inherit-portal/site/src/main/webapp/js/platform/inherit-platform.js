@@ -74,4 +74,15 @@ $(document).ready(function() {
 		this.contentWindow.document.body.offsetHeight + 15 +  'px';
 	});
 
+      // load xform div if there is one
+      var url = $("#xform").children("a.view-url").attr('href');
+      if (typeof (url) !== 'undefined' && url.length > 0) {
+        $("#xform").load(url, function(data) {
+          if (typeof ORBEON != "undefined") { 
+            if (!document.all) {
+              ORBEON.xforms.Init.document(); 
+            } 
+          } 
+        }); 
+      }
 });

@@ -26,24 +26,24 @@
  
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 
+  <nav class="breadcrumbs">
+    <ol>
+	<li><a href='https://webapps06.malmo.se/dashboard/'><span class="glyphicon glyphicon-home"></span>KOMIN Min sida</a></li>
+    <li><a href="/site/komin">E-tjänster</a></li>
+	<c:if test="${not empty breadcrumb}"> 
+	  <c:forEach var="item" items="${breadcrumb.items}">	    
+	       <li><a href='<hst:link link="${item.link}"/>'><c:out value="${item.title}"/></a></li>
+	  </c:forEach>
+	</c:if>
+    </ol>
+  </nav>
+
 <c:choose>
   <c:when test="${empty user}">
 	Ej inloggad  <a href="/site/login/form">Logga in</a>
   </c:when>
   <c:otherwise>
 	Inloggad som: ${user.label} <a href="/site/logout">Logga ut</a>
+	<input id="motrice-auth-user-uuid" type="hidden" name="motrice-auth-user-uuid" value="${user.uuid}"/>
   </c:otherwise>
 </c:choose>
-
-<c:if test="${not empty mastHead}">
-${mastHead}
-</c:if>
-
-<!-- removed search field because there is a search in masthead, how to integrate??? 
-<fmt:message var="submitText" key="search.submit.text"/>
-<hst:link var="link" path="/search"/>
-<form action="${link}" method="POST">
- <input type="text" name="query"/>
- <input type="submit" value="${submitText}"/>
-</form>
- -->

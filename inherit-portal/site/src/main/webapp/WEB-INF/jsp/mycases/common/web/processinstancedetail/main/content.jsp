@@ -34,13 +34,20 @@
   	<fmt:message key="mycases.noProcessInstanceDetails.lbl"/>
   </c:when>
   <c:otherwise> 
-  	<p>${processInstanceDetails.processLabel}
-  	</p>
+  	<p>${processInstanceDetails.processLabel} startades <fmt:formatDate value="${processInstanceDetails.startDate}" type="Both" dateStyle="short" timeStyle="short"/> 
+    </p>
+  	<ul>
+  	<c:forEach var="tag" items="${tags}">
+	  <c:if test="${not empty tag and tag.typeId eq 1}">
+		<li>${tag.value}</li>
+	  </c:if>
+	</c:forEach>
+  	</ul>
+  	
   	<h2><fmt:message key="mycases.actlist.lbl" /></h2>
 	<tag:actlist timelineItems="${processInstanceDetails.timeline.items}" viewMode="limit"/>
  	
  	<h2><fmt:message key="mycases.pendingActivities.lbl"/></h2>   
- 	<p></p>
 		 <table class="display dataTable">
 			<thead>
 				<tr>
@@ -60,11 +67,8 @@
 			</c:if>
 			</tbody>
 		</table>
-		<p></p>
-  	 <h2><fmt:message key="mycases.timeline.lbl"/></h2>
-  	 <p></p>
 
-	 <tag:timelinebyday timelineByDay="${timelineByDay}" viewMode="limit"/>
+	 <!-- tag:timelinebyday timelineByDay="${timelineByDay}" viewMode="limit"/ -->
 
   </c:otherwise>
  </c:choose>

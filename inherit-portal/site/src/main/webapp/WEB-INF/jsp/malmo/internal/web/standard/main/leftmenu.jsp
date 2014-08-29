@@ -27,14 +27,24 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="menu" type="org.hippoecm.hst.core.sitemenu.HstSiteMenu"--%>
 
-<!--eri-no-index-->                     
-<div>
-  <div>
-	<ul class="sub-menu-light">
-	  <c:forEach var="item" items="${menu.siteMenuItems}">
-      <tag:menuitem siteMenuItem="${item}"/>
-	  </c:forEach>
-	</ul>
-  </div>
-</div>
-<!--/eri-no-index-->
+<c:if test="${not empty topnavigation and not empty topnavigation.items}"> 
+<section class="box" contextmenu="nav-menu" id="nav-box">
+  <h1 class="box-title">Navigering</h1>
+  <ul class="box-content">
+   <c:forEach var="item" items="${topnavigation.items}">	    
+    <li><a href='<hst:link link="${item.link}"/>'><c:out value="${item.title}"/></a></li>
+   </c:forEach>
+  </ul>
+</section>
+</c:if>
+
+<c:if test="${not empty subnavigation and not empty subnavigation.items}"> 
+<section class="box" contextmenu="nav-menu" id="nav-box">
+  <h1 class="box-title">H&auml;r hittar du</h1>
+  <ul class="box-content">
+   <c:forEach var="item" items="${subnavigation.items}">	    
+    <li><a href='<hst:link link="${item.link}"/>'><c:out value="${item.title}"/></a></li>
+   </c:forEach>
+  </ul>
+</section>
+</c:if>

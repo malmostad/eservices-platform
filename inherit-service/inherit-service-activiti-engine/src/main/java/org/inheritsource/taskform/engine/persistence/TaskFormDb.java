@@ -420,21 +420,23 @@ public class TaskFormDb {
 	public List<Tag> getTagsByProcessInstance(String procinstId) {
 		List<Tag> tags = new ArrayList<Tag>();
 		
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		try {
-			List<ProcessActivityTag> result = (List<ProcessActivityTag>) session.createCriteria(ProcessActivityTag.class)
-					.add( Restrictions.eq("procinstId", procinstId) ) 
-				    .list();
-			
-			for (ProcessActivityTag pafi : result) {
-				tags.add(processActivityTag2Tag(pafi));
+		if (procinstId != null && procinstId.length()>0) {
+			Session session = HibernateUtil.getSessionFactory().openSession();
+			try {
+				List<ProcessActivityTag> result = (List<ProcessActivityTag>) session.createCriteria(ProcessActivityTag.class)
+						.add( Restrictions.eq("procinstId", procinstId) ) 
+					    .list();
+				
+				for (ProcessActivityTag pafi : result) {
+					tags.add(processActivityTag2Tag(pafi));
+				}
 			}
-		}
-		catch (Exception e) {
-			log.error("procinstId=[" + procinstId + "] Exception: " + e.toString());
-		}
-		finally {		
-			session.close();
+			catch (Exception e) {
+				log.error("procinstId=[" + procinstId + "] Exception: " + e.toString());
+			}
+			finally {		
+				session.close();
+			}
 		}
 		
 		return tags;

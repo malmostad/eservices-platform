@@ -31,7 +31,11 @@ import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.hippoecm.hst.core.sitemenu.HstSiteMenu;
+import org.hippoecm.hst.core.sitemenu.HstSiteMenuItem;
 import org.inheritsource.portal.channels.WebsiteInfo;
+import org.inheritsource.portal.domain.NavigationItem;
+import org.inheritsource.portal.domain.NavigationItems;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +53,9 @@ public class Header extends BaseHstComponent {
         } else {
             log.warn("No channel info available for website '{}'", mount.getMountPath());
         }
+        
+    	
+
     }
 
 }
