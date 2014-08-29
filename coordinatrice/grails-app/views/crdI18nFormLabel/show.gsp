@@ -28,6 +28,7 @@
   <head>
     <meta name="layout" content="main"/>
       <g:set var="entityName" value="${message(code: 'crdI18nFormLabel.label', default: 'CrdI18nFormLabel')}" />
+      <g:set var="formdefPath" value="${crdI18nFormLabelInst?.formdef?.path}"/>
       <title><g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
@@ -38,10 +39,10 @@
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
       <ol class="property-list crdI18nFormLabel">
-	<g:if test="${crdI18nFormLabelInst?.formdefPath}">
+	<g:if test="${formdefPath}">
 	  <li class="fieldcontain">
 	    <span id="formdefPath-label" class="property-label"><g:message code="crdI18nFormLabel.formdefPath.label" default="Formdef Path" /></span>
-	    <span class="property-value" aria-labelledby="formdefPath-label"><g:fieldValue bean="${crdI18nFormLabelInst}" field="formdefPath"/></span>
+	    <span class="property-value" aria-labelledby="formdefPath-label">${formdefPath?.encodeAsHTML()}</span>
 	  </li>
 	</g:if>
 	<g:if test="${crdI18nFormLabelInst?.formdefVer}">

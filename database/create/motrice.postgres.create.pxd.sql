@@ -57,7 +57,9 @@ CREATE TABLE pxd_item (
     size integer NOT NULL,
     stream bytea,
     text text,
-    uuid character varying(200)
+    uuid character varying(200),
+    origin_id bigint,
+    read_only boolean
 );
 
 ALTER TABLE ONLY pxd_item

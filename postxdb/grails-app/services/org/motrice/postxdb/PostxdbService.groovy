@@ -223,11 +223,67 @@ class PostxdbService {
     return result
   }
 
+  /**
+   * Get the item containing XML form data for a given instance uuid.
+   */
+  PxdItem instItemGetXml(String uuid) {
+    if (log.debugEnabled) log.debug "instItemGetXml << ${uuid}"
+    def item = PxdItem.findByPath(uuid + '/data.xml')
+    if (log.debugEnabled) log.debug "instItemGetXml >> ${item}"
+    return item
+  }
+
+  /**
+   * Get all items belonging to a form instance.
+   */
+  List instItemGetAll(String uuid) {
+    if (log.debugEnabled) log.debug "instItemGetAll << ${uuid}"
+    def items = PxdItem.findAllByUuid(uuid)
+    if (log.debugEnabled) log.debug "instItemGetAll >> ${items?.size()}"
+    return items
+  }
+
+  /**
+   * Get an item given its database id.
+   */
   PxdItem itemGet(Long id) {
     if (log.debugEnabled) log.debug "itemGet << ${id}"
     def item = PxdItem.get(id)
     if (log.debugEnabled) log.debug "itemGet >> ${item}"
     return item
+  }
+
+  /**
+   * Duplicate a form instance identified by its XML form data item.
+   */
+  PxdItem duplicateInstance(PxdItem srcItem, String tgtuuid, boolean readOnlyFlag) {
+    if (log.debugEnabled) log.debug "duplicateInstance << ${srcItem?.id}, ${tgtuuid}, ${readOnlyFlag}"
+    def tgtItem = PxdItem.formDataCopy(srcItem, tgtuuid)
+    if (!tgtItem.save(failOnError: true)) log.error "duplicateInstance tgtItem: ${tgtItem.errors.allErrors.join(',')}"
+    srcItem.readOnly = readOnlyFlag
+    if (!srcItem.save()) log.error "duplicateInstance srcItem: ${srcItem.errors.allErrors.join(',')}"
+    if (log.debugEnabled) log.debug "duplicateInstance >> ${tgtItem}"
+    return tgtItem
+  }
+
+  /**
+   * Set the read-only state of all items belonging to a form instance.
+   * itemList must be a list of all items of the instance.
+   * RETURN the number of processed items
+   */
+  int makeInstanceReadOnly(List itemList, boolean readOnlyFlag) {
+    int count = itemList.size()
+    if (log.debugEnabled) log.debug "makeInstanceReadOnly << ${count}"
+    itemList.each {item ->
+      item.readOnly = readOnlyFlag
+      if (!item.save()) {
+	def msg = item.errors.allErrors.join(',')
+	throw new PostxdbException('pxdItem.update.problem', msg)
+      }
+    }
+
+    if (log.debugEnabled) log.debug "makeInstanceReadOnly >> ${count}"
+    return count
   }
 
 }

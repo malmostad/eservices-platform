@@ -99,14 +99,15 @@ class CrdI18nFormLabelController {
 
   def show(Long id) {
     if (log.debugEnabled) log.debug "SHOW ${params}"
-    def crdI18nFormLabelInst = CrdI18nFormLabel.get(id)
-    if (!crdI18nFormLabelInst) {
+    def formLabelInst = CrdI18nFormLabel.get(id)
+    if (!formLabelInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'crdI18nFormLabel.label', default: 'CrdI18nFormLabel'), id])
       redirect(action: "list")
       return
     }
 
-    [crdI18nFormLabelInst: crdI18nFormLabelInst]
+    formLabelInst.formdef = PxdFormdef.get(formLabelInst?.formdefId)
+    [crdI18nFormLabelInst: formLabelInst]
   }
 
   def edit(Long id) {
@@ -118,7 +119,8 @@ class CrdI18nFormLabelController {
       return
     }
 
-    [formLabelInst: formLabelInst, formdefInst: PxdFormdef.get(formLabelInst?.formdefId)]
+    formLabelInst.formdef = PxdFormdef.get(formLabelInst?.formdefId)
+    [formLabelInst: formLabelInst]
   }
 
   def update(Long id, Long version) {
@@ -162,9 +164,10 @@ class CrdI18nFormLabelController {
     }
 
     try {
+      def formdefId = crdI18nFormLabelInst.formdefId
       crdI18nFormLabelInst.delete(flush: true)
       flash.message = message(code: 'default.deleted.message', args: [message(code: 'crdI18nFormLabel.label', default: 'CrdI18nFormLabel'), id])
-      redirect(action: "list")
+      redirect(action: 'listkey', id: formdefId)
     }
     catch (DataIntegrityViolationException e) {
       flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'crdI18nFormLabel.label', default: 'CrdI18nFormLabel'), id])

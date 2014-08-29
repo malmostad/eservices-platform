@@ -1,4 +1,4 @@
-<%-- == Motrice Copyright Notice ==
+%-- == Motrice Copyright Notice ==
 
   Motrice Service Platform
 
@@ -67,6 +67,20 @@
 	  <li class="fieldcontain">
 	    <span id="size-label" class="property-label"><g:message code="pxdItem.size.label" default="Size" /></span>
 	    <span class="property-value" aria-labelledby="size-label"><g:fieldValue bean="${pxdItemObj}" field="size"/></span>
+	  </li>
+	</g:if>
+	<g:if test="${pxdItemObj?.readOnly}">
+	  <li class="fieldcontain">
+	    <span id="readOnly-label" class="property-label"><g:message code="pxdItem.readOnly.label" default="ReadOnly" /></span>
+	    <span class="property-value" aria-labelledby="readOnly-label"><g:fieldValue bean="${pxdItemObj}" field="readOnly"/></span>
+	  </li>
+	</g:if>
+	<g:if test="${pxdItemObj?.origin}">
+	  <li class="fieldcontain">
+	    <span id="origin-label" class="property-label"><g:message code="pxdItem.origin.label" default="Origin" /></span>
+	    <span class="property-value" aria-labelledby="origin-label">
+	      <g:link action="show" id="${pxdItemObj?.origin?.id}">${pxdItemObj?.origin?.path}</g:link>
+	    </span>
 	  </li>
 	</g:if>
 	<g:if test="${pxdItemObj?.uuid}">

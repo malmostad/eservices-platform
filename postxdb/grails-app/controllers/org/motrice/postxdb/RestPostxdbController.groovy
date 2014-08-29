@@ -123,4 +123,85 @@ class RestPostxdbController {
     }
   }
 
+  /**
+   * Get the read-only status of a form instance.
+   * GET $POSTXDB/readonly/$uuid
+   * NOTE: Only checks the XML item.
+   */
+  def readonlyget() {
+    if (log.debugEnabled) log.debug "READONLY_GET: ${Util.clean(params)}, ${request.forwardURI}"
+    def item = postxdbService.instItemGetXml(params.uuid)
+    if (item) {
+	render (status: 200, contentType: 'application/xml;charset=UTF-8') {
+	  pxdItem {
+	    uuid(params.uuid)
+	    path(item.path)
+	    readOnly(new Boolean(item.readOnly))
+	  }
+	}
+    } else {
+      response.status = 404
+    }
+  }
+
+  /**
+   * Set the read-only status of a form instance.
+   * PUT $POSTXDB/readonly/$uuid[?ro=true|false]
+   * Sets all items belonging to this instance to the given read-only status.
+   * The default is ro=true.
+   */
+  def readonlyset(String ro) {
+    if (log.debugEnabled) log.debug "READONLY_SET: ${Util.clean(params)}, ${request.forwardURI}"
+    String instanceUuid = params.uuid
+    def items = postxdbService.instItemGetAll(instanceUuid)
+    if (items) {
+      try {
+	boolean roState = 'false'.equalsIgnoreCase(params.ro)? false : true
+	def count = postxdbService.makeInstanceReadOnly(items, roState)
+	render (status: 200, contentType: 'application/xml;charset=UTF-8') {
+	  list(size: count) {
+	    items.each {item ->
+	      pxdItem {
+		uuid(item.uuid)
+		path(item.path)
+		readOnly(item.readOnly)
+	      }
+	    }
+	  }
+	}
+      } catch (PostxdbException exc) {
+	log.error(exc.message)
+	response.status = exc.http
+	render(status: exc.http, contentType: 'text/plain', text: message(code: exc.code))
+      }
+    } else {
+      render(status: 404)
+    }
+  }
+
+  /**
+   * Duplicate a form instance, i.e. all its items.
+   * By default set the source instance read-only.
+   * PUT $POSTXDB/duplicate/$srcuuid/$tgtuuid
+   */
+  def duplicateinstance(String ro) {
+    if (log.debugEnabled) log.debug "DUPLICATE: ${Util.clean(params)}, ${request.forwardURI}"
+    String srcuuid = params.srcuuid
+    String tgtuuid = params.tgtuuid
+    boolean readOnly = 'false'.equalsIgnoreCase(params.ro)? false : true
+    def item = postxdbService.instItemGetXml(srcuuid)
+
+    if (item) {
+      try {
+	def itemList = [postxdbService.duplicateInstance(item, tgtuuid, readOnly)]
+	render(status: 200, text: itemList as XML, encoding:'UTF-8')
+      } catch (RuntimeException exc) {
+	response.status = 409
+	render exc.errors as XML
+      }
+    } else {
+      render(status: 404)
+    }
+  }
+
 }

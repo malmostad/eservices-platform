@@ -61,6 +61,12 @@ class PxdItem {
   // A purist would do this by subclassing.
   Boolean instance
 
+  // If true, this item may not be overwritten.
+  Boolean readOnly
+
+  // The item from which this item was created, or null.
+  PxdItem origin
+
   // Auto timestamping
   Date dateCreated
   Date lastUpdated
@@ -91,6 +97,8 @@ class PxdItem {
     path nullable: false, unique: true
     uuid nullable: true, maxSize: 200
     formDef nullable: true, maxSize: 400
+    readOnly nullable: true
+    origin nullable: true
     dateCreated nullable: true
     lastUpdated nullable: true
     format nullable: false, maxSize: 80
@@ -106,8 +114,20 @@ class PxdItem {
    * Does NOT copy text/stream
    */
   static PxdItem almostCopy(PxdItem otherItem, String path, String formDef) {
-    def item = new PxdItem(path: path, formDef: formDef, uuid: otherItem.uuid,
-    instance: otherItem.instance, format: otherItem.format)
+    new PxdItem(path: path, formDef: formDef, uuid: otherItem.uuid,
+    instance: otherItem.instance, readOnly: otherItem.readOnly,
+    origin: otherItem.origin, format: otherItem.format)
+  }
+
+  /**
+   * Copy a form data item.
+   * The read-only state of the new item is null.
+   * ASSUMES the item is an instance.
+   */
+  static PxdItem formDataCopy(PxdItem otherItem, String uuid) {
+    def item = new PxdItem(path: "${uuid}/data.xml", uuid: uuid, formDef: otherItem.formDef,
+    instance: true, origin: otherItem, format: otherItem.format)
+    return item.assignText(otherItem.text)
   }
 
   // Assign stream
@@ -181,6 +201,8 @@ class PxdItem {
       created(dateCreated)
       path(path)
       uuid(uuid)
+      if (readOnly) readonly(readOnly)
+      if (origin) origin(origin.id)
       formpath(formDef)
       format(format)
       size(size)
