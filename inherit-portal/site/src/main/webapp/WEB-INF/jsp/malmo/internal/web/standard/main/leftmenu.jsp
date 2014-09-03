@@ -38,13 +38,4 @@
 </section>
 </c:if>
 
-<c:if test="${not empty subnavigation and not empty subnavigation.items}"> 
-<section class="box" contextmenu="nav-menu" id="nav-box">
-  <h1 class="box-title">H&auml;r hittar du</h1>
-  <ul class="box-content">
-   <c:forEach var="item" items="${subnavigation.items}">	    
-    <li><a href='<hst:link link="${item.link}"/>'><c:out value="${item.title}"/></a></li>
-   </c:forEach>
-  </ul>
-</section>
-</c:if>
+
