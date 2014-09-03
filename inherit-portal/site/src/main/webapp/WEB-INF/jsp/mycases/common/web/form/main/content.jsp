@@ -38,23 +38,6 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
-
-	
-	<c:if test="${not empty activity}">
-    	<script type="text/javascript" charset="utf-8">
-		        jQuery.noConflict();
-		        var $j = jQuery;
-		        $j(document).ready(function () {
-		             $j("#xform").load("${activity.editUrl}", function(data) {
-		                if (typeof ORBEON != "undefined") { 
-		                    if (!document.all) {
-		                        ORBEON.xforms.Init.document(); 
-		                    } 
-		                } 
-		        	    }); 
-					});
-		</script>
-    </c:if>
     
     <c:if test="${not empty guide}">
 		<h1>${guide.title}</h1>
@@ -62,11 +45,9 @@
 		<hst:html hippohtml="${guide.html}"/>
 	</c:if>
 					
-	<div class="row-fluid">
-		<div class="span12">
-    		<div id="xform" class="public-xform">Loading form...please wait...</div>
-		</div>
-	</div>    
-    
+	<!--  activity form (ajax load after page is loaded) -->
+	<c:if test="${not empty activity}">
+      <div id="xform" class="public-xform"><fmt:message key="orbeon.loading.lbl"/><a class="view-url" href="${activity.editUrl}"/></div>
+	</c:if>
   </c:otherwise>  
 </c:choose>

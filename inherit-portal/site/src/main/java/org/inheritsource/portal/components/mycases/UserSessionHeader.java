@@ -29,6 +29,10 @@ package org.inheritsource.portal.components.mycases;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
+import org.hippoecm.hst.core.sitemenu.HstSiteMenu;
+import org.hippoecm.hst.core.sitemenu.HstSiteMenuItem;
+import org.inheritsource.portal.domain.NavigationItem;
+import org.inheritsource.portal.domain.NavigationItems;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +47,22 @@ public class UserSessionHeader extends MyCasesBaseComponent {
         if (user != null) {
         	request.setAttribute("user", user);
         }
+        
+        // Calculate breadcrumb
+        HstSiteMenu menu = request.getRequestContext().getHstSiteMenus().getSiteMenu("main");
+    	
+        NavigationItems breadcrumb = new NavigationItems();
+    	HstSiteMenuItem menuItem = menu.getSelectSiteMenuItem();
+    	if (menuItem == null) {
+    		menuItem = menu.getDeepestExpandedItem();
+    	}
+    	while (menuItem != null) {
+    		NavigationItem item = new NavigationItem(menuItem.getHstLink(), menuItem.getName());
+    		breadcrumb.getItems().add(0, item);
+    		menuItem = menuItem.getParentItem();
+    	}
+    	
+    	request.setAttribute("breadcrumb", breadcrumb);
     }
 
 }

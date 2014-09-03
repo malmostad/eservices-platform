@@ -49,6 +49,7 @@
 			<thead>
 				<tr>
 					<th><fmt:message key="mycases.process.column.lbl" /></th>
+					<th><fmt:message key="mycases.diaryNo.lbl" /></th>
 					<th><fmt:message key="mycases.startDate.column.lbl" /></th>
 					<th><fmt:message key="mycases.expectedEndDate.column.lbl" /></th>
 					<th><fmt:message key="mycases.activity.column.lbl" /></th>
@@ -60,6 +61,15 @@
 						<c:forEach var="task" items="${tasks}">
 							<tr>
 								<td>${task.processLabel}</td>
+								<td>
+								<c:if test="${not empty task and not empty task.tags}">
+									<c:forEach var="tag" items="${task.tags}">
+				        				<c:if test="${not empty tag and tag.typeId eq 1}">
+						  					${tag.value}&nbsp;
+										</c:if>
+				      				</c:forEach>
+			      				</c:if>
+								</td>
 								<td><fmt:formatDate value="${task.activityCreated}"
 										type="Both" dateStyle="short" timeStyle="short"/></td>
 								<!-- href="form?taskUuid={task.taskUuid}&activityDefinitionUUID={task.activityDefinitionUUID}">{task.activityLabel} -->
@@ -71,7 +81,7 @@
 					</c:when>
 					<c:otherwise>
 						<tr>
-							<td colspan="3"><fmt:message key="mycases.noActivity.lbl" /></td>
+							<td colspan="4"><fmt:message key="mycases.noActivity.lbl" /></td>
 						</tr>
 
 					</c:otherwise>

@@ -39,42 +39,70 @@
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
 
-	<c:if test="${not empty activity}">
-    	<script type="text/javascript" charset="utf-8">
-		        $jq(document).ready(function () {
-		             $jq("#xform").load("${activity.editUrl}", function(data) {
-		                if (typeof ORBEON != "undefined") { 
-		                    if (!document.all) {
-		                        ORBEON.xforms.Init.document(); 
-		                    } 
-		                } 
-		        	    }); 
-					});
-		</script>
-    </c:if>
+	<section class="box" contextmenu="case-details-menu" id="case-details">
+	  <h1 class="box-title"><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
+	  <div class="box-content body-copy">
+	        <h3><fmt:message key="mycases.diaryNo.lbl" /></h3>
+	        <form>
+	        	<input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/>
+	        	<input type="hidden" name="motrice-process-instance-uuid" value="${activity.processInstanceUuid}"/>
+				<ul id="diaryNo">
+				  <c:forEach var="tag" items="${tags}">
+			        <c:if test="${not empty tag and tag.typeId eq 1}">
+					  <li>${tag.value}</li>
+					</c:if>
+			      </c:forEach>
+				</ul>
+			</form>
+	        
+			<h3>Status</h3>
+			<ul>
+			  <li>Registrering</li>
+			</ul>
 			
-    <h1><fmt:message key="mycases.activity.column.lbl"/></h1>	   
+			<h3><fmt:message key="mycases.actlist.lbl" /></h3>
+			<tag:actlist timelineItems="${processInstanceDetails.timeline.items}" viewMode="full"/>
+			<h3><fmt:message key="mycases.commentFeed.lbl"/></h3>
+			<ul id="commentfeed">
+			</ul>			
+			<h3><fmt:message key="mycases.tags.lbl" /></h3> 			
+			<form>
+			  <input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/>
+			  <input type="hidden" name="motrice-process-instance-uuid" value="${activity.processInstanceUuid}"/>
+					<ul id="myTags">
+				     <c:if test="${not empty tags}">
+			           <c:forEach var="tag" items="${tags}">
+			             <c:if test="${not empty tag and tag.typeId ne 1}">
+						   <li>${tag.value}</li>
+						 </c:if>
+					   </c:forEach>
+					 </c:if>
+					</ul>
+				</form>
+	  </div>
+	</section>		
 
-    <p> ${activity.activityLabel} i ${processInstanceDetails.processLabel}</p>
+	<section class="box" contextmenu="task-section-menu" id="task-section">
+	  <h1 class="box-title"><fmt:message key="mycases.activity.column.lbl"/>: ${activity.activityLabel} i ${processInstanceDetails.processLabel}</h1>
+	  <div class="box-instructions">
+	     <p>Lås till mig för att utföra aktiviteten. När aktiviten är låst till en person så visas den i inkorgen endast för den personen. Släpp lås om du vill att övriga kandidater ska se aktiviteten igen. </p>
+	  </div>
+	  
+	  <div class="box-content body-copy">
+		    <p><button class="btn btn-danger motrice-unassign-user"><fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+		    <p><button class="btn btn-primary motrice-assign-to"><fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+	    
+	    <div id="xform" class="komin-xform"><fmt:message key="orbeon.loading.lbl"/><a class="view-url" href="${activity.editUrl}"/></div>
+	  </div>
+	<a href="#" class="toggle-instructions" title="Show instructions">?</a>
+	</section>
 
-	<!--  activity form (ajax load after page is loaded) -->
-	<div class="row-fluid">
-		<div class="span12">
-    		<div id="xform" class="komin-xform">Loading form...please wait...</div>
-		</div>
-	</div>    
-    
-    
-    
   </c:otherwise>  
 </c:choose>
 	
 <p></p>
 <h1><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
 
-<h2><fmt:message key="mycases.commentFeed.lbl"/></h2>
-<ul id="commentfeed">
-</ul>
 
 <c:choose>
   <c:when test="${empty processInstanceDetails}">

@@ -25,16 +25,15 @@
  
  
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
-		
-<div id="tab-element-container">
-    <ul>
-       <li><a href="#tab-element-1">Blanketter & tj&auml;nster</a></li>
-       <li><a href="#tab-element-2">Hj&auml;lp & information</a></li>
-    </ul>
-	<div id="tab-element-1">
-		<div class="tab-content">
-		
-			<table class="e-services">
+	
+
+<section class="box" contextmenu="formoverview-menu" id="formoverview">
+  <h1 class="box-title">Blanketter & tj&auml;nster</h1>
+  <div class="box-instructions">
+    <p>hjälptext...TODO</p>
+  </div>
+  <div class="box-content body-copy">
+  <table class="e-services">
 			  <thead>
 			    <tr>
 			      <th id="case-name"><fmt:message key="mycases.service.lbl"/></th>
@@ -66,15 +65,7 @@
 				</c:forEach>          
 			</tbody>
 			</table>
-			
-		</div>
-	</div>
-
-	<div id="tab-element-2">
-		<div class="tab-content">
-		
-		</div>
-	</div>
-
-</div>
+  </div>
+  <button type="button" class="toggle-instructions" title="Show instructions">?</button>
+</section>
 

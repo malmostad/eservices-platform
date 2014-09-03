@@ -28,10 +28,6 @@
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.NewsDocument"--%>
 
 
-	<div class="row-fluid">
-		<div class="span12">
-
-
 <c:choose>
   <c:when test="${empty document}">
     <tag:pagenotfound/>
@@ -72,8 +68,6 @@
 			  	</c:otherwise>
 			  </c:choose>
 			</c:if>
-		</div>
-	</div>    
 
 
 <p></p>

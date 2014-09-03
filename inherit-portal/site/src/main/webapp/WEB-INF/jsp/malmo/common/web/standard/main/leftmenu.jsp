@@ -27,14 +27,14 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 <%--@elvariable id="menu" type="org.hippoecm.hst.core.sitemenu.HstSiteMenu"--%>
 
-<!--eri-no-index-->                     
-<div>
-  <div>
-	<ul class="sub-menu-light">
-	  <c:forEach var="item" items="${menu.siteMenuItems}">
-      <tag:menuitem siteMenuItem="${item}"/>
-	  </c:forEach>
-	</ul>
-  </div>
-</div>
-<!--/eri-no-index-->
+
+<c:if test="${not empty topnavigation and not empty topnavigation.items}"> 
+  <nav class="content">
+  <h1>Här hittar du</h1>
+    <ul>
+	  <c:forEach var="item" items="${topnavigation.items}">	    
+       	<li><a href='<hst:link link="${item.link}"/>'><c:out value="${item.title}"/></a></li>
+  	  </c:forEach>
+    </ul>
+  </nav>
+</c:if>

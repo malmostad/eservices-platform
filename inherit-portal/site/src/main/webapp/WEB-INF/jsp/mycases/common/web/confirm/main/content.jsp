@@ -38,55 +38,29 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
-
-
-<c:if test="${not empty formUrl}">
-	<script type="text/javascript" charset="utf-8">
-		        jQuery.noConflict();
-		        var $j = jQuery;
-
-		        $j(document).ready(function () {
-		             $j("#xform").load("${formUrl}", function(data) {
-		                if (typeof ORBEON != "undefined") { 
-		                    if (!document.all) {
-		                        ORBEON.xforms.Init.document(); 
-		                    } 
-		                } 
-		        	    }); 
-					 
-					});
-				
-				
-				</script>
-</c:if>
 	
-	<div class="row-fluid">
-		<div class="span12">
-			<c:if test="${not empty document}">
-				<h2>${document.title}</h2>
-				<p>${document.summary}</p>
-				<hst:html hippohtml="${document.html}" />
-			</c:if>	    
+	<c:if test="${not empty document}">
+		<h2>${document.title}</h2>
+		<p>${document.summary}</p>
+		<hst:html hippohtml="${document.html}" />
+	</c:if>	    
+
+    <div id="xform">
+		<c:choose>
+		  <c:when test="${empty formUrl}">
+		  	<fmt:message key="mycases.noformtoload.lbl"/>
+		  </c:when>
+		  <c:otherwise>
+		  	<div id="xform" class="public-xform"><fmt:message key="orbeon.loading.lbl"/><a class="view-url" href="${formUrl}"/></div>
+		  </c:otherwise>
+		</c:choose>
+	  </div>
 	
-	        <div id="xform">
-				<c:choose>
-				  <c:when test="${empty formUrl}">
-				  	<fmt:message key="mycases.noformtoload.lbl"/>
-				  </c:when>
-				  <c:otherwise>
-				    <fmt:message key="mycases.loadingform.lbl"/>
-				  </c:otherwise>
-				</c:choose>
-			  </div>
-    		
-    		<c:if test="${not empty nextTask}">
-	    		<p>
-	    			<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.relativePageLink}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
-	    		</p>
-    		</c:if>
-    		
-		</div>
-	</div>    
+	<c:if test="${not empty nextTask}">
+		<p>
+			<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.relativePageLink}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
+		</p>
+	</c:if>
     
   </c:otherwise>  
 </c:choose>

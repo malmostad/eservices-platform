@@ -23,46 +23,55 @@
  
 --%> 
  
- 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <hst:headContributions categoryExcludes="scripts" />
-    <hst:link var="link" path="/css/style.css"/>
-    <link rel="stylesheet" href="${link}" type="text/css"/>
+    <meta charset='utf-8'/>
+    <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
+    <meta content='IE=edge' http-equiv='X-UA-Compatible'/>
+    <!--[if lte IE 8]><script src='//assets.malmo.se/internal/3.0/html5shiv-printshiv.js' type='text/javascript'></script><![endif]-->
+    <link href='//assets.malmo.se/internal/3.0/malmo.css' media='all' rel='stylesheet' type='text/css'/>
+    <!--[if lte IE 7]><link href='//assets.malmo.se/internal/3.0/legacy/ie7.css' media='all' rel='stylesheet' type='text/css'/><![endif]-->
 
-	<!--  Malmö internal services assets-2.0 begin -->    
-    <link href="https://www.malmo.se/assets-2.0/css/internal-core.css" rel="stylesheet" type="text/css" media="all" />
-	<link href="https://www.malmo.se/assets-2.0/jquery/malmo-theme.css" rel="stylesheet" type="text/css" media="all" />
-	<link href="https://www.malmo.se/assets-2.0/css/malmo-print.css" rel="stylesheet" type="text/css" media="print" />
-	<!--[if lt IE 7]><link href="https://www.malmo.se/assets-2.0/css/malmo-ie-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->
-	<!--[if IE 7]><link href="https://www.malmo.se/assets-2.0/css/malmo-ie7-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->
-	<link rel="shortcut icon" href="https://www.malmo.se/assets-2.0/img/malmo-favicon.ico" type="image/x-icon" />
-	<script src="https://www.malmo.se/assets-2.0/jquery/jquery.js" type="text/javascript"></script>
-	<script src="https://www.malmo.se/assets-2.0/js/malmo.js" type="text/javascript"></script>
-	<script src="https://www.malmo.se/assets-2.0/js/internal.js" type="text/javascript"></script>
-	<!--  Malmö assets-2.0 end -->    
-    <script language="javascript" type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script language="javascript" type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+    <!-- motrice css -->
+    <hst:headContributions categoryExcludes="scripts" />
+    <hst:link var="link" path="/css/motrice-komin.css"/>
+    <link rel="stylesheet" href="${link}" type="text/css"/>
     
-    <link rel="stylesheet" href="<hst:link path="/css/platform/inherit-platform.css"/>" type="text/css"/>
-    <script type="text/javascript" src="<hst:link path="/js/platform/inherit-platform.js"/>"></script>
-    
-    <link rel="stylesheet" href="/site/js/tag-it/css/jquery.tagit.css" type="text/css"/>
-    <link href=""/site/js/tag-it/css/tagit.ui-zendesk.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="/site/js/tag-it/js/tag-it.min.js"></script>
-    
-    <script type="text/javascript" charset="utf-8">
-    	var $jq = jQuery.noConflict();
-    </script>
+    <link rel='stylesheet' href='<hst:link path="/css/platform/inherit-platform.css"/>' type='text/css'/>
+
+    <!-- end of motrice css -->
+
+    <link rel='icon' type='image/x-icon' href='//assets.malmo.se/internal/3.0/favicon.ico'/>
   </head>
-  <body>
-  	<div class="wrap-all">
-    <hst:include ref="header"/>
-    <hst:include ref="main"/>
-    <hst:headContributions categoryIncludes="scripts"/>
+
+  <body class='malmo-masthead-dashboard development'>
+
+  <div class='app-title'><fmt:message key="mycases.motriceapp.lbl"/></div>
+
+    <div class="motrice-grid">
+      <hst:include ref="header"/>
+      <hst:include ref="main"/>
     </div>
+
+    <script src='//assets.malmo.se/internal/3.0/malmo.js'></script>
+   
+<!-- start motrice javascript --> 
+
+     <hst:headContributions categoryIncludes="scripts"/>
+
+    <script type='text/javascript' src='/site/js/jquery-ui-1.11.1.custom/jquery-ui.min.js'></script>
+    <script type='text/javascript' src='<hst:link path="/js/platform/inherit-platform.js"/>'></script>
+    
+    <link rel='stylesheet' href='/site/js/tag-it/css/jquery.tagit.css' type='text/css'/>
+    <link href='/site/js/tag-it/css/tagit.ui-zendesk.css' rel='stylesheet' type='text/css'>
+    <script type='text/javascript' src='/site/js/tag-it/js/tag-it.min.js'></script>
+
+    <script type='text/javascript' src='<hst:link path="/js/form/jquery.form.min.js"/>'></script>
+    <script type='text/javascript' src='<hst:link path="/js/platform/motrice-internal.js"/>'></script>
+     <!-- end of motrice javascript --> 
+
   </body>
 </html>
+

@@ -38,20 +38,6 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
-
-	<script type="text/javascript" charset="utf-8">
-		        jQuery.noConflict();
-		        var $j = jQuery;
-		        $j(document).ready(function () {
-		             $j("#xform").load("<fmt:message key="orbeonbase.portal.url"/>${document.formPath}/edit/${user.uuid}?orbeon-embeddable=true", function(data) {
-		                if (typeof ORBEON != "undefined") { 
-		                    if (!document.all) {
-		                        ORBEON.xforms.Init.document(); 
-		                    } 
-		                } 
-		        	    }); 
-					});
-		</script>
 		
 <%--
     <c:if test="${not empty guide}">
@@ -61,13 +47,6 @@
 	</c:if>
 --%>
 					
-	<div class="row-fluid">
-		<div class="span12">
-    		<div id="xform" class="public-xform">
-	    		<p>Loading form: ${document.title}, please wait...</p>
-    		</div>
-		</div>
-	</div>    
-    
+<div id="xform" class="public-xform"><fmt:message key="orbeon.loading.lbl"/><a class="view-url" href="<fmt:message key="orbeonbase.portal.url"/>${document.formPath}/edit/${user.uuid}?orbeon-embeddable=true"/></div>    
   </c:otherwise>  
 </c:choose>

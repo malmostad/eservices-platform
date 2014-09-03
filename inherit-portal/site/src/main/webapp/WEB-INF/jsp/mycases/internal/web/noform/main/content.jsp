@@ -44,25 +44,18 @@
     <p> ${activity.activityLabel} i ${processInstanceDetails.processLabel}</p>
 
 	<!--  activity form (ajax load after page is loaded) -->
-	<div class="row-fluid">
-		<div class="span12">
-			    <c:choose>
-		         <c:when test="${activity.typeId eq 6}">
-		    		<form method="post" action="noform/confirm">
-							<input type="hidden" name="document" value="${activity.instanceId}" />
-							<input type="submit" value="Klart! Skicka vidare"/>
-					</form>
-				</c:when>
-			  	<c:otherwise>
-			  	   <fmt:message key="mycases.noform.cannothandle"/>
-			  	</c:otherwise>
-			   </c:choose>
+    <c:choose>
+     <c:when test="${activity.typeId eq 6}">
+		<form method="post" action="noform/confirm">
+				<input type="hidden" name="document" value="${activity.instanceId}" />
+				<input type="submit" value="Klart! Skicka vidare"/>
+		</form>
+	</c:when>
+  	<c:otherwise>
+  	   <fmt:message key="mycases.noform.cannothandle"/>
+  	</c:otherwise>
+   </c:choose>
 		   
-		</div>
-	</div>    
-    
-    
-    
   </c:otherwise>  
 </c:choose>
 	

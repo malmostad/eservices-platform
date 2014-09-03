@@ -18,49 +18,45 @@
   along with this program. If not, see <http://www.gnu.org/licenses/>. 
  
   e-mail: info _at_ motrice.se 
-  mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
+  mail: Motrice AB, LÃ¥ngsjÃ¶vÃ¤gen 8, SE-131 33 NACKA, SWEDEN 
   phone: +46 8 641 64 14 
  
 --%> 
  
  
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <hst:headContributions categoryExcludes="scripts" />
-    <hst:link var="link" path="/css/style.css"/>
-    <link rel="stylesheet" href="${link}" type="text/css"/>
+    <meta charset='utf-8'/>
+    <meta content='width=device-width, initial-scale=1.0' name='viewport'/>
 
-	<!--  Malm� external services assets-2.0 begin -->    
-    <link href="https://www.malmo.se/assets-2.0/css/external.css" rel="stylesheet" type="text/css" media="all" />
-	<link href="https://www.malmo.se/assets-2.0/jquery/malmo-theme.css" rel="stylesheet" type="text/css" media="all" />
-	<link href="https://www.malmo.se/assets-2.0/css/malmo-print.css" rel="stylesheet" type="text/css" media="print" />
-	<!--[if lt IE 7]><link href="https://www.malmo.se/assets-2.0/css/malmo-ie-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->
-	<!--[if IE 7]><link href="https://www.malmo.se/assets-2.0/css/malmo-ie7-css-fix.css" rel="stylesheet" type="text/css" media="all" /><![endif]-->
-	<link rel="shortcut icon" href="https://www.malmo.se/assets-2.0/img/malmo-favicon.ico" type="image/x-icon" />
-	<script src="https://www.malmo.se/assets-2.0/jquery/jquery.js" type="text/javascript"></script>
-	<script src="https://www.malmo.se/assets-2.0/js/malmo.js" type="text/javascript"></script>
-	<script src="https://www.malmo.se/assets-2.0/js/external.js" type="text/javascript"></script>
-	<script src="https://s7.addthis.com/js/250/addthis_widget.js" type="text/javascript"></script> 
-	<!--  Malm� assets-2.0 end -->   
-	<script language="javascript" type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script> 
-    
-    <link rel="stylesheet" href="<hst:link path="/css/platform/inherit-platform.css"/>" type="text/css"/>
-    <script type="text/javascript" src="<hst:link path="/js/platform/inherit-platform.js"/>"></script>
+    <!--[if IE]><meta content='IE=edge' http-equiv='X-UA-Compatible'/><![endif]-->
+    <!--[if lte IE 8]><script src='//assets.malmo.se/external/v4/html5shiv-printshiv.js' type='text/javascript'></script><![endif]-->
+    <link href='//assets.malmo.se/external/v4/malmo.css' media='all' rel='stylesheet' type='text/css'/>
+	
+	<!-- motrice css -->
+	<hst:headContributions categoryExcludes="scripts" />
+    <hst:link var='link' path='/css/style.css'/>
+    <link rel='stylesheet' href='${link}' type='text/css'/>
+    <link rel='stylesheet' href='<hst:link path="/css/platform/inherit-platform.css"/>' type='text/css'/>
+    <link rel='stylesheet' href='<hst:link path="/css/motrice-public.css"/>' type='text/css'/>
 
-    <script type="text/javascript" charset="utf-8">
-        var $jq = jQuery.noConflict();
-    </script>
-    
+    <!--[if lte IE 8]><link href='//assets.malmo.se/external/v4/legacy/ie8.css' media='all' rel='stylesheet' type='text/css'/><![endif]-->
+    <noscript><link href="//assets.malmo.se/external/v4/icons.fallback.css" rel="stylesheet"></noscript>
+    <link rel='icon' type='image/x-icon' href='//assets.malmo.se/external/v4/favicon.ico'/>
   </head>
-  <body>
-  	<div class="wrap-all">
-    
-    <hst:include ref="header"/>
-    <hst:include ref="main"/>
-    <hst:headContributions categoryIncludes="scripts"/>
-    </div>
-  </body>
+  <body class="mf-v4 development">
+
+  	<div class="motrice-grid">
+	    <hst:include ref="header"/>
+	    <hst:include ref="main"/>    
+	</div>
+  
+  <script src='//assets.malmo.se/external/v4/malmo.js'></script>  
+ 
+  <script type='text/javascript' src='<hst:link path="/js/platform/inherit-platform.js"/>'></script>
+  <hst:headContributions categoryIncludes="scripts"/>
+  
+ </body>
 </html>

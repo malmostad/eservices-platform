@@ -39,43 +39,38 @@
 			<hst:headContribution keyHint="headTitle" element="${headTitle}" />
 		</c:if>
 
-		<div class="row-fluid">
-			<div class="span12">
+		<c:if test="${not empty guide}">
+			<h1>${guide.title}</h1>
+			<p>${guide.summary}</p>
+			<hst:html hippohtml="${guide.html}" />
+		</c:if>
 
-				<c:if test="${not empty guide}">
-					<h1>${guide.title}</h1>
-					<p>${guide.summary}</p>
-					<hst:html hippohtml="${guide.html}" />
-				</c:if>
+		<c:if test="${not empty document}">
+			<h1>${document.title}</h1>
+			<p>${document.summary}</p>
+			<hst:html hippohtml="${document.html}" />
+		</c:if>
 
-				<c:if test="${not empty document}">
-					<h1>${document.title}</h1>
-					<p>${document.summary}</p>
-					<hst:html hippohtml="${document.html}" />
-				</c:if>
+		<table>
+		  <thead>
+		    <tr>
+		      <th>Dokument</th>
+		      <th>Kontrollsumma</th>
+		    </tr>
+		  </thead>
+		  <tbody>
+		    <tr>
+		    	<td><a href="${pdfUrl}">${docNo}</a></td>
+		    	<td>${pdfChecksum}</td>
+		    </tr>
+		  </tbody>
+		</table>					    
 
-				<table>
-				  <thead>
-				    <tr>
-				      <th>Dokument</th>
-				      <th>Kontrollsumma</th>
-				    </tr>
-				  </thead>
-				  <tbody>
-				    <tr>
-				    	<td><a href="${pdfUrl}">${docNo}</a></td>
-				    	<td>${pdfChecksum}</td>
-				    </tr>
-				  </tbody>
-				</table>					    
-
-				<form method="post" action="https://idp.test.malmo.se/wa/auth?authmech=e-id-signer">
-					<input type="hidden" name="text" value="${signText}" />
-					<input type="hidden" name="location" value="${responseUrl}" /> <input
-						type="submit" value="G&aring; till signering"/>
-				</form>
-			</div>
-		</div>
+		<form method="post" action="https://idp.test.malmo.se/wa/auth?authmech=e-id-signer">
+			<input type="hidden" name="text" value="${signText}" />
+			<input type="hidden" name="location" value="${responseUrl}" /> <input
+				type="submit" value="G&aring; till signering"/>
+		</form>
 
 	</c:otherwise>
 </c:choose>

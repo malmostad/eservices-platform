@@ -1,0 +1,33 @@
+@import './bower_components/malmo_shared_assets/stylesheets/malmo_external';
+
+article, nav.content, aside {
+  padding: 1em;
+  @include columns(12);
+}
+
+.motrice-grid {
+  padding: 1em;
+}
+
+@media (min-width: 40em) {
+  article {
+    @include columns(6);
+  }
+  nav.content {
+    @include columns(6, true);
+  }
+  aside {
+    @include columns(12);
+  } 
+}
+@media (min-width: 50em) {
+  article {
+    @include columns(6);
+  }
+  nav.content {
+    @include columns(3);
+  }
+  aside {
+    @include columns(3, true);
+  }
+}

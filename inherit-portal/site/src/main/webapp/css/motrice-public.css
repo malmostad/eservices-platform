@@ -1,0 +1,71 @@
+article, nav.content, aside {
+  padding: 1em;
+  width: 100%;
+  margin-right: 2%;
+  margin-right: 0;
+  float: none;
+  float: left;
+  -ms-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.motrice-grid {
+  padding: 1em; }
+
+@media (min-width: 40em) {
+  article {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
+  nav.content {
+    width: 49%;
+    margin-right: 0;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
+  aside {
+    width: 100%;
+    margin-right: 2%;
+    margin-right: 0;
+    float: none;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; } }
+@media (min-width: 50em) {
+  article {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
+  nav.content {
+    width: 23.5%;
+    margin-right: 2%;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
+  aside {
+    width: 23.5%;
+    margin-right: 0;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; } }
