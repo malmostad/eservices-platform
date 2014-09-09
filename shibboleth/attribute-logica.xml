@@ -1,0 +1,31 @@
+<Attributes xmlns="urn:mace:shibboleth:2.0:attribute-map" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+
+    <!-- Fourth, the SAML 2.0 NameID Format: -->
+    <Attribute name="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent" id="persistent-id">
+        <AttributeDecoder xsi:type="NameIDAttributeDecoder" formatter="$NameQualifier!$SPNameQualifier!$Name" defaultQualifiers="true"/>
+    </Attribute>
+    
+    <!-- Some more eduPerson attributes, uncomment these to use them... -->
+    <Attribute name="urn:mace:dir:attribute-def:eduPersonPrimaryAffiliation" id="primary-affiliation">
+        <AttributeDecoder xsi:type="StringAttributeDecoder" caseSensitive="false"/>
+    </Attribute>
+    <Attribute name="Subject_GivenName" id="GivenName"/>
+    <Attribute name="sn_id" id="sn_id"/>
+    <Attribute name="SecurityLevelDescription" id="SecurityLevelDescription"/>
+    <Attribute name="Subject_CountryName" id="Subject_CountryName"/>
+    <Attribute name="Subject_CommonName" id="Subject_CommonName"/>
+    <Attribute name="CertificateSerialNumber" id="CertificateSerialNumber"/>
+    <Attribute name="dateOfBirth" id="dateOfBirth"/>
+    <Attribute name="Subject_OrganisationName" id="Subject_OrganisationName"/>
+    <Attribute name="Issuer_OrganizationName" id="Issuer_OrganizationName"/>
+    <Attribute name="sn_type" id="sn_type"/>
+    <Attribute name="Subject_Surname" id="Subject_Surname"/>
+    <Attribute name="Subject_SerialNumber" id="Subject_SerialNumber"/>
+    <Attribute name="Gender" id="Gender"/>
+    <Attribute name="ValidationOcspResponse" id="ValidationOcspResponse"/>
+    <Attribute name="SecurityLevel" id="SecurityLevel"/>
+    <Attribute name="Issuer_CommonName" id="Issuer_CommonName"/>
+    <Attribute name="age" id="age"/>
+
+</Attributes>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" entityID="https://idp2.motrice.se/idp/shibboleth">
+
+    <IDPSSODescriptor protocolSupportEnumeration="urn:mace:shibboleth:1.0 urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+
+        <Extensions>
+            <shibmd:Scope regexp="false">motrice.se</shibmd:Scope>
+        </Extensions>
+
+        <KeyDescriptor>
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+MIIDJzCCAg+gAwIBAgIUdDm2tV152J5ak9AzIt7iv9qKTzcwDQYJKoZIhvcNAQEF
+BQAwGjEYMBYGA1UEAwwPaWRwMi5tb3RyaWNlLnNlMB4XDTE0MDkwNDEzMjQyOVoX
+DTM0MDkwNDEzMjQyOVowGjEYMBYGA1UEAwwPaWRwMi5tb3RyaWNlLnNlMIIBIjAN
+BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhyh71MEgNQY2XUQJdG2iWvDm6Jgj
+wkYKMnDvjNuVOUHf2jgfRd7zRvL0FaQt99rgTQbKbXLj40IOikG1ESb/yzOeGxVG
+x+ZU4qhD5kDawb4BlsEV+TYXCvl/aeT0wWMsYe+O8LyWKRd2dpCMMGp24GX9ByVh
+C1EXNAZ7oOr9PwM0IPuOIzRWw/bUNX3iIKQAdS5QOLpTs5YJ3EvY3utpcJ1LZ0bf
+utqJ5Mr7aAQLUBGKsjZQY7BViA7fra25vXUf01OOWosXygHZsJknM++Ii8G0w1OT
+cAPL98jGEVjjak7+Ds/sDRc3DHsGiL9SH0StUJouXw/R0ThGGKAhq3+MyQIDAQAB
+o2UwYzAdBgNVHQ4EFgQU76xBB+j+SNBV9oU73z/CkgoItxkwQgYDVR0RBDswOYIP
+aWRwMi5tb3RyaWNlLnNlhiZodHRwczovL2lkcDIubW90cmljZS5zZS9pZHAvc2hp
+YmJvbGV0aDANBgkqhkiG9w0BAQUFAAOCAQEAHgycInW4bNayQIHMV4+s/2nL29Hq
+crqSqFtD0z7XMyS39LBNeBhxAZ++NWMwn+feRcLsnxXpM8iRAu5eRTu8kRlqglmq
+1qf1z/IP8ffR1XztklCKPDwHE6ahtxMQrzZsrnJM5AjvTarjbr4WZzDejtnTK7Jp
+ygo7/RHBhzuaUl8GOmt7z4FcWFeHaYOkkbG4y6M4Xm/+u3HjyHtiHUIquWxKGWQ/
+vRc1V+ZHgjQCZzR2dz9n9jbk/K1TmIQorrjfN6Ckt49eRkXUXUoxtC662RUtYtH+
+YIM8ViyRyo+TRscuN4vB+hOEbUSuq6JtSzRDBpvBNhdpPh0WeKkXzlM5vA==
+
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+        
+        <ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://idp2.motrice.se:18443/idp/profile/SAML1/SOAP/ArtifactResolution" index="1"/>
+
+        <ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://idp2.motrice.se:18443/idp/profile/SAML2/SOAP/ArtifactResolution" index="2"/>
+        
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp2.motrice.se/idp/profile/SAML2/Redirect/SLO" />
+        
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://idp2.motrice.se/idp/profile/SAML2/POST/SLO" />
+        
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://idp2.motrice.se:18443/idp/profile/SAML2/SOAP/SLO" />
+                                   
+        <NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+
+        <SingleSignOnService Binding="urn:mace:shibboleth:1.0:profiles:AuthnRequest" Location="https://idp2.motrice.se/idp/profile/Shibboleth/SSO"/>
+        
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://idp2.motrice.se/idp/profile/SAML2/POST/SSO"/>
+
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://idp2.motrice.se/idp/profile/SAML2/POST-SimpleSign/SSO"/>
+        
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://idp2.motrice.se/idp/profile/SAML2/Redirect/SSO"/>
+    </IDPSSODescriptor>
+
+    <AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+
+        <Extensions>
+            <shibmd:Scope regexp="false">motrice.se</shibmd:Scope>
+        </Extensions>
+
+        <KeyDescriptor>
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+MIIDJzCCAg+gAwIBAgIUdDm2tV152J5ak9AzIt7iv9qKTzcwDQYJKoZIhvcNAQEF
+BQAwGjEYMBYGA1UEAwwPaWRwMi5tb3RyaWNlLnNlMB4XDTE0MDkwNDEzMjQyOVoX
+DTM0MDkwNDEzMjQyOVowGjEYMBYGA1UEAwwPaWRwMi5tb3RyaWNlLnNlMIIBIjAN
+BgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhyh71MEgNQY2XUQJdG2iWvDm6Jgj
+wkYKMnDvjNuVOUHf2jgfRd7zRvL0FaQt99rgTQbKbXLj40IOikG1ESb/yzOeGxVG
+x+ZU4qhD5kDawb4BlsEV+TYXCvl/aeT0wWMsYe+O8LyWKRd2dpCMMGp24GX9ByVh
+C1EXNAZ7oOr9PwM0IPuOIzRWw/bUNX3iIKQAdS5QOLpTs5YJ3EvY3utpcJ1LZ0bf
+utqJ5Mr7aAQLUBGKsjZQY7BViA7fra25vXUf01OOWosXygHZsJknM++Ii8G0w1OT
+cAPL98jGEVjjak7+Ds/sDRc3DHsGiL9SH0StUJouXw/R0ThGGKAhq3+MyQIDAQAB
+o2UwYzAdBgNVHQ4EFgQU76xBB+j+SNBV9oU73z/CkgoItxkwQgYDVR0RBDswOYIP
+aWRwMi5tb3RyaWNlLnNlhiZodHRwczovL2lkcDIubW90cmljZS5zZS9pZHAvc2hp
+YmJvbGV0aDANBgkqhkiG9w0BAQUFAAOCAQEAHgycInW4bNayQIHMV4+s/2nL29Hq
+crqSqFtD0z7XMyS39LBNeBhxAZ++NWMwn+feRcLsnxXpM8iRAu5eRTu8kRlqglmq
+1qf1z/IP8ffR1XztklCKPDwHE6ahtxMQrzZsrnJM5AjvTarjbr4WZzDejtnTK7Jp
+ygo7/RHBhzuaUl8GOmt7z4FcWFeHaYOkkbG4y6M4Xm/+u3HjyHtiHUIquWxKGWQ/
+vRc1V+ZHgjQCZzR2dz9n9jbk/K1TmIQorrjfN6Ckt49eRkXUXUoxtC662RUtYtH+
+YIM8ViyRyo+TRscuN4vB+hOEbUSuq6JtSzRDBpvBNhdpPh0WeKkXzlM5vA==
+
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+
+        <AttributeService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://idp2.motrice.se:18443/idp/profile/SAML1/SOAP/AttributeQuery"/>
+        
+        <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://idp2.motrice.se:18443/idp/profile/SAML2/SOAP/AttributeQuery"/>
+        
+        <NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+        
+    </AttributeAuthorityDescriptor>
+    
+</EntityDescriptor>

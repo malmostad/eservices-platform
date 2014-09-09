@@ -100,7 +100,8 @@
 			<bean class="org.activiti.ldap.LDAPConfigurator">
 	
 				<!-- Server connection params -->
-				<property name="server" value="ldap://localhost" />
+	  <!--			<property name="server" value="ldap://localhost" />    -->   
+				<property name="server" value="ldap://${userDirectoryService.host}" />
 				<property name="port" value="${userDirectoryService.port}" />
 				<property name="user" value="${userDirectoryService.securityPrincipal}" />
 				<property name="password" value="${userDirectoryService.pwd}" />
@@ -118,8 +119,12 @@
 				<!-- <property name="queryGroupsForUser" value="(&amp;(objectclass=groupofentries)(member={0}))" 
 					/> -->
 	
+				 <!-- setting for openDj  : --> 
+				 <!--<property name="queryGroupsForUser"
+					value="(&amp;(objectclass=groupofentries)(member=CN={0},OU=Personal,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se))" /> -->
+				 <!-- setting for openldap  : --> 
 				<property name="queryGroupsForUser"
-					value="(&amp;(objectclass=groupofentries)(member=CN={0},OU=Personal,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se))" />
+					value="(&amp;(objectclass=groupOfNames)(member=CN={0},OU=Personal,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se))" />
 	
 				<property name="userIdAttribute" value="uid" />
 				<property name="userFirstNameAttribute" value="cn" />

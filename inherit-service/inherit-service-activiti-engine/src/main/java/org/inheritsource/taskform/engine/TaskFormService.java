@@ -36,7 +36,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.inheritsource.service.common.util.ConfigUtil;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.ActivityInstancePendingItem;
@@ -94,8 +94,10 @@ public class TaskFormService {
 		userDirectoryService = new UserDirectoryService();
 		//activitiEngineService = new ActivitiEngineService();
 		
-		// TODO hostname,port and base DN should be resolved from configuration
-		aSelectorDirUtils = new ActorSelectorDirUtils("localhost", "1389",
+		// TODO base DN should be resolved from configuration
+                String host = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.host");
+                String port = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.port"); 
+		aSelectorDirUtils = new ActorSelectorDirUtils(host , port,
 				"ou=IDMGroups,OU=Organisation,OU=Malmo,DC=adm,DC=malmo,DC=se"); // Base
 																				// DN
 	}
@@ -645,10 +647,10 @@ public class TaskFormService {
 
 			}
 
-			if (cn != null && cn.trim().length() > 0) {
-				// use cn as uuid...
-				uuid = cn;
-			}
+		 	if (cn != null && cn.trim().length() > 0) {
+	 			// use cn as uuid...
+	 			uuid = cn;
+	 		}
 
 			// store user
 			UserEntity user = new UserEntity();
@@ -669,6 +671,32 @@ public class TaskFormService {
 	public List<StartForm> getStartForms(String mode, Locale locale) { 
 		return activitiEngineService.getFormEngine().getStartForms(locale);
 	}
+	public UserInfo getUserBySerial(String serial,String gn , String sn , String dn , String cn ) {
+		UserInfo userInfo = taskFormDb.getUserBySerial(serial);
+
+		if (userInfo == null) {
+			// new user in system
+
+		//	String gn = null, sn = null, cn = null;
+			String uuid = java.util.UUID.randomUUID().toString();
+	//		String dn = null;
+
+
+			// store user
+			UserEntity user = new UserEntity();
+			user.setCategory(UserInfo.CATEGORY_EXTERNAL);
+			user.setSerial(serial);
+			user.setCn(cn);
+			user.setGn(gn);
+			user.setSn(sn);
+			user.setDn(dn);
+			user.setUuid(uuid);
+			userInfo = taskFormDb.createUser(user);
+
+		}
+
+		return userInfo;
+	}	
 	
 	public UserInfo getUserBySerial(String serial, String certificateSubject) {
 		UserInfo userInfo = taskFormDb.getUserBySerial(serial);
