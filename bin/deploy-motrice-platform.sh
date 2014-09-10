@@ -167,7 +167,7 @@ then
 	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
     fi
 
-
+   mv properties-local.xml.eservicepatch properties-local.xml
 fi 
 # 3. Build eservice-platform
 if [ -z ${MVN_SKIP_TEST} ] 
@@ -197,38 +197,6 @@ else
 fi
 popd
 
-if ${WITH_KSERVICES}
-then
-# 5. Preparing properties-local.xml for kservicetest (patching done in step #2)
-    pushd ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config
-       mv properties-local.xml.kservicepatch properties-local.xml
-    popd
-
-# 6. Build kservice-platform
-    pushd ${BUILD_DIR}/inherit-portal
-    if mvn -DskipTests=true install      # NB no clean here because
-                                         # inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
-                                         # will otherwise be removed, but is used at a later stage...
-    then
-	echo "Executing mvn -DskipTests=true install - patched for kservicetest..."
-    else
-	echo "Compilation failed. Aborting execution"
-	ERRORSTATUS=$?
-	exit $ERRORSTATUS
-    fi
-
-# 7. Build kservice-platform distribution snapshot
-    if mvn -P dist
-    then
-	echo "Creating eservicetest snapshot distribution tar.gz..."
-        mv target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
-    else
-	echo "Building of snapshot distribution failed. Aborting execution"
-	ERRORSTATUS=$?
-	exit $ERRORSTATUS
-    fi
-    popd
-fi
 
 #8. Restore to original state the patched files from step 2 in order to be able to run
 #   the deployment script multiple times
