@@ -39,6 +39,7 @@
     <hst:link var="link" path="/css/motrice-komin.css"/>
     <link rel="stylesheet" href="${link}" type="text/css"/>
     
+     <link rel="stylesheet" href="/site/js/jquery-ui-1.11.1.custom/jquery-ui.css" type="text/css"/>
     <link rel='stylesheet' href='<hst:link path="/css/platform/inherit-platform.css"/>' type='text/css'/>
 
     <!-- end of motrice css -->

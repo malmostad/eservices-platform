@@ -8,6 +8,8 @@ if(typeof String.prototype.trim !== 'function') {
 
 $(document).ready(function() {
 
+	    
+	    
         $(".motrice-assign-to").click(function() {
 	    var assignTo = $(this).children("input[name='motrice-assign-to']").attr("value");
 	    var instanceUuid = $(this).children("input[name='motrice-activity-instance-uuid']").attr("value");
@@ -77,6 +79,7 @@ $(document).ready(function() {
 
  //       console.log("before binding #search-users-form, options: " + JSON.stringify(options, null, 4)); 
  //       $('#search-users-form').ajaxForm(options);
+ 	   $('#search-users-form').ajaxForm(options);
 
 });
 	
@@ -143,9 +146,11 @@ $(document).ready(function() {
          event.preventDefault();
          var entry    = $(this).closest('tr').children().first().next().text();
          var entryrow = $(this).closest('tr');
+         // fix id ref to dialog later....
+         var instanceUuid = $("#dialog-edit-candidates").children("input[name='motrice-activity-instance-uuid']").attr("value");
          console.log("targetUserId: " + entry);
          siteAjaxPost("/site/restservices/site-ajax/assignTask",
-           "activityInstanceUuid=${activity.activityInstanceUuid}&action=addcandidate&targetUserId=" + entry,
+           "activityInstanceUuid=" + instanceUuid + "&action=addcandidate&targetUserId=" + entry,
            function(data) {
              // if success remove table row entry from page
              console.log("add candidate: " + entry + ", removing row from search results");
@@ -160,9 +165,11 @@ $(document).ready(function() {
 
     function refreshActualCandidates(data) {
         console.log("refreshActualCandidates for activity: activity.activityInstanceUuid");
+        var instanceUuid = $("#dialog-edit-candidates").children("input[name='motrice-activity-instance-uuid']").attr("value");
+         
         siteAjaxPost(
           "/site/restservices/site-ajax/getActivityWorkflowInfo",
-          "activityInstanceUuid=${activity.activityInstanceUuid}",
+          "activityInstanceUuid=" + instanceUuid,
           function(data) {
               var assignedUserUid = data.assignedUser.uuid ;
               if ( assignedUserUid.trim() ) { // not null, not empty and not only WS
@@ -234,9 +241,11 @@ $(document).ready(function() {
                   //   activity 
                   event.preventDefault();
                   var entry = $(this).closest('tr').children().first().next().text();
+                  var instanceUuid = $("#dialog-edit-candidates").children("input[name='motrice-activity-instance-uuid']").attr("value");
+         
                   console.log("targetUserId: " + entry);
                   siteAjaxPost("/site/restservices/site-ajax/assignTask",
-                               "activityInstanceUuid=${activity.activityInstanceUuid}&action=removecandidate&targetUserId=" + entry,
+                               "activityInstanceUuid=" + instanceUuid + "&action=removecandidate&targetUserId=" + entry,
                     function(data) {
                       // if success, refreshActualCandidates(), else leave as is
                       refreshActualCandidates();
@@ -259,22 +268,26 @@ $(document).ready(function() {
 	                       event.preventDefault();
 	                       // get targetUid, i.e. uid of current row
 	                       var entry = $(this).closest('tr').children().first().next().text();
+	                       var instanceUuid = $("#dialog-edit-candidates").children("input[name='motrice-activity-instance-uuid']").attr("value");
+         
 	                       console.log("targetUserId: " + entry);
 //	                       $(this).closest('tr').css({backgroundColor:'yellow'});
 	                       console.log($(this).parent().html());
 //	                       $(this).closest('button.assigned')....;
 		             if ( assignedUserUid.trim() ) {
 	                     siteAjaxPost("/site/restservices/site-ajax/assignTask",
-	                                  "activityInstanceUuid=${activity.activityInstanceUuid}&action=unassign&targetUserId=" + entry,
+	                                  "activityInstanceUuid=" + instanceUuid + "&action=unassign&targetUserId=" + entry,
 	                       function(data) {
 	                         // if success, refreshActualCandidates(), else leave as is
 	                         refreshActualCandidates();
+	                         refreshActivityWorkflowInfo(data);
 	                       }); } else {
 	                        siteAjaxPost("/site/restservices/site-ajax/assignTask",
-	                                     "activityInstanceUuid=${activity.activityInstanceUuid}&action=assign&targetUserId=" + entry,
+	                                     "activityInstanceUuid=" + instanceUuid + "&action=assign&targetUserId=" + entry,
 	                       function(data) {
 	                         // if success, refreshActualCandidates(), else leave as is
 	                         refreshActualCandidates();
+	                         refreshActivityWorkflowInfo(data);
 	                       }); 
 	                      }
 			   });
@@ -285,8 +298,7 @@ $(document).ready(function() {
           }); 
       }
 
-/*
-$("#dialog-edit-candidates").dialog({
+var editCandidatesDialog = $("#dialog-edit-candidates").dialog({
 	  autoOpen : false,
         resizable: false,
 	  //height : 500,
@@ -309,10 +321,16 @@ $("#dialog-edit-candidates").dialog({
 	    }
 	}
 	});
-*/
+
+$(".motrice-add-candidates").click(function() {
+		editCandidatesDialog.dialog("open");
+});
+
 	/*
 	 * Refresh tags list
 	 */
+	 
+	 /*
 	function refreshTags(info) {
 		console.log("refreshTags TODO, asynkront anrop lÃ¤gger till taggar sÃ¥ tÃ¤nk ut vettigaste sÃ¤ttet att Ã¥terkoppla");
 	}
@@ -427,9 +445,6 @@ $("#dialog-edit-candidates").dialog({
 				}
 			});
 
-	$("#add-candidates").click(function() {
-		$("#dialog-edit-candidates").dialog("open");
-	});
 
 //	 $("#search-users-form input:last").button({
 //         create: function (event,ui) {console.log("#search-users-form input:last button create event...");},
@@ -461,7 +476,7 @@ $("#dialog-edit-candidates").dialog({
 			secondary : null
 		}
 	});
-
+*/
 	/*
 	 * Button and links to act on in page
 	 */

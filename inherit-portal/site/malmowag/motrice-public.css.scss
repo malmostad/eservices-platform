@@ -2,6 +2,7 @@
 
 article, nav.content, aside {
   padding: 1em;
+  padding-bottom:150px; /* this needs to be bigger than footer height*/
   @include columns(12);
 }
 
