@@ -81,6 +81,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		String messageText = (String) props.get("mail.text.messageText");
 		String siteUri = (String) props.get("site.base.uri");
 		String SMTPSERVER = (String) props.get("mail.smtp.host");
+		String SMTPport   = (String) props.get("mail.smtp.port");
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
 		String inbox = "";
@@ -111,7 +112,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 			} else {
 				try {
 					to = service.getMyProfile(recipientUserId).getEmail();
-					sendEmail(to, from, messageSubject, messageText, SMTPSERVER);
+					sendEmail(to, from, messageSubject, messageText, SMTPSERVER,SMTPport);
 				} catch (Exception e) {
 					log.error(e.toString());
 
@@ -132,7 +133,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 	}
 
 	private static void sendEmail(String to, String from,
-			String messageSubject, String messageText, String SMTPSERVER) {
+			String messageSubject, String messageText, String SMTPSERVER,String SMTPport) {
 		log.info("to: {}", to);
 		// check email address
 		// might like to replace this with EmailValidator from apache.commons
@@ -149,6 +150,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		// Setup mail server
 		Properties mailprops = new Properties();
 		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
+		mailprops.setProperty("mail.smtp.port", SMTPport);
 
 		try {
 
@@ -197,7 +199,9 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		Properties mailprops = new Properties();
 
 		String SMTPSERVER = "localhost" ;
+		String SMTPport = "1025" ;
 		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
+		mailprops.setProperty("mail.smtp.port", SMTPport);
 		
 		Properties props = ConfigUtil.getConfigProperties();
 
@@ -229,7 +233,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		}
 			
 
-		sendEmail(to, from, messageSubject+" / "+messageTaskSubject, messageText+" \n"+messageTaskText , SMTPSERVER);
+		sendEmail(to, from, messageSubject+" / "+messageTaskSubject, messageText+" \n"+messageTaskText , SMTPSERVER, SMTPport);
 
 	}
 

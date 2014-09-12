@@ -25,13 +25,16 @@
 
 package org.inheritsource.service.delegates;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.regex.Pattern;
 
 import javax.mail.Message;
@@ -76,19 +79,27 @@ public class TaskMessageListener implements TaskListener {
 
 		Properties props = ConfigUtil.getConfigProperties();
 
-		String messageText = (String) props.get("mail.text.messageTaskText");
+		String mText = (String) props.get("mail.text.messageTaskText");
+		if (mText == null || mText.trim().length() == 0) {
+			mText = "Du har ett ärende i din inkorg ";
+		}
+		
+		String messageText= "";
+	        messageText= mText ; 	
+		
+		
 		String siteUri = (String) props.get("site.base.uri");
 		String SMTPSERVER = (String) props.get("mail.smtp.host");
+		String SMTPport   = (String) props.get("mail.smtp.port");
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
 		String inbox = (String) props.get("site.base.intranet");
 
-		if (messageText == null || messageText.trim().length() == 0) {
-			messageText = "Du har ett ärende i din inkorg ";
-		}
 
 		String taskName = execution.getName();
-		messageText = messageText + "( " + taskName + " ) \n";
+		String processDefinitionId = execution.getProcessDefinitionId() ; 
+
+		messageText = messageText + "( " + taskName + " , " + processDefinitionId   + ")\n";
 		if ((siteUri != null) && (inbox != null)) {
 			messageText = messageText + " " + siteUri + "/" + inbox;
 		}
@@ -121,7 +132,7 @@ public class TaskMessageListener implements TaskListener {
 					to = user.getMail();
 					if (to != null) {
 						sendEmail(to, from, messageSubject, messageText,
-								siteUri, inbox, SMTPSERVER);
+								siteUri, inbox, SMTPSERVER,SMTPport);
 
 					}
 				}
@@ -191,7 +202,7 @@ public class TaskMessageListener implements TaskListener {
 						to = user.getMail();
 						if (to != null) {
 							sendEmail(to, from, messageSubject, messageText,
-									siteUri, inbox, SMTPSERVER);
+									siteUri, inbox, SMTPSERVER, SMTPport);
 
 						}
 
@@ -205,8 +216,8 @@ public class TaskMessageListener implements TaskListener {
 		return;
 	}
 
-	private void sendEmail(String to, String from, String messageSubject,
-			String messageText, String siteUri, String inbox, String SMTPSERVER) {
+	private static void sendEmail(String to, String from, String messageSubject,
+			String messageText, String siteUri, String inbox, String SMTPSERVER, String SMTPport) {
 		log.info("to: " + to);
 		// check email address
 		// might like to replace this with EmailValidator from apache.commons
@@ -225,6 +236,7 @@ public class TaskMessageListener implements TaskListener {
 		// Setup mail server
 		Properties mailprops = new Properties();
 		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
+		mailprops.setProperty("mail.smtp.port", SMTPport);
 
 		try {
 
@@ -252,5 +264,34 @@ public class TaskMessageListener implements TaskListener {
 
 	private static final Pattern rfc2822 = Pattern
 			.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+	public static void main(String[] args) {
+		System.out.println("Hello World!");
+		// some tests to see the impact of Swedish letters
+		// in string in java from the properties
+	
+		// Setup mail server
+		Properties mailprops = new Properties();
 
+		String SMTPSERVER = "localhost" ;
+		// String SMTPport = "1025" ;
+		
+		
+		Properties props = ConfigUtil.getConfigProperties();
+
+		String from = (String) props.get("mail.text.from");
+		String SMTPport =  (String) props.get("mail.smtp.port");
+		String to = "none@nowhere.com";
+	
+		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
+		mailprops.setProperty("mail.smtp.port", SMTPport);
+		
+
+		String messageSubject = "main subject" ; 
+		String messageText = "Message Text from main TaskMessageListener";
+			
+
+		sendEmail(to, from, messageSubject, messageText , "","", SMTPSERVER, SMTPport);
+
+
+}
 }
