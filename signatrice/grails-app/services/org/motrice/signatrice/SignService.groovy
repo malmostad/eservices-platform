@@ -40,6 +40,23 @@ class SignService {
   def auditService
 
   /**
+   * Check a service connection by downloading its WSDL.
+   */
+  def String checkService(SigService service) {
+    if (log.debugEnabled) log.debug "checkService << ${service}"
+    String result = null
+    try {
+      result = service?.serviceUrl?.text
+    } catch (Exception exc) {
+      if (log.debugEnabled) log.debug "checkService EXCEPTION: ${exc}"
+      throw new ServiceException(exc.message)
+    }
+
+    if (log.debugEnabled) log.debug "checkService >> ${result.size()}"
+    return result
+  }
+
+  /**
    * Send a sign request, return a newly created SigResult containing
    * the return values, or throw a ServiceException.
    */
@@ -102,6 +119,8 @@ class SignService {
   }
 
   // Candidate SigResults with hardwired progess status id:s
+  // The max age limit should not be necessary but is a guard
+  // against infinite repetition in case there is a problem.
   private static String COLLECT_Q = 'from SigResult r where ' +
     'r.dateCreated between ? and ? and r.progressStatus.id in (1, 2, 3) and ' +
     'faultStatus is null'
@@ -114,7 +133,7 @@ class SignService {
     def beg = new Timestamp(now.time - MAX_COLLECT_AGE_MILLIS)
     def end = new Timestamp(now.time - MIN_COLLECT_AGE_MILLIS)
     def candidates = SigResult.findAll(COLLECT_Q, [beg, end])
-    if (log.debugEnabled) log.debug "collect candidates: ${candidates?.size()}"
+    if (log.debugEnabled && candidates?.size() > 0) log.debug "collect candidates: ${candidates?.size()}"
 
     // Find the service of all candidates
     def serviceSet = new TreeSet()
