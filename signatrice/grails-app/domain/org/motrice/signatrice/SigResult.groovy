@@ -7,9 +7,6 @@ package org.motrice.signatrice
  * Comparable is based on dateCreated.
  */
 class SigResult implements Comparable {
-  // Transaction id format
-  static final String TXID_FORMAT = 'MOTRICE%07d'
-
   // The point in time when the log was created which is probably also when
   // the test case was run.
   // Used as the basis for sorting.
@@ -85,9 +82,10 @@ class SigResult implements Comparable {
    */
   Map toMap() {
     ['class': SigResult.class.name, dateCreated: dateCreated,
+    service: tcase?.service?.toString(),
     transactionId: transactionId, orderRef: orderRef,
     autoStartToken: autoStartToken, displayName: displayName?.toString(),
-    policy: policy?.toString(), personalIdNo: personalIdNo,
+    policy: policy?.toString(), personalIdNo: personalIdNo ?: '',
     progressStatus: progressStatus?.toString(), faultStatus: faultStatus?.toString(),
     signature: signature?.size() ?: null]
   }

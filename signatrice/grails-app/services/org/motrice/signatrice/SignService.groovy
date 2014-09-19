@@ -25,7 +25,7 @@ import org.motrice.signatrice.cgi.SignRequestType
  */
 class SignService {
   // Format string for transaction id
-  static final String TXID_FORMAT = 'MOTRICE%06d'
+  static final String TXID_FORMAT = 'MOT-%06d'
 
   // Provider name needed by CGI. The only one defined so far.
   static final String PROVIDER = 'bankid'
@@ -81,7 +81,7 @@ class SignService {
       if (log.debugEnabled) log.debug "sign EXCEPTION ${fault}"
       def info = fault.faultInfo
       String faultMsg = "${info?.faultStatus?.value()}: ${info.detailedDescription}"
-      auditService.logSignEvent(true, 'Sign request failed', faultMsg,
+      auditService.logSignEvent(transactionId, true, 'Sign request failed', faultMsg,
 				StackTracer.trace(fault), request)
       throw new ServiceException(faultMsg, transactionId, fault)
     }
@@ -173,6 +173,7 @@ class SignService {
     try {
       def collectResponse = doCollect(candidate, portMap)
       def progressStatus = SigProgress.lookup(collectResponse?.progressStatus?.value())
+      if (log.debugEnabled) log.debug "collect RESPONSE ${candidate}: ${progressStatus}"
       if (progressStatus && progressStatus.id != candidate.progressStatus.id) {
 	candidate.progressStatus = progressStatus
       }
@@ -180,7 +181,6 @@ class SignService {
       if (props) {
 	props.each {prop ->
 	  def dbProp = new SigAttribute(name: prop.name, value: prop.value)
-	  if (log.debugEnabled) log.debug "collect.dbProp: ${dbProp}"
 	  candidate.addToAttrs(dbProp)
 	}
       }
@@ -188,7 +188,8 @@ class SignService {
       if (signature) {
 	candidate.signature = signature
 	String resultString = candidate.toMap() as JSON
-	auditService.logSignEvent('Signature created', resultString, null)
+	auditService.logSignEvent(candidate?.transactionId, 'Signature created',
+				  resultString, null)
       }
     } catch (GrpFault fault) {
       if (log.debugEnabled) log.debug "collect FAULT ${candidate}: ${faultToString(fault)}"

@@ -40,7 +40,7 @@ class ViewUtilsTagLib {
    */
   def abbr = {attrs, body ->
     def str = attrs.text
-    out << ((str.length() > 18)? "${str[0..4]}...${str[-5..-1]}" : str)
+    out << ((str.length() > 40)? "${str[0..4]}...${str[-5..-1]}" : str)
   }
 
   /**

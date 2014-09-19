@@ -7,95 +7,95 @@ class AuditService {
 
   private static final log = LogFactory.getLog(this)
 
-  def logCreateEvent(String description, String details, request) {
-    doLogEvent(AuditRecord.CREATE_EVENT_TYPE, null, description,
+  def logCreateEvent(String label, String description, String details, request) {
+    doLogEvent(label, AuditRecord.CREATE_EVENT_TYPE, null, description,
 	       details, null, request)
   }
 
-  def logCreateEvent(Boolean failure, String description, String details,
+  def logCreateEvent(String label, Boolean failure, String description, String details,
 		     String stackTrace, request)
   {
-    doLogEvent(AuditRecord.CREATE_EVENT_TYPE, failure, description,
+    doLogEvent(label, AuditRecord.CREATE_EVENT_TYPE, failure, description,
 	       details, stackTrace, request)
   }
 
-  def logUpdateEvent(String description, String details, request) {
-    doLogEvent(AuditRecord.UPDATE_EVENT_TYPE, null, description,
+  def logUpdateEvent(String label, String description, String details, request) {
+    doLogEvent(label, AuditRecord.UPDATE_EVENT_TYPE, null, description,
 	       details, null, request)
   }
 
-  def logUpdateEvent(Boolean failure, String description, String details,
+  def logUpdateEvent(String label, Boolean failure, String description, String details,
 		     String stackTrace, request)
   {
-    doLogEvent(AuditRecord.UPDATE_EVENT_TYPE, failure, description,
+    doLogEvent(label, AuditRecord.UPDATE_EVENT_TYPE, failure, description,
 	       details, stackTrace, request)
   }
 
-  def logDeleteEvent(String description, String details, request) {
-    doLogEvent(AuditRecord.DELETE_EVENT_TYPE, null, description,
+  def logDeleteEvent(String label, String description, String details, request) {
+    doLogEvent(label, AuditRecord.DELETE_EVENT_TYPE, null, description,
 	       details, null, request)
   }
 
-  def logDeleteEvent(Boolean failure, String description, String details,
+  def logDeleteEvent(String label, Boolean failure, String description, String details,
 		     String stackTrace, request)
   {
-    doLogEvent(AuditRecord.DELETE_EVENT_TYPE, failure, description,
+    doLogEvent(label, AuditRecord.DELETE_EVENT_TYPE, failure, description,
 	       details, stackTrace, request)
   }
 
-  def logErrorEvent(String description, String details, request) {
-    doLogEvent(AuditRecord.ERROR_EVENT_TYPE, null, description,
+  def logErrorEvent(String label, String description, String details, request) {
+    doLogEvent(label, AuditRecord.ERROR_EVENT_TYPE, null, description,
 	       details, null, request)
   }
 
-  def logErrorEvent(Boolean failure, String description, String details,
+  def logErrorEvent(String label, Boolean failure, String description, String details,
 		    String stackTrace, request)
   {
-    doLogEvent(AuditRecord.ERROR_EVENT_TYPE, failure, description,
+    doLogEvent(label, AuditRecord.ERROR_EVENT_TYPE, failure, description,
 	       details, stackTrace, request)
   }
 
-  def logSignEvent(String description, String details, request) {
-    doLogEvent(AuditRecord.SIGNATURE_EVENT_TYPE, null, description,
+  def logSignEvent(String label, String description, String details, request) {
+    doLogEvent(label, AuditRecord.SIGNATURE_EVENT_TYPE, null, description,
 	       details, null, request)
   }
 
-  def logSignEvent(Boolean failure, String description, String details,
+  def logSignEvent(String label, Boolean failure, String description, String details,
 		    String stackTrace, request)
   {
-    doLogEvent(AuditRecord.SIGNATURE_EVENT_TYPE, failure, description,
+    doLogEvent(label, AuditRecord.SIGNATURE_EVENT_TYPE, failure, description,
 	       details, stackTrace, request)
   }
 
-  def logAuthNEvent(String description, String details, request) {
-    doLogEvent(AuditRecord.AUTHENTICATION_EVENT_TYPE, null, description,
+  def logAuthNEvent(String label, String description, String details, request) {
+    doLogEvent(label, AuditRecord.AUTHENTICATION_EVENT_TYPE, null, description,
 	       details, null, request)
   }
 
-  def logAuthNEvent(Boolean failure, String description, String details,
+  def logAuthNEvent(String label, Boolean failure, String description, String details,
 		    String stackTrace, request)
   {
-    doLogEvent(AuditRecord.AUTHENTICATION_EVENT_TYPE, failure, description,
+    doLogEvent(label, AuditRecord.AUTHENTICATION_EVENT_TYPE, failure, description,
 	       details, stackTrace, request)
   }
 
-  def logAuthZEvent(String description, String details, request) {
-    doLogEvent(AuditRecord.AUTHORIZATION_EVENT_TYPE, null, description,
+  def logAuthZEvent(String label, String description, String details, request) {
+    doLogEvent(label, AuditRecord.AUTHORIZATION_EVENT_TYPE, null, description,
 	       details, null, request)
   }
 
-  def logAuthZEvent(Boolean failure, String description, String details,
+  def logAuthZEvent(String label, Boolean failure, String description, String details,
 		    String stackTrace, request)
   {
-    doLogEvent(AuditRecord.AUTHORIZATION_EVENT_TYPE, failure, description,
+    doLogEvent(label, AuditRecord.AUTHORIZATION_EVENT_TYPE, failure, description,
 	       details, stackTrace, request)
   }
 
-  private doLogEvent(String eventType, Boolean failure, String description,
+  private doLogEvent(String label, String eventType, Boolean failure, String description,
 		     String details, String stackTrace, request)
   {
     if (log.debugEnabled) log.debug "Audit ${eventType}/${description} ${failure?'FAILURE':'ok'}"
-    def record = new AuditRecord(eventType: eventType, failure: failure,
+    def record = new AuditRecord(label: label, eventType: eventType, failure: failure,
     description: description, remoteAddr: request?.remoteAddr,
     details: details, stackTrace: stackTrace)
     

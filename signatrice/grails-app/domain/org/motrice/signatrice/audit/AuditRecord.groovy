@@ -18,6 +18,10 @@ class AuditRecord {
   // All non-true values represents success or don't care.
   Boolean failure
 
+  // A string that may serve as a readable identifier.
+  // May be anything (including null), shown in lists.
+  String label
+
   // Short free text describing the nature of the event.
   String description
 
@@ -39,6 +43,7 @@ class AuditRecord {
     dateCreated nullable: true
     eventType nullable: false, size: 3..8
     failure nullable: true
+    label nullable: true, maxSize: 24
     description nullable: false, maxSize: 80
     remoteAddr nullable: true, maxSize: 40
     details nullable: true

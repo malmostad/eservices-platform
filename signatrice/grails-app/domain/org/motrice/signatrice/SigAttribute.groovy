@@ -18,6 +18,11 @@ class SigAttribute implements Comparable {
   static mapping = {
     value type: 'text'
   }
+  static transients = ['valueSize']
+
+  Integer getValueSize() {
+    value?.size() ?: 0
+  }
 
   String toString() {
     def sb = new StringBuilder()
@@ -52,8 +57,8 @@ class SigAttribute implements Comparable {
    */
   int compareTo(Object obj) {
     def other = (SigAttribute)obj
-    def outcome = result.compareTo(other.result)
-    if (outcome == 0) outcome = name.toUpperCase().compareTo(other.name.toUpperCase())
+    def outcome = result?.compareTo(other?.result)
+    if (outcome == null || outcome == 0) outcome = name.toUpperCase().compareTo(other.name.toUpperCase())
     return outcome
   }
 

@@ -77,7 +77,7 @@
 	  <g:hiddenField name="id" value="${sigTestcaseInst?.id}" />
 	  <g:link class="edit" action="edit" id="${sigTestcaseInst?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-	  <g:link class="edit" action="sign" id="${sigTestcaseInst?.id}"><g:message code="default.button.sign.label" default="Sign" /></g:link>
+	  <g:link class="edit" action="sign" id="${sigTestcaseInst?.id}"><g:message code="sigTestcase.sign.label" default="Sign" /></g:link>
 	</fieldset>
       </g:form>
     </div>
