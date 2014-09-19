@@ -9,6 +9,7 @@ class SigDisplayname {
 
   static mapping = {
     id generator: 'assigned'
+    cache usage: 'read-only'
   }
   static constraints = {
     name size: 1..120, unique: true

@@ -2,12 +2,20 @@
 
 
 
-<div class="fieldcontain ${hasErrors(bean: sigServiceInst, field: 'serviceName', 'error')} ">
-	<label for="serviceName">
-		<g:message code="sigService.serviceName.label" default="Service Name" />
+<div class="fieldcontain ${hasErrors(bean: sigServiceInst, field: 'wsdlLocation', 'error')} ">
+	<label for="wsdlLocation">
+		<g:message code="sigService.wsdlLocation.label" default="Wsdl Location" />
 		
 	</label>
-	<g:textField name="serviceName" maxlength="200" value="${sigServiceInst?.serviceName}"/>
+	<g:textField name="wsdlLocation" maxlength="200" value="${sigServiceInst?.wsdlLocation}"/>
+</div>
+
+<div class="fieldcontain ${hasErrors(bean: sigServiceInst, field: 'alias', 'error')} ">
+	<label for="alias">
+		<g:message code="sigService.alias.label" default="Alias" />
+		
+	</label>
+	<g:textField name="alias" maxlength="24" pattern="${sigServiceInst.constraints.alias.matches}" value="${sigServiceInst?.alias}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: sigServiceInst, field: 'qNameUri', 'error')} ">

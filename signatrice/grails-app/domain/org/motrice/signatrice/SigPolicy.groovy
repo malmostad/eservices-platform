@@ -10,6 +10,7 @@ class SigPolicy implements Comparable {
   
   static mapping = {
     id generator: 'assigned'
+    cache usage: 'read-only'
   }
   static constraints = {
     name size: 1..40, unique: true

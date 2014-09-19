@@ -25,7 +25,7 @@ import org.motrice.signatrice.cgi.SignRequestType
  */
 class SignService {
   // Format string for transaction id
-  static final String TXID_FORMAT = 'MOTRICE%06d'
+  static final String TXID_FORMAT = 'MOT-%06d'
 
   // Provider name needed by CGI. The only one defined so far.
   static final String PROVIDER = 'bankid'
@@ -38,6 +38,23 @@ class SignService {
   private static final log = LogFactory.getLog(this)
 
   def auditService
+
+  /**
+   * Check a service connection by downloading its WSDL.
+   */
+  def String checkService(SigService service) {
+    if (log.debugEnabled) log.debug "checkService << ${service}"
+    String result = null
+    try {
+      result = service?.serviceUrl?.text
+    } catch (Exception exc) {
+      if (log.debugEnabled) log.debug "checkService EXCEPTION: ${exc}"
+      throw new ServiceException(exc.message)
+    }
+
+    if (log.debugEnabled) log.debug "checkService >> ${result.size()}"
+    return result
+  }
 
   /**
    * Send a sign request, return a newly created SigResult containing
@@ -64,7 +81,7 @@ class SignService {
       if (log.debugEnabled) log.debug "sign EXCEPTION ${fault}"
       def info = fault.faultInfo
       String faultMsg = "${info?.faultStatus?.value()}: ${info.detailedDescription}"
-      auditService.logSignEvent(true, 'Sign request failed', faultMsg,
+      auditService.logSignEvent(transactionId, true, 'Sign request failed', faultMsg,
 				StackTracer.trace(fault), request)
       throw new ServiceException(faultMsg, transactionId, fault)
     }
@@ -102,6 +119,8 @@ class SignService {
   }
 
   // Candidate SigResults with hardwired progess status id:s
+  // The max age limit should not be necessary but is a guard
+  // against infinite repetition in case there is a problem.
   private static String COLLECT_Q = 'from SigResult r where ' +
     'r.dateCreated between ? and ? and r.progressStatus.id in (1, 2, 3) and ' +
     'faultStatus is null'
@@ -114,7 +133,7 @@ class SignService {
     def beg = new Timestamp(now.time - MAX_COLLECT_AGE_MILLIS)
     def end = new Timestamp(now.time - MIN_COLLECT_AGE_MILLIS)
     def candidates = SigResult.findAll(COLLECT_Q, [beg, end])
-    if (log.debugEnabled) log.debug "collect candidates: ${candidates?.size()}"
+    if (log.debugEnabled && candidates?.size() > 0) log.debug "collect candidates: ${candidates?.size()}"
 
     // Find the service of all candidates
     def serviceSet = new TreeSet()
@@ -154,6 +173,7 @@ class SignService {
     try {
       def collectResponse = doCollect(candidate, portMap)
       def progressStatus = SigProgress.lookup(collectResponse?.progressStatus?.value())
+      if (log.debugEnabled) log.debug "collect RESPONSE ${candidate}: ${progressStatus}"
       if (progressStatus && progressStatus.id != candidate.progressStatus.id) {
 	candidate.progressStatus = progressStatus
       }
@@ -161,7 +181,6 @@ class SignService {
       if (props) {
 	props.each {prop ->
 	  def dbProp = new SigAttribute(name: prop.name, value: prop.value)
-	  if (log.debugEnabled) log.debug "collect.dbProp: ${dbProp}"
 	  candidate.addToAttrs(dbProp)
 	}
       }
@@ -169,7 +188,8 @@ class SignService {
       if (signature) {
 	candidate.signature = signature
 	String resultString = candidate.toMap() as JSON
-	auditService.logSignEvent('Signature created', resultString, null)
+	auditService.logSignEvent(candidate?.transactionId, 'Signature created',
+				  resultString, null)
       }
     } catch (GrpFault fault) {
       if (log.debugEnabled) log.debug "collect FAULT ${candidate}: ${faultToString(fault)}"

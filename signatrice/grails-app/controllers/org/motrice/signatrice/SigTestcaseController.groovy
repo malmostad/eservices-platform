@@ -100,12 +100,12 @@ class SigTestcaseController {
     def result = null
     try {
       result = signService.sign(sigTestcaseInst, request)
+      if (result && !result.save()) log.error "Test case ${sigTestcaseInst} save: ${result.errors.allErrors.join(', ')}"
+      redirect(controller: 'sigResult', action: 'show', id: result.id)
     } catch (ServiceException exc) {
-      flash.message = exc.message
+      flash.message = "Sign request failed. ${exc.message}"
+      redirect(controller: 'sigTestcase', action: 'show', id: id)
     }
-
-    if (result && !result.save()) log.error "Test case ${sigTestcaseInst} save: ${result.errors.allErrors.join(', ')}"
-    redirect(controller: 'sigResult', action: 'show', id: result.id)
   }
 
   def delete(Long id) {
