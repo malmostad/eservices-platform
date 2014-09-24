@@ -87,7 +87,7 @@ class RestDocController {
   /**
    * Get original form data
    */
-  def docboxFormData(String docboxref) {
+  def docboxOrbeonData(String docboxref) {
     if (log.debugEnabled) log.debug "FORMDATA: ${Util.clean(params)}, ${request.forwardURI}"
     def pdfContents = null
     String msg = null
@@ -151,15 +151,14 @@ class RestDocController {
     if (contents) {
       if (log.debugEnabled) log.debug "FOUND: ${contents}"
       String contDisp = "attachment;filename=${contents.fileName}"
+      response.setHeader(CONT_DISP, contDisp)
       if (contents.binary) {
-	response.setHeader(CONT_DISP, contDisp)
 	response.status = 200
 	response.contentType = contents.contentType
 	response.getOutputStream().withStream {stream ->
 	  stream.bytes = contents.stream
 	}
       } else {
-	response.setHeader(CONT_DISP, contDisp)
 	render(status: 200, text: contents.text, contentType: contents.contentType,
 	encoding: 'UTF-8')
       }

@@ -41,6 +41,12 @@ class SigResult implements Comparable {
   // Returned as String by CollectResponse. Probably Base64.
   String signature
 
+  // Original docboxRef of the document to be signed, if applicable.
+  String docboxRefIn
+
+  // Target docboxRef of the document after the signature was added, if applicable.
+  String docboxRefOut
+
   static belongsTo = [tcase: SigTestcase]
   SortedSet attrs
   static hasMany = [attrs: SigAttribute]
@@ -55,6 +61,8 @@ class SigResult implements Comparable {
     progressStatus nullable: true
     faultStatus nullable: true
     signature nullable: true
+    docboxRefIn nullable: true, maxSize: 200
+    docboxRefOut nullable: true, maxSize: 200
   }
   static mapping = {
     dateCreated index: 'Created_Idx'
