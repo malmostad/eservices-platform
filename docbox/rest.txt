@@ -1,0 +1,33 @@
+PREFIX = /docbox/rest
+
+$PREFIX/conf/validation GET: validate configuration (även till GUI, komplettera med GRP test)
+
+$PREFIX/doc/byformdata/$formDataUuid[?item=pdfa|docbook.xml|convlog|rdf.xml][step=$stepNumber] GET: get document
+
+$PREFIX/doc/core/$docboxref[?item=pdfa|docbook.xml|convlog|rdf.xml] GET: get document
+
+$PREFIX/doc/meta/$docboxref GET: get document metadata
+
+$PREFIX/doc/orbeon/$uuid PUT: convert Orbeon form data to PDF/A
+
+$PREFIX/doc/orbeon/$uuid[?step=$stepNumber] GET: get Orbeon form data
+
+$PREFIX/doc/orig/$docboxref GET: get original document data
+
+$PREFIX/sig/core/$docboxref GET all signatures
+
+$PREFIX/sig/core/$docboxref POST: add signature
+
+$PREFIX/sig/validation/$docboxref GET: validate the last signature
+
+--------------
+
+$PREFIX/doc/pdfa/$uuid PUT: store a PDF/A document in DocBox
+
+$PREFIX/sig/request/$docboxref ????? med mera PUT: issue a sign request
+
+$PREFIX/sig/request/$docboxref?transaction=$uuid GET: get the state of the signing transaction
+
+$PREFIX/sig/scheme/$id GET: get details of a signing service
+
+$PREFIX/sig/scheme/all GET: get a list of signing services

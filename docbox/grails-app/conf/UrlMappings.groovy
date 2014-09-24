@@ -24,22 +24,25 @@
 class UrlMappings {
 
   static mappings = {
-    "/env/validate"(controller: 'Env') {
+    "/rest/env/validate"(controller: 'Env') {
       action = [GET: 'validate']
     }
-    "/doc/formdata/$uuid"(controller: 'RestDoc') {
-      action = [GET: 'formDataGet', PUT: 'formDataPut']
+    "/rest/doc/orbeon/$uuid"(controller: 'RestDoc') {
+      action = [PUT: 'formDataPut']
     }
-    "/doc/input/$docboxref"(controller: 'RestDoc') {
-      action = [GET: 'docboxFormData']
+    "/rest/doc/byformdata/$uuid"(controller: 'RestDoc') {
+      action = [GET: 'formDataGet']
     }
-    "/doc/ref/$docboxref"(controller: 'RestDoc') {
+    "/rest/doc/core/$docboxref"(controller: 'RestDoc') {
       action = [GET: 'docboxRefGet']
     }
-    "/doc/sig/$docboxref"(controller: 'RestSig') {
+    "/rest/doc/orbeon/$docboxref"(controller: 'RestDoc') {
+      action = [GET: 'docboxOrbeonData']
+    }
+    "/rest/sig/core/$docboxref"(controller: 'RestSig') {
       action = [GET: 'docboxSigGet', POST: 'docboxSigPut']
     }
-    "/doc/sig/validate/$docboxref"(controller: 'RestSig') {
+    "/rest/sig/validation/$docboxref"(controller: 'RestSig') {
       action = [GET: 'sigValidate']
     }
 
