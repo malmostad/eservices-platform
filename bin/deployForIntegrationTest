@@ -101,8 +101,8 @@ fi
 DEPLOYMENTNAME="${HOME}/motrice"`date  +%Y%m%d%H%M`
 cp current_config.sh current_config.sh.orig 
 cat current_config.sh.orig | sed  s%'CONTAINER_ROOT=.*'%CONTAINER_ROOT=${DEPLOYMENTNAME}%g > current_config.sh
-./create-new-deploy-environment.sh
-./deploy-inherit-platform.sh
+./create-new-deploy-environment-motrice.sh  
+./deploy-motrice-platform.sh
 popd 
 
 exit ${ERRORSTATUS}
