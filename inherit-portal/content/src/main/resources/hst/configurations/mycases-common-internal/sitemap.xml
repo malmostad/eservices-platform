@@ -260,6 +260,36 @@
           </sv:property>
         </sv:node>
       </sv:node>
+      <sv:node sv:name="search-cases">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+          <sv:value>${parent}/search-cases</sv:value>
+        </sv:property>
+        <sv:node sv:name="advanced">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/searchcasesadvanced</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/advanced-search</sv:value>
+          </sv:property>
+        </sv:node>
+        <sv:node sv:name="simple">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/searchcasessimple</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>${parent}/simple-search</sv:value>
+          </sv:property>
+        </sv:node>
+      </sv:node>
     </sv:node>
     <sv:node sv:name="noform">
       <sv:property sv:name="jcr:primaryType" sv:type="Name">

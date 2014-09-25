@@ -33,19 +33,18 @@ import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SearchCasesStartedByUserId extends BaseSearchCasesComponent {
+public class SearchCasesSimple extends BaseSearchCasesComponent {
 
-	public static final Logger log = LoggerFactory.getLogger(SearchCasesStartedByUserId.class);
-	
+	public static final Logger log = LoggerFactory.getLogger(SearchCasesSimple.class);
 
 	@Override
 	public PagedProcessInstanceSearchResult executeSearch(
-			String searchForUserId, String involvedUserId, int fromIndex, int pageSize, String sortBy,
-			String sortOrder, String filter, Locale locale, String userId, Date startDate, int tolDays) {
+			String searchForUserId, String startedByUserId, int fromIndex, int pageSize, String sortBy,
+			String sortOrder, String filter, Locale locale, String userId,Date startDate, int tolDays) {
 		
-        PagedProcessInstanceSearchResult searchResult = engine.searchProcessInstancesAdvanced(searchForUserId, involvedUserId,fromIndex, pageSize, sortBy, sortOrder,  filter,  locale, userId, startDate, tolDays );
-           return searchResult;
-   }
- 
+		// ignore startedByUserId, startDate, tolDays (used in advanced search)	
+        PagedProcessInstanceSearchResult searchResult = engine.searchProcessInstancesStartedByUser(searchForUserId, fromIndex, pageSize, sortBy, sortOrder,  filter, locale, userId);
 
+		return searchResult;
+	}
 }

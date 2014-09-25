@@ -33,9 +33,9 @@ import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SearchCasesStartedByUserId extends BaseSearchCasesComponent {
+public class SearchCasesAdvanced extends BaseSearchCasesComponent {
 
-	public static final Logger log = LoggerFactory.getLogger(SearchCasesStartedByUserId.class);
+	public static final Logger log = LoggerFactory.getLogger(SearchCasesAdvanced.class);
 	
 
 	@Override

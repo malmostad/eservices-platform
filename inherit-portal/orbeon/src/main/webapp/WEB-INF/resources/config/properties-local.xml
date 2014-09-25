@@ -34,7 +34,7 @@
   <property as="xs:string" name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
 
   <property as="xs:anyURI" name="oxf.fr.detail.send.success.uri.*.*"
-          value="http://localhost:8080/site/mycases/form/confirmdispatcher"/>
+          value="https://eminburk.malmo.se:443/site/mycases/form/confirmdispatcher"/>
   <property as="xs:string" name="oxf.fr.detail.send.success.method.*.*" value="get"/>
 
 

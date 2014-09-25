@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:sitemenus">
+<?xml version="1.0" encoding="UTF-8"?><sv:node xmlns:sv="http://www.jcp.org/jcr/sv/1.0" sv:name="hst:sitemenus">
   <sv:property sv:name="jcr:primaryType" sv:type="Name">
     <sv:value>hst:sitemenus</sv:value>
   </sv:property>
@@ -20,7 +19,7 @@
         <sv:value>hst:sitemenuitem</sv:value>
       </sv:property>
       <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-        <sv:value>mycases/search/by-user/casesstartedbyuser</sv:value>
+        <sv:value>mycases/search/search-cases/simple</sv:value>
       </sv:property>
       <sv:node sv:name="Startad av person">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">

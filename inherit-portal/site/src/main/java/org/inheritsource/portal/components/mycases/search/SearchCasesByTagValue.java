@@ -26,6 +26,7 @@
  
 package org.inheritsource.portal.components.mycases.search;
 
+import java.util.Date;
 import java.util.Locale;
 
 import org.inheritsource.service.common.domain.PagedProcessInstanceSearchResult;
@@ -38,8 +39,10 @@ public class SearchCasesByTagValue extends BaseSearchCasesComponent {
 
 	@Override
 	public PagedProcessInstanceSearchResult executeSearch(
-			String searchStr, int fromIndex, int pageSize, String sortBy,
-			String sortOrder, String filter, Locale locale, String userId) {
+			String searchStr, String startedByUserId ,int fromIndex, int pageSize, String sortBy,
+			String sortOrder, String filter, Locale locale, String userId, Date startDate, int tolDays) {
+		
+		// ignore startedByUserId, startDate, tolDays (used in advanced search)
         PagedProcessInstanceSearchResult searchResult = engine.searchProcessInstancesListByTag(searchStr, fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
 
 		return searchResult;

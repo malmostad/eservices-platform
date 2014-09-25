@@ -23,6 +23,7 @@
  
  */ 
  
+
 package org.inheritsource.service.processengine;
 
 import java.io.FileInputStream;
@@ -40,9 +41,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
 import org.activiti.bpmn.model.Process;
@@ -54,6 +55,7 @@ import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricIdentityLink;
 import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricProcessInstanceQuery;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
@@ -93,6 +95,7 @@ import org.inheritsource.service.docbox.DocBoxFacade;
 import org.inheritsource.service.form.FormEngine;
 import org.inheritsource.service.identity.IdentityService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
+import org.joda.time.DateTime;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -1155,6 +1158,139 @@ public class ActivitiEngineService {
 		return(null);
 	}
 		
+	/*
+	 * Returns a paged search of process instances The conditions are used with
+	 * AND
+	 * 
+	 * @param startedByUserId : user to search instances of
+	 * 
+	 * @param involvedUserId : involved user
+	 * 
+	 * @param fromIndex : first index in response
+	 * 
+	 * @param pageSize : number of instances per page
+	 * 
+	 * @param sortBy : {"started"}
+	 * 
+	 * @param sortOrder : {"DESENDING", "ASCENDING" }
+	 * 
+	 * @param filter : {"STARTED", "FINISHED", "ALL"}
+	 * 
+	 * @param locale
+	 * 
+	 * @param userId : user of the service
+	 * 
+	 * @param startDate : start date of the process instance
+	 * 
+	 * @param tolDays : tolerance in +/- days of startDate
+	 * 
+	 * @return PagedProcessInstanceSearchResult
+	 */
+	public PagedProcessInstanceSearchResult getProcessInstancesAdvanced(
+			String startedByUserId, String involvedUserId, int fromIndex,
+			int pageSize, String sortBy, String sortOrder, String filter,
+			Locale locale, String userId, Date startDate, int tolDays) {
+
+		List<HistoricProcessInstance> processes;
+		HistoricProcessInstanceQuery historicProcessInstanceQuery = engine
+				.getHistoryService().createHistoricProcessInstanceQuery();
+
+		try {
+			engine.getIdentityService().setAuthenticatedUserId(userId);
+
+			if (filter.equals("STARTED")) {
+				System.out.println("date started");
+				historicProcessInstanceQuery.unfinished();
+
+			} else if (filter.equals("FINISHED")) {
+				historicProcessInstanceQuery.finished();
+			}
+
+			if (startDate != null ) {
+				DateTime dtOrg = new DateTime(startDate);
+				Date dateLast = dtOrg.plusDays(tolDays).toDate();
+				Date dateFirst = dtOrg.minusDays(tolDays).toDate();
+				System.out.println("dateLast =" + dateLast.toString());
+				System.out.println("dateFirst =" + dateFirst.toString());
+
+				historicProcessInstanceQuery.startedAfter(dateFirst)
+						.startedBefore(dateLast);
+			}
+
+			if (sortBy.equals("started") && sortOrder.equals("desc")) {
+				historicProcessInstanceQuery.orderByProcessInstanceStartTime()
+						.desc();
+			}
+
+			if (sortBy.equals("started") && sortOrder.equals("asc")) {
+				historicProcessInstanceQuery.orderByProcessInstanceStartTime()
+						.asc();
+			}
+
+			if (involvedUserId != null && !involvedUserId.isEmpty()) {
+				historicProcessInstanceQuery.involvedUser(involvedUserId);
+			}
+
+			if (startedByUserId != null && !startedByUserId.isEmpty() ) {
+				historicProcessInstanceQuery.startedBy(startedByUserId);
+			}
+
+			processes = historicProcessInstanceQuery.excludeSubprocesses(true)
+					.list();
+			engine.getIdentityService().setAuthenticatedUserId(null);
+			return (getHistoricPagedProcessInstanceSearchResult(processes,
+					startedByUserId, fromIndex, pageSize, sortBy, sortOrder,
+					locale, userId));
+		} catch (Exception e) {
+			log.error("Unable to getHistoricPagedProcessInstanceSearchResult with searchForUserId: "
+					+ " by userId: " + userId + " exeception: " + e);
+			engine.getIdentityService().setAuthenticatedUserId(null);
+			return (null);
+		}
+
+	}
+
+	/*
+	 * Returns a paged search of process instances The conditions are used with
+	 * OR
+	 * 
+	 * @param startedByUserId : user to search instances of
+	 * 
+	 * @param involvedUserId : involved user
+	 * 
+	 * @param fromIndex : first index in response
+	 * 
+	 * @param pageSize : number of instances per page
+	 * 
+	 * @param sortBy : {"started"}
+	 * 
+	 * @param sortOrder : {"DESENDING", "ASCENDING" }
+	 * 
+	 * @param filter : {"STARTED", "FINISHED"}
+	 * 
+	 * @param locale
+	 * 
+	 * @param userId : user of the service
+	 * 
+	 * @param startDate : start date of the process instance
+	 * 
+	 * @param tolDays : tolerance in +/- days of startDate
+	 * 
+	 * @return PagedProcessInstanceSearchResult
+	 */
+	public PagedProcessInstanceSearchResult getProcessInstancesWithOrSearch(
+			String startedByUserId, String involvedUserId, int fromIndex,
+			int pageSize, String sortBy, String sortOrder, String filter,
+			Locale locale, String userId, Date startDate, int tolDays) {
+		// TODO
+		// To be implemented after an upgrade to activiti 5.16.1 or later
+		// since .or and .endOr methods in HistoricProcessInstanceQuery are
+		// implemented then. Most of getProcessInstancesAdvanced 
+		// can be reused
+
+		return (null);
+	}
+
 	private PagedProcessInstanceSearchResult getPagedProcessInstanceSearchResult(String userSearchCriteria,
 			String searchForUserId, int fromIndex, int pageSize,
 			String sortBy, String sortOrder, Locale locale, String userId) {
@@ -1287,6 +1423,88 @@ public class ActivitiEngineService {
 		
 		return(startDate);
 	}
+
+	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResult(
+			List<HistoricProcessInstance> processInstances,
+			String searchForUserId, int fromIndex, int pageSize, String sortBy,
+			String sortOrder, Locale locale, String userId) {
+		// NOTE List<HistoricProcessInstance> processInstances = null;
+		PagedProcessInstanceSearchResult pagedProcessInstanceSearchResult = new PagedProcessInstanceSearchResult();
+
+		if (fromIndex < 0) {
+			fromIndex = 0;
+		}
+
+		if (pageSize < 0) {
+			pageSize = 0;
+		}
+
+		pagedProcessInstanceSearchResult.setFromIndex(fromIndex);
+		pagedProcessInstanceSearchResult.setPageSize(pageSize);
+		pagedProcessInstanceSearchResult.setSortBy(sortBy);
+		pagedProcessInstanceSearchResult.setSortOrder(sortOrder);
+
+		try {
+                        engine.getIdentityService().setAuthenticatedUserId(userId);  
+			if (processInstances != null) {
+				// Filter due to fromIndex and pageSize
+				// bjmo made a quick fix here, but the number of pages will be
+				// wrong because it is based on a array with subprocesses
+				// included.
+				List<HistoricProcessInstance> pageProcessInstances = pageHistoricList(
+						processInstances, fromIndex, pageSize);
+
+				pagedProcessInstanceSearchResult
+						.setNumberOfHits(processInstances.size());
+
+				List<ProcessInstanceListItem> processInstanceListItems = new ArrayList<ProcessInstanceListItem>();
+
+				for (HistoricProcessInstance processInstance : pageProcessInstances) {
+					ProcessInstanceListItem processInstanceListItem = new ProcessInstanceListItem();
+					processInstanceListItem
+							.setProcessInstanceUuid(processInstance.getId());
+					if (processInstance.getEndTime() == null) {
+						processInstanceListItem
+								.setStatus(ProcessInstanceListItem.STATUS_PENDING);
+					} else {
+						processInstanceListItem
+								.setStatus(ProcessInstanceListItem.STATUS_FINISHED);
+					}
+					processInstanceListItem.setStartDate(processInstance
+							.getStartTime());
+					processInstanceListItem.setStartedBy(processInstance
+							.getStartUserId());
+					processInstanceListItem.setEndDate(processInstance
+							.getEndTime());
+					processInstanceListItem.setProcessInstanceLabel("");
+					processInstanceListItem
+							.setProcessLabel(coordinatriceFacade
+									.getStartFormLabel(processInstance.getId(),
+											locale));
+					processInstanceListItem
+							.setActivities(getHistoricUserInboxByProcessInstanceId(
+									processInstance.getId(), locale));
+
+					processInstanceListItems.add(processInstanceListItem);
+				}
+
+				pagedProcessInstanceSearchResult
+						.setHits(processInstanceListItems);
+			}
+		} catch (Exception e) {
+			log.error("Unable to getHistoricPagedProcessInstanceSearchResult with searchForUserId: "
+					+ searchForUserId
+					+ " by userId: "
+					+ userId
+					+ " exeception: " + e);
+			pagedProcessInstanceSearchResult = null;
+		} finally {
+			engine.getIdentityService().setAuthenticatedUserId(null);
+		}
+
+		return pagedProcessInstanceSearchResult;
+	}
+
 	
 	private PagedProcessInstanceSearchResult getHistoricPagedProcessInstanceSearchResult(String userSearchCriteria,
 			String searchForUserId, int fromIndex, int pageSize,
