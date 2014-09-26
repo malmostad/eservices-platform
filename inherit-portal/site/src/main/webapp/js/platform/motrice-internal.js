@@ -22,19 +22,7 @@ $(document).ready(function() {
 
 
 
-	   		          $(".hitlist_goto_page").click(function(event) {
-		           event.preventDefault();
-		           var hrefPage = $(this).attr("href");
-		           
-		           $("#searchPanelForm  > input[name=page]").prop("value", hrefPage);
-		
-		            $("#searchPanelForm").submit();
-		          });
- 
-			  $("#search-btn").click(function(event) {
-			   $("#searchPanelForm  > input[name=page]").prop("value", 1);
-			  });
-	    
+    
         $(".motrice-assign-to").click(function() {
 	    var assignTo = $(this).children("input[name='motrice-assign-to']").attr("value");
 	    var instanceUuid = $(this).children("input[name='motrice-activity-instance-uuid']").attr("value");

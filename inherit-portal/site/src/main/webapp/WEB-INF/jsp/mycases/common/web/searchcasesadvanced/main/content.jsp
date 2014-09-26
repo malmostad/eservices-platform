@@ -44,6 +44,10 @@
 		<hst:html hippohtml="${document.html}" />
 
 <form method="post" id="searchPanelForm" class="basic">
+			<input type="hidden" name="page" value="${page}"/>
+			<input type="hidden" name="pageSize" value="${pageSize}"/>
+			<input type="hidden" name="sortBy" value="${sortBy}"/>
+			<input type="hidden" name="sortOrder" value="${sortOrder}"/>
   <p class="help-block">
     Some instructions to the form may, or may not, be necessary. Lorem lipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
     tempor.
