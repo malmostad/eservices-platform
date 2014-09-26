@@ -44,6 +44,7 @@
 		<hst:html hippohtml="${document.html}" />
 		
 		<form id="searchPanelForm" action="${submitUri}" method="POST">
+			<input type="hidden" name="searchIsEnabled" value="${searchIsEnabled}"/>
 			<input type="hidden" name="page" value="${page}"/>
 			<input type="hidden" name="pageSize" value="${pageSize}"/>
 			<input type="hidden" name="sortBy" value="${sortBy}"/>

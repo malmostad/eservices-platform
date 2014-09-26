@@ -58,6 +58,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		String involvedUserId = null;
 		String startDateStr = null;
 		String tolDaysStr = null;
+		String searchIsEnabled = null;
 
 		try {
 			searchStr = getPublicRequestParameter(request, "searchStr");
@@ -72,6 +73,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 					"involvedUserId");
 			startDateStr = getPublicRequestParameter(request, "startDate");
 			tolDaysStr = getPublicRequestParameter(request, "tolDays");
+			searchIsEnabled = getPublicRequestParameter(request, "searchIsEnabled");
 		} catch (Exception e) {
 			log.warn("getPublicRequestParameter problem");
 		}
@@ -79,6 +81,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		log.info("searchStr = {}", searchStr);
 		log.info("sortBy = {}", sortBy);
 		log.info("sortOrder = {}", sortOrder);
+		log.info("searchIsEnabled = {}", searchIsEnabled);
 		log.info("filter = {}", filter);
 		log.info("editablefilter = {}", editablefilter);
 		log.info("involvedUserId = {}", involvedUserId);
@@ -136,6 +139,14 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 			sortOrder = "desc";
 		}
 
+		if (searchStr != null ) {
+			searchStr = searchStr.trim() ;
+		}
+
+		if (involvedUserId != null ) {
+			involvedUserId = involvedUserId.trim() ;
+		}
+
 		int fromIndex = (page - 1) * pageSize;
 
 		if (doc == null) {
@@ -151,10 +162,15 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 
 		request.setAttribute("document", doc);
 
-		PagedProcessInstanceSearchResult searchResult = executeSearch(
+                PagedProcessInstanceSearchResult searchResult ; 
+                if ( searchIsEnabled == null) { 
+                     searchResult = null ; 
+                     } else {
+		            searchResult = executeSearch(
 				searchStr, involvedUserId, fromIndex, pageSize, sortBy,
 				sortOrder, filter, request.getLocale(), user.getUuid(),
 				startDate, tolDays);
+                }
 
 		// append hippo jcr labels on processes and activities in the serach
 		// result
@@ -180,6 +196,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		request.setAttribute("pageSize", pageSize);
 		request.setAttribute("sortBy", sortBy);
 		request.setAttribute("sortOrder", sortOrder);
+		request.setAttribute("searchIsEnabled", "true");
 		request.setAttribute("involvedUserId", involvedUserId);
 		request.setAttribute("startDate", startDate);
 		request.setAttribute("tolDays", tolDays);
@@ -196,6 +213,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		log.info("pageSize = {}", pageSize);
 		log.info("sortBy = {}", sortBy);
 		log.info("sortOrder = {}", sortOrder);
+		log.info("searchIsEnabled = {}", searchIsEnabled);
 		log.info("involvedUserId = {}", involvedUserId);
 		log.info("startDate = {}", startDate);
 		log.info("tolDays = {}", tolDays);
