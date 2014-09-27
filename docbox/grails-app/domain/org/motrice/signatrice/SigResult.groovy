@@ -47,7 +47,7 @@ class SigResult implements Comparable {
   // Target docboxRef of the document after the signature was added, if applicable.
   String docboxRefOut
 
-  static belongsTo = [tcase: SigTestcase]
+  static belongsTo = [tcase: SigScheme]
   SortedSet attrs
   static hasMany = [attrs: SigAttribute]
   static transients = ['createdFmt', 'sigSize']

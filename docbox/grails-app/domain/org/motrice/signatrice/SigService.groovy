@@ -25,7 +25,7 @@ class SigService implements Comparable {
   // Default display name
   SigDisplayname defaultDisplayName
 
-  static hasMany = [cases: SigTestcase]
+  static hasMany = [cases: SigScheme]
   static constraints = {
     wsdlLocation size: 5..200, unique: true
     alias size: 5..24, matches: '[A-Za-z0-9-]+', unique: true
@@ -50,7 +50,7 @@ class SigService implements Comparable {
     createService(GRPT_HTTP_WSDL_LOCATION, GRPT_HTTP_ALIAS,
 		  GRPT_HTTP_QNAME_URI, GRPT_HTTP_QNAME_LOCAL, 7, 1)
     createService(GRPT_HTTPS_WSDL_LOCATION, GRPT_HTTPS_ALIAS,
-		  GRPT_HTTPS_QNAME_URI, GRPT_HTTPS_QNAME_LOCAL, 9, 22)
+		  GRPT_HTTPS_QNAME_URI, GRPT_HTTPS_QNAME_LOCAL, 9, 2)
   }
 
   QName getQname() {

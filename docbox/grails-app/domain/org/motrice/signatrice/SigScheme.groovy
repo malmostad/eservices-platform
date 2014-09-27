@@ -1,9 +1,9 @@
 package org.motrice.signatrice
 
 /**
- * A test case against a CGI service.
+ * A scheme provides the details for invoking a SigService.
  */
-class SigTestcase implements Comparable {
+class SigScheme implements Comparable {
   // Name of this test case
   String name
 
@@ -71,8 +71,8 @@ class SigTestcase implements Comparable {
 
   boolean equals(Object obj) {
     def result = false
-    if (obj instanceof SigTestcase) {
-      def other = (SigTestcase)obj
+    if (obj instanceof SigScheme) {
+      def other = (SigScheme)obj
       result = uname == other.uname
     }
 
@@ -83,7 +83,7 @@ class SigTestcase implements Comparable {
    * Date-based comparison, latest first.
    */
   int compareTo(Object obj) {
-    def other = (SigTestcase)obj
+    def other = (SigScheme)obj
     int outcome = name.compareTo(other.name)
     println "outcome 1: ${outcome}"
     if (outcome == 0) outcome = -dateCreated.compareTo(other.dateCreated)

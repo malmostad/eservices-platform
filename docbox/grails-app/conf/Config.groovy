@@ -141,7 +141,7 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-	   error 'org.motrice.docbox.doc', 'grails.app.controllers', 'grails.app.jobs', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService',  'org.motrice.signatrice.SignService', 'org.motrice.signatrice.audit.AuditService'
+	   debug 'org.motrice.docbox.doc', 'grails.app.controllers', 'grails.app.jobs', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService',  'org.motrice.signatrice.SignService', 'org.motrice.signatrice.audit.AuditService'
 
 }
 

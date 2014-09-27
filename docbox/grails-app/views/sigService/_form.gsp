@@ -42,10 +42,10 @@
 	
 <ul class="one-to-many">
 <g:each in="${sigServiceInst?.cases?}" var="c">
-    <li><g:link controller="sigTestcase" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+    <li><g:link controller="sigScheme" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">
-<g:link controller="sigTestcase" action="create" params="['sigService.id': sigServiceInst?.id]">${message(code: 'default.add.label', args: [message(code: 'sigTestcase.label', default: 'SigTestcase')])}</g:link>
+<g:link controller="sigScheme" action="create" params="['sigService.id': sigServiceInst?.id]">${message(code: 'default.add.label', args: [message(code: 'sigScheme.label', default: 'SigScheme')])}</g:link>
 </li>
 </ul>
 

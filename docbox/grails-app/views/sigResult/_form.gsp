@@ -96,6 +96,6 @@
 		<g:message code="sigResult.tcase.label" default="Tcase" />
 		<span class="required-indicator">*</span>
 	</label>
-	<g:select id="tcase" name="tcase.id" from="${org.motrice.signatrice.SigTestcase.list()}" optionKey="id" required="" value="${sigResultInst?.tcase?.id}" class="many-to-one"/>
+	<g:select id="tcase" name="tcase.id" from="${org.motrice.signatrice.SigScheme.list()}" optionKey="id" required="" value="${sigResultInst?.tcase?.id}" class="many-to-one"/>
 </div>
 

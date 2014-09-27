@@ -49,7 +49,7 @@
 	  <li class="fieldcontain">
 	    <span id="cases-label" class="property-label"><g:message code="sigService.cases.label" default="Cases" /></span>
 	    <g:each in="${sigServiceInst.cases}" var="c">
-	      <span class="property-value" aria-labelledby="cases-label"><g:link controller="sigTestcase" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></span>
+	      <span class="property-value" aria-labelledby="cases-label"><g:link controller="sigScheme" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></span>
 	    </g:each>
 	  </li>
 	</g:if>

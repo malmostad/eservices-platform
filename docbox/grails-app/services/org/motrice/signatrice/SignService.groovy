@@ -60,7 +60,7 @@ class SignService {
    * Send a sign request, return a newly created SigResult containing
    * the return values, or throw a ServiceException.
    */
-  SigResult sign(SigTestcase testcase, request) {
+  SigResult sign(SigScheme testcase, request) {
     if (log.debugEnabled) log.debug "sign << ${testcase} from ${request.remoteAddr}"
     def transactionId = generateTransactionId()
     def result = null
@@ -92,7 +92,7 @@ class SignService {
   /**
    * The details of a signing request
    */
-  private OrderResponseType doSign(SigTestcase testcase, String transactionId, request) {
+  private OrderResponseType doSign(SigScheme testcase, String transactionId, request) {
     def service = new GrpService(testcase.service.serviceUrl, testcase.service.qname)
     def of = new ObjectFactory()
     def signReq = of.createSignRequestType()

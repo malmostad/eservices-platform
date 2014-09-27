@@ -30,7 +30,7 @@
 	<g:if test="${sigResultInst?.tcase}">
 	  <li class="fieldcontain">
 	    <span id="tcase-label" class="property-label"><g:message code="sigResult.tcase.label" default="Tcase" /></span>
-	    <span class="property-value" aria-labelledby="tcase-label"><g:link controller="sigTestcase" action="show" id="${sigResultInst?.tcase?.id}">${sigResultInst?.tcase?.encodeAsHTML()}</g:link></span>
+	    <span class="property-value" aria-labelledby="tcase-label"><g:link controller="sigScheme" action="show" id="${sigResultInst?.tcase?.id}">${sigResultInst?.tcase?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
 	<g:if test="${sigResultInst?.progressStatus}">
