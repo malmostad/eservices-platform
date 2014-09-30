@@ -21,9 +21,18 @@
  * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN
  * phone: +46 8 641 64 14
  */
-class BootStrap {
 
-    def init = { servletContext ->
+import org.motrice.signatrice.SigDisplayname
+import org.motrice.signatrice.SigPolicy
+import org.motrice.signatrice.SigProgress
+import org.motrice.signatrice.SigService
+
+class BootStrap {
+    def init = {servletContext ->
+      SigDisplayname.createDisplaynames()
+      SigPolicy.createPolicies()
+      SigService.createPredefinedServices()
+      SigProgress.createAllProgress()
     }
     def destroy = {
     }
