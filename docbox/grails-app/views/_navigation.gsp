@@ -24,31 +24,28 @@
 --%>
 <div class="mainmenu" role="navigation">
   <ul id="menu">
-    <li><a href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a>
+    <li><a href="${createLink(uri: '/')}"><g:message code="boxDoc.menu"/></a>
       <ul class="submenu">
-	<li><g:link controller="procdef" action="showconfig"><g:message code="config.show.menu"/></g:link></li>
+	<li><g:link controller="boxDoc" action="list"><g:message code="boxDoc.list.menu"/></g:link></li>
       </ul>
     </li>
-    <li><g:link controller="procdef" action="list"><g:message code="procdef.menu"/></g:link>
+    <li><g:link controller="sigResult" action="list"><g:message code="signatures.menu"/></g:link>
 	<ul class="submenu">
-	  <li><g:link controller="procdef" action="list"><g:message code="procdef.list.menu"/></g:link></li>
-	  <li><g:link controller="procdef" action="create"><g:message code="procdef.upload.bpmn.label"/></g:link></li>
-	  <li><g:link controller="crdProcCategory" action="list"><g:message code="crdProcCategory.list.menu"/></g:link></li>
-	  <li><g:link class="create" action="create"><g:message code="crdProcCategory.create.menu"/></g:link></li>
+	  <li><g:link controller="sigService" action="list"><g:message code="sigService.list.menu"/></g:link></li>
+	  <li><g:link controller="sigService" action="create"><g:message code="sigService.create.menu"/></g:link></li>
+	  <li><g:link controller="sigScheme" action="list"><g:message code="sigScheme.list.menu"/></g:link></li>
+	  <li><g:link controller="sigScheme" action="create"><g:message code="sigScheme.create.menu"/></g:link></li>
+	  <li><g:link controller="sigResult" action="list"><g:message code="sigResult.list.menu"/></g:link></li>
 	</ul>
     </li>
-    <li><g:link controller="mtfStartFormDefinition" action="list"><g:message code="pxdFormdef.menu"/></g:link>
+    <li><g:link controller="auditRecord" action="list"><g:message code="auditRecord.main.menu"/></g:link>
 	<ul class="submenu">
-	  <li><g:link controller="mtfStartFormDefinition" action="list"><g:message code="startform.list.label"/></g:link></li>
-	  <li><g:link controller="pxdFormdef" action="list"><g:message code="pxdFormdef.list.label"/></g:link></li>
-	  <li><a class="create" href="${orbeonUri}/new" target="_"><g:message code="pxdFormdef.create.menu"/></a></li>
+	  <li><g:link controller="auditRecord" action="list"><g:message code="auditRecord.list.menu"/></g:link></li>
 	</ul>
     </li>
-    <li><g:link controller="migPackage" action="list"><g:message code="migration.menu"/></g:link>
+    <li><g:link controller="env" action="showconfig"><g:message code="config.menu"/></g:link>
 	<ul class="submenu">
-	  <li><g:link controller="migPackage" action="list"><g:message code="migPackage.list.menu"/></g:link></li>
-	  <li><g:link controller="migPackage" action="uploadprepare"><g:message code="migPackage.upload.menu"/></g:link></li>
-	  <li><g:link controller="migPackage" action="listexp"><g:message code="migPackage.create.menu"/></g:link></li>
+	  <li><g:link controller="env" action="showconfig"><g:message code="config.show.menu"/></g:link></li>
 	</ul>
     </li>
   </ul>

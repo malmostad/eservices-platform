@@ -34,7 +34,7 @@ class EnvController {
   def envService
 
   /**
-   * Validate the setup
+   * Validate the setup -- part of the REST interface
    * The id is not used
    * Besides the HTTP status the method returns diagnostics as JSON data
    */
@@ -72,4 +72,31 @@ class EnvController {
       forms_datasource = formsDsMsg
     }
   }
+
+  def showconfig() {
+    if (log.debugEnabled) log.debug "SHOWCONFIG"
+    // Display table for decoding resources
+    def table = [:]
+    // Configured
+    table[1] = display('/images/silk/bullet_white.png', 'config.liveness.1')
+    table[2] = display('/images/silk/exclamation.png', 'config.liveness.2')
+    table[3] = display('/images/silk/tick.png', 'config.liveness.3')
+    table[4] = display('/images/silk/cross.png', 'config.liveness.4')
+    table[5] = display('/images/silk/comment.png', 'config.liveness.5')
+    def configList = envService.configDisplay()
+    // Replace stuff in the list
+    def displayList = configList.collect {item ->
+      def res = table[item.state]
+      item.name = message(code: item.name)
+      item.img = res.img
+      item.title = message(code: res.title)
+      return item
+    }
+    [config: displayList]
+  }
+
+  private Map display (String img, String title) {
+    [img: img, title: title]
+  }
+
 }

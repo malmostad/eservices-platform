@@ -94,13 +94,14 @@ img {
 
 #grailsLogo a {
 	display: inline-block;
-	margin: 2px 1em;
+	margin: 1px 1em; 0px; 1em;
 }
 
 #grailsLogo div.meta {
 	vertical-align: top;
-	color: #FFF3E7;
-	/* color: #CCE1E8;*/
+	color: #94BF66;
+        font-size: 130%;
+	font-weight: bold;
 }
 
 #grailsLogo span.meta {
