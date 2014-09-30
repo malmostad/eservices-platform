@@ -28,16 +28,13 @@ class UrlMappings {
       action = [GET: 'validate']
     }
     "/rest/doc/orbeon/$uuid"(controller: 'RestDoc') {
-      action = [PUT: 'formDataPut']
+      action = [GET: 'docboxOrbeonData', PUT: 'formDataPut']
     }
     "/rest/doc/byformdata/$uuid"(controller: 'RestDoc') {
       action = [GET: 'formDataGet']
     }
     "/rest/doc/core/$docboxref"(controller: 'RestDoc') {
       action = [GET: 'docboxRefGet']
-    }
-    "/rest/doc/orbeon/$docboxref"(controller: 'RestDoc') {
-      action = [GET: 'docboxOrbeonData']
     }
     "/rest/sig/core/$docboxref"(controller: 'RestSig') {
       action = [GET: 'docboxSigGet', POST: 'docboxSigPut']

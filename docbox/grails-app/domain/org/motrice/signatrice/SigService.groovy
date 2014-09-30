@@ -25,7 +25,7 @@ class SigService implements Comparable {
   // Default display name
   SigDisplayname defaultDisplayName
 
-  static hasMany = [cases: SigScheme]
+  static hasMany = [schemes: SigScheme]
   static constraints = {
     wsdlLocation size: 5..200, unique: true
     alias size: 5..24, matches: '[A-Za-z0-9-]+', unique: true

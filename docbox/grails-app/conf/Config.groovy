@@ -129,11 +129,11 @@ log4j = {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
 
+
     error  'org.codehaus.groovy.grails.web.servlet',        // controllers
            'org.codehaus.groovy.grails.web.pages',          // GSP
            'org.codehaus.groovy.grails.web.sitemesh',       // layouts
            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-           'org.codehaus.groovy.grails.web.mapping',        // URL mapping
            'org.codehaus.groovy.grails.commons',            // core / classloading
            'org.codehaus.groovy.grails.plugins',            // plugins
            'org.codehaus.groovy.grails.orm.hibernate',      // hibernate integration
@@ -141,7 +141,9 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-	   debug 'org.motrice.docbox.doc', 'grails.app.controllers', 'grails.app.jobs', 'org.motrice.docbox.EnvService', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService',  'org.motrice.signatrice.SignService', 'org.motrice.signatrice.audit.AuditService'
+    error  'org.codehaus.groovy.grails.web.mapping'        // URL mapping
+
+    debug 'org.motrice.docbox.doc', 'grails.app.controllers', 'grails.app.jobs', 'org.motrice.docbox.EnvService', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService', 'org.motrice.signatrice.SignService', 'org.motrice.signatrice.audit.AuditService'
 
 }
 

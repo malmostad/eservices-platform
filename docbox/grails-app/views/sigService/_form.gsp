@@ -34,14 +34,14 @@
 	<g:textField name="qNameLocalPart" maxlength="120" value="${sigServiceInst?.qNameLocalPart}"/>
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: sigServiceInst, field: 'cases', 'error')} ">
-	<label for="cases">
-		<g:message code="sigService.cases.label" default="Cases" />
+<div class="fieldcontain ${hasErrors(bean: sigServiceInst, field: 'schemes', 'error')} ">
+	<label for="schemes">
+		<g:message code="sigService.schemes.label" default="Schemes" />
 		
 	</label>
 	
 <ul class="one-to-many">
-<g:each in="${sigServiceInst?.cases?}" var="c">
+<g:each in="${sigServiceInst?.schemes?}" var="c">
     <li><g:link controller="sigScheme" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
 </g:each>
 <li class="add">

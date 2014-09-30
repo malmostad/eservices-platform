@@ -87,12 +87,13 @@ class RestDocController {
   /**
    * Get original form data
    */
-  def docboxOrbeonData(String docboxref) {
+  def docboxOrbeonData(String uuid) {
     if (log.debugEnabled) log.debug "FORMDATA: ${Util.clean(params)}, ${request.forwardURI}"
     def pdfContents = null
     String msg = null
     Integer status = 404
 
+    def docboxref = uuid
     def docStep = docService.findStepByRef(docboxref)
     if (docStep) {
 	pdfContents = docService.findPdfContents(docStep)

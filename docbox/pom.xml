@@ -6,7 +6,7 @@
   <groupId>org.motrice</groupId>
   <artifactId>docbox</artifactId>
   <packaging>grails-app</packaging>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
   <name>docbox</name>
   <description>docbox</description>
 
