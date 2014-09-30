@@ -21,11 +21,12 @@
  * mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
  * phone: +46 8 641 64 14 
  
- */ 
- 
- 
+ */
+
 package org.inheritsource.portal.components.mycases.search;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import org.hippoecm.hst.content.beans.standard.HippoBean;
@@ -40,96 +41,188 @@ import org.slf4j.LoggerFactory;
 
 public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 
-	public static final Logger log = LoggerFactory.getLogger(BaseSearchCasesComponent.class);
-	
-    public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
-    	HippoBean doc = getContentBean(request);
-        UserInfo user = getUserName(request);
+	public static final Logger log = LoggerFactory
+			.getLogger(BaseSearchCasesComponent.class);
 
-        String searchStr = getPublicRequestParameter(request, "searchStr");
-        String pageStr = getPublicRequestParameter(request, "page");
-        String pageSizeStr = getPublicRequestParameter(request, "pageSize");
-        String sortBy = getPublicRequestParameter(request, "sortBy");
-        String sortOrder = getPublicRequestParameter(request, "sortOrder");
-        String filter = getPublicRequestParameter(request, "filter");
-        String editablefilter = getPublicRequestParameter(request, "editablefilter");
-        
-        
-        int page = 1;
-        if (pageStr!=null && pageStr.length()>0 ) {
-        	try {
-        		page = Integer.parseInt(pageStr);
-        	}
-        	catch(Exception e) {
-        		log.warn("pageStr=[" + pageStr + "] is not an integer => ignored");
-        	}
-        }
-        	
-        int pageSize = 10;
-        if (pageSizeStr!=null && pageSizeStr.length()>0 ) {
-        	try {
-        		pageSize = Integer.parseInt(pageSizeStr);
-        	}
-        	catch(Exception e) {
-        		log.warn("pageSizeStr=[" + pageSizeStr + "] is not an integer => ignored");
-        	}
-        }
-        
-        if (filter==null || filter.trim().length()==0) {
-        	// default filter
-        	filter = "STARTED";
-        }
-        	
-        if (sortBy==null || sortBy.trim().length()==0) {
-        	// default filter
-        	sortBy = "started";
-        }
-        	
-        if (sortOrder==null || sortOrder.trim().length()==0) {
-        	// default filter
-        	sortOrder = "desc";
-        }
-        	
-        int fromIndex = (page-1)*pageSize;
-        
-        
-        if (doc == null) {
-            log.warn("Did not find a content bean for relative content path '{}' for pathInfo '{}'", 
-                         request.getRequestContext().getResolvedSiteMapItem().getRelativeContentPath(),
-                         request.getRequestContext().getResolvedSiteMapItem().getPathInfo());
-  //          response.setStatus(404);
-  //          return;
-        }
-        
-        request.setAttribute("document",doc);
-        
-        
-        PagedProcessInstanceSearchResult searchResult = executeSearch(searchStr, fromIndex, pageSize, sortBy, sortOrder, filter, request.getLocale(), user.getUuid());
+	public void doBeforeRender(final HstRequest request,
+			final HstResponse response) throws HstComponentException {
+		HippoBean doc = getContentBean(request);
+		UserInfo user = getUserName(request);
+		String searchStr = null;
+		String pageStr = null;
+		String pageSizeStr = null;
+		String sortBy = null;
+		String sortOrder = null;
+		String filter = null;
+		String editablefilter = null;
+		String involvedUserId = null;
+		String startDateStr = null;
+		String tolDaysStr = null;
+		String searchIsEnabled = null;
 
-        // append hippo jcr labels on processes and activities in the serach result
-        appendChannelLabels(request, searchResult);
-        
-        // set request attributes 
-        
-        request.setAttribute("searchResult", searchResult);
-        int pageCount = ( (searchResult.getNumberOfHits()-1) / searchResult.getPageSize()) + 1;
-        request.setAttribute("pageCount", pageCount);
-        
-        request.setAttribute("searchStr", searchStr);
-        request.setAttribute("filter", filter);
-        request.setAttribute("editablefilter", editablefilter);
-        request.setAttribute("page", page);
-        request.setAttribute("pageLinkLb", Math.max(page-3, 1));
-        request.setAttribute("pageLinkUb", Math.min(page+3, pageCount));
-        request.setAttribute("pageSize", pageSize);
-        request.setAttribute("sortBy", sortBy);
-        request.setAttribute("sortOrder", sortOrder);
-        
-        request.setAttribute("submitUri", request.getRequestURI());
-        
-        
-    }
-    
-    public abstract PagedProcessInstanceSearchResult executeSearch(String searchStr, int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId);
+		try {
+			searchStr = getPublicRequestParameter(request, "searchStr");
+			pageStr = getPublicRequestParameter(request, "page");
+			pageSizeStr = getPublicRequestParameter(request, "pageSize");
+			sortBy = getPublicRequestParameter(request, "sortBy");
+			sortOrder = getPublicRequestParameter(request, "sortOrder");
+			filter = getPublicRequestParameter(request, "filter");
+			editablefilter = getPublicRequestParameter(request,
+					"editablefilter");
+			involvedUserId = getPublicRequestParameter(request,
+					"involvedUserId");
+			startDateStr = getPublicRequestParameter(request, "startDate");
+			tolDaysStr = getPublicRequestParameter(request, "tolDays");
+			searchIsEnabled = getPublicRequestParameter(request, "searchIsEnabled");
+		} catch (Exception e) {
+			log.warn("getPublicRequestParameter problem");
+		}
+
+		log.info("searchStr = {}", searchStr);
+		log.info("sortBy = {}", sortBy);
+		log.info("sortOrder = {}", sortOrder);
+		log.info("searchIsEnabled = {}", searchIsEnabled);
+		log.info("filter = {}", filter);
+		log.info("editablefilter = {}", editablefilter);
+		log.info("involvedUserId = {}", involvedUserId);
+
+		int page = 1;
+		if (pageStr != null && pageStr.length() > 0) {
+			try {
+				page = Integer.parseInt(pageStr);
+			} catch (Exception e) {
+				log.warn("pageStr=[" + pageStr
+						+ "] is not an integer => ignored");
+			}
+		}
+
+		int pageSize = 10;
+		if (pageSizeStr != null && pageSizeStr.length() > 0) {
+			try {
+				pageSize = Integer.parseInt(pageSizeStr);
+			} catch (Exception e) {
+				log.warn("pageSizeStr=[" + pageSizeStr
+						+ "] is not an integer => ignored");
+			}
+		}
+		int tolDays = 10;
+		if (tolDaysStr != null && tolDaysStr.length() > 0) {
+			try {
+				tolDays = Integer.parseInt(tolDaysStr);
+			} catch (Exception e) {
+				log.warn("tolDaysStr=[" + tolDaysStr
+						+ "] is not an integer => ignored");
+			}
+		}
+
+		Date startDate = null;
+		// String oldstring = "2011-01-18 00:00:00.0";
+		try {
+			startDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDateStr);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (filter == null || filter.length() == 0) {
+			// default filter
+			filter = "STARTED";
+		}
+
+		if (sortBy == null || sortBy.length() == 0) {
+			// default filter
+			sortBy = "started";
+		}
+
+		if (sortOrder == null || sortOrder.length() == 0) {
+			// default filter
+			sortOrder = "desc";
+		}
+
+		if (searchStr != null ) {
+			searchStr = searchStr.trim() ;
+		}
+
+		if (involvedUserId != null ) {
+			involvedUserId = involvedUserId.trim() ;
+		}
+
+		int fromIndex = (page - 1) * pageSize;
+
+		if (doc == null) {
+			log.warn(
+					"Did not find a content bean for relative content path '{}' for pathInfo '{}'",
+					request.getRequestContext().getResolvedSiteMapItem()
+							.getRelativeContentPath(), request
+							.getRequestContext().getResolvedSiteMapItem()
+							.getPathInfo());
+			// response.setStatus(404);
+			// return;
+		}
+
+		request.setAttribute("document", doc);
+
+                PagedProcessInstanceSearchResult searchResult ; 
+                if ( searchIsEnabled == null) { 
+                     searchResult = null ; 
+                     } else {
+		            searchResult = executeSearch(
+				searchStr, involvedUserId, fromIndex, pageSize, sortBy,
+				sortOrder, filter, request.getLocale(), user.getUuid(),
+				startDate, tolDays);
+                }
+
+		// append hippo jcr labels on processes and activities in the serach
+		// result
+		appendChannelLabels(request, searchResult);
+
+		// set request attributes
+
+		request.setAttribute("searchResult", searchResult);
+		log.info("(searchResult.getNumberOfHits()-1) = "
+				+ (searchResult.getNumberOfHits() - 1));
+		log.info("searchResult.getPageSize() = " + searchResult.getPageSize());
+
+		int pageCount = ((searchResult.getNumberOfHits() - 1) / searchResult
+				.getPageSize()) + 1;
+		request.setAttribute("pageCount", pageCount);
+
+		request.setAttribute("searchStr", searchStr);
+		request.setAttribute("filter", filter);
+		request.setAttribute("editablefilter", editablefilter);
+		request.setAttribute("page", page);
+		request.setAttribute("pageLinkLb", Math.max(page - 3, 1));
+		request.setAttribute("pageLinkUb", Math.min(page + 3, pageCount));
+		request.setAttribute("pageSize", pageSize);
+		request.setAttribute("sortBy", sortBy);
+		request.setAttribute("sortOrder", sortOrder);
+		request.setAttribute("searchIsEnabled", "true");
+		request.setAttribute("involvedUserId", involvedUserId);
+		request.setAttribute("startDate", startDate);
+		request.setAttribute("tolDays", tolDays);
+
+		request.setAttribute("submitUri", request.getRequestURI());
+
+		log.info("pageCount = {}", pageCount);
+		log.info("searchStr = {}", searchStr);
+		log.info("filter = {}", filter);
+		log.info("editablefilter = {}", editablefilter);
+		log.info("page = {}", page);
+		log.info("pageLinkLb = {}", Math.max(page - 3, 1));
+		log.info("pageLinkUb = {}", Math.min(page + 3, pageCount));
+		log.info("pageSize = {}", pageSize);
+		log.info("sortBy = {}", sortBy);
+		log.info("sortOrder = {}", sortOrder);
+		log.info("searchIsEnabled = {}", searchIsEnabled);
+		log.info("involvedUserId = {}", involvedUserId);
+		log.info("startDate = {}", startDate);
+		log.info("tolDays = {}", tolDays);
+
+	}
+
+	public abstract PagedProcessInstanceSearchResult executeSearch(
+			String searchStr, String involvedUserId, int fromIndex,
+			int pageSize, String sortBy, String sortOrder, String filter,
+			Locale locale, String userId, Date startDate, int tolDays);
 
 }

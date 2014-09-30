@@ -1,5 +1,4 @@
-
-<!-- http://stackoverflow.com/questions/11219731/trim-function-doesnt-work-in-ie8 -->
+//   http://stackoverflow.com/questions/11219731/trim-function-doesnt-work-in-ie8 
 if(typeof String.prototype.trim !== 'function') {
   String.prototype.trim = function() {
     return this.replace(/^\s+|\s+$/g, ''); 
@@ -8,8 +7,22 @@ if(typeof String.prototype.trim !== 'function') {
 
 $(document).ready(function() {
 
-	    
-	    
+// $('#start-date').datepicker({ 
+//   weekStart: 1   , 
+//   language: "sv"   , 
+//   autoclose: true   , 
+//   todayHighlight: true
+//   });
+//     return $('#start-date').datepicker({
+//       weekStart: 1,
+//       language: "sv",
+//       autoclose: true,
+//       todayHighlight: true
+//    });
+
+
+
+    
         $(".motrice-assign-to").click(function() {
 	    var assignTo = $(this).children("input[name='motrice-assign-to']").attr("value");
 	    var instanceUuid = $(this).children("input[name='motrice-activity-instance-uuid']").attr("value");

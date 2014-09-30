@@ -563,7 +563,31 @@ public class TaskFormService {
            PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesWithInvolvedUser(searchForBonitaUser(searchForUserId), fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId);
            return result;
    }
-   
+ 
+
+     
+   /**
+    * Find process instances with involved user
+    * @param searchForUserId 
+    * @param involvedUserId involved user to search for
+    * @param fromIndex paging start index. starts with 0
+    * @param pageSize 
+    * @param sortBy
+    * @param sortOrder
+    * @param filter filter on instance state, valid values are STARTED, FINISHED
+    * @param userId The user that is actually performing the search, make it possibly to exclude hits because of privacy reasons for instance
+    * @param startDate : start date of the process instance
+    * @param tolDays : tolerance in +/- days of startDate
+
+    * @return
+    */
+   public PagedProcessInstanceSearchResult searchProcessInstancesAdvanced(String searchForUserId, String involvedUserId,int fromIndex, int pageSize, String sortBy, String sortOrder, String filter, Locale locale, String userId,  Date startDate, int tolDays ) { 
+           PagedProcessInstanceSearchResult result = activitiEngineService.getProcessInstancesAdvanced(searchForBonitaUser(searchForUserId), involvedUserId, fromIndex, pageSize, sortBy, sortOrder, filter, locale, userId ,  startDate,  tolDays);
+           return result;
+   }
+ 
+
+  
    
    /**
     * Find process instances that has a specified associated tag

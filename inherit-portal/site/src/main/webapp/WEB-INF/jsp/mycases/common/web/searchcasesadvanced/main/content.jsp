@@ -42,17 +42,51 @@
 		<h2>${document.title}</h2>
 		<p>${document.summary}</p>
 		<hst:html hippohtml="${document.html}" />
-		
-		<form id="searchPanelForm" action="${submitUri}" method="POST">
+
+<form method="post" id="searchPanelForm" class="basic">
 			<input type="hidden" name="searchIsEnabled" value="${searchIsEnabled}"/>
 			<input type="hidden" name="page" value="${page}"/>
 			<input type="hidden" name="pageSize" value="${pageSize}"/>
 			<input type="hidden" name="sortBy" value="${sortBy}"/>
 			<input type="hidden" name="sortOrder" value="${sortOrder}"/>
-			<input type="input"  name="searchStr" value="${searchStr}"><br/>
-			<input type="hidden" name="editablefilter" value="${editablefilter}"/>
-			
-			<c:choose>
+  <p class="help-block">
+    Some instructions to the form may, or may not, be necessary. Lorem lipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor.
+  </p>
+
+  <div class="form-group">
+    <label for="person-name" class="control-label">Started By user:</label>
+    <div class="controls">
+      <input type="text" id="searchStr" name="searchStr"   value="${searchStr}" class="form-control" placeholder=""/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="involvedUserId" class="control-label">Involved user:</label>
+    <div class="controls">
+      <input type="text" id="involvedUserId" name="involvedUserId"   value="${involvedUserId}" class="form-control" placeholder=""/>
+    </div>
+
+<div class="input-group date" id="start-date">
+  <input type="text" class="form-control">
+  <span class="input-group-addon">
+    <span class="glyphicon glyphicon-calendar"></span>
+  </span>
+</div>
+<%-- 
+--%>  
+  <div class="form-group">
+    <label for="startDate" class="control-label">Start date:</label>
+    <div class="controls">
+      <input type="text" id="startDate" name="startDate"   value="${startDate}" class="form-control" placeholder=""/>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="tolDays" class="control-label">Tolerance days:</label>
+    <div class="controls">
+      <input type="text" id="tolDays" name="tolDays"   value="${tolDays}" class="form-control" placeholder=""/>
+    </div>
+  </div>	
+		<c:choose>
 			  <c:when test="${editablefilter eq 'false'}">
 			  	<input type="hidden" name="filter" value="${filter}"/>
 			  </c:when>
@@ -75,17 +109,9 @@
 					</c:choose>
 		    	</c:otherwise>
 		    </c:choose>
-			
+	
 			<button id="search-btn" href="#">S&ouml;k</button>
-		</form>
-		
-<%--
-		<script type="text/javascript">
-			  $("#search-btn").click(function(event) {
-			   $("#searchPanelForm  > input[name=page]").prop("value", 1);
-			  });
-		</script>
---%> 
+</form>
 
 		<table class="display dataTable" width="100%">
 			<thead>
@@ -161,20 +187,12 @@
 			</div>
 		</c:if>
 		
-<%--
-		<script type="text/javascript">
-		          $(".hitlist_goto_page").click(function(event) {
-		           event.preventDefault();
-		           var hrefPage = $(this).attr("href");
-		           
-		           $("#searchPanelForm  > input[name=page]").prop("value", hrefPage);
-		
-		            $("#searchPanelForm").submit();
-		          });
-		</script>
---%> 
 		
 	</c:otherwise>
 </c:choose>
+
+
+
+
 
 

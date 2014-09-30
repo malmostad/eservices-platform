@@ -34,6 +34,19 @@ $(document).ready(function() {
 		}
 	});
 
+         $(".hitlist_goto_page").click(function(event) {
+		           event.preventDefault();
+		           var hrefPage = $(this).attr("href");
+		           
+		           $("#searchPanelForm  > input[name=page]").prop("value", hrefPage);
+		
+		            $("#searchPanelForm").submit();
+		          });
+ 
+			  $("#search-btn").click(function(event) {
+			   $("#searchPanelForm  > input[name=page]").prop("value", 1);
+			  });
+	
 	/*
 	 * load url into div tag of class panel in a toggle view
 	 * 
