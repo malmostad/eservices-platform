@@ -37,15 +37,33 @@ $(document).ready(function() {
          $(".hitlist_goto_page").click(function(event) {
 		           event.preventDefault();
 		           var hrefPage = $(this).attr("href");
-		           
 		           $("#searchPanelForm  > input[name=page]").prop("value", hrefPage);
-		
 		            $("#searchPanelForm").submit();
 		          });
  
-			  $("#search-btn").click(function(event) {
-			   $("#searchPanelForm  > input[name=page]").prop("value", 1);
-			  });
+	  $("#search-btn").click(function(event) {
+		   $("#searchPanelForm  > input[name=page]").prop("value", 1);
+	  });
+
+	  $(".toggle-sortorder").click(function(event) {
+	           var hrefDat = $(this).attr("href");	                   
+                   if( hrefDat=="#startDate" ){
+	              $("#searchPanelForm  > input[name=sortBy]").prop("value", "started");
+                   } 
+                   if( hrefDat=="#endDate" ) {
+	              $("#searchPanelForm  > input[name=sortBy]").prop("value", "ended");
+                   } 
+		
+
+                   sortOrder = $("#searchPanelForm  > input[name=sortOrder]").prop("value") 
+                   if (sortOrder == 'desc'   ) {
+                       sortOrder = 'asc' ; 
+                         } else { 
+                             if  (sortOrder == 'asc'   ) { 
+                               sortOrder = 'desc' ; } }
+                 $("#searchPanelForm  > input[name=sortOrder]").prop("value", sortOrder);
+		 $("#searchPanelForm  > input[name=page]").prop("value", 1);
+	  });
 	
 	/*
 	 * load url into div tag of class panel in a toggle view
@@ -98,4 +116,25 @@ $(document).ready(function() {
           } 
         }); 
       }
+/* Swedish initialisation for the jQuery UI date picker plugin. */
+/* Written by Anders Ekdahl ( anders@nomadiz.se). */
+    $.datepicker.regional['sv'] = {
+		closeText: 'Stäng',
+        prevText: '&laquo;Förra',
+		nextText: 'Nästa&raquo;',
+		currentText: 'Idag',
+        monthNames: ['Januari','Februari','Mars','April','Maj','Juni',
+        'Juli','Augusti','September','Oktober','November','December'],
+        monthNamesShort: ['Jan','Feb','Mar','Apr','Maj','Jun',
+        'Jul','Aug','Sep','Okt','Nov','Dec'],
+		dayNamesShort: ['Sön','Mån','Tis','Ons','Tor','Fre','Lör'],
+		dayNames: ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag'],
+		dayNamesMin: ['Sö','Må','Ti','On','To','Fr','Lö'],
+		weekHeader: 'Ve',
+        dateFormat: 'yy-mm-dd',
+		firstDay: 1,
+		isRTL: false,
+		showMonthAfterYear: false,
+		yearSuffix: ''};
+    $.datepicker.setDefaults($.datepicker.regional['sv']);
 });

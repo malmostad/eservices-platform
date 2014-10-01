@@ -4422,7 +4422,7 @@ fortskrida.&lt;/p&gt;
             <sv:value>sv</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:summary" sv:type="String">
-            <sv:value>Ange användarnamn eller personnummer (ÅÅÅÅMMDDXXXX) att söka efter. Ange datum</sv:value>
+            <sv:value>Ange användarnamn eller personnummer (ÅÅÅÅMMDDXXXX) att söka efter.</sv:value>
           </sv:property>
           <sv:property sv:name="inheritportal:title" sv:type="String">
             <sv:value>Avancerad sökning</sv:value>

@@ -1229,6 +1229,19 @@ public class ActivitiEngineService {
 				historicProcessInstanceQuery.orderByProcessInstanceStartTime()
 						.asc();
 			}
+			
+			if (sortBy.equals("ended") && sortOrder.equals("desc")) {
+				historicProcessInstanceQuery.orderByProcessInstanceEndTime()
+						.desc();
+			}
+
+			if (sortBy.equals("ended") && sortOrder.equals("asc")) {
+				historicProcessInstanceQuery.orderByProcessInstanceEndTime()
+						.asc();
+			}
+						
+			
+			
 
 			if (involvedUserId != null && !involvedUserId.isEmpty()) {
 				historicProcessInstanceQuery.involvedUser(involvedUserId);

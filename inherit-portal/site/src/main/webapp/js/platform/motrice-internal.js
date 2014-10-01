@@ -83,6 +83,17 @@ $(document).ready(function() {
  	   $("#search-users-form").ajaxForm(options);
  	    console.log("In document.ready, after  call for activity");
 
+ $('#startDate').datepicker({ 
+ firstDay: 1 ,
+  dateFormat: "yy-mm-dd" ,
+  autoclose: true ,
+   weekStart: 1   , 
+   language: "sv"   , 
+   todayHighlight: true
+  }
+);
+
+
 });
 	
     // pre-submit callback cd in	po	

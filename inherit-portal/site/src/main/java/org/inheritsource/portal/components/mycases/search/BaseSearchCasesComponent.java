@@ -56,7 +56,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		String filter = null;
 		String editablefilter = null;
 		String involvedUserId = null;
-		String startDateStr = null;
+		String startDateStr = "";
 		String tolDaysStr = null;
 		String searchIsEnabled = null;
 
@@ -73,18 +73,11 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 					"involvedUserId");
 			startDateStr = getPublicRequestParameter(request, "startDate");
 			tolDaysStr = getPublicRequestParameter(request, "tolDays");
-			searchIsEnabled = getPublicRequestParameter(request, "searchIsEnabled");
+			searchIsEnabled = getPublicRequestParameter(request,
+					"searchIsEnabled");
 		} catch (Exception e) {
 			log.warn("getPublicRequestParameter problem");
 		}
-
-		log.info("searchStr = {}", searchStr);
-		log.info("sortBy = {}", sortBy);
-		log.info("sortOrder = {}", sortOrder);
-		log.info("searchIsEnabled = {}", searchIsEnabled);
-		log.info("filter = {}", filter);
-		log.info("editablefilter = {}", editablefilter);
-		log.info("involvedUserId = {}", involvedUserId);
 
 		int page = 1;
 		if (pageStr != null && pageStr.length() > 0) {
@@ -109,6 +102,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		if (tolDaysStr != null && tolDaysStr.length() > 0) {
 			try {
 				tolDays = Integer.parseInt(tolDaysStr);
+				tolDays = Math.max(tolDays, 1);
 			} catch (Exception e) {
 				log.warn("tolDaysStr=[" + tolDaysStr
 						+ "] is not an integer => ignored");
@@ -116,7 +110,6 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		}
 
 		Date startDate = null;
-		// String oldstring = "2011-01-18 00:00:00.0";
 		try {
 			startDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDateStr);
 		} catch (Exception e) {
@@ -130,21 +123,25 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		}
 
 		if (sortBy == null || sortBy.length() == 0) {
-			// default filter
+			// default
 			sortBy = "started";
 		}
 
 		if (sortOrder == null || sortOrder.length() == 0) {
-			// default filter
-			sortOrder = "desc";
+			// default
+			if (sortBy.equals("started")) {
+				sortOrder = "asc";
+			} else {
+				sortOrder = "desc";
+			}
 		}
 
-		if (searchStr != null ) {
-			searchStr = searchStr.trim() ;
+		if (searchStr != null) {
+			searchStr = searchStr.trim();
 		}
 
-		if (involvedUserId != null ) {
-			involvedUserId = involvedUserId.trim() ;
+		if (involvedUserId != null) {
+			involvedUserId = involvedUserId.trim();
 		}
 
 		int fromIndex = (page - 1) * pageSize;
@@ -162,15 +159,14 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 
 		request.setAttribute("document", doc);
 
-                PagedProcessInstanceSearchResult searchResult ; 
-                if ( searchIsEnabled == null) { 
-                     searchResult = null ; 
-                     } else {
-		            searchResult = executeSearch(
-				searchStr, involvedUserId, fromIndex, pageSize, sortBy,
-				sortOrder, filter, request.getLocale(), user.getUuid(),
-				startDate, tolDays);
-                }
+		PagedProcessInstanceSearchResult searchResult;
+		if (searchIsEnabled == null) {
+			searchResult = null;
+		} else {
+			searchResult = executeSearch(searchStr, involvedUserId, fromIndex,
+					pageSize, sortBy, sortOrder, filter, request.getLocale(),
+					user.getUuid(), startDate, tolDays);
+		}
 
 		// append hippo jcr labels on processes and activities in the serach
 		// result
@@ -179,12 +175,19 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		// set request attributes
 
 		request.setAttribute("searchResult", searchResult);
-		log.info("(searchResult.getNumberOfHits()-1) = "
-				+ (searchResult.getNumberOfHits() - 1));
-		log.info("searchResult.getPageSize() = " + searchResult.getPageSize());
+		int pageCount;
+		if (searchResult == null) {
+			log.info("searchResult is null");
+			pageCount = 1;
+		} else {
+			log.info("(searchResult.getNumberOfHits()-1) = "
+					+ (searchResult.getNumberOfHits() - 1));
+			log.info("searchResult.getPageSize() = "
+					+ searchResult.getPageSize());
 
-		int pageCount = ((searchResult.getNumberOfHits() - 1) / searchResult
-				.getPageSize()) + 1;
+			pageCount = ((searchResult.getNumberOfHits() - 1) / searchResult
+					.getPageSize()) + 1;
+		}
 		request.setAttribute("pageCount", pageCount);
 
 		request.setAttribute("searchStr", searchStr);
@@ -198,7 +201,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		request.setAttribute("sortOrder", sortOrder);
 		request.setAttribute("searchIsEnabled", "true");
 		request.setAttribute("involvedUserId", involvedUserId);
-		request.setAttribute("startDate", startDate);
+		request.setAttribute("startDate", startDateStr);
 		request.setAttribute("tolDays", tolDays);
 
 		request.setAttribute("submitUri", request.getRequestURI());

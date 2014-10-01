@@ -49,39 +49,27 @@
 			<input type="hidden" name="pageSize" value="${pageSize}"/>
 			<input type="hidden" name="sortBy" value="${sortBy}"/>
 			<input type="hidden" name="sortOrder" value="${sortOrder}"/>
-  <p class="help-block">
-    Some instructions to the form may, or may not, be necessary. Lorem lipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor.
-  </p>
-
   <div class="form-group">
-    <label for="person-name" class="control-label">Started By user:</label>
+    <label for="person-name" class="control-label"><fmt:message key="mycases.userId.column.lbl" />:</label>
     <div class="controls">
       <input type="text" id="searchStr" name="searchStr"   value="${searchStr}" class="form-control" placeholder=""/>
     </div>
   </div>
   <div class="form-group">
-    <label for="involvedUserId" class="control-label">Involved user:</label>
+    <label for="involvedUserId" class="control-label"><fmt:message key="mycases.search.involved.lbl" />:</label>
     <div class="controls">
       <input type="text" id="involvedUserId" name="involvedUserId"   value="${involvedUserId}" class="form-control" placeholder=""/>
     </div>
-
-<div class="input-group date" id="start-date">
-  <input type="text" class="form-control">
-  <span class="input-group-addon">
-    <span class="glyphicon glyphicon-calendar"></span>
-  </span>
-</div>
 <%-- 
 --%>  
   <div class="form-group">
-    <label for="startDate" class="control-label">Start date:</label>
+    <label for="startDate" class="control-label"><fmt:message key="mycases.search.startDate.lbl" />:</label>
     <div class="controls">
       <input type="text" id="startDate" name="startDate"   value="${startDate}" class="form-control" placeholder=""/>
     </div>
   </div>
   <div class="form-group">
-    <label for="tolDays" class="control-label">Tolerance days:</label>
+    <label for="tolDays" class="control-label"><fmt:message key="mycases.search.toleranceDays.lbl" />:</label>
     <div class="controls">
       <input type="text" id="tolDays" name="tolDays"   value="${tolDays}" class="form-control" placeholder=""/>
     </div>
@@ -93,24 +81,24 @@
 			  <c:otherwise>
 					<c:choose>		
 				      <c:when test="${filter eq 'STARTED'}">	
-						<input type="radio" name="filter" value="STARTED" checked/>P&aring;g&aring;ende<br/>
+						<input type="radio" name="filter" value="STARTED" checked/><fmt:message key="mycases.processStatusPending" /><br/>
 					  </c:when>
 					  <c:otherwise>
-					    <input type="radio" name="filter" value="STARTED"/>P&aring;g&aring;ende<br/>
+					    <input type="radio" name="filter" value="STARTED"/><fmt:message key="mycases.processStatusPending" /><br/>
 					  </c:otherwise>
 					</c:choose>
 					<c:choose>		
 				      <c:when test="${filter eq 'FINISHED'}">	
-						<input type="radio" name="filter" value="FINISHED" checked/> Avslutade<br/>
+						<input type="radio" name="filter" value="FINISHED" checked/> <fmt:message key="mycases.processStatusFinished" /> <br/>
 					  </c:when>
 					  <c:otherwise>
-					    <input type="radio" name="filter" value="FINISHED"/> Avslutade<br/>
+					    <input type="radio" name="filter" value="FINISHED"/> <fmt:message key="mycases.processStatusFinished" /> <br/>
 					  </c:otherwise>
 					</c:choose>
 		    	</c:otherwise>
 		    </c:choose>
 	
-			<button id="search-btn" href="#">S&ouml;k</button>
+			<button id="search-btn" href="#"><fmt:message key="search.submit.text" /></button>
 </form>
 
 		<table class="display dataTable" width="100%">
@@ -118,8 +106,23 @@
 				<tr>
 					<th><fmt:message key="mycases.process.column.lbl" /></th>
 					<th><fmt:message key="mycases.status.column.lbl" /></th>
-					<th><fmt:message key="mycases.startDate.column.lbl" /></th>
-					<th><fmt:message key="mycases.endDate.column.lbl" /></th>
+					<th> <button class="toggle-sortorder" href="#startDate"><fmt:message key="mycases.startDate.column.lbl" /> 
+                          <c:if test="${sortOrder eq 'desc' && sortBy eq 'started'}">
+                                   <i class="fa fa-sort-desc"></i> 
+                          </c:if>
+                          <c:if test="${sortOrder eq 'asc' && sortBy eq 'started'}">
+                                   <i class="fa fa-sort-asc"></i> 
+		    	  </c:if>
+</th>
+					<th><button class="toggle-sortorder" href="#endDate"><fmt:message key="mycases.endDate.column.lbl" />   
+                          <c:if test="${sortOrder eq 'desc' && sortBy eq 'ended'}">
+                                   <i class="fa fa-sort-desc"></i> 
+                          </c:if>
+                          <c:if test="${sortOrder eq 'asc' && sortBy eq 'ended'}">
+                                   <i class="fa fa-sort-asc"></i> 
+		    	  </c:if>
+
+</th> 
 				</tr>
 			</thead>
 			<tbody>
