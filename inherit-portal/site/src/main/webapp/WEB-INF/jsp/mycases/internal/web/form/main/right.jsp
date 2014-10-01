@@ -65,9 +65,9 @@
 						<p class="motrice-activity-candidates">
 						  Loading candidates...
 						</p>
-						<button id="add-candidates" class="btn btn-primary motrice-add-candidates"><fmt:message	key="mycases.editcandidates.lbl" /><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button>
-						<p><button class="btn btn-danger motrice-unassign-user"><fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
-						<p><button class="btn btn-primary motrice-assign-to"><fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+						<p><button id="add-candidates" class="btn btn-primary motrice-add-candidates"><fmt:message	key="mycases.editcandidates.lbl" /><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+						<p><button class="btn btn-danger motrice-unassign-user motrice-initial-hidden"><fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+						<p><button class="btn btn-primary motrice-assign-to motrice-initial-hidden"><fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
 	  </div>
 	  <a href="#" class="toggle-instructions" title="Show instructions">?</a>
 	  <div class="dropdown box-menu pull-right">

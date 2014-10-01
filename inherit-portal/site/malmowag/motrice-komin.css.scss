@@ -28,13 +28,13 @@ background-image: none;
 }
 }
 
-article, nav.content, aside {
+article, nav.content, aside, column  {
   @include columns(12);
-  padding: .5em;
+  margin-right: 0%;
 }
 
 .motrice-grid {
-  padding: .5em;
+ 
 }
 
 @media (min-width: 40em) {
@@ -47,9 +47,19 @@ article, nav.content, aside {
   aside {
     @include columns(12);
   }
+
 }
 @media (min-width: 50em) {
-  article {
+  column  {
+    @include columns(6);
+  } 
+  lastcolumn  {
+    @include columns(6, true);
+  } 
+  full-width-column  {
+    @include columns(12, true);
+  } 
+  article  {
     @include columns(6);
   }
   nav.content {
@@ -58,4 +68,28 @@ article, nav.content, aside {
   aside {
     @include columns(3, true);
   }
+}
+
+.motrice-initial-hidden {
+  display: none;
+}
+
+.motrice-ui-icon-comment {
+  float: left; margin: 0 4px;
+}
+
+.motrice-comment-list {
+  list-style-type: none  !important;
+}
+
+.toggle-view-list span.ui-icon {
+  float: left; margin: 0 4px;
+}
+
+.actlist li {
+  display: inline;
+}
+
+.motrice-comment-list li h4 {
+ background-color: WhiteSmoke;
 }

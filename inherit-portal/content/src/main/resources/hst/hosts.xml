@@ -53,6 +53,10 @@
     <sv:value>.PNG</sv:value>
     <sv:value>.ftl</sv:value>
     <sv:value>.FTL</sv:value>
+    <sv:value>.ttf</sv:value>
+    <sv:value>.woff</sv:value>
+    <sv:value>.svg</sv:value>
+    <sv:value>.eot</sv:value>
   </sv:property>
   <sv:property sv:name="hst:versioninpreviewheader" sv:type="Boolean">
     <sv:value>true</sv:value>

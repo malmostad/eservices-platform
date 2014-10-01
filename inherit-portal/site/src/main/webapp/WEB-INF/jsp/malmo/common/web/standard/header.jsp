@@ -30,7 +30,7 @@
   <nav class="breadcrumbs">
     <ol>
 	<li><a href='http://malmo.se/'><span class="glyphicon glyphicon-home"></span>malmo.se</a></li>
-	<li><a href="/site/public">E-tjänster&raquo;</a></li>
+	<li><a href="/site/public">E-tjänster</a></li>
 <c:if test="${not empty breadcrumb}"> 
   <c:forEach var="item" items="${breadcrumb.items}">	    
        <li><a href='<hst:link link="${item.link}"/>'><c:out value="${item.title}"/></a></li>
@@ -39,13 +39,5 @@
     </ol>
   </nav>
 
-<c:choose>
-  <c:when test="${empty user}">
-	Ej inloggad  <a href="/site/login/form">Logga in</a>
-  </c:when>
-  <c:otherwise>
-	Inloggad som: ${user.label} <a href="/site/logout">Logga ut</a>
-	<input id="motrice-auth-user-uuid" type="hidden" name="motrice-auth-user-uuid" value="${user.uuid}"/>
-  </c:otherwise>
-</c:choose>
+
 

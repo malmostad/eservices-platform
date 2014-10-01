@@ -23,9 +23,9 @@
     .breadcrumbs li a {
       color: black; }
     .breadcrumbs li:last-child {
-      background-image: none; }
+      background-image: none; } 
 
-article, nav.content, aside {
+article, nav.content, aside, column {
   width: 100%;
   margin-right: 2%;
   margin-right: 0;
@@ -35,10 +35,7 @@ article, nav.content, aside {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  padding: .5em; }
-
-.motrice-grid {
-  padding: .5em; }
+  margin-right: 0%; }
 
 @media (min-width: 40em) {
   article {
@@ -70,6 +67,35 @@ article, nav.content, aside {
     -moz-box-sizing: border-box;
     box-sizing: border-box; } }
 @media (min-width: 50em) {
+  column {
+    width: 49%;
+    margin-right: 2%;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
+  lastcolumn {
+    width: 49%;
+    margin-right: 0;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
+  full-width-column {
+    width: 100%;
+    margin-right: 0;
+    margin-right: 0;
+    float: none;
+    float: left;
+    -ms-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+
   article {
     width: 49%;
     margin-right: 2%;
@@ -96,3 +122,24 @@ article, nav.content, aside {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box; } }
+.motrice-initial-hidden {
+  display: none; }
+
+.motrice-ui-icon-comment {
+  float: left;
+  margin: 0 4px; }
+
+.motrice-comment-list {
+  list-style-type: none  !important; }
+
+.toggle-view-list span.ui-icon {
+  float: left;
+  margin: 0 4px; }
+
+.actlist li {
+  display: inline; }
+
+.motrice-comment-list li h4 {
+ background-color: WhiteSmoke;
+}
+  

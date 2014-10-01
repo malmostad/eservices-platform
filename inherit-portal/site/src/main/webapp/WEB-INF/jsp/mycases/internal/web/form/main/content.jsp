@@ -38,49 +38,11 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
-
-	<section class="box" contextmenu="case-details-menu" id="case-details">
-	  <h1 class="box-title"><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
-	  <div class="box-content body-copy">
-	        <h3><fmt:message key="mycases.diaryNo.lbl" /></h3>
-	        <form>
-	        	<input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/>
-	        	<input type="hidden" name="motrice-process-instance-uuid" value="${activity.processInstanceUuid}"/>
-				<ul id="diaryNo">
-				  <c:forEach var="tag" items="${tags}">
-			        <c:if test="${not empty tag and tag.typeId eq 1}">
-					  <li>${tag.value}</li>
-					</c:if>
-			      </c:forEach>
-				</ul>
-			</form>
-	        
-			<h3>Status</h3>
-			<ul>
-			  <li>Registrering</li>
-			</ul>
-			
-			<h3><fmt:message key="mycases.actlist.lbl" /></h3>
-			<tag:actlist timelineItems="${processInstanceDetails.timeline.items}" viewMode="full"/>
-			<h3><fmt:message key="mycases.commentFeed.lbl"/></h3>
-			<ul id="commentfeed">
-			</ul>			
-			<h3><fmt:message key="mycases.tags.lbl" /></h3> 			
-			<form>
-			  <input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/>
-			  <input type="hidden" name="motrice-process-instance-uuid" value="${activity.processInstanceUuid}"/>
-					<ul id="myTags">
-				     <c:if test="${not empty tags}">
-			           <c:forEach var="tag" items="${tags}">
-			             <c:if test="${not empty tag and tag.typeId ne 1}">
-						   <li>${tag.value}</li>
-						 </c:if>
-					   </c:forEach>
-					 </c:if>
-					</ul>
-				</form>
-	  </div>
-	</section>		
+	
+	<tag:caseoverview activity="${activity}" processInstanceDetails="${processInstanceDetails}" casetags="${tags}"/>
+	
+	
+	
 
 	<section class="box" contextmenu="task-section-menu" id="task-section">
 	  <h1 class="box-title"><fmt:message key="mycases.activity.column.lbl"/>: ${activity.activityLabel} i ${processInstanceDetails.processLabel}</h1>
@@ -89,8 +51,8 @@
 	  </div>
 	  
 	  <div class="box-content body-copy">
-		    <p><button class="btn btn-danger motrice-unassign-user"><fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
-		    <p><button class="btn btn-primary motrice-assign-to"><fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+		    <p><button class="btn btn-danger motrice-unassign-user motrice-initial-hidden"><fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+		    <p><button class="btn btn-primary motrice-assign-to motrice-initial-hidden"><fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
 	    
 	    <div id="xform" class="komin-xform"><fmt:message key="orbeon.loading.lbl"/><a class="view-url" href="${activity.editUrl}"/></div>
 	  </div>

@@ -28,6 +28,7 @@ package org.inheritsource.service.processengine;
 
 import java.io.FileInputStream;
 import java.nio.file.Paths;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -940,6 +941,7 @@ public class ActivitiEngineService {
 				
 				for(Comment comment : comments) {
 					
+					DateFormat formatter = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, locale);
 					cFItem = new CommentFeedItem();
 					
 					cFItem.setProcessDefinitionUuid(processDefinitionUuid);
@@ -949,6 +951,7 @@ public class ActivitiEngineService {
 					cFItem.setActivityInstanceUuid(comment.getTaskId());
 					cFItem.setActivityLabel(setActivityLabel);
 					cFItem.setTimestamp(comment.getTime());
+					cFItem.setTimeStampStr(formatter.format(comment.getTime()));
 					cFItem.setMessage(comment.getFullMessage());
 					cFItem.setUser(userId2UserInfo(comment.getUserId()));
 					

@@ -1,4 +1,5 @@
-//   http://stackoverflow.com/questions/11219731/trim-function-doesnt-work-in-ie8 
+
+// http://stackoverflow.com/questions/11219731/trim-function-doesnt-work-in-ie8 
 if(typeof String.prototype.trim !== 'function') {
   String.prototype.trim = function() {
     return this.replace(/^\s+|\s+$/g, ''); 
@@ -7,22 +8,8 @@ if(typeof String.prototype.trim !== 'function') {
 
 $(document).ready(function() {
 
-// $('#start-date').datepicker({ 
-//   weekStart: 1   , 
-//   language: "sv"   , 
-//   autoclose: true   , 
-//   todayHighlight: true
-//   });
-//     return $('#start-date').datepicker({
-//       weekStart: 1,
-//       language: "sv",
-//       autoclose: true,
-//       todayHighlight: true
-//    });
-
-
-
-    
+	    
+	    
         $(".motrice-assign-to").click(function() {
 	    var assignTo = $(this).children("input[name='motrice-assign-to']").attr("value");
 	    var instanceUuid = $(this).children("input[name='motrice-activity-instance-uuid']").attr("value");
@@ -56,13 +43,14 @@ $(document).ready(function() {
 	    });
 	});
 
-        $(".commentfeed").each(function( i ) {	
-	    var instanceUuid = $(this).siblings("input[name='motrice-activity-instance-uuid']").attr("value");
-	siteAjaxPost("/site/restservices/site-ajax/getCommentFeed", 
-                     {activityInstanceUuid: instanceUuid},
-                     function(data) {
-	                refreshCommentFeed(data);
-	             } );
+    $(".commentfeed").each(function( i ) {	
+	    var instanceUuid = $(this).siblings("input[name='activityInstanceUuid']").attr("value");
+		siteAjaxPost("/site/restservices/site-ajax/getCommentFeed", 
+            {activityInstanceUuid: instanceUuid, language:'sv' , country:'SE' },
+            function(data) {
+	          refreshCommentFeed(data);
+	        } 
+	    );
 	
 	});
 
@@ -92,11 +80,12 @@ $(document).ready(function() {
 
  //       console.log("before binding #search-users-form, options: " + JSON.stringify(options, null, 4)); 
  //       $('#search-users-form').ajaxForm(options);
- 	   $('#search-users-form').ajaxForm(options);
+ 	   $("#search-users-form").ajaxForm(options);
+ 	    console.log("In document.ready, after  call for activity");
 
 });
 	
-    // pre-submit callback 
+    // pre-submit callback cd in	po	
     function showRequest(formData, jqForm, options) { 
 	  // formData is an array; here we use $jq.param to convert it to a string to display it 
 	  // but the form plugin does this for you automatically when it submits the data 
@@ -325,25 +314,71 @@ var editCandidatesDialog = $("#dialog-edit-candidates").dialog({
         },
 	  beforeClose: function( event, ui ) {
 	    console.log("#dialog-edit-candidates: beforeclose event fired...");
-          $('#search-users-form').clearForm();
-	    $('#output1').html('<tr />');
-        },
+         //$("#search-users-form").clearForm();
+         //$("#output1").html('<tr />');
+        }
+        /*
+        ,
 	  buttons : {
 	    "St\u00e4ng" : function() {
 	      $(this).dialog("close");
 	    }
 	}
+	*/
 	});
 
 $(".motrice-add-candidates").click(function() {
 		editCandidatesDialog.dialog("open");
 });
 
+
+$(".motrice-comment-btn-ok").click(function(event) {
+	console.log("Publicera kommentar");
+	event.preventDefault();
+    var addCommentForm = $(this).parent();
+    var instanceUuid = addCommentForm.children("input[name='motrice-activity-instance-uuid']").attr("value");
+    
+    console.log("Publicera kommentar för " + instanceUuid);
+	siteAjaxPost(addCommentForm.attr('action'), addCommentForm.serialize(), function(data) {
+		refreshCommentFeed(data);
+	});
+	
+	$(this).siblings("input[name='comment']").attr("value", "");
+	$(this).siblings(".motrice-comment-field-controls").hide();
+	$(this).hide();
+});
+
+$(".motrice-comment-btn-cancel").click(function(event) {
+	event.preventDefault();
+	$(this).siblings("input[name='comment']").attr("value", "");
+	$(this).siblings(".motrice-comment-field-controls").hide();
+	$(this).hide();
+});
+
+$(".motrice-comment-field").focus(function() {
+	$(this).siblings(".motrice-comment-field-controls").show();
+});
+
+
+	$('a.toggle-view-list').click(function(event) {
+	    event.preventDefault();
+		var list = $(this).siblings('ul.toggle-view-list');
+		if (list.is(':hidden')) {
+			list.slideDown('200');
+			$(this).siblings("a.toggle-view-list").show();
+			$(this).hide();
+		} else {
+			list.slideUp('200');
+			$(this).siblings("a.toggle-view-list").show();
+			$(this).hide();
+		}
+	});
+	
 	/*
 	 * Refresh tags list
 	 */
 	 
-	 /*
+	 
 	function refreshTags(info) {
 		console.log("refreshTags TODO, asynkront anrop lÃ¤gger till taggar sÃ¥ tÃ¤nk ut vettigaste sÃ¤ttet att Ã¥terkoppla");
 	}
@@ -489,7 +524,7 @@ $(".motrice-add-candidates").click(function() {
 			secondary : null
 		}
 	});
-*/
+
 	/*
 	 * Button and links to act on in page
 	 */
@@ -524,7 +559,7 @@ $(".motrice-add-candidates").click(function() {
 				/* Assigned to someone else */
 				str = info.assignedUser.label
 						+ " är tilldelad att utföra aktiviteten";
-				$(".motrice-assign-to").show();
+				$(".motrice-assign-to").hide();
 				$(".motrice-unassign-user").show();
 				$("#edit-candidates").hide();
 			}
@@ -562,9 +597,17 @@ $(".motrice-add-candidates").click(function() {
 	}
 
 	function refreshCommentFeed(comments) {
+	   var N=1; // one comment in lastcomments
 	   $("#commentfeed").empty();
-           for (var i=0;i<comments.length;i++) {
-    	     var commentDate = new Date(comments[i].timestamp);
-	       $("#commentfeed").append("<li><b>" + $.datepicker.formatDate('yy-mm-dd', commentDate) + " (" + comments[i].activityLabel + ") " + comments[i].user.label + ": </b><br/>" + comments[i].message + "</li>");
+	   $("#lastcomments").empty();
+       for (var i=0;i<comments.length && i<N;i++) {
+		$("#lastcomments").append("<li><h4><i class='fa fa-comment-o'></i> " + comments[i].user.label + " (" + comments[i].activityLabel + ") <small>" + comments[i].timeStampStr + "</small></h4><p>" + comments[i].message + "</p></li>");
 	   }
+       for (var i=N;i<comments.length;i++) {
+    	  $("#commentfeed").append("<li><h4><i class='fa fa-comment-o'></i> " + comments[i].user.label + " (" + comments[i].activityLabel + ") <small>" + comments[i].timeStampStr + "</small></h4><p>" + comments[i].message + "</p></li>");
+	   }
+	   $("#commentfeed").siblings("a.toggle-view-list-show").attr("href", comments.length);
+	   $("#commentfeed").siblings("a.toggle-view-list-show").html(comments.length + " kommentarer <i class='fa fa-chevron-circle-down'></i>"); //TODO multi lingual...
 	}
+
+	

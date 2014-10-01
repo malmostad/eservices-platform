@@ -43,6 +43,7 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 	String activityInstanceUuid;
 	String activityLabel;
 	Date timestamp;
+	String timeStampStr;
 	String message;
 	UserInfo user;
 	
@@ -118,6 +119,41 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 		this.activityDefinitionUuid = activityDefinitionUuid;
 	}
 
+
+	@Override
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	@Override
+	public int getType() {
+		return TimelineItem.TYPE_COMMENT;
+	}
+
+	@Override
+	public String getBriefDescription() {
+		return message;
+	}
+
+	@Override
+	public String getDescription() {
+		return message;
+	}
+
+	@Override
+	public String getViewUrl() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getTimeStampStr() {
+		return timeStampStr;
+	}
+
+	public void setTimeStampStr(String timeStampStr) {
+		this.timeStampStr = timeStampStr;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -143,6 +179,8 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 						.hashCode());
 		result = prime * result
 				+ ((processLabel == null) ? 0 : processLabel.hashCode());
+		result = prime * result
+				+ ((timeStampStr == null) ? 0 : timeStampStr.hashCode());
 		result = prime * result
 				+ ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((user == null) ? 0 : user.hashCode());
@@ -193,6 +231,11 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 				return false;
 		} else if (!processLabel.equals(other.processLabel))
 			return false;
+		if (timeStampStr == null) {
+			if (other.timeStampStr != null)
+				return false;
+		} else if (!timeStampStr.equals(other.timeStampStr))
+			return false;
 		if (timestamp == null) {
 			if (other.timestamp != null)
 				return false;
@@ -208,40 +251,14 @@ public class CommentFeedItem implements Serializable, TimelineItem {
 
 	@Override
 	public String toString() {
-		return "CommentFeedItem {\n    processDefinitionUuid : "
-				+ processDefinitionUuid + "\n    processInstanceUuid : "
-				+ processInstanceUuid + "\n    processLabel : " + processLabel
-				+ "\n    activityDefinitionUuid : " + activityDefinitionUuid
-				+ "\n    activityInstanceUuid : " + activityInstanceUuid
-				+ "\n    activityLabel : " + activityLabel
-				+ "\n    timestamp : " + timestamp + "\n    message : "
-				+ message + "\n    user : " + user + "\n}";
-	}
-
-	@Override
-	public Date getTimestamp() {
-		return timestamp;
-	}
-
-	@Override
-	public int getType() {
-		return TimelineItem.TYPE_COMMENT;
-	}
-
-	@Override
-	public String getBriefDescription() {
-		return message;
-	}
-
-	@Override
-	public String getDescription() {
-		return message;
-	}
-
-	@Override
-	public String getViewUrl() {
-		// TODO Auto-generated method stub
-		return null;
+		return "CommentFeedItem [processDefinitionUuid="
+				+ processDefinitionUuid + ", processInstanceUuid="
+				+ processInstanceUuid + ", processLabel=" + processLabel
+				+ ", activityDefinitionUuid=" + activityDefinitionUuid
+				+ ", activityInstanceUuid=" + activityInstanceUuid
+				+ ", activityLabel=" + activityLabel + ", timestamp="
+				+ timestamp + ", timeStampStr=" + timeStampStr + ", message="
+				+ message + ", user=" + user + "]";
 	}
 
 	

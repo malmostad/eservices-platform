@@ -15,7 +15,7 @@
 <ul class="actlist">
 <c:forEach var="timelineItem" items="${timelineItems}">
 	<c:if test="${not empty timelineItem.actUri}">
-		<li><a href="${timelineItem.actUri}">${timelineItem.briefDescription}</a></li> 
+		<li><a href="${timelineItem.actUri}"><i class="fa fa-file-pdf-o">&nbsp;${timelineItem.briefDescription}</i></a></li> 
 	</c:if>
-</c:forEach>
+</c:forEach>		
 </ul>

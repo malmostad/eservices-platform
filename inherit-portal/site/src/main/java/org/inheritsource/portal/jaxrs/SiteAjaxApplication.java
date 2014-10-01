@@ -29,6 +29,7 @@ package org.inheritsource.portal.jaxrs;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -92,30 +93,50 @@ public class SiteAjaxApplication extends AbstractResource {
 	}
 	
 	@POST
+	@Produces("application/json")
 	@Consumes("application/x-www-form-urlencoded")
 	@Path("/addComment") // /{activityInstanceUuid}/{comment}/
-	public int addComment (
+	public List<CommentFeedItem> addComment (
 			@Context HttpServletRequest servletRequest,
 			@Context HttpServletResponse servletResponse,
 			@FormParam("activityInstanceUuid") String activityInstanceUuid,
-			@FormParam("comment") String comment) {
+			@FormParam("comment") String comment,
+			@FormParam("language") String language,
+			@FormParam("country") String country) {
 		
-		int result = GENERAL_ERROR;
+		List<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
 				
 		String userId = getUserUuid(servletRequest);
+
+		Locale locale = getLocale(language, country);
 
 		log.debug("activityInstanceUuid: {}" , activityInstanceUuid);
 		log.debug("comment: {}" , comment);
 		log.debug("userId: {}" , userId);
 
 		if (userId != null) {
-			result = engine.addComment(activityInstanceUuid, comment, userId);
+			if (engine.addComment(activityInstanceUuid, comment, userId) >= 0) {
+				result = engine.getCommentFeed(activityInstanceUuid, userId, locale);
+			}
 		}
-		else {
-			result = PERMISSION_DENIED_ERROR;
+		return result; 
+	}
+	
+	private Locale getLocale(String language, String country) {
+		Locale locale = null;
+		if (language != null) {
+			if (country != null) {
+				locale = new Locale(language, country);
+			}
+			else {
+				locale = new Locale(language);
+			}
+		}
+		if (locale == null) {
+			locale = new Locale("en"); // default to english
 		}
 		
-		return result; 
+		return locale;
 	}
 	
 	@POST
@@ -219,11 +240,14 @@ public class SiteAjaxApplication extends AbstractResource {
 	public List<CommentFeedItem> getCommentFeed(
 			@Context HttpServletRequest servletRequest,
 			@Context HttpServletResponse servletResponse,
-			@FormParam("activityInstanceUuid") String activityInstanceUuid) {
+			@FormParam("activityInstanceUuid") String activityInstanceUuid,
+			@FormParam("language") String language,
+			@FormParam("country") String country) {
 		
 		List<CommentFeedItem> result = new ArrayList<CommentFeedItem>();
 		
 		String userId = getUserUuid(servletRequest);
+		Locale locale = getLocale(language, country);
 		
 		log.debug("activityInstanceUuid: {}" , activityInstanceUuid);
 		log.debug("userId: {}", userId);
@@ -231,7 +255,7 @@ public class SiteAjaxApplication extends AbstractResource {
 //		if (userId != null) {
 			// user is authenticated
 			
-			result = engine.getCommentFeed(activityInstanceUuid, userId, null);
+			result = engine.getCommentFeed(activityInstanceUuid, userId, locale);
 /*		}
 		else {
 			// TODO respone http error

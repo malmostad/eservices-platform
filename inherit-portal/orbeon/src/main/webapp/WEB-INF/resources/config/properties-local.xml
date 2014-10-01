@@ -34,7 +34,7 @@
   <property as="xs:string" name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
 
   <property as="xs:anyURI" name="oxf.fr.detail.send.success.uri.*.*"
-          value="https://eminburk.malmo.se:443/site/mycases/form/confirmdispatcher"/>
+          value="http://localhost:8080/site/mycases/form/confirmdispatcher"/>
   <property as="xs:string" name="oxf.fr.detail.send.success.method.*.*" value="get"/>
 
 
@@ -54,4 +54,7 @@
  -->
  
   <property as="xs:boolean" name="oxf.fr.noscript-link.*.*" value="false"/>
+  
+  <!--  no orbeon logotype in forms  -->
+  <property as="xs:anyURI" name="oxf.fr.default-logo.uri.*.*" value=""/>
 </properties>

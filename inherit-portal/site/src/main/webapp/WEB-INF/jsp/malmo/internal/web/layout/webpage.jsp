@@ -41,7 +41,7 @@
     
      <link rel="stylesheet" href="/site/js/jquery-ui-1.11.1.custom/jquery-ui.css" type="text/css"/>
     <link rel='stylesheet' href='<hst:link path="/css/platform/inherit-platform.css"/>' type='text/css'/>
-
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <!-- end of motrice css -->
 
     <link rel='icon' type='image/x-icon' href='//assets.malmo.se/internal/3.0/favicon.ico'/>
@@ -62,12 +62,12 @@
 
      <hst:headContributions categoryIncludes="scripts"/>
 
-    <script type='text/javascript' src='/site/js/jquery-ui-1.11.1.custom/jquery-ui.min.js'></script>
+    <script type='text/javascript' src='<hst:link path="/js/jquery-ui-1.11.1.custom/jquery-ui.min.js"/>'></script>
     <script type='text/javascript' src='<hst:link path="/js/platform/inherit-platform.js"/>'></script>
     
-    <link rel='stylesheet' href='/site/js/tag-it/css/jquery.tagit.css' type='text/css'/>
-    <link href='/site/js/tag-it/css/tagit.ui-zendesk.css' rel='stylesheet' type='text/css'>
-    <script type='text/javascript' src='/site/js/tag-it/js/tag-it.min.js'></script>
+    <link rel='stylesheet' href='<hst:link path="/js/tag-it/css/jquery.tagit.css"/>' type='text/css'/>
+    <link href='<hst:link path="/js/tag-it/css/tagit.ui-zendesk.css"/>' rel='stylesheet' type='text/css'>
+    <script type='text/javascript' src='<hst:link path="/js/tag-it/js/tag-it.min.js"/>'></script>
 
     <script type='text/javascript' src='<hst:link path="/js/form/jquery.form.min.js"/>'></script>
     <script type='text/javascript' src='<hst:link path="/js/platform/motrice-internal.js"/>'></script>

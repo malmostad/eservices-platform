@@ -95,10 +95,12 @@ public class IdentityServiceMalmoImpl implements IdentityService {
 		log.info("getUserByUuid: " + uuid);
 		if ( userInfo == null && userDirectoryService != null && uuid!=null) {
 			UserDirectoryEntry ue = userDirectoryService.lookupUserByCn(uuid);
-			userInfo = new UserInfo();
-			userInfo.setUuid(ue.getCn());
-			userInfo.setLabel(ue.getLabel());
-			userInfo.setLabelShort(ue.getCn());
+			if (ue != null) {
+				userInfo = new UserInfo();
+				userInfo.setUuid(ue.getCn());
+				userInfo.setLabel(ue.getLabel());
+				userInfo.setLabelShort(ue.getCn());
+			}
 		}
 		if (userInfo == null) {
 			userInfo = new UserInfo();

@@ -38,13 +38,20 @@
       </hst:element>
       <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
     </c:if>
+    
+    <tag:caseoverview activity="${activity}" processInstanceDetails="${processInstanceDetails}" casetags="${tags}"/>
 		
-    <h1><fmt:message key="mycases.activity.column.lbl"/></h1>	   
-
-    <p> ${activity.activityLabel} i ${processInstanceDetails.processLabel}</p>
-
-	<!--  activity form (ajax load after page is loaded) -->
-    <c:choose>
+	<section class="box" contextmenu="task-section-menu" id="task-section">
+	  <h1 class="box-title"><fmt:message key="mycases.activity.column.lbl"/>: ${activity.activityLabel} i ${processInstanceDetails.processLabel}</h1>
+	  <div class="box-instructions">
+	     <p>Lås till mig för att utföra aktiviteten. När aktiviten är låst till en person så visas den i inkorgen endast för den personen. Släpp lås om du vill att övriga kandidater ska se aktiviteten igen. </p>
+	  </div>
+	  
+	  <div class="box-content body-copy">
+		    <p><button class="btn btn-danger motrice-unassign-user motrice-initial-hidden"><fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+		    <p><button class="btn btn-primary motrice-assign-to motrice-initial-hidden"><fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+	    
+	    <c:choose>
      <c:when test="${activity.typeId eq 6}">
 		<form method="post" action="noform/confirm">
 				<input type="hidden" name="document" value="${activity.instanceId}" />
@@ -55,6 +62,9 @@
   	   <fmt:message key="mycases.noform.cannothandle"/>
   	</c:otherwise>
    </c:choose>
+	  </div>
+	<a href="#" class="toggle-instructions" title="Show instructions">?</a>
+	</section>	
 		   
   </c:otherwise>  
 </c:choose>
