@@ -17,22 +17,20 @@
 	<thead>
 	  <tr>
 	    <g:sortableColumn property="transactionId" title="${message(code: 'sigResult.transactionId.label', default: 'Transaction Id')}" />
-	    <g:sortableColumn property="orderRef" title="${message(code: 'sigResult.orderRef.label', default: 'Order Ref')}" />
-	    <g:sortableColumn property="autoStartToken" title="${message(code: 'sigResult.autoStartToken.label', default: 'Auto Start Token')}" />
-	    <g:sortableColumn property="personalIdNo" title="${message(code: 'sigResult.personalIdNo.label', default: 'Personal Id No')}" />
+	    <g:sortableColumn property="dateCreated" title="${message(code: 'sigResult.dateCreated.label', default: 'Created')}" />
 	    <th><g:message code="sigResult.progressStatus.label" default="Progress Status" /></th>
 	    <th><g:message code="sigResult.faultStatus.label" default="Fault Status" /></th>
+	    <g:sortableColumn property="orderRef" title="${message(code: 'sigResult.orderRef.label', default: 'Order Ref')}" />
 	  </tr>
 	</thead>
 	<tbody>
 	  <g:each in="${sigResultInstList}" status="i" var="sigResultInst">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 	      <td><g:link action="show" id="${sigResultInst.id}">${fieldValue(bean: sigResultInst, field: "transactionId")}</g:link></td>
-	      <td>${fieldValue(bean: sigResultInst, field: "orderRef")}</td>
-	      <td>${fieldValue(bean: sigResultInst, field: "autoStartToken")}</td>
-	      <td>${fieldValue(bean: sigResultInst, field: "personalIdNo")}</td>
+	      <td><g:tstamp date="${sigResultInst?.dateCreated}"/></td>
 	      <td>${fieldValue(bean: sigResultInst, field: "progressStatus")}</td>
 	      <td>${fieldValue(bean: sigResultInst, field: "faultStatus")}</td>
+	      <td>${fieldValue(bean: sigResultInst, field: "orderRef")}</td>
 	    </tr>
 	  </g:each>
 	</tbody>

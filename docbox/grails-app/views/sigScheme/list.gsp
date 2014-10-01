@@ -17,22 +17,20 @@
 	<thead>
 	  <tr>
 	    <g:sortableColumn property="name" title="${message(code: 'sigScheme.name.label', default: 'Name')}" />
-	    <g:sortableColumn property="dateCreated" title="${message(code: 'sigScheme.dateCreated.label', default: 'Date Created')}" />
-	    <g:sortableColumn property="personalIdNo" title="${message(code: 'sigScheme.personalIdNo.label', default: 'Personal Id No')}" />
+	    <th><g:message code="sigScheme.service.label" default="Service" /></th>
 	    <th><g:message code="sigScheme.displayName.label" default="Display Name" /></th>
 	    <th><g:message code="sigScheme.policy.label" default="Policy" /></th>
-	    <th><g:message code="sigScheme.service.label" default="Service" /></th>
+	    <g:sortableColumn property="dateCreated" title="${message(code: 'sigScheme.dateCreated.label', default: 'Date Created')}" />
 	  </tr>
 	</thead>
 	<tbody>
 	  <g:each in="${sigSchemeObjList}" status="i" var="sigSchemeObj">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
 	      <td><g:link action="show" id="${sigSchemeObj.id}">${fieldValue(bean: sigSchemeObj, field: "name")}</g:link></td>
-	      <td><g:formatDate date="${sigSchemeObj.dateCreated}" /></td>
-	      <td>${fieldValue(bean: sigSchemeObj, field: "personalIdNo")}</td>
+	      <td>${sigSchemeObj?.service?.alias}</td>
 	      <td>${fieldValue(bean: sigSchemeObj, field: "displayName")}</td>
 	      <td>${fieldValue(bean: sigSchemeObj, field: "policy")}</td>
-	      <td>${fieldValue(bean: sigSchemeObj, field: "service")}</td>
+	      <td><g:formatDate date="${sigSchemeObj.dateCreated}" /></td>
 	    </tr>
 	  </g:each>
 	</tbody>

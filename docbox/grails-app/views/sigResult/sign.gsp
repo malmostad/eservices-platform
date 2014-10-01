@@ -13,7 +13,7 @@
       <g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
-      <iframe src="bankid://autostarttoken=${autoStartToken}&redirect=${returnUrl}" height=90 width=300></iframe>
+      <iframe src="bankid://autostarttoken=${autoStartToken}&redirect=${returnUrl}" height=70 width=90></iframe>
       <ol class="property-list sigResult">
 	<g:if test="${sigResultInst?.dateCreated}">
 	  <li class="fieldcontain">
@@ -21,10 +21,16 @@
 	    <span class="property-value" aria-labelledby="dateCreated-label"><g:tstampsec date="${sigResultInst?.dateCreated}" /></span>
 	  </li>
 	</g:if>
-	<g:if test="${sigResultInst?.tcase}">
+	<g:if test="${sigResultInst?.scheme}">
 	  <li class="fieldcontain">
-	    <span id="tcase-label" class="property-label"><g:message code="sigResult.tcase.label" default="Tcase" /></span>
-	    <span class="property-value" aria-labelledby="tcase-label">${sigResultInst?.tcase?.encodeAsHTML()}</span>
+	    <span id="scheme-label" class="property-label"><g:message code="sigResult.scheme.label" default="Scheme" /></span>
+	    <span class="property-value" aria-labelledby="scheme-label">${sigResultInst?.scheme?.encodeAsHTML()}</span>
+	  </li>
+	</g:if>
+	<g:if test="${sigResultInst?.transactionId}">
+	  <li class="fieldcontain">
+	    <span id="transactionId-label" class="property-label"><g:message code="sigResult.transactionId.label" default="Transaction Id" /></span>
+	    <span class="property-value" aria-labelledby="transactionId-label"><g:fieldValue bean="${sigResultInst}" field="transactionId"/></span>
 	  </li>
 	</g:if>
 	<g:if test="${sigResultInst?.progressStatus}">
@@ -33,10 +39,22 @@
 	    <span class="property-value" aria-labelledby="progressStatus-label">${sigResultInst?.progressStatus?.encodeAsHTML()}</span>
 	  </li>
 	</g:if>
-	<g:if test="${sigResultInst?.transactionId}">
+	<g:if test="${sigResultInst?.faultStatus}">
 	  <li class="fieldcontain">
-	    <span id="transactionId-label" class="property-label"><g:message code="sigResult.transactionId.label" default="Transaction Id" /></span>
-	    <span class="property-value" aria-labelledby="transactionId-label"><g:fieldValue bean="${sigResultInst}" field="transactionId"/></span>
+	    <span id="faultStatus-label" class="property-label"><g:message code="sigResult.faultStatus.label" default="Fault Status" /></span>
+	    <span class="property-value" aria-labelledby="faultStatus-label">${sigResultInst?.faultStatus?.encodeAsHTML()}</span>
+	  </li>
+	</g:if>
+	<g:if test="${sigResultInst?.displayName}">
+	  <li class="fieldcontain">
+	    <span id="displayName-label" class="property-label"><g:message code="sigResult.displayName.label" default="Display Name" /></span>
+	    <span class="property-value" aria-labelledby="displayName-label">${sigResultInst?.displayName?.encodeAsHTML()}</span>
+	  </li>
+	</g:if>
+	<g:if test="${sigResultInst?.policy}">
+	  <li class="fieldcontain">
+	    <span id="policy-label" class="property-label"><g:message code="sigResult.policy.label" default="Policy" /></span>
+	    <span class="property-value" aria-labelledby="policy-label">${sigResultInst?.policy?.encodeAsHTML()}</span>
 	  </li>
 	</g:if>
 	<g:if test="${sigResultInst?.orderRef}">
@@ -55,37 +73,6 @@
 	  <li class="fieldcontain">
 	    <span id="personalIdNo-label" class="property-label"><g:message code="sigResult.personalIdNo.label" default="Personal Id No" /></span>
 	    <span class="property-value" aria-labelledby="personalIdNo-label"><g:fieldValue bean="${sigResultInst}" field="personalIdNo"/></span>
-	  </li>
-	</g:if>
-	<g:if test="${sigResultInst?.faultStatus}">
-	  <li class="fieldcontain">
-	    <span id="faultStatus-label" class="property-label"><g:message code="sigResult.faultStatus.label" default="Fault Status" /></span>
-	    <span class="property-value" aria-labelledby="faultStatus-label">${sigResultInst?.faultStatus?.encodeAsHTML()}</span>
-	  </li>
-	</g:if>
-	<g:if test="${sigResultInst?.signature}">
-	  <li class="fieldcontain">
-	    <span id="signature-label" class="property-label"><g:message code="sigResult.signature.label" default="Signature" /></span>
-	  </li>
-	</g:if>
-	<g:if test="${sigResultInst?.attrs}">
-	  <li class="fieldcontain">
-	    <span id="attrs-label" class="property-label"><g:message code="sigResult.attrs.label" default="Attrs" /></span>
-	    <g:each in="${sigResultInst.attrs}" var="a">
-	      <span class="property-value" aria-labelledby="attrs-label"><g:link controller="sigAttribute" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></span>
-	    </g:each>
-	  </li>
-	</g:if>
-	<g:if test="${sigResultInst?.displayName}">
-	  <li class="fieldcontain">
-	    <span id="displayName-label" class="property-label"><g:message code="sigResult.displayName.label" default="Display Name" /></span>
-	    <span class="property-value" aria-labelledby="displayName-label">${sigResultInst?.displayName?.encodeAsHTML()}</span>
-	  </li>
-	</g:if>
-	<g:if test="${sigResultInst?.policy}">
-	  <li class="fieldcontain">
-	    <span id="policy-label" class="property-label"><g:message code="sigResult.policy.label" default="Policy" /></span>
-	    <span class="property-value" aria-labelledby="policy-label">${sigResultInst?.policy?.encodeAsHTML()}</span>
 	  </li>
 	</g:if>
       </ol>
