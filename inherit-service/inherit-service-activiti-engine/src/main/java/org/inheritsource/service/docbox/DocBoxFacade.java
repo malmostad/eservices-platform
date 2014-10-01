@@ -54,7 +54,7 @@ public class DocBoxFacade {
 		try {
 			ClientConfig config = new DefaultClientConfig();
 			Client client = Client.create(config);
-			WebResource service = client.resource("http://localhost:8080/docbox/doc/formdata/");
+			WebResource service = client.resource("http://localhost:8080/docbox/rest/doc/orbeon/");
 			label = 
 					service
 					.path(formInstanceId)
@@ -72,7 +72,7 @@ public class DocBoxFacade {
 		try {
 			ClientConfig config = new DefaultClientConfig();
 			Client client = Client.create(config);
-			WebResource service = client.resource("http://localhost:8080/docbox/doc/sig/");
+			WebResource service = client.resource("http://localhost:8080/docbox/rest/sig/core/");
 			label = 
 					service
 					.path(docBoxRef)
