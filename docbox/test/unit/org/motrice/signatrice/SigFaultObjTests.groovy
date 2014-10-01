@@ -12,6 +12,5 @@ import org.junit.*
 class SigFaultObjTests {
 
     void testSomething() {
-       fail "Implement me"
     }
 }

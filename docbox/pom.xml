@@ -23,7 +23,6 @@
       <type>pom</type>
     </dependency>
 
-
     <dependency>
       <groupId>org.grails</groupId>
       <artifactId>grails-test</artifactId>
@@ -70,6 +69,14 @@
       <scope>provided</scope>
       <type>zip</type>
     </dependency>
+        
+    <dependency>
+        <groupId>org.grails.plugins</groupId>
+        <artifactId>quartz</artifactId>
+        <version>1.0.2</version>
+        <scope>compile</scope>
+        <type>zip</type>
+    </dependency>
     
     <dependency>
       <groupId>org.grails.plugins</groupId>
@@ -79,7 +86,6 @@
       <type>zip</type>
     </dependency>
     
-
     <dependency>
       <groupId>org.grails.plugins</groupId>
       <artifactId>resources</artifactId>
@@ -88,7 +94,6 @@
       <type>zip</type>
     </dependency>
     
-
     <dependency>
       <groupId>org.grails.plugins</groupId>
       <artifactId>database-migration</artifactId>
@@ -96,7 +101,6 @@
       <scope>runtime</scope>
       <type>zip</type>
     </dependency>
-    
 
     <dependency>
       <groupId>org.grails.plugins</groupId>
@@ -105,7 +109,6 @@
       <scope>runtime</scope>
       <type>zip</type>
     </dependency>
-    
 
     <dependency>
       <groupId>org.grails.plugins</groupId>
@@ -114,7 +117,6 @@
       <scope>runtime</scope>
       <type>zip</type>
     </dependency>
-    
 
     <dependency>
       <groupId>org.grails.plugins</groupId>
@@ -123,8 +125,6 @@
       <scope>provided</scope>
       <type>zip</type>
     </dependency>
-    
-
 
   </dependencies>
 

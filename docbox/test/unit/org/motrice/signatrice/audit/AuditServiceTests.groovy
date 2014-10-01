@@ -1,4 +1,4 @@
-package org.motrice.cgisigntest.audit
+package org.motrice.signatrice.audit
 
 
 
@@ -12,6 +12,5 @@ import org.junit.*
 class AuditServiceTests {
 
     void testSomething() {
-        fail "Implement me"
     }
 }
