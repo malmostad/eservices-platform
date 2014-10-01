@@ -53,7 +53,7 @@
 	    
 	    <c:choose>
      <c:when test="${activity.typeId eq 6}">
-		<form method="post" action="noform/confirm">
+		<form class="motrice-unassign-user" method="post" action="noform/confirm">
 				<input type="hidden" name="document" value="${activity.instanceId}" />
 				<input type="submit" value="Klart! Skicka vidare"/>
 		</form>
