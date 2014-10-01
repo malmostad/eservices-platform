@@ -21,6 +21,5 @@ class CollectJobTests {
     }
 
     void testSomething() {
-        fail "Implement me"
     }
 }

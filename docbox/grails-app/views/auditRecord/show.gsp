@@ -21,15 +21,10 @@
 	  </li>
 	</g:if>
 	<g:if test="${auditRecordInst?.eventType}">
+	  <g:set var="icon"><g:failure flag="${auditRecordInst.failure}"/></g:set>
 	  <li class="fieldcontain">
 	    <span id="eventType-label" class="property-label"><g:message code="auditRecord.eventType.label" default="Event Type" /></span>
-	    <span class="property-value" aria-labelledby="eventType-label"><g:fieldValue bean="${auditRecordInst}" field="eventType"/></span>
-	  </li>
-	</g:if>
-	<g:if test="${auditRecordInst?.failure}">
-	  <li class="fieldcontain">
-	    <span id="failure-label" class="property-label"><g:message code="auditRecord.failure.label" default="Failure" /></span>
-	    <span class="property-value" aria-labelledby="failure-label"><g:formatBoolean boolean="${auditRecordInst?.failure}" /></span>
+	    <span class="property-value" aria-labelledby="eventType-label"><g:img dir="images/silk" file="${icon}"/>&nbsp;&nbsp;<g:fieldValue bean="${auditRecordInst}" field="eventType"/></span>
 	  </li>
 	</g:if>
 	<g:if test="${auditRecordInst?.description}">

@@ -26,6 +26,18 @@
 	    <span class="property-value" aria-labelledby="wsdlLocation-label"><g:fieldValue bean="${sigServiceInst}" field="wsdlLocation"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${sigServiceInst?.defaultDisplayName}">
+	  <li class="fieldcontain">
+	    <span id="defaultDisplayName-label" class="property-label"><g:message code="sigService.defaultDisplayName.label" default="Default Display Name" /></span>
+	    <span class="property-value" aria-labelledby="defaultDisplayName-label">${sigServiceInst?.defaultDisplayName?.encodeAsHTML()}</span>
+	  </li>
+	</g:if>
+	<g:if test="${sigServiceInst?.defaultPolicy}">
+	  <li class="fieldcontain">
+	    <span id="defaultPolicy-label" class="property-label"><g:message code="sigService.defaultPolicy.label" default="Default Policy" /></span>
+	    <span class="property-value" aria-labelledby="defaultPolicy-label">${sigServiceInst?.defaultPolicy?.encodeAsHTML()}</span>
+	  </li>
+	</g:if>
 	<g:if test="${sigServiceInst?.qNameUri}">
 	  <li class="fieldcontain">
 	    <span id="qNameUri-label" class="property-label"><g:message code="sigService.qNameUri.label" default="QN ame Uri" /></span>
@@ -38,25 +50,12 @@
 	    <span class="property-value" aria-labelledby="qNameLocalPart-label"><g:fieldValue bean="${sigServiceInst}" field="qNameLocalPart"/></span>
 	  </li>
 	</g:if>
-	<g:if test="${sigServiceInst?.cases}">
+	<g:if test="${sigServiceInst?.schemes}">
 	  <li class="fieldcontain">
-	    <span id="cases-label" class="property-label"><g:message code="sigService.cases.label" default="Cases" /></span>
-	    <g:each in="${sigServiceInst.cases}" var="c">
-	      <span class="property-value" aria-labelledby="cases-label"><g:link controller="sigScheme" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></span>
+	    <span id="schemes-label" class="property-label"><g:message code="sigService.schemes.label" default="Schemes" /></span>
+	    <g:each in="${sigServiceInst.schemes}" var="c">
+	      <span class="property-value" aria-labelledby="schemes-label"><g:link controller="sigScheme" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></span>
 	    </g:each>
-	  </li>
-	</g:if>
-	<g:if test="${sigServiceInst?.defaultDisplayName}">
-	  <li class="fieldcontain">
-	    <span id="defaultDisplayName-label" class="property-label"><g:message code="sigService.defaultDisplayName.label" default="Default Display Name" /></span>
-	    <span class="property-value" aria-labelledby="defaultDisplayName-label">${sigServiceInst?.defaultDisplayName?.encodeAsHTML()}</span>
-	  </li>
-	</g:if>
-	
-	<g:if test="${sigServiceInst?.defaultPolicy}">
-	  <li class="fieldcontain">
-	    <span id="defaultPolicy-label" class="property-label"><g:message code="sigService.defaultPolicy.label" default="Default Policy" /></span>
-	    <span class="property-value" aria-labelledby="defaultPolicy-label">${sigServiceInst?.defaultPolicy?.encodeAsHTML()}</span>
 	  </li>
 	</g:if>
       </ol>

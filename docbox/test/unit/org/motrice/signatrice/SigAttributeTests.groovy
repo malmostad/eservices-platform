@@ -12,6 +12,5 @@ import org.junit.*
 class SigAttributeTests {
 
     void testSomething() {
-       fail "Implement me"
     }
 }

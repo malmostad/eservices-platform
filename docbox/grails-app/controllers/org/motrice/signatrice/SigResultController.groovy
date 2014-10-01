@@ -12,6 +12,10 @@ class SigResultController {
 
   def list(Integer max) {
     params.max = Math.min(max ?: 10, 100)
+    if (!params.sort) {
+      params.sort = 'dateCreated'
+      params.order = 'desc'
+    }
     [sigResultInstList: SigResult.list(params), sigResultInstTotal: SigResult.count()]
   }
 
