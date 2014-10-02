@@ -52,13 +52,13 @@
   <div class="form-group">
     <label for="person-name" class="control-label"><fmt:message key="mycases.userId.column.lbl" />:</label>
     <div class="controls">
-      <input type="text" id="searchStr" name="searchStr"   value="${searchStr}" class="form-control" placeholder=""/>
+      <input type="text" id="searchStr" name="searchStr"   value="${searchStr}" class="form-control dirusername" placeholder=""/>
     </div>
   </div>
   <div class="form-group">
     <label for="involvedUserId" class="control-label"><fmt:message key="mycases.search.involved.lbl" />:</label>
     <div class="controls">
-      <input type="text" id="involvedUserId" name="involvedUserId"   value="${involvedUserId}" class="form-control" placeholder=""/>
+      <input type="text" id="involvedUserId" name="involvedUserId"   value="${involvedUserId}" class="form-control dirusername" placeholder=""/>
     </div>
 <%-- 
 --%>  
