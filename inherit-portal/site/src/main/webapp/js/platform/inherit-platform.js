@@ -138,3 +138,42 @@ $(document).ready(function() {
 		yearSuffix: ''};
     $.datepicker.setDefaults($.datepicker.regional['sv']);
 });
+
+
+ $( ".dirusername" ).autocomplete({
+      source: function( request, response ) {
+        $.ajax({
+          url: "/site/restservices/site-ajax/dirSearchUserEntries",
+          dataType: "json",
+          type: "POST",
+          data: {
+            cn: request.term
+          },
+          success: function( data ) {
+            response( data );
+          }
+        });
+      },
+      minLength: 3,
+      select: function( event, ui ) {
+        $(this).val( ui.item.cn);
+        return false;
+      },
+      focus: function( event, ui ) {
+        $(this).val( ui.item.cn);
+        return false;
+      },
+      open: function() {
+        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+      },
+      close: function() {
+        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+      }
+    }).each(function() {
+         $(this).data("ui-autocomplete")._renderItem = function( ul, item ) {
+         return  $( "<li>" )
+	.attr( "data-value", item.cn )
+        .append( "<a><strong>" + item.cn + "</strong> - " + item.label + "</a>" )
+        .appendTo( ul );
+      };
+    });
