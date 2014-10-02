@@ -29,10 +29,10 @@
   <nav class="breadcrumbs">
     <ol>
 	<li><a href='https://webapps06.malmo.se/dashboard/'><span class="glyphicon glyphicon-home"></span>KOMIN Min sida</a></li>
-    <li><a href="/site/komin">E-tjänster</a></li>
+    <li><a href="/site/komin"><i class="fa fa-chevron-right"></i>&nbsp;E-tjänster</a></li>
 	<c:if test="${not empty breadcrumb}"> 
 	  <c:forEach var="item" items="${breadcrumb.items}">	    
-	       <li><a href='<hst:link link="${item.link}"/>'><c:out value="${item.title}"/></a></li>
+	       <li><a href='<hst:link link="${item.link}"/>'><i class="fa fa-chevron-right"></i>&nbsp;<c:out value="${item.title}"/></a></li>
 	  </c:forEach>
 	</c:if>
     </ol>
