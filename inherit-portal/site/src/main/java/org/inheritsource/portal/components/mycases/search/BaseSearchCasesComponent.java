@@ -44,6 +44,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 	public static final Logger log = LoggerFactory
 			.getLogger(BaseSearchCasesComponent.class);
 
+	protected boolean checkIfIsEnabled() { return  false ;  } ; 
 	public void doBeforeRender(final HstRequest request,
 			final HstResponse response) throws HstComponentException {
 		HippoBean doc = getContentBean(request);
@@ -160,7 +161,7 @@ public abstract class BaseSearchCasesComponent extends MyCasesBaseComponent {
 		request.setAttribute("document", doc);
 
 		PagedProcessInstanceSearchResult searchResult;
-		if (searchIsEnabled == null) {
+		if ( checkIfIsEnabled() && (searchIsEnabled == null)) {
 			searchResult = null;
 		} else {
 			searchResult = executeSearch(searchStr, involvedUserId, fromIndex,

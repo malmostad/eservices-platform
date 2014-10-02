@@ -36,7 +36,8 @@ import org.slf4j.LoggerFactory;
 public class SearchCasesAdvanced extends BaseSearchCasesComponent {
 
 	public static final Logger log = LoggerFactory.getLogger(SearchCasesAdvanced.class);
-	
+	@Override
+	protected boolean checkIfIsEnabled() { return  true ;} ; 
 
 	@Override
 	public PagedProcessInstanceSearchResult executeSearch(

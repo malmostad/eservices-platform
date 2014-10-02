@@ -82,11 +82,6 @@
 			<button id="search-btn" href="#">S&ouml;k</button>
 		</form>
 		
-		<script type="text/javascript">
-			  $jq("#search-btn").click(function(event) {
-			   $jq("#searchPanelForm  > input[name=page]").prop("value", 1);
-			  });
-		</script>
        </div>		
        <div data-role="content">
 

@@ -44,6 +44,7 @@
 		<hst:html hippohtml="${document.html}" />
 		
 		<form id="searchPanelForm" action="${submitUri}" method="POST">
+			<input type="hidden" name="searchIsEnabled" value="true"/>
 			<input type="hidden" name="page" value="${page}"/>
 			<input type="hidden" name="pageSize" value="${pageSize}"/>
 			<input type="hidden" name="sortBy" value="${sortBy}"/>
@@ -125,17 +126,6 @@
 			  </ul>
 			</div>
 		</c:if>
-		
-		<script type="text/javascript">
-		          $jq(".hitlist_goto_page").click(function(event) {
-		           event.preventDefault();
-		           var hrefPage = $jq(this).attr("href");
-		           
-		           $jq("#searchPanelForm  > input[name=page]").prop("value", hrefPage);
-		
-		            $jq("#searchPanelForm").submit();
-		          });
-		</script>
 		
 	</c:otherwise>
 </c:choose>
