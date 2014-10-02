@@ -1,13 +1,24 @@
 @import './bower_components/malmo_shared_assets/stylesheets/malmo_external';
 
 article, nav.content, aside {
-  padding: 1em;
-  padding-bottom:150px; /* this needs to be bigger than footer height*/
+/*  padding-bottom:150px; this needs to be bigger than footer height*/
   @include columns(12);
 }
 
 .motrice-grid {
-  padding: 1em;
+ *zoom:1;
+ margin:1em auto;
+ max-width:55em;
+ padding:0 1em}
+
+.motrice-grid:before,.motrice-grid:after {
+   display:table;
+   content:'';
+   line-height:0
+}
+
+.motrice-grid:after {
+   clear:both
 }
 
 @media (min-width: 40em) {
@@ -23,10 +34,10 @@ article, nav.content, aside {
 }
 @media (min-width: 50em) {
   article {
-    @include columns(6);
+    @include columns(9);
   }
   nav.content {
-    @include columns(3);
+    @include columns(3, true);
   }
   aside {
     @include columns(3, true);

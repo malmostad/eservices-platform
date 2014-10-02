@@ -48,7 +48,7 @@
   </head>
   <body class="mf-v4 development">
 
-  	<div class="motrice-grid">
+  	<div class="container motrice-grid">
 	    <hst:include ref="header"/>
 	    <hst:include ref="main"/>    
 	</div>
