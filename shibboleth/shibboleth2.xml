@@ -110,7 +110,7 @@
         impact on the security of the SP. Stealing cookies/sessions is much easier with this disabled.
         -->
         <Sessions lifetime="28800" timeout="3600" checkAddress="false"
-            handlerURL="/Shibboleth.sso" handlerSSL="false" relayState="ss:mem"
+            handlerURL="/Shibboleth.sso" handlerSSL="false" relayState="ss:mem" 
             exportLocation="http://localhost/Shibboleth.sso/GetAssertion" exportACL="127.0.0.1"
             idpHistory="false" idpHistoryDays="7">
 
@@ -134,19 +134,21 @@
             <!-- Default directs to a specific IdP (favoring SAML 2 over Shib 1). -->
 
             <!-- Default directs to a specific IdP (favoring SAML 2 over Shib 1). -->
-            <SessionInitiator type="Chaining" Location="/Login" isDefault="true" id="Login"
+            <SessionInitiator type="Chaining" Location="/Logintestshib" isDefault="true" id="Login"
                               entityID="https://idp.testshib.org/idp/shibboleth">
                   <!--        entityID="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0"> -->
                   <!--             entityID="https://m10-mg-local.funktionstjanster.se/samlv2/idp/metadata/0">  -->   
               
                 <SessionInitiator type="SAML2" template="bindingTemplate.html"/>
                 <SessionInitiator type="Shib1"/>
+            </SessionInitiator>
 
 
-            <SessionInitiator type="Chaining" Location="/Login" isDefault="false" id="Logininternal"
-                              entityID="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0"/>
+            <SessionInitiator type="Chaining" Location="/Loginfunktionstjanster" isDefault="false" id="Logininternal"
+                              entityID="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0">
                 <SessionInitiator type="SAML2" template="bindingTemplate.html"/>
                 <SessionInitiator type="Shib1"/>
+            </SessionInitiator>
                 <!--
                 To allow for >1 IdP, remove entityID property from Chaining element and add
                 *either* of the SAMLDS or WAYF handlers below:
@@ -157,13 +159,14 @@
 
           <!--       <SessionInitiator type="Chaining" Location="/Login" isDefault="true" id="Login" --> 
           <!--                      entityID="https://idp.testshib.org/idp/shibboleth">   --> 
-            <SessionInitiator type="Chaining" Location="/Login" isDefault="false" id="Login" 
-                                 entityID="https://idp1.motrice.se/idp/shibboleth"/>   
+            <SessionInitiator type="Chaining" Location="/Loginidp1" isDefault="false" id="Loginidp1" 
+                                 entityID="https://idp1.motrice.se/idp/shibboleth">   
                 <SessionInitiator type="SAML2" template="bindingTemplate.html"/>
                 <SessionInitiator type="Shib1"/> 
+            </SessionInitiator>
 
-             <SessionInitiator type="Chaining" Location="/Login" isDefault="false" id="Login" 
-                                 entityID="https://idp2.motrice.se/idp/shibboleth"/>   
+             <SessionInitiator type="Chaining" Location="/Login" isDefault="false" id="Loginidp2" 
+                                 entityID="https://idp2.motrice.se/idp/shibboleth">   
                 <SessionInitiator type="SAML2" template="bindingTemplate.html"/>
                 <SessionInitiator type="Shib1"/> 
             </SessionInitiator>
@@ -235,7 +238,7 @@
             <Handler type="Status" Location="/Status" acl="127.0.0.1"/>
 
             <!-- Session diagnostic service. -->
-            <Handler type="Session" Location="/Session" showAttributeValues="false"/>
+            <Handler type="Session" Location="/Session" showAttributeValues="true"/>
 
             <!-- JSON feed of discovery information. -->
             <Handler type="DiscoveryFeed" Location="/DiscoFeed"/>
