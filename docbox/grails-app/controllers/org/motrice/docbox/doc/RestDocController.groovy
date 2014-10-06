@@ -34,7 +34,7 @@ class RestDocController {
   private final static CONT_DISP = 'Content-Disposition'
   def docService
   def pdfService
-  def sigService
+  def signdocService
 
   /**
    * Create a PDF/A document given a formDataUuid and return metadata.
@@ -105,7 +105,7 @@ class RestDocController {
     if (msg) {
       render(status: status, contentType: 'text/plain', text: msg)
     } else {
-      def xmlInput = sigService.findFormdata(pdfContents)
+      def xmlInput = signdocService.findFormdata(pdfContents)
       if (xmlInput) {
 	render(status: 200, contentType: 'text/json') {
 	  formData = xmlInput.formData

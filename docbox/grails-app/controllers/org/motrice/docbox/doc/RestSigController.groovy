@@ -32,7 +32,7 @@ class RestSigController {
   static final XMLDSIG_SCHEMA = '/xsd/xmldsig-core-schema.xsd'
 
   def docService
-  def sigService
+  def signdocService
 
   /**
    * Add a XML-DSIG signature to an existing document.
@@ -51,7 +51,7 @@ class RestSigController {
 
     try {
       status = 400
-      sigService.basicSignatureCheck(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
+      signdocService.basicSignatureCheck(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
       status = 409
       docStep = docService.findAndCheckByRef(docboxref)
       status = 404
@@ -60,7 +60,7 @@ class RestSigController {
 	if (pdfContents) {
 	  try {
 	    status = 200
-	    sigService.signedTextCheck(sigB64, docStep, pdfContents)
+	    signdocService.signedTextCheck(sigB64, docStep, pdfContents)
 	  } catch (DocBoxException exc) {
 	    status = 403
 	    msg = exc.message
@@ -79,7 +79,7 @@ class RestSigController {
       render(status: status, contentType: 'text/plain', text: msg)
     } else {
       def sig = new XmlDsig(sigB64, log)
-      def result = sigService.addSignature(docStep, pdfContents, sig)
+      def result = signdocService.addSignature(docStep, pdfContents, sig)
       def nextStep = result.step
       def nextContents = result.contents
 
@@ -115,7 +115,7 @@ class RestSigController {
 
     def sigList = null
     if (pdfContents) {
-      sigList = sigService.findAllSignatures(pdfContents)
+      sigList = signdocService.findAllSignatures(pdfContents)
       if (sigList.empty) {
 	status = 409
 	msg = "No signature found: ${docboxref}"
@@ -175,12 +175,12 @@ class RestSigController {
 
     Map outcome = null
     if (pdfContents) {
-      def sigList = sigService.findAllSignatures(pdfContents)
+      def sigList = signdocService.findAllSignatures(pdfContents)
       if (sigList.empty) {
 	status = 500
 	msg = "No signature found: ${docboxref}"
       } else {
-	outcome = sigService.validateSignature(sigList[-1])
+	outcome = signdocService.validateSignature(sigList[-1])
       }
     } else {
       msg = "No PDF found for ${docboxref}"

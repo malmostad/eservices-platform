@@ -26,8 +26,27 @@ $PREFIX/doc/pdfa/$uuid PUT: store a PDF/A document in DocBox
 
 $PREFIX/sig/request/$docboxref ????? med mera PUT: issue a sign request
 
-$PREFIX/sig/request/$docboxref?transaction=$uuid GET: get the state of the signing transaction
+$PREFIX/sig/request/$docboxref?transaction=$uuid GET: get the state of a signing transaction
 
-$PREFIX/sig/scheme/$id GET: get details of a signing service
+$PREFIX/sig/scheme/$id GET: get details of a signing scheme
 
-$PREFIX/sig/scheme/all GET: get a list of signing services
+$PREFIX/sig/scheme/all GET: get a list of signing schemes
+
+---------------
+
+Multipart:
+http://www.codejava.net/java-se/networking/upload-files-by-sending-multipart-request-programmatically
+
+http://jersey.576304.n2.nabble.com/Test-Client-for-Multipart-Jersy-Rest-Service-td7579951.html
+https://jersey.java.net/apidocs/1.8/jersey/com/sun/jersey/api/client/WebResource.html
+
+---------------
+
+Update DocBoxFacade.java:
+
+"http://localhost:8080/docbox/doc/formdata/"
+"http://localhost:8080/docbox/rest/doc/orbeon/"
+
+
+"http://localhost:8080/docbox/doc/sig/"
+"http://localhost:8080/docbox/rest/sig/core/"

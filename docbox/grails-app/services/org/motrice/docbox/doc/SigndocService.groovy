@@ -66,10 +66,11 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.transaction.annotation.Transactional
 
 /**
- * Services related to signing and storing the signature in a PDF/A document
- * A page is added to the document to carry signature data
+ * Services related to signing and storing the signature in a PDF/A document.
+ * A page is added to the document to carry signature data.
+ * The class had to be renamed after name clash with Signatrice domain SigService.
  */
-class SigService {
+class SigndocService {
   private static final log = LogFactory.getLog(this)
   static final String PDF_FORMAT_PAT = 'http://motrice.org/spec/docbox/%s/pdf'
 
