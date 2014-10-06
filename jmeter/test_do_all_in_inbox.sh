@@ -43,7 +43,7 @@ done
 
 
 # load a number of activites 
-LOOP=1 
+LOOP=10 
 # The host under test.
 HOST="eminburk.malmo.se"
 PROTOCOL="https"
@@ -77,12 +77,11 @@ fi
  
  
 JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
-JMETER=${HOME}/jmeter/bin/jmeter.sh
 OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
-TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
-TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
-COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"
+ 
+TESTCLEANPLAN=TestPlanDoAllInInbox.jmx 
+COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTSLASK}"
 
 # 
 if [ ! -f ${JMETER} ]; then
@@ -97,9 +96,12 @@ fi
 
 
 # first clean up inbox 
-####cleanUpInbox 
+cleanUpInbox 
+exit 0 
 
-TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCreateCases.jmx 
+
+
+TESTPLAN=TestPlanCreateCases.jmx 
 CASENAME="CreateCases" 
 
 if [ ! -f ${TESTPLAN} ]; then
@@ -107,10 +109,10 @@ if [ ! -f ${TESTPLAN} ]; then
    exit 1;
 fi
 
+LOOP=3
 LOOP=11
-LOOP=1
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
-for thread_count in 001 
+for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100
 do
   COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
@@ -118,6 +120,19 @@ do
   ${COMMANDO}
 
   # clean up between the tests 
-  # cleanUpInbox 
+  cleanUpInbox 
 done
 
+
+PLOTSCRIPT="./plotResults.py" 
+if [ ! -f ${PLOTSCRIPT} ]; then
+  echo "Missing file PLOTSCRIPT=${PLOTSCRIPT}"
+   exit 1;
+fi
+
+
+${PLOTSCRIPT} ${OUTPUTDIR}/${CASENAME}/*jtl
+
+echo "results are found in   ${OUTPUTDIR}/${CASENAME}   "
+
+display ${OUTPUTDIR}/${CASENAME}/_orbeon_fr_start_demo-ansokan--v002_edit_ef08e823-78f3-4c25-a744-31e9958c05ae.png    & 

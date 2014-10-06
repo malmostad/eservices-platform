@@ -62,6 +62,11 @@ USER=""
 # USER's password
 PASS=""
  
+# The host under test.
+HOST="eminburk.malmo.se"
+PROTOCOL="https"
+PORT="443"
+
 while getopts 'u:p:' flag; do
   case "${flag}" in
     u) USER=$OPTARG ;;
@@ -95,7 +100,7 @@ OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
  
 TESTCLEANPLAN=TestPlanDoAllInInbox.jmx 
-COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"
+COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTSLASK}"
 
 if [ ! -f ${JMETER} ]; then
   echo "Missing file JMETER=${JMETER}"
@@ -121,7 +126,7 @@ TESTPLAN=TestPlanReadInbox.jmx
 for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100
 do
-  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
+  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
   echo ${COMMANDO}
   ${COMMANDO}
 done

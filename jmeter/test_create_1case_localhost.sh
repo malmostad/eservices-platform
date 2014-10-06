@@ -45,9 +45,9 @@ done
 # load a number of activites 
 LOOP=1 
 # The host under test.
-HOST="eminburk.malmo.se"
-PROTOCOL="https"
-PORT="443"
+HOST="localhost"
+PROTOCOL="http"
+PORT="8080"
 
 # A username.
 USER=""
