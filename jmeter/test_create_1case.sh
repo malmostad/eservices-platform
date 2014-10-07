@@ -76,10 +76,11 @@ if [ -z "$PASS" ] ; then
 fi
  
  
-JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
 JMETER=${HOME}/jmeter/bin/jmeter.sh
+JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
 OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
+STARTFORM="demo-ansokan--v002"
 TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
 TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
 COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"
@@ -113,7 +114,7 @@ LOOP=1
 for thread_count in 001 
 # for thread_count in 001 002 004 010 050 100
 do
-  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
+  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTDIR} -Jstartform=${STARTFORM} -Jloop=${LOOP}"
   echo ${COMMANDO}
   ${COMMANDO}
 
