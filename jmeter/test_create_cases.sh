@@ -45,9 +45,7 @@ done
 # load a number of activites 
 LOOP=10 
 # The host under test.
-HOST="eminburk.malmo.se"
-PROTOCOL="https"
-PORT="443"
+HOST=localhost
 
 # A username.
 USER=""
@@ -79,10 +77,10 @@ fi
 JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
 OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
-STARTFORM="demo-ansokan--v002"
+TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
  
-TESTCLEANPLAN=TestPlanDoAllInInbox.jmx 
-COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTSLASK}"
+TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
+COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"
 
 # 
 if [ ! -f ${JMETER} ]; then
@@ -99,7 +97,7 @@ fi
 # first clean up inbox 
 cleanUpInbox 
 
-TESTPLAN=TestPlanCreateCases.jmx 
+TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCreateCases.jmx 
 CASENAME="CreateCases" 
 
 if [ ! -f ${TESTPLAN} ]; then
@@ -113,7 +111,7 @@ LOOP=11
 for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100
 do
-  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTDIR}  -Jstartform=${STARTFORM} -Jloop=${LOOP}"
+  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
   echo ${COMMANDO}
   ${COMMANDO}
 
@@ -122,7 +120,7 @@ do
 done
 
 
-PLOTSCRIPT="./plotResults.py" 
+PLOTSCRIPT="${TESTPLANDIRECTORY}/plotResults.py" 
 if [ ! -f ${PLOTSCRIPT} ]; then
   echo "Missing file PLOTSCRIPT=${PLOTSCRIPT}"
    exit 1;
@@ -134,3 +132,4 @@ ${PLOTSCRIPT} ${OUTPUTDIR}/${CASENAME}/*jtl
 echo "results are found in   ${OUTPUTDIR}/${CASENAME}   "
 
 display ${OUTPUTDIR}/${CASENAME}/_orbeon_fr_start_demo-ansokan--v002_edit_ef08e823-78f3-4c25-a744-31e9958c05ae.png    & 
+exit $? 

@@ -66,6 +66,7 @@ CASENAME="coordinatrice"
 JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
 OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
+TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
  
 
 if [ ! -f ${JMETER} ]; then
@@ -76,7 +77,7 @@ fi
 
 LOOP=3
 LOOP=11
-TESTPLAN=TestPlanCoordinatrice.jmx
+TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCoordinatrice.jmx
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
 for thread_count in 001 004 010 
 # for thread_count in 001 002 004 010 
@@ -89,6 +90,7 @@ done
 
 
 PLOTSCRIPT="./plotResults.py" 
+PLOTSCRIPT="${TESTPLANDIRECTORY}/plotResults.py" 
 if [ ! -f ${PLOTSCRIPT} ]; then
   echo "Missing file PLOTSCRIPT=${PLOTSCRIPT}"
    exit 1;

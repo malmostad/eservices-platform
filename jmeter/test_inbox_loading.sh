@@ -62,11 +62,6 @@ USER=""
 # USER's password
 PASS=""
  
-# The host under test.
-HOST="eminburk.malmo.se"
-PROTOCOL="https"
-PORT="443"
-
 while getopts 'u:p:' flag; do
   case "${flag}" in
     u) USER=$OPTARG ;;
@@ -98,9 +93,10 @@ CASENAME="inbox"
 JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
 OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
+TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
  
-TESTCLEANPLAN=TestPlanDoAllInInbox.jmx 
-COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTSLASK}"
+TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
+COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"
 
 if [ ! -f ${JMETER} ]; then
   echo "Missing file JMETER=${JMETER}"
@@ -121,19 +117,19 @@ loadInbox
 
 LOOP=3
 LOOP=11
-TESTPLAN=TestPlanReadInbox.jmx
+TESTPLAN=${TESTPLANDIRECTORY}/TestPlanReadInbox.jmx
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
 for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100
 do
-  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
+  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
   echo ${COMMANDO}
   ${COMMANDO}
 done
 
 cleanUpInbox 
 
-PLOTSCRIPT="./plotResults.py" 
+PLOTSCRIPT="${TESTPLANDIRECTORY}/plotResults.py" 
 if [ ! -f ${PLOTSCRIPT} ]; then
   echo "Missing file PLOTSCRIPT=${PLOTSCRIPT}"
    exit 1;
@@ -145,3 +141,4 @@ ${PLOTSCRIPT} ${OUTPUTDIR}/${CASENAME}/*jtl
 echo "results are found in   ${OUTPUTDIR}/${CASENAME}   "
 
 display ${OUTPUTDIR}/${CASENAME}/_site_mycases_inbox.png     & 
+exit $? 
