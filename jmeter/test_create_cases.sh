@@ -77,6 +77,7 @@ fi
 JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
 OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
+STARTFORM="demo-ansokan--v002"
 TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
  
 TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
@@ -111,7 +112,7 @@ LOOP=11
 for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100
 do
-  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
+  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTDIR} -Jstartform=${STARTFORM} -Jloop=${LOOP}"
   echo ${COMMANDO}
   ${COMMANDO}
 
