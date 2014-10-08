@@ -28,7 +28,7 @@ background-image: none;
 }
 }
 
-article, nav.content, aside, column  {
+article, article.wide , nav.content, aside, column  {
   @include columns(12);
   margin-right: 0%;
 }
@@ -47,6 +47,9 @@ article, nav.content, aside, column  {
   aside {
     @include columns(12);
   }
+  article.wide {
+    @include columns(12);
+  }
 
 }
 @media (min-width: 50em) {
@@ -61,6 +64,9 @@ article, nav.content, aside, column  {
   } 
   article  {
     @include columns(6);
+  }
+  article.wide {
+    @include columns(9, true);
   }
   nav.content {
     @include columns(3);

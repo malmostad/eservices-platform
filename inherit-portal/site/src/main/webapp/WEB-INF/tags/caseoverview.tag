@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="hst" uri="http://www.hippoecm.org/jsp/hst/core" %>
 <%@ taglib prefix="tag" tagdir="/WEB-INF/tags" %>
 
@@ -20,7 +21,7 @@
 	  
 	  <column>
 	   
-	        <h4><fmt:message key="mycases.diaryNo.lbl" /></h4>
+	        <strong><fmt:message key="mycases.diaryNo.lbl" /></strong>
 	        <form>
 	        	<input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/>
 	        	<input type="hidden" name="motrice-process-instance-uuid" value="${activity.processInstanceUuid}"/>
@@ -34,7 +35,7 @@
 			</form>
 	        
 	        
-	        <h4><fmt:message key="mycases.tags.lbl" />&nbsp;<i class="fa fa-tags"></i></h4> 			
+	        <strong><fmt:message key="mycases.tags.lbl" /></strong>&nbsp;<i class="fa fa-tags"></i> 			
 			<form>
 			  <input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/>
 			  <input type="hidden" name="motrice-process-instance-uuid" value="${activity.processInstanceUuid}"/>
@@ -53,28 +54,59 @@
 	  </column>
 	  <lastcolumn>
 	  
-	  		<h4>Status</h4>
-			<ul>
-			  <li>Registrering</li>
+	  
+	  <strong>Status: </strong> ${activity.activityLabel}
+		<c:if test="${not empty processInstanceDetails.pending and fn:length(processInstanceDetails.pending)>1}">
+			<a class="toggle-view-list" href="#">och ${fn:length(processInstanceDetails.pending)-1} till<i class="fa fa-chevron-circle-down"></i></a>
+			<a class="toggle-view-list motrice-initial-hidden" href="#">D&ouml;lj&nbsp;<i class="fa fa-chevron-circle-up"></i></a>
+			<ul class="toggle-view-list motrice-initial-hidden">
+	  		  <c:forEach var="pendingTask" items="${processInstanceDetails.pending}">
+		 	    <c:if test="${pendingTask.activityInstanceUuid ne activity.activityInstanceUuid}">
+					  <li>
+					    <a href="${pendingTask.relativePageLink}">${pendingTask.activityLabel}</a>
+					   	<c:if test="${not empty pendingTask.lastStateUpdate}">
+					   	  <br/><fmt:message key="mycases.startDate.column.lbl"/>: <fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" dateStyle="short" timeStyle="short"/>
+					   	</c:if>
+					  	<c:if test="${not empty pendingTask.expectedEndDate}">
+					  	  <br/><fmt:message key="mycases.expectedEndDate.column.lbl"/>: <fmt:formatDate value="${pendingTask.expectedEndDate}" type="Date" dateStyle="short" timeStyle="short"/>
+					  	</c:if>
+			 	  		<c:if test="${not empty pendingTask.assignedUser and pendingTask.assignedUser ne ''}">
+			 	  		  <br/><i class='fa fa-lock'></i>&nbsp;${pendingTask.assignedUser} 
+			 	  		</c:if>
+					  </li>
+				</c:if>
+			  </c:forEach>
 			</ul>
-			
-			<h4><fmt:message key="mycases.actlist.lbl" /></h4>
+		</c:if>
+		<br/>	
+			<strong><fmt:message key="mycases.actlist.lbl" />: </strong>
 			<tag:actlist timelineItems="${processInstanceDetails.timeline.items}" viewMode="full"/>
-			
-			
-			
-	 		
-	  
-	  
+	  	
+	  	     
 	   </lastcolumn>
 	   
 	   <full-width-column>
-	   <h4><fmt:message key="mycases.commentFeed.lbl"/></h4>
+
+	<a href="0" class="toggle-view-div">Visa  &auml;rendets tidslinje <i class="fa fa-chevron-circle-down"></i></a>
+	<a href="0" class="toggle-view-div motrice-initial-hidden">D&ouml;lj &auml;rendets tidslinje <i class="fa fa-chevron-circle-up"></i></a>
+	
+	<div class="toggle-view-div motrice-initial-hidden">
+	   <c:choose>
+		<c:when test="${empty processInstanceDetails}">
+  			<fmt:message key="mycases.noProcessInstanceDetails.lbl"/>
+  		</c:when>
+  		<c:otherwise> 
+  	  	 <tag:timelinebyday timelineByDay="${timelineByDay}" viewMode="full"/>
+  	     
+  		</c:otherwise>
+	   </c:choose>
+		
+	</div>		
+	<br/>
+	   <strong><fmt:message key="mycases.commentFeed.lbl"/></strong>
 			<form action="/site/restservices/site-ajax/addComment" id="addCommentForm" class="motrice-add-comment siteAjaxForm">
-						
-						
 							<input type="hidden" name="activityInstanceUuid" value="${activity.activityInstanceUuid}" /> 
-							<input type="text" name="comment" placeholder="<fmt:message key="mycases.addcomment.lbl"/>"	class="text ui-widget-content ui-corner-all motrice-comment-field" />
+							<input type="text" name="comment" placeholder="<fmt:message key="mycases.addcomment.lbl"/>"	class="text ui-widget-content ui-corner-all malmo-form motrice-comment-field" />
 							<input type="hidden" name="language" value="sv" /> 
 							<input type="hidden" name="country" value="SE" /> 
 							<button class="btn btn-primary motrice-comment-field-controls motrice-comment-btn-ok motrice-initial-hidden"><fmt:message key="mycases.addcomment.btnok.lbl"/></button>
@@ -92,11 +124,7 @@
 			
 						</form>
 					
-	   </full-width-column>
-	  
-	  
+	</full-width-column>
 	  </div>
-	  
-	 
 	  
 	</section>		

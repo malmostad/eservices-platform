@@ -52,7 +52,7 @@
 		    <c:if test="${not empty processInstanceDetails.pending}">
 				<c:forEach var="pendingTask" items="${processInstanceDetails.pending}">
 					<tr>
-				 	  	<td>${pendingTask.activityLabel}</td>
+				 	  	<td><a href="${pendingTask.relativePageLink}">${pendingTask.activityLabel}</a></td>
 				 	  	<!--  TODO check start date vs lastStateUpdate -->
 				 	  	<td><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" dateStyle="short" timeStyle="short"/></td>
 				 	  	<td><fmt:formatDate value="${pendingTask.expectedEndDate}" type="Date" dateStyle="short" timeStyle="short"/></td> 
@@ -74,9 +74,7 @@
 			</c:if>
 			</tbody>
 		</table>
-		<p></p>
-  	 <h2><fmt:message key="mycases.timeline.lbl"/></h2>
-  	 <p></p>
+	 
   	 
   	 <tag:timelinebyday timelineByDay="${timelineByDay}" viewMode="full"/>
 	 

@@ -12,10 +12,8 @@
 	         limit - view my own task forms, hide which user that performed the task
 -->
 
-<ul class="actlist">
 <c:forEach var="timelineItem" items="${timelineItems}">
 	<c:if test="${not empty timelineItem.actUri}">
-		<li><a href="${timelineItem.actUri}"><i class="fa fa-file-pdf-o">&nbsp;${timelineItem.briefDescription}</i></a></li> 
+		<a href="${timelineItem.actUri}"><i class="fa fa-file-pdf-o">&nbsp;${timelineItem.briefDescription}</i></a>&nbsp;  
 	</c:if>
 </c:forEach>		
-</ul>

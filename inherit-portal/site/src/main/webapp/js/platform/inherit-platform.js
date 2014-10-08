@@ -111,7 +111,7 @@ $(document).ready(function() {
         $("#xform").load(url, function(data) {
           if (typeof ORBEON != "undefined") { 
             if (!document.all) {
-              ORBEON.xforms.Init.document(); 
+              ORBEON.xforms.Init.document();
             } 
           } 
         }); 
@@ -137,10 +137,9 @@ $(document).ready(function() {
 		showMonthAfterYear: false,
 		yearSuffix: ''};
     $.datepicker.setDefaults($.datepicker.regional['sv']);
-});
-
-
- $( ".dirusername" ).autocomplete({
+    
+    
+    $( ".dirusername" ).autocomplete({
       source: function( request, response ) {
         $.ajax({
           url: "/site/restservices/site-ajax/dirSearchUserEntries",
@@ -172,8 +171,12 @@ $(document).ready(function() {
     }).each(function() {
          $(this).data("ui-autocomplete")._renderItem = function( ul, item ) {
          return  $( "<li>" )
-	.attr( "data-value", item.cn )
+		.data( "ui-autocomplete-item", item )
         .append( "<a><strong>" + item.cn + "</strong> - " + item.label + "</a>" )
         .appendTo( ul );
       };
     });
+});
+
+
+ 

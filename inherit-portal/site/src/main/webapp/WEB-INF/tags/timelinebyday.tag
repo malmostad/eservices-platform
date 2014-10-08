@@ -12,7 +12,8 @@
 	         limit - view my own task forms, hide which user that performed the task
 -->
 
-<c:forEach var="dayEntry" items="${timelineByDay}">
+
+   <c:forEach var="dayEntry" items="${timelineByDay}">
 	<h3><fmt:formatDate value="${dayEntry.key}" type="Date" dateStyle="long" timeStyle="short"/></h3>
 	
 	<ul class="toggle-view timeline">
@@ -20,5 +21,4 @@
 			<tag:timelinelistitem logItem="${logItem}" viewMode="full"/>
 		</c:forEach>
 	</ul>
-</c:forEach>
-	
+  </c:forEach>

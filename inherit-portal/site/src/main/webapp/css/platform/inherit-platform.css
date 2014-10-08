@@ -24,7 +24,7 @@
 
 .toggle-view span.exp {
 	position: absolute;
-	right: 5px;
+	right: 20px;
 	top: 0;
 	color: #ccc;
 	font-size: 13px;
@@ -43,3 +43,10 @@
   margin: 1px;
 }
 
+ul.motrice-activity-candidates-details { 
+    list-style-type: none;
+}
+
+ul.timeline { 
+    list-style-type: none;
+}

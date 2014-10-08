@@ -26,18 +26,33 @@
  
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 
+<c:choose>
+  <c:when test="${empty document}">
+    <tag:pagenotfound/>
+  </c:when>
+  <c:otherwise>
+    <c:if test="${not empty document.title}">
+      <hst:element var="headTitle" name="title">
+        <c:out value="${document.title}"/>
+      </hst:element>
+      <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
+    </c:if>
+    
+    <hst:cmseditlink hippobean="${document}"/>
+    <h2>${document.title}</h2>
+    <p>${document.summary}</p>
+    <hst:html hippohtml="${document.html}"/>
+  </c:otherwise>
+</c:choose>
 
-  <nav class="breadcrumbs">
-    <ol>
-	<li><a href='http://malmo.se/'>Start</a></li>
-	<li><a href="/site/public">E-tjänster</a></li>
-<c:if test="${not empty breadcrumb}"> 
-  <c:forEach var="item" items="${breadcrumb.items}">	    
-       <li><a href='<hst:link link="${item.link}"/>'><c:out value="${item.title}"/></a></li>
-  </c:forEach>
-</c:if>
-    </ol>
-  </nav>
-
-
-
+<section class="box" contextmenu="task-section-menu" id="task-section">
+	  <h1 class="box-title">Aviseringar</h1>
+	  <div class="box-instructions">
+	     <p>Hjälp</p>
+	  </div>
+	  
+	  <div class="box-content body-copy">
+		    Inga aviseringar
+	  </div>
+	<a href="#" class="toggle-instructions" title="Show instructions">?</a>
+</section>

@@ -48,8 +48,10 @@
 	  </div>
 	  
 	  <div class="box-content body-copy">
-		    <p><button class="btn btn-danger motrice-unassign-user motrice-initial-hidden"><fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
-		    <p><button class="btn btn-primary motrice-assign-to motrice-initial-hidden"><fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+		    <p><button class="btn btn-danger motrice-unassign-user motrice-unassign-user-btn motrice-initial-hidden"><i class="fa fa-unlock-alt"></i>&nbsp;<fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+		    <p><button class="btn btn-primary motrice-assign-to"><i class="fa fa-lock"></i>&nbsp;<fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+	        <p class="motrice-assigned-to-other-user motrice-initial-hidden">Aktiviteten är låst till en annan användare</p>
+	        <p class="motrice-assigned-to-other-user motrice-initial-hidden"><button class="btn btn-danger motrice-unassign-user-btn"><i class="fa fa-unlock-alt"></i>&nbsp;<fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
 	    
 	    <c:choose>
      <c:when test="${activity.typeId eq 6}">
@@ -68,63 +70,4 @@
 		   
   </c:otherwise>  
 </c:choose>
-	
-<p></p>
-<h1><fmt:message key="mycases.processInstanceDetails.lbl"/></h1>
 
-<h2><fmt:message key="mycases.commentFeed.lbl"/></h2>
-<ul id="commentfeed">
-</ul>
-
-<c:choose>
-  <c:when test="${empty processInstanceDetails}">
-  	<fmt:message key="mycases.noProcessInstanceDetails.lbl"/>
-  </c:when>
-  <c:otherwise> 
- 	<h2><fmt:message key="mycases.pendingActivities.lbl"/></h2>   
- 	<p></p>
-	 <table class="display dataTable">
-		<thead>
-			<tr>
-			   <th><fmt:message key="mycases.activity.column.lbl"/></th>
-			   <th><fmt:message key="mycases.startDate.column.lbl"/></th>
-			   <th><fmt:message key="mycases.expectedEndDate.column.lbl"/></th>
-			   <th><fmt:message key="mycases.candidates.column.lbl"/></th>
-			   <th><fmt:message key="mycases.assignedto.column.lbl"/></th>			   
-			</tr>
-		</thead>
-		<tbody>
-	    <c:if test="${not empty processInstanceDetails.pending}">
-			<c:forEach var="pendingTask" items="${processInstanceDetails.pending}">
-				<tr>
-			 	  	<td>${pendingTask.activityLabel}</td>
-			 	  	<!--  TODO check start date vs lastStateUpdate -->
-			 	  	<td><fmt:formatDate value="${pendingTask.lastStateUpdate}" type="Both" dateStyle="short" timeStyle="short"/></td>
-			 	  	<td><fmt:formatDate value="${pendingTask.expectedEndDate}" type="Date" dateStyle="short" timeStyle="short"/></td> 
-			 	  	<td>
-			 	  	<c:choose>
-				 	  	<c:when test="${empty pendingTask.candidates}}">
-				 	  		
-				 	  	</c:when>
-				 	  	<c:otherwise>
-				 	  		<c:forEach var="candidate" items="${pendingTask.candidates}">
-				 	  			${candidate}<br>
-				 	  		</c:forEach>
-				 	  	</c:otherwise>
-			 	  	</c:choose>
-			 	  	</td>
-					<td>${pendingTask.assignedUser}</td>
-				</tr>
-			</c:forEach>
-		</c:if>
-		</tbody>
-	</table>
-	<p></p> 
-	
-  	    
-  	 <h2><fmt:message key="mycases.timeline.lbl"/></h2>
-  	 <p></p>
-  	 <tag:timelinebyday timelineByDay="${timelineByDay}" viewMode="full"/>
-    
-  </c:otherwise>
- </c:choose>

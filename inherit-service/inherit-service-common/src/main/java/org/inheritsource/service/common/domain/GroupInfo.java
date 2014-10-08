@@ -48,7 +48,7 @@ public class GroupInfo implements CandidateInfo, Serializable, Comparable {
 	String label;
 	
 	@XmlElement(required=false)
-	String type;
+	String type = "group";
 	
 	public GroupInfo() {
 		
