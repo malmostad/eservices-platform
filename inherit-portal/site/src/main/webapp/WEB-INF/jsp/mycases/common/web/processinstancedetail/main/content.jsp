@@ -36,6 +36,7 @@
   <c:otherwise> 
   	<p>${processInstanceDetails.processLabel} startades <fmt:formatDate value="${processInstanceDetails.startDate}" type="Both" dateStyle="short" timeStyle="short"/> 
     </p>
+    <h2>Relaterade &auml;rendenummer</h2>
   	<ul>
   	<c:forEach var="tag" items="${tags}">
 	  <c:if test="${not empty tag and tag.typeId eq 1}">
