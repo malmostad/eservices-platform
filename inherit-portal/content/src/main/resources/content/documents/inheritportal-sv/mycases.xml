@@ -4636,7 +4636,7 @@ fortskrida.&lt;/p&gt;
         <sv:value>sv</sv:value>
       </sv:property>
       <sv:property sv:name="inheritportal:formpath" sv:type="String">
-        <sv:value>malmo/profil--v002</sv:value>
+        <sv:value>malmo/profil--v003</sv:value>
       </sv:property>
       <sv:property sv:name="inheritportal:pdfurl" sv:type="String">
         <sv:value/>
