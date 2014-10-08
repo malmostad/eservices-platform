@@ -8,11 +8,12 @@ if(typeof String.prototype.trim !== 'function') {
 
 $(document).ready(function() {
 
-	    
+	   $(".motrice-accordion" ).accordion();	    
 	    
         $(".motrice-assign-to").click(function() {
 	    var assignTo = $(this).children("input[name='motrice-assign-to']").attr("value");
 	    var instanceUuid = $(this).children("input[name='motrice-activity-instance-uuid']").attr("value");
+	    
 	    siteAjaxPost("/site/restservices/site-ajax/assignTask",
 	                 "activityInstanceUuid=" + instanceUuid + "&action=assign&targetUserId=" + assignTo,
 	                   function(data) {
@@ -22,9 +23,10 @@ $(document).ready(function() {
 		); 
         });
 
-        $(".motrice-unassign-user").click(function() {
+        $(".motrice-unassign-user-btn").click(function() {
 	    var unassignUser = $(this).children("input[name='motrice-unassign-user']").attr("value");
 	    var instanceUuid = $(this).children("input[name='motrice-activity-instance-uuid']").attr("value");
+	    
 	     siteAjaxPost("/site/restservices/site-ajax/assignTask",
 	                  "activityInstanceUuid=" + instanceUuid + "&action=unassign&targetUserId=" + unassignUser,
 	                   function(data) {
@@ -54,34 +56,6 @@ $(document).ready(function() {
 	
 	});
 
-        var options = { 
-          target:       '#output1',      // target element(s) to be updated with server response 
-          dataType:     'json',          // 'xml', 'script', or 'json' (expected server response type) 
-          clearForm:    false,            // clear all form fields after successful submit 
-          resetForm:    false,            // reset the form after successful submit 
-          beforeSubmit: showRequest,     // pre-submit callback 
-          success:      showResponse     // post-submit callback 
- 
-          // other available options: 
-          //url:       url         // override for form's 'action' attribute 
-          //type:      type        // 'get' or 'post', override for form's 'method' attribute 
- 
-          // $jq.ajax options can be used here too, for example: 
-          //timeout:   3000 
-        }; 
-
-        console.log("In document.ready, before call for activity");
-
-        // bind 'search-users-form' and provide a callback function 
-
-        //$('#search-users-form').ajaxForm(function(options) { 
-        //  alert("Thank you for your input!"+ JSON.stringify(options, null, 4));  
-        //});
-
- //       console.log("before binding #search-users-form, options: " + JSON.stringify(options, null, 4)); 
- //       $('#search-users-form').ajaxForm(options);
- 	   $("#search-users-form").ajaxForm(options);
- 	    console.log("In document.ready, after  call for activity");
 
  $('#startDate').datepicker({ 
  firstDay: 1 ,
@@ -96,252 +70,6 @@ $(document).ready(function() {
 
 });
 	
-    // pre-submit callback cd in	po	
-    function showRequest(formData, jqForm, options) { 
-	  // formData is an array; here we use $jq.param to convert it to a string to display it 
-	  // but the form plugin does this for you automatically when it submits the data 
-	  var queryString = $.param(formData);
-
-	  // jqForm is a jQuery object encapsulating the form element. To access the 
-	  // DOM element for the form do this: 
-	  // var formElement = jqForm[0]; 
-
-        console.log("in showRequest...About to submit: " + queryString); 
-
-	  // here we could return false to prevent the form from being submitted; 
-	  // returning anything other than false will allow the form submit to continue 
-	  return true; 
-    } 
-
-    // post-submit callback 
-    function showResponse(responseText, statusText, xhr, $form)  { 
-	  // for normal html responses, the first argument to the success callback 
-	  // is the XMLHttpRequest object's responseText property 
-
-	  // if the ajaxForm method was passed an Options Object with the dataType 
-	  // property set to 'xml' then the first argument to the success callback 
-	  // is the XMLHttpRequest object's responseXML property 
-
-	  // if the ajaxForm method was passed an Options Object with the dataType 
-	  // property set to 'json' then the first argument to the success callback 
-	  // is the json data object returned by the server 
-
-	  //alert('status: ' + statusText + '\n\nresponseText: \n' + 
-        //      JSON.stringify(responseText, null, 4) + 
-	  //      '\n\nThe output div should have already been updated with the responseText.');
-
-        //$('#output1').hide().html(JSON.stringify(responseText, null, 4)).fadeIn('slow');
-
-        var htmlfragment = "";
-        $.each(responseText, function() {
-          htmlfragment += 
-            '<tr>' + 
-            '<td>' + this.label + '</td>' +
-            '<td>' + this.cn    + '</td>' +
-            '<td>' + this.mail  + '</td>' +
-	      '<td><button class="add-candidate-btn" href="#"></button></td>' +
-            '</tr>' ;
-        });
-    
-       $('#output1').html(htmlfragment);
-
-	 $(".add-candidate-btn").button({
-              create: function (event,ui) {console.log("add candidate button create event...");},
-		color : 'green',
-		icons : {
-			primary : 'ui-icon-circle-plus',
-			secondary : null
-		}
-	 }).click(function(event){ 
-         // console.log("add button clicked...:" + event.target.nodename );
-         // first, siteAjaxPost addcandidate message  with uid and 
-         // activityinstanceuuid of current activity
-         event.preventDefault();
-         var entry    = $(this).closest('tr').children().first().next().text();
-         var entryrow = $(this).closest('tr');
-         // fix id ref to dialog later....
-         var instanceUuid = $("#dialog-edit-candidates").children("input[name='motrice-activity-instance-uuid']").attr("value");
-         console.log("targetUserId: " + entry);
-         siteAjaxPost("/site/restservices/site-ajax/assignTask",
-           "activityInstanceUuid=" + instanceUuid + "&action=addcandidate&targetUserId=" + entry,
-           function(data) {
-             // if success remove table row entry from page
-             console.log("add candidate: " + entry + ", removing row from search results");
-//             event.preventDefault();
-//             $(this).closest("tr").remove();
-             $(entryrow).remove();
-             refreshActualCandidates();
-             refreshActivityWorkflowInfo(data);
-	   }); 
-       });
-    }
-
-    function refreshActualCandidates(data) {
-        console.log("refreshActualCandidates for activity: activity.activityInstanceUuid");
-        var instanceUuid = $("#dialog-edit-candidates").children("input[name='motrice-activity-instance-uuid']").attr("value");
-         
-        siteAjaxPost(
-          "/site/restservices/site-ajax/getActivityWorkflowInfo",
-          "activityInstanceUuid=" + instanceUuid,
-          function(data) {
-              var assignedUserUid = data.assignedUser.uuid ;
-              if ( assignedUserUid.trim() ) { // not null, not empty and not only WS
-                // first check if assignedUserUid is present in candidate array
-                // if not, add it to the candidate array
-                resultArray = $.grep(data.candidates, 
-                   function(n,i) {
-//                     console.log( ((n.uuid === assignedUserUid)? 'found' : 'not found') + ': ' + n.uuid  + ' ' + assignedUserUid);
-                     return (n.uuid === assignedUserUid);
-                   }
-                );
-                if ( resultArray.length === 0 ) { // add assigned user to candidate list
-                   data.candidates.push(data.assignedUser);
-                }
-              }
-  
-            var cnListQueryStr = '';
-            $.each(data.candidates, 
-              function() {
-                cnListQueryStr += 'cnList=' + this.uuid + '&' ;
-              }
-            );
-            console.log("refreshActualCandidates, cnListQueryStr: " + cnListQueryStr);
-            if (cnListQueryStr.trim()) {
- 	       siteAjaxPost(
-		 "/site/restservices/site-ajax/dirLookupUserEntries",
-		 cnListQueryStr,
-		 function(data) {
-		   var htmlfragment = '';
-           var assigned = false;
-		   console.log('Assigned User: "' + assignedUserUid + '"');
-                   if (assignedUserUid.trim()) { // there is an assigned user in the list
-                     $.each(data, function() {
-                       assigned = (this.cn == assignedUserUid);
-                       htmlfragment += 
-                         ( assigned ? '<tr class="assigned">' : '<tr class="unassigned">' ) +
-			 ( assigned ? '<td class="assigned">' : '<td class="unassigned">' ) + this.label + '</td>' +
-			 ( assigned ? '<td class="assigned">' : '<td class="unassigned">' ) + this.cn    + '</td>' +
-			 ( assigned ? '<td class="assigned">' : '<td class="unassigned">' ) + this.mail  + '</td>' +
-                          '<td />' +
-             ( assigned ? '<td><button class="lock-candidate-btn" href="#"></button></td>' : '<td />' ) +
-			 '</tr>' ;
-                     });
-                   } else {
-                     $.each(data, function() {
-                       htmlfragment += 
-                         '<tr>' +
-               			 '<td>' + this.label + '</td>' +
-			             '<td>' + this.cn    + '</td>' +
-			             '<td>' + this.mail  + '</td>' +
-                         '<td><button class="remove-candidate-btn" href="#"></button></td>' +
-                         '<td><button class="lock-candidate-btn" href="#"></button></td>' +
-			             '</tr>' ;
-                     });
-                   }
-
-                   //console.log("dirlookup htmlfragment: " + htmlfragment);
-		   $('#output2').html(htmlfragment);
-		   $(".remove-candidate-btn").button({
-		     create: function (event,ui) {console.log("remove candidate button create event...");},
-		     color : 'red',
-		     icons : {
-		       primary : 'ui-icon-circle-minus',
-		       secondary : null
-		     }
-		   }).click(function(event){ 
-                  // console.log("remove button clicked...:" + event.target.nodename );
-                  // first, siteAjaxPost with uid and activityinstanceuuid of current
-                  //   activity 
-                  event.preventDefault();
-                  var entry = $(this).closest('tr').children().first().next().text();
-                  var instanceUuid = $("#dialog-edit-candidates").children("input[name='motrice-activity-instance-uuid']").attr("value");
-         
-                  console.log("targetUserId: " + entry);
-                  siteAjaxPost("/site/restservices/site-ajax/assignTask",
-                               "activityInstanceUuid=" + instanceUuid + "&action=removecandidate&targetUserId=" + entry,
-                    function(data) {
-                      // if success, refreshActualCandidates(), else leave as is
-                      refreshActualCandidates();
-                      refreshActivityWorkflowInfo(data);
-                    });
-		   });
-
-		   $(".lock-candidate-btn").button({
-			     create: function (event,ui) {
-	                       console.log("lock button create event2...");
-	                       //$(this).parent().closest('tr').css({backgroundColor:'yellow'});
-	                     },
-			     color  :'red',
-			     icons : {
-			       primary : ( (assignedUserUid.trim() ) ? 'ui-icon-locked' : 'ui-icon-unlocked' ),
-			       secondary : null
-			     }
-			   }).click(function(event){ 
-	                       console.log("Locking/Unlocking row...");
-	                       event.preventDefault();
-	                       // get targetUid, i.e. uid of current row
-	                       var entry = $(this).closest('tr').children().first().next().text();
-	                       var instanceUuid = $("#dialog-edit-candidates").children("input[name='motrice-activity-instance-uuid']").attr("value");
-         
-	                       console.log("targetUserId: " + entry);
-//	                       $(this).closest('tr').css({backgroundColor:'yellow'});
-	                       console.log($(this).parent().html());
-//	                       $(this).closest('button.assigned')....;
-		             if ( assignedUserUid.trim() ) {
-	                     siteAjaxPost("/site/restservices/site-ajax/assignTask",
-	                                  "activityInstanceUuid=" + instanceUuid + "&action=unassign&targetUserId=" + entry,
-	                       function(data) {
-	                         // if success, refreshActualCandidates(), else leave as is
-	                         refreshActualCandidates();
-	                         refreshActivityWorkflowInfo(data);
-	                       }); } else {
-	                        siteAjaxPost("/site/restservices/site-ajax/assignTask",
-	                                     "activityInstanceUuid=" + instanceUuid + "&action=assign&targetUserId=" + entry,
-	                       function(data) {
-	                         // if success, refreshActualCandidates(), else leave as is
-	                         refreshActualCandidates();
-	                         refreshActivityWorkflowInfo(data);
-	                       }); 
-	                      }
-			   });
-              });
-            } else {
-		   $('#output2').html("<tr />");
-            }                
-          }); 
-      }
-
-var editCandidatesDialog = $("#dialog-edit-candidates").dialog({
-	  autoOpen : false,
-        resizable: false,
-	  //height : 500,
-	  height : 'auto',
-	  //width : 400,
-        width:'auto',
-	  modal : true,
-	  open: function( event, ui ) {
-	          console.log("#dialog-edit-candidates: open event fired...");
-                refreshActualCandidates();
-        },
-	  beforeClose: function( event, ui ) {
-	    console.log("#dialog-edit-candidates: beforeclose event fired...");
-         //$("#search-users-form").clearForm();
-         //$("#output1").html('<tr />');
-        }
-        /*
-        ,
-	  buttons : {
-	    "St\u00e4ng" : function() {
-	      $(this).dialog("close");
-	    }
-	}
-	*/
-	});
-
-$(".motrice-add-candidates").click(function() {
-		editCandidatesDialog.dialog("open");
-});
-
 
 $(".motrice-comment-btn-ok").click(function(event) {
 	console.log("Publicera kommentar");
@@ -370,6 +98,50 @@ $(".motrice-comment-field").focus(function() {
 	$(this).siblings(".motrice-comment-field-controls").show();
 });
 
+$(".motrice-activity-candidates-details").click(function(event) {
+	event.preventDefault();
+	
+	var instanceUuid = $(this).siblings("input[name='motrice-activity-instance-uuid']").val();
+	
+	console.log("instanceUuid: " + instanceUuid);
+	
+	var userUuid = $(event.target).siblings("input[name='user-uuid']").val();
+	
+	if ($.isEmptyObject(userUuid)) {
+	    // work-around if sub element to button is clicked
+		userUuid = $(event.target).parent().siblings("input[name='user-uuid']").val();
+	}
+	
+	console.log("targetUserId: " + userUuid + " event.target: " + event.target);
+	
+	if ($(event.target).hasClass("motrice-task-assign-to-btn")) {
+	    siteAjaxPost("/site/restservices/site-ajax/assignTask",
+	       "activityInstanceUuid=" + instanceUuid + "&action=assign&targetUserId=" + userUuid,
+	       function(data) {
+	          // if success, refreshActualCandidates(), else leave as is
+	          refreshActivityWorkflowInfo(data);
+	       }	
+		); 
+	}
+	else if ($(event.target).hasClass("motrice-task-remove-candidate-btn")) {
+		siteAjaxPost("/site/restservices/site-ajax/assignTask",
+                               "activityInstanceUuid=" + instanceUuid + "&action=removecandidate&targetUserId=" + userUuid,
+            function(data) {
+               // if success, refreshActualCandidates(), else leave as is
+               refreshActivityWorkflowInfo(data);
+            });
+	}
+	else if ($(event.target).hasClass("motrice-task-unassign-btn")) {            
+        siteAjaxPost("/site/restservices/site-ajax/assignTask",
+                  "activityInstanceUuid=" + instanceUuid + "&action=unassign&targetUserId=" + userUuid,
+                   function(data) {
+                     // if success, refreshActualCandidates(), else leave as is
+		       			refreshActivityWorkflowInfo(data);
+                   }
+		); 
+	}
+	
+});
 
 	$('a.toggle-view-list').click(function(event) {
 	    event.preventDefault();
@@ -381,6 +153,20 @@ $(".motrice-comment-field").focus(function() {
 		} else {
 			list.slideUp('200');
 			$(this).siblings("a.toggle-view-list").show();
+			$(this).hide();
+		}
+	});
+	
+	$('a.toggle-view-div').click(function(event) {
+	    event.preventDefault();
+		var divNode = $(this).siblings('div.toggle-view-div');
+		if (divNode.is(':hidden')) {
+			divNode.slideDown('200');
+			$(this).siblings("a.toggle-view-div").show();
+			$(this).hide();
+		} else {
+			divNode.slideUp('200');
+			$(this).siblings("a.toggle-view-div").show();
 			$(this).hide();
 		}
 	});
@@ -471,54 +257,6 @@ $(".motrice-comment-field").focus(function() {
            }
         });
 
-	$("#dialog-comment-case").dialog(
-			{
-				autoOpen : false,
-				height : 300,
-				width : 350,
-				modal : true,
-				buttons : {
-					"Kommentera" : function(data) {
-						siteAjaxPost($("#addCommentForm").attr('action'), $(
-								"#addCommentForm").serialize(), function() {
-							siteAjaxPost("/site/restservices/site-ajax/getCommentFeed", {activityInstanceUuid: '112'}, function(data) {
-							    refreshCommentFeed(data);
-							});
-							$("#dialog-comment-case").dialog("close");
-						});
-					},
-					Cancel : function() {
-						$(this).dialog("close");
-					}
-				},
-				open: function() {
-				    $("#dialog-comment-case").keypress(function(e) {
-				      if (e.keyCode == $.ui.keyCode.ENTER) {
-				        $(this).parent().find("button:eq(0)").trigger("click");
-				        return false;
-				      }
-				    });
-				},
-				close : function() {
-					$("#addCommentForm input[name=comment]").val('');
-				}
-			});
-
-
-//	 $("#search-users-form input:last").button({
-//         create: function (event,ui) {console.log("#search-users-form input:last button create event...");},
-//	     color : 'green'
-//	}
-//})
-	
-//$(function() {
-//
-//$("#dialog-comment-case").dialog("open");
-//  });	
-
-	$("#add-comment").click(function() {
-		$("#dialog-comment-case").dialog("open");
-	});
 
 	$(".add-tag-btn").button({
 		icons : {
@@ -550,6 +288,86 @@ $(".motrice-comment-field").focus(function() {
 		});
 	});
 
+$(".motrice-task-add-candidate-btn-cancel").click(function(event) {
+	event.preventDefault();
+	$(this).siblings("input[name='motrice-task-add-candidate']").val("");
+	$(this).siblings(".motrice-task-add-candidate-field-controls").hide();
+	$(this).hide();
+});
+
+$(".motrice-task-add-candidate").focus(function() {
+	$(this).siblings(".motrice-task-add-candidate-field-controls").show();
+});
+
+$(".motrice-task-add-candidate-btn-ok").click(function(event) {
+         // console.log("add button clicked...:" + event.target.nodename );
+         // first, siteAjaxPost addcandidate message  with uid and 
+         // activityinstanceuuid of current activity
+         event.preventDefault();
+         
+         
+         var entry    = $(this).siblings("input[name='motrice-task-add-candidate']").val();
+         var instanceUuid = $(this).siblings("input[name='motrice-activity-instance-uuid']").val();
+         console.log("targetUserId: " + entry);
+         siteAjaxPost("/site/restservices/site-ajax/assignTask",
+           "activityInstanceUuid=" + instanceUuid + "&action=addcandidate&targetUserId=" + entry,
+           function(data) {
+             // if success remove table row entry from page
+             console.log("add candidate: " + entry + ", removing from input field and hide buttons");
+			 $(this).siblings("input[name='motrice-task-add-candidate']").val("");
+			 $(this).siblings(".motrice-task-add-candidate-field-controls").hide();
+	         $(this).hide();
+             refreshActivityWorkflowInfo(data);
+	   }); 
+});
+
+	$(".motrice-task-remove-candidate-btn").click(function(event){ 
+	    console.log("remove button clicked...:" + event.target.nodename );
+	    // first, siteAjaxPost with uid and activityinstanceuuid of current
+	    //   activity 
+		event.preventDefault();
+		var entry    = $(this).parent().parent().siblings("input[name='motrice-task-add-candidate']").val();
+		var instanceUuid = $(this).parent().parent().siblings("input[name='motrice-activity-instance-uuid']").val();
+	         
+	    console.log("targetUserId: " + entry);
+	    siteAjaxPost("/site/restservices/site-ajax/assignTask",
+	        "activityInstanceUuid=" + instanceUuid + "&action=removecandidate&targetUserId=" + entry,
+	        function(data) {
+	           // if success, refreshActualCandidates(), else leave as is
+	           refreshActivityWorkflowInfo(data);
+	        }
+	    );
+	});
+
+	$(".motrice-task-assign-to-candidate-btn").click(function(event) { 
+		console.log("Locking/Unlocking row...");
+		event.preventDefault();
+	
+	    var entry    = $(this).parent().parent().siblings("input[name='motrice-task-add-candidate']").val();
+	    var instanceUuid = $(this).parent().parent().siblings("input[name='motrice-activity-instance-uuid']").val();
+	
+	    console.log("targetUserId: " + entry);
+	
+	    if ( assignedUserUid.trim() ) {
+		    siteAjaxPost("/site/restservices/site-ajax/assignTask",
+		      "activityInstanceUuid=" + instanceUuid + "&action=unassign&targetUserId=" + entry,
+		      function(data) {
+		        // if success, refreshActualCandidates(), else leave as is
+		        refreshActivityWorkflowInfo(data);
+	          }); 
+	    } 
+	    else {
+		    siteAjaxPost("/site/restservices/site-ajax/assignTask",
+		      "activityInstanceUuid=" + instanceUuid + "&action=assign&targetUserId=" + entry,
+		      function(data) {
+		         // if success, refreshActualCandidates(), else leave as is
+		         refreshActivityWorkflowInfo(data);
+		      }
+		    ); 
+		}
+	});
+
+
 	/*
 	 * Refresh work flow info in page i.e. activity candidates and assigned 
 	 */
@@ -565,13 +383,15 @@ $(".motrice-comment-field").focus(function() {
 				str = "Jag är tilldelad att utföra aktiviteten";
 				$(".motrice-assign-to").hide();
 				$(".motrice-unassign-user").show();
+				$(".motrice-assigned-to-other-user").hide();
 				$("#edit-candidates").hide();
 			} else {
 				/* Assigned to someone else */
 				str = info.assignedUser.label
 						+ " är tilldelad att utföra aktiviteten";
 				$(".motrice-assign-to").hide();
-				$(".motrice-unassign-user").show();
+				$(".motrice-unassign-user").hide();
+				$(".motrice-assigned-to-other-user").show();
 				$("#edit-candidates").hide();
 			}
 		} else {
@@ -594,6 +414,7 @@ $(".motrice-comment-field").focus(function() {
 			}
 			$(".motrice-assign-to").show();
 			$(".motrice-unassign-user").hide();
+			$(".motrice-assigned-to-other-user").hide();
 			$("#edit-candidates").show();
 		}
 
@@ -602,6 +423,32 @@ $(".motrice-comment-field").focus(function() {
 		if ( !$.isEmptyObject(info) && instanceUuid == info.taskId ) {
 		    $(this).children(".motrice-activity-priority").children("select.motrice-activity-priority-select").val(info.priority);
 		    $(this).children(".motrice-activity-candidates").text(str);
+		    $(this).children("ul.motrice-activity-candidates-details").empty();
+			for (var i=0;i<info.candidates.length;i++) {
+			    var item = info.candidates[i];
+			    if (!$.isEmptyObject(info.assignedUser) && !$.isEmptyObject(info.assignedUser.uuid)) {
+			    	if (info.assignedUser.uuid  == item.uuid) {
+						$(this).children("ul.motrice-activity-candidates-details").append("<li>" + item.label + "(" + item.labelShort + ") <button class='btn btn-danger motrice-task-unassign-btn'><i class='fa fa-unlock-alt'></i>&nbsp;Sl&auml;pp l&aring;s</button><input name='user-uuid' type='hidden' value='" + item.uuid + "'/></li>");			    	
+			    	}
+			    	else {
+		//	    		$(this).children("ul.motrice-activity-candidates-details").append("<li>" + (item.type=="group" ? "G" : "U") + item.label + "<button class='motrice-task-remove-candidate-btn'><i class='fa fa-times'></i></button><input name='user-uuid' type='hidden' value='" + item.uuid + "'/></li>");
+			    		if (item.type=="group") {
+			    	 	  $(this).children("ul.motrice-activity-candidates-details").append("<li><i class='fa fa-users'></i>&nbsp;" + item.label + "<input name='user-uuid' type='hidden' value='" + item.uuid + "'/></li>");
+			    		}
+			    		else {   
+							$(this).children("ul.motrice-activity-candidates-details").append("<li><i class='fa fa-user'></i>&nbsp;" + item.label + "<button class='motrice-task-remove-candidate-btn'><i class='fa fa-times'></i></button><input name='user-uuid' type='hidden' value='" + item.uuid + "'/></li>");
+						}
+			    	}
+			    }
+			    else {
+			    	if (item.type=="group") {
+			    	   $(this).children("ul.motrice-activity-candidates-details").append("<li><i class='fa fa-users'></i>&nbsp;" + item.label + "<input name='user-uuid' type='hidden' value='" + item.uuid + "'/></li>");
+			    	}
+			    	else {   
+						$(this).children("ul.motrice-activity-candidates-details").append("<li><i class='fa fa-user'></i>&nbsp;" + item.label + "<button class='motrice-task-remove-candidate-btn'><i class='fa fa-times'></i></button>&nbsp;<button class='motrice-task-assign-to-btn'><i class='fa fa-lock'></i></button><input name='user-uuid' type='hidden' value='" + item.uuid + "'/></li>");
+					}
+				} 
+			}
 		}
 	    });
 
@@ -621,4 +468,42 @@ $(".motrice-comment-field").focus(function() {
 	   $("#commentfeed").siblings("a.toggle-view-list-show").html(comments.length + " kommentarer <i class='fa fa-chevron-circle-down'></i>"); //TODO multi lingual...
 	}
 
+
+ $( ".motrice-add-dirusername" ).autocomplete({
+      source: function( request, response ) {
+        $.ajax({
+          url: "/site/restservices/site-ajax/dirSearchUserEntries",
+          dataType: "json",
+          type: "POST",
+          data: {
+            cn: request.term
+          },
+          success: function( data ) {
+            response( data );
+          }
+        }); 
+      },
+      minLength: 3,
+      select: function( event, ui ) {
+        $(this).val( ui.item.cn	);
+        return false;
+      },
+      focus: function( event, ui ) {
+        $(this).val( ui.item.cn);
+        return false;
+      },
+      open: function() {
+        $( this ).removeClass( "ui-corner-all" ).addClass( "ui-corner-top" );
+      },
+      close: function() {
+        $( this ).removeClass( "ui-corner-top" ).addClass( "ui-corner-all" );
+      }
+    })/*.each(function() {
+         $(this).data("ui-autocomplete")._renderItem = function( ul, item ) {
+         return  $("<li>")
+         .attr("data-value", item.cn )
+        .append( "<a><strong>" + item.cn + "</strong> - " + item.label + "</a>" )
+        .appendTo( ul );
+      };
+    })*/;
 	

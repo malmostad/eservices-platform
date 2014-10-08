@@ -26,7 +26,7 @@
  
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
 
-<article>
+<article class="wide body-copy">
 <hst:include ref="content" />
 <!-- the lists is a general 'slot' where items can be dropped in -->
 <hst:include ref="lists" />

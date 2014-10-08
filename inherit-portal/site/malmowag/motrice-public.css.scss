@@ -25,6 +25,9 @@ article, nav.content, aside {
   article {
     @include columns(6);
   }
+  article.wide {
+    @include columns(12, true);
+  }
   nav.content {
     @include columns(6, true);
   }
@@ -35,6 +38,9 @@ article, nav.content, aside {
 @media (min-width: 50em) {
   article {
     @include columns(9);
+  }
+  article.wide {
+    @include columns(12, true);
   }
   nav.content {
     @include columns(3, true);

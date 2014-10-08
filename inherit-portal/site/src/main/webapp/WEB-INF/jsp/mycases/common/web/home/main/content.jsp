@@ -24,15 +24,23 @@
 --%> 
  
  
-<%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
+<%@ include file="/WEB-INF/jspf/htmlTags.jspf" %>
 
-
-<article class="body-copy" role="main">
-<hst:include ref="content" />
-<!-- the lists is a general 'slot' where items can be dropped in -->
-<hst:include ref="lists" />
-</article>
-
-<hst:include ref="leftmenu" />
-
-<!-- hst:include ref="right" / -->
+<c:choose>
+  <c:when test="${empty document}">
+    <tag:pagenotfound/>
+  </c:when>
+  <c:otherwise>
+    <c:if test="${not empty document.title}">
+      <hst:element var="headTitle" name="title">
+        <c:out value="${document.title}"/>
+      </hst:element>
+      <hst:headContribution keyHint="headTitle" element="${headTitle}"/>
+    </c:if>
+    
+    <hst:cmseditlink hippobean="${document}"/>
+    <h2>${document.title}</h2>
+    <p>${document.summary}</p>
+    <hst:html hippohtml="${document.html}"/>
+  </c:otherwise>
+</c:choose>

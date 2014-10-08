@@ -46,9 +46,9 @@
 	    <p>TODO HELP!</p>
 	  </div>
 	  <div class="box-content body-copy motrice-activity-workflow">
-	     <input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/>
+	     			<input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/>
 						
-	    <p  class="motrice-activity-priority">
+	    			<p  class="motrice-activity-priority">
 							<label><fmt:message key="mycases.priority.lbl" /></label> <select
 								class="motrice-activity-priority-select">
 								<option value="0">
@@ -65,9 +65,17 @@
 						<p class="motrice-activity-candidates">
 						  Loading candidates...
 						</p>
-						<p><button id="add-candidates" class="btn btn-primary motrice-add-candidates"><fmt:message	key="mycases.editcandidates.lbl" /><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
-						<p><button class="btn btn-danger motrice-unassign-user motrice-initial-hidden"><fmt:message key="mycases.unassign.lbl"/><input type="hidden" name="motrice-unassign-user" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
-						<p><button class="btn btn-primary motrice-assign-to motrice-initial-hidden"><fmt:message key="mycases.assigntome.lbl"/><input type="hidden" name="motrice-assign-to" value="${user.uuid}"/><input type="hidden" name="motrice-activity-instance-uuid" value="${activity.activityInstanceUuid}"/></button></p>
+						
+						<a class="motrice-task-candidates-view-details toggle-view-list" href="#">Visa detaljer&nbsp;<i class="fa fa-chevron-circle-down"></i></a>
+						<a class="motrice-task-candidates-view-details toggle-view-list motrice-initial-hidden" href="#">D&ouml;lj detaljer&nbsp;<i class="fa fa-chevron-circle-up"></i></a>
+						<ul class="motrice-activity-candidates-details toggle-view-list motrice-initial-hidden">
+							<li>Loading candidates...</li>
+						</ul>
+						
+						<input type="text" name="motrice-task-add-candidate" placeholder="L&auml;gg till kandidat"	class="text ui-widget-content ui-corner-all motrice-add-dirusername motrice-task-add-candidate" />
+						<button class="btn btn-primary motrice-task-add-candidate-field-controls motrice-task-add-candidate-btn-ok motrice-initial-hidden">L&auml;gg till</button>
+						<button class="btn btn-default motrice-task-add-candidate-field-controls motrice-task-add-candidate-btn-cancel motrice-initial-hidden">Avbryt</button>
+									
 	  </div>
 	  <a href="#" class="toggle-instructions" title="Show instructions">?</a>
 	  <div class="dropdown box-menu pull-right">
@@ -81,131 +89,5 @@
 	    </menu>
 	  </div>
 	</section>
-
-
-<!-- Modal dialog to edit candidates to perform the activity-->
-<div id="dialog-edit-candidates"
-	title="<fmt:message key="mycases.editcandidatesdlg.title"/>">
-	<p class="validateTips">
-		<fmt:message key="mycases.editcandidatesdlg.hint" />
-	</p>
-	<input type="hidden" name="motrice-activity-instance-uuid"
-			value="${activity.activityInstanceUuid}" />
-
-	<h3>
-		<fmt:message key="mycases.candidates.column.lbl" />
-	</h3>
-	<table>
-		<thead>
-			<tr>
-				<th><fmt:message key="mycases.name.lbl" /></th>
-				<th><fmt:message key="mycases.cn.lbl" /></th>
-				<th><fmt:message key="mycases.email.lbl" /></th>
-				<th></th>
-				<th></th>
-			</tr>
-		</thead>
-	<tbody id="output2" >
-	  <tr>
-	    <td></td>
-	    <td></td>
-        <td></td>
-	    <td><button class="remove-candidate-btn" href="#"></button></td>
-	    <td><button class="lock-candidate-btn" href="#"></button></td>
-	  </tr>
-	</tbody>
-	</table>
-
-	<h3></h3>
-
-<!-- 
-			<label for="name"><fmt:message key="mycases.name.lbl" /></label> <input
-				type="text" name="name" id="name"
-				class="text ui-widget-content ui-corner-all" /> <label for="email"><fmt:message
-					key="mycases.email.lbl" /></label> <input type="text" name="email"
-				id="email" value="" class="text ui-widget-content ui-corner-all" />
-			<button id="search-button" class="search-button">
-				<fmt:message key="mycases.search.lbl" />
-			</button>
--->
-	
-	<form id="search-users-form" action="/site/restservices/site-ajax/dirSearchUserEntries" method="post"> 
-	<!-- uid -->        
-	<label for="cn"><fmt:message key="mycases.cn.lbl" /></label>
-	<input type="text" name="cn" id="cn"
-	       class="text ui-widget-content ui-corner-all" />
-	<br/>
-
-	<!-- sn -->        
-	<label for="sn"><fmt:message key="mycases.sn.lbl" /></label>
-	<input type="text" name="sn" id="sn"
-	       class="text ui-widget-content ui-corner-all" />
-	<br/>
-
-	<!-- mail -->      
-	<label for="mail"><fmt:message key="mycases.email.lbl" /></label>
-	<input type="text" name="mail"
-	       id="mail" value=""
-	       class="text ui-widget-content ui-corner-all" />
-	<br/>
-
-	<!-- givenName --> 
-	<label for="givenName"><fmt:message key="mycases.givenname.lbl" /></label>
-	<input type="text" name="givenName"
-	       id="givenName" value=""
-	       class="text ui-widget-content ui-corner-all" />
-	<br/>
-
-	<!-- department -->
-	<label for="department"><fmt:message key="mycases.department.lbl" /></label>
-	<input type="text" name="department"
-	       id="department" value=""
-	       class="text ui-widget-content ui-corner-all" />
-	<br/>
-
-	<!-- company -->
-	<label for="company"><fmt:message key="mycases.company.lbl" /></label>
-	<input type="text" name="company"
-	       id="company" value=""
-	       class="text ui-widget-content ui-corner-all" />
-	<br/>
-    <div >
-       <input type="submit" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" value="<fmt:message key="search.submit.text" />" /> 
-    </div>
-      </form>
-
-	<h3>
-		<fmt:message key="mycases.searchresult.column.lbl" />
-	</h3>
-
-	<table>
-		<thead>
-			<tr>
-				<th><fmt:message key="mycases.name.lbl" /></th>
-				<th><fmt:message key="mycases.cn.lbl" /></th>
-				<th><fmt:message key="mycases.email.lbl" /></th>
-				<th></th>
-			</tr>
-		</thead>
-		<tbody id="output1">
-			<tr>
-				<td></td>
-				<td></td>
-				<td></td>
-<!--				<td><button class="add-candidate-btn" href="#"></button></td> -->
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
-
-	<form action="/site/restservices/site-ajax/assignTask"
-		id="addCandidate" class="siteAjaxForm">
-		<input type="hidden" name="activityInstanceUuid"
-			value="${activity.activityInstanceUuid}" />
-		<input type="hidden" name="action"
-		    value="addcandidate" />
-	    <input type="hidden" size="8"name="targetUserId" placeholder="" />
-	</form>
-</div>
 
 </aside>
