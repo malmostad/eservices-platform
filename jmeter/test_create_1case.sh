@@ -44,10 +44,19 @@ done
 
 # load a number of activites 
 LOOP=1 
-# The host under test.
-HOST="eminburk.malmo.se"
-PROTOCOL="https"
-PORT="443"
+JMETERSETTINGS="jmeterSetting_deploy" 
+if test -f "${JMETERSETTINGS}" 
+then 
+   echo "reading ${JMETERSETTINGS}" 
+   source  ./${JMETERSETTINGS}
+else
+   echo "using defaults"
+   # The host under test.
+   HOST="eminburk.malmo.se"
+   PROTOCOL="https"
+   PORT="443"
+   STARTFORM="demo-ansokan--v002"
+fi 
 
 # A username.
 USER=""
@@ -80,7 +89,6 @@ JMETER=${HOME}/jmeter/bin/jmeter.sh
 JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
 OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
-STARTFORM="demo-ansokan--v002"
 TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
 TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
 COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"

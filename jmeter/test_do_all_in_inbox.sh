@@ -44,10 +44,19 @@ done
 
 # load a number of activites 
 LOOP=10 
-# The host under test.
-HOST="eminburk.malmo.se"
-PROTOCOL="https"
-PORT="443"
+JMETERSETTINGS="jmeterSetting_deploy" 
+if test -f "${JMETERSETTINGS}" 
+then 
+   echo "reading ${JMETERSETTINGS}" 
+   source  ./${JMETERSETTINGS}
+else
+   echo "using defaults"
+   # The host under test.
+   HOST="eminburk.malmo.se"
+   PROTOCOL="https"
+   PORT="443"
+   STARTFORM="demo-ansokan--v002"
+fi 
 
 # A username.
 USER=""
