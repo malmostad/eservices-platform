@@ -40,10 +40,7 @@
     </c:if>
 	
 	<tag:caseoverview activity="${activity}" processInstanceDetails="${processInstanceDetails}" casetags="${tags}"/>
-	
-	
-	
-
+		
 	<section class="box" contextmenu="task-section-menu" id="task-section">
 	  <h1 class="box-title"><fmt:message key="mycases.activity.column.lbl"/>: ${activity.activityLabel} i ${processInstanceDetails.processLabel}</h1>
 	  <div class="box-instructions">

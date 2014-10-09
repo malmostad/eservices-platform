@@ -50,7 +50,9 @@
 					</ul>
 				</form>
 	        
-	
+		<form action="./search/by-tag/casesbytagvalue" method="POST" id="searchTagForm" class="motrice-initial-hidden">
+        	<input type="hidden" name="searchStr" value=""/> 
+    	</form>
 	  </column>
 	  <lastcolumn>
 	  
