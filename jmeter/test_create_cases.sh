@@ -44,11 +44,11 @@ done
 
 # load a number of activites 
 LOOP=10 
-JMETERSETTINGS="jmeterSetting_deploy" 
+JMETERSETTINGS="${HOME}/workspaces/inheritsource-develop/pawap/jmeter/jmeterSetting_deploy" 
 if test -f "${JMETERSETTINGS}" 
 then 
    echo "reading ${JMETERSETTINGS}" 
-   source  ./${JMETERSETTINGS}
+   source  ${JMETERSETTINGS}
 else
    echo "using defaults"
    # The host under test.

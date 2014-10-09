@@ -45,7 +45,7 @@ done
 function loadInbox() {
 # load a number of activites 
 LOOP=10 
-TESTPLAN=TestPlanCreateCases.jmx 
+TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCreateCases.jmx 
 if [ ! -f ${TESTPLAN} ]; then
   echo "Missing file TESTPLAN=${TESTPLAN}"
    exit 1;
