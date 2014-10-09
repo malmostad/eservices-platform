@@ -45,7 +45,7 @@
             </elementProp>
             <elementProp name="host" elementType="Argument">
               <stringProp name="Argument.name">host</stringProp>
-              <stringProp name="Argument.value">${__P(host,eminburk.malmo.se)}</stringProp>
+              <stringProp name="Argument.value">${__P(host,spunk.malmo.se)}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="casename" elementType="Argument">

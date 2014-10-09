@@ -88,8 +88,9 @@ fi
 JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
 OUTPUTDIR=`pwd`/jmeterResults
 OUTPUTSLASK=`pwd`/slask
+TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
  
-TESTCLEANPLAN=TestPlanDoAllInInbox.jmx 
+TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
 COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTSLASK}"
 
 # 
@@ -110,7 +111,7 @@ exit 0
 
 
 
-TESTPLAN=TestPlanCreateCases.jmx 
+TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCreateCases.jmx 
 CASENAME="CreateCases" 
 
 if [ ! -f ${TESTPLAN} ]; then
