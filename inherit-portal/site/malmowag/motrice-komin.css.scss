@@ -34,7 +34,9 @@ article, article.wide , nav.content, aside, column  {
 }
 
 .motrice-grid {
- 
+ *zoom:1;
+ margin:1em auto;
+ padding:0 1em
 }
 
 @media (min-width: 40em) {
