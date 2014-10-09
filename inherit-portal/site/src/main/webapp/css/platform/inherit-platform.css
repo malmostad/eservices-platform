@@ -50,3 +50,7 @@ ul.motrice-activity-candidates-details {
 ul.timeline { 
     list-style-type: none;
 }
+
+ul.tagit {
+	font-size: 1em;
+}
