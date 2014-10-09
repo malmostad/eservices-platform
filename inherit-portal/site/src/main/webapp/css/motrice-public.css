@@ -11,9 +11,8 @@ article, nav.content, aside {
   box-sizing: border-box; }
 
 .motrice-grid {
-  *zoom: 1; 
+  *zoom: 1;
   margin: 1em auto;
-  max-width: 55em;
   padding: 0 1em; }
 
 .motrice-grid:before, .motrice-grid:after {
