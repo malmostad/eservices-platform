@@ -30,10 +30,11 @@
     <hst:include ref="leftmenu" />
 </nav>
  
-<article class="wide body-copy">
+<article class="body-copy">
     <hst:include ref="content" />
 </article>
 
 <!-- the lists is a general 'slot' where items can be dropped in -->
 <hst:include ref="lists" />
 
+<hst:include ref="right" />

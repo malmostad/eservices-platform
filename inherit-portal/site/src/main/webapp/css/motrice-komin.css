@@ -7,7 +7,7 @@
     display: table;
     content: '';
     line-height: 0; }
-  .breadcrumbs:after {
+  .breadcrumbs:after { 
     clear: both; }
   .breadcrumbs ol, .breadcrumbs ul {
     margin: 0;
@@ -21,7 +21,7 @@
     display: inline-block;
     background-position: right 50%; }
     .breadcrumbs li a {
-      color: black; } 
+      color: black; }
     .breadcrumbs li:last-child {
       background-image: none; }
 
@@ -36,6 +36,11 @@ article, article.wide, nav.content, aside, column {
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   margin-right: 0%; }
+
+.motrice-grid {
+  *zoom: 1;
+  margin: 1em auto;
+  padding: 0 1em; }
 
 @media (min-width: 40em) {
   article {
