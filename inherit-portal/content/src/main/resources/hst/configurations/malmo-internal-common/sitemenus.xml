@@ -21,23 +21,15 @@
       <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
         <sv:value>mycases/search/search-cases/simple</sv:value>
       </sv:property>
-      <sv:node sv:name="Startad av person">
+      <sv:node sv:name="Avancerad sökning">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
         <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-          <sv:value>mycases/search/by-user/casesstartedbyuser</sv:value>
+          <sv:value>mycases/search/search-cases/advanced</sv:value>
         </sv:property>
       </sv:node>
-      <sv:node sv:name="Person deltagit i">
-        <sv:property sv:name="jcr:primaryType" sv:type="Name">
-          <sv:value>hst:sitemenuitem</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-          <sv:value>mycases/search/by-user/casesbyinvolveduser</sv:value>
-        </sv:property>
-      </sv:node>
-      <sv:node sv:name="Etikett">
+      <sv:node sv:name="Sök på etikett och ärendenummer">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
@@ -61,20 +53,12 @@
       <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
         <sv:value>mycases/search/with-me/pending</sv:value>
       </sv:property>
-      <sv:node sv:name="Startade av mig">
+      <sv:node sv:name="Ärenden startade av mig">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
         <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
           <sv:value>mycases/search/started-by-me/pending</sv:value>
-        </sv:property>
-      </sv:node>
-      <sv:node sv:name="Handlagda av mig">
-        <sv:property sv:name="jcr:primaryType" sv:type="Name">
-          <sv:value>hst:sitemenuitem</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-          <sv:value>mycases/search/with-me/pending</sv:value>
         </sv:property>
       </sv:node>
     </sv:node>
@@ -85,20 +69,12 @@
       <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
         <sv:value>mycases/search/with-me/archived</sv:value>
       </sv:property>
-      <sv:node sv:name="Startade av mig">
+      <sv:node sv:name="Ärenden startade av mig">
         <sv:property sv:name="jcr:primaryType" sv:type="Name">
           <sv:value>hst:sitemenuitem</sv:value>
         </sv:property>
         <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
           <sv:value>mycases/search/started-by-me/archived</sv:value>
-        </sv:property>
-      </sv:node>
-      <sv:node sv:name="Handlagda av mig">
-        <sv:property sv:name="jcr:primaryType" sv:type="Name">
-          <sv:value>hst:sitemenuitem</sv:value>
-        </sv:property>
-        <sv:property sv:name="hst:referencesitemapitem" sv:type="String">
-          <sv:value>mycases/search/with-me/archived</sv:value>
         </sv:property>
       </sv:node>
     </sv:node>
