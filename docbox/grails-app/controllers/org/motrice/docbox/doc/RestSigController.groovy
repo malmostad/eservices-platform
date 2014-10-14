@@ -106,7 +106,7 @@ class RestSigController {
       if (docStep.signCount > 0) {
 	pdfContents = docService.findPdfContents(docStep)
       } else {
-	status = 400
+	status = 409
 	msg = "Document has no signature: ${docboxref}"
       }
     } else {

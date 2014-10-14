@@ -85,7 +85,7 @@ class RestDocController {
   }
 
   /**
-   * Get original form data
+   * Get original form data given an Orbeon form data uuid.
    */
   def docboxOrbeonData(String uuid) {
     if (log.debugEnabled) log.debug "FORMDATA: ${Util.clean(params)}, ${request.forwardURI}"

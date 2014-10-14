@@ -50,6 +50,15 @@
 				</li>
 				</g:if>
 			
+				<g:if test="${tdbParameterObj?.drill}">
+				<li class="fieldcontain">
+					<span id="drill-label" class="property-label"><g:message code="tdbParameter.drill.label" default="Drill" /></span>
+					
+						<span class="property-value" aria-labelledby="drill-label"><g:link controller="tdbDrill" action="show" id="${tdbParameterObj?.drill?.id}">${tdbParameterObj?.drill?.encodeAsHTML()}</g:link></span>
+					
+				</li>
+				</g:if>
+			
 			</ol>
 			<g:form>
 				<fieldset class="buttons">

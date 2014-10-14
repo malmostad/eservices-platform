@@ -28,7 +28,11 @@
 					
 						<th><g:message code="tdbDrill.verb.label" default="Verb" /></th>
 					
+						<th><g:message code="tdbDrill.mode.label" default="Mode" /></th>
+					
 						<th><g:message code="tdbDrill.method.label" default="Method" /></th>
+					
+						<th><g:message code="tdbDrill.suite.label" default="Suite" /></th>
 					
 					</tr>
 				</thead>
@@ -40,7 +44,11 @@
 					
 						<td>${fieldValue(bean: tdbDrillObj, field: "verb")}</td>
 					
+						<td>${fieldValue(bean: tdbDrillObj, field: "mode")}</td>
+					
 						<td>${fieldValue(bean: tdbDrillObj, field: "method")}</td>
+					
+						<td>${fieldValue(bean: tdbDrillObj, field: "suite")}</td>
 					
 					</tr>
 				</g:each>

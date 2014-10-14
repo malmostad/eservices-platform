@@ -30,6 +30,8 @@
 					
 						<g:sortableColumn property="description" title="${message(code: 'tdbParameter.description.label', default: 'Description')}" />
 					
+						<th><g:message code="tdbParameter.drill.label" default="Drill" /></th>
+					
 					</tr>
 				</thead>
 				<tbody>
@@ -41,6 +43,8 @@
 						<td>${fieldValue(bean: tdbParameterObj, field: "value")}</td>
 					
 						<td>${fieldValue(bean: tdbParameterObj, field: "description")}</td>
+					
+						<td>${fieldValue(bean: tdbParameterObj, field: "drill")}</td>
 					
 					</tr>
 				</g:each>

@@ -26,3 +26,11 @@
 	<g:textArea name="description" cols="40" rows="5" maxlength="400" value="${tdbParameterObj?.description}"/>
 </div>
 
+<div class="fieldcontain ${hasErrors(bean: tdbParameterObj, field: 'drill', 'error')} required">
+	<label for="drill">
+		<g:message code="tdbParameter.drill.label" default="Drill" />
+		<span class="required-indicator">*</span>
+	</label>
+	<g:select id="drill" name="drill.id" from="${org.motrice.tdocbox.TdbDrill.list()}" optionKey="id" required="" value="${tdbParameterObj?.drill?.id}" class="many-to-one"/>
+</div>
+
