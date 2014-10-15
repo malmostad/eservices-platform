@@ -114,7 +114,9 @@ $(document).ready(function() {
               ORBEON.xforms.Init.document();
             } 
           } 
+          window.dispatchEvent(new Event('resize'));
         }); 
+        
       }
 /* Swedish initialisation for the jQuery UI date picker plugin. */
 /* Written by Anders Ekdahl ( anders@nomadiz.se). */
