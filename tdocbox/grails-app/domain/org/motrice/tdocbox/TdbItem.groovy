@@ -1,5 +1,7 @@
 package org.motrice.tdocbox
 
+import java.security.MessageDigest
+
 /**
  * An item obtained from running a drill.
  * Mainly name-value.
@@ -18,32 +20,51 @@ class TdbItem implements Comparable {
   // Binary value
   byte[] bytes
 
+  // SHA-256 checksum, currently only used for binary contents
+  String checksum
+
   static mapping = {
     text type: 'text'
   }
-  static belongsTo = [case: TdbCase]
+  static belongsTo = [tcase: TdbCase]
   static constraints = {
     binaryFlag nullable: true
     text nullable: true
     bytes nullable: true
+    checksum nullable: true, maxSize: 200
   }
 
   /**
    * Create a text item without saving it.
    */
   static createTextItem(String name, String text) {
-    new TdbItem(name: name, text: text)
+    new TdbItem(name: name, text: text, checksum: null)
   }
 
   /**
    * Create a binary item without saving it.
    */
   static createBinaryItem(String name, byte[] bytes) {
-    new TdbItem(name: name, bytes: bytes, binaryFlag: true)
+    def digest = MessageDigest.getInstance('SHA-256').digest(bytes)
+    def sw = new StringWriter()
+    digest.encodeBase64().writeTo(sw)
+    new TdbItem(name: name, bytes: bytes, binaryFlag: true, checksum: sw.toString())
   }
 
   boolean isBinary() {
     binaryFlag
+  }
+
+  /**
+   * The file name of this item when downloaded
+   */
+  String getFileName() {
+    def fileExt = binary? 'bin' : 'txt'
+    if (binary && bytes.length > 9) {
+      def magic = new String(bytes, 0, 5, 'UTF-8')
+      if (magic == '%PDF-') fileExt = 'pdf'
+    }
+    "${tcase?.timeStamp?.format('yyyyMMdd-HHmmss')}-${name}.${fileExt}"
   }
 
   def getValue() {

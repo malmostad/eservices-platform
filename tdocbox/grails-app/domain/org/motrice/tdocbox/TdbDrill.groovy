@@ -24,14 +24,6 @@ class TdbDrill implements Comparable {
     parameters nullable: true
   }
 
-  TdbCase createCase() {
-    TdbCase.createCase(this)
-  }
-
-  TdbCase createCase(TdbCase cs) {
-    cs ?: TdbCase.createCase(this)
-  }
-
   /**
    * Get the body parameter, if present, otherwise null.
    */
@@ -53,7 +45,27 @@ class TdbDrill implements Comparable {
   }
 
   String getDebug() {
-    "[Drill ${name}: ${map}]"
+    def sb = new StringBuilder()
+    sb.append('[Drill ').append(name).append(':')
+    def sep = ' '
+    map.each {entry ->
+      sb.append(sep).append(entry.key).append(':')
+      String val = entry.value
+
+      if (!val) {
+	sb.append('<>')
+      } else if (val.size() <= 48) {
+	sb.append(val)
+      } else {
+	sb.append(val.substring(0, 40))
+	sb.append('..<').append(val.size()).append('>')
+      }
+
+      sep = ', '
+    }
+    
+    sb.append(']')
+    return sb.toString()
   }
 
   String toString() {

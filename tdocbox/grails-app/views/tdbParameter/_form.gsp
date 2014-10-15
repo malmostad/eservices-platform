@@ -15,7 +15,7 @@
 		<g:message code="tdbParameter.value.label" default="Value" />
 		
 	</label>
-	<g:textArea name="value" cols="40" rows="5" maxlength="400" value="${tdbParameterObj?.value}"/>
+	<g:textField name="value" value="${tdbParameterObj?.value}"/>
 </div>
 
 <div class="fieldcontain ${hasErrors(bean: tdbParameterObj, field: 'description', 'error')} ">

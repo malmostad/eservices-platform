@@ -6,6 +6,7 @@ import org.motrice.tdocbox.TdbProperty
 class BootStrap {
   // Injection magic
   def grailsApplication
+  def setupService
 
   def init = { servletContext ->
     // Create the HTTP verbs
@@ -16,6 +17,9 @@ class BootStrap {
     TdbProperty.createProperties()
     // Define the API methods
     TdbMethod.createMethods()
+
+    // Database initialization
+    setupService.initialize()
   }
 
   def destroy = {

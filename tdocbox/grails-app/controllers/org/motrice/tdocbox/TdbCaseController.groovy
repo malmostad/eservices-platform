@@ -10,13 +10,45 @@ class TdbCaseController {
     redirect(action: "list", params: params)
   }
 
+  /**
+   * May have a 'tdbSuiteId' parameter identifying a test suite.
+   * In such case the list is limited to test cases for that suite.
+   */
   def list(Integer max) {
-    params.max = Math.min(max ?: 10, 100)
+    if (log.debugEnabled) log.debug "LIST ${params}"
+    params.max = Math.min(max ?: 15, 100)
     if (!params.sort) {
       params.sort = 'timeStamp'
       params.order = 'desc'
     }
-    [tdbCaseObjList: TdbCase.list(params), tdbCaseObjTotal: TdbCase.count()]
+
+    def list = []
+    def count = 0
+    def tdbSuiteObj = null
+    def tdbSuiteId = params.tdbSuiteId
+    if (tdbSuiteId) tdbSuiteObj = TdbSuite.get(tdbSuiteId)
+
+    // We silently ignore the suite if the id does not return anything
+    if (tdbSuiteObj) {
+      def cr = TdbCase.createCriteria()
+      list = cr.list(params) {
+	suite {
+	  eq('id', tdbSuiteObj.id)
+	}
+      }
+
+      cr = TdbCase.createCriteria()
+      count = cr.count() {
+	suite {
+	  eq('id', tdbSuiteObj.id)
+	}
+      }
+    } else {
+      list = TdbCase.list(params)
+      count = TdbCase.count()
+    }
+
+    [tdbCaseObjList: list, tdbCaseObjTotal: count, tdbSuiteId: tdbSuiteId]
   }
 
   def create() {

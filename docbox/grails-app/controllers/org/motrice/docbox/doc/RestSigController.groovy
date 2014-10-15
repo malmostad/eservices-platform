@@ -114,14 +114,16 @@ class RestSigController {
     }
 
     def sigList = null
-    if (pdfContents) {
-      sigList = signdocService.findAllSignatures(pdfContents)
-      if (sigList.empty) {
-	status = 409
-	msg = "No signature found: ${docboxref}"
+    if (!msg) {
+      if (pdfContents) {
+	sigList = signdocService.findAllSignatures(pdfContents)
+	if (sigList.empty) {
+	  status = 409
+	  msg = "No signature found: ${docboxref}"
+	}
+      } else {
+	msg = "No PDF found for ${docboxref}"
       }
-    } else {
-      msg = "No PDF found for ${docboxref}"
     }
 
     if (msg) {
@@ -166,7 +168,7 @@ class RestSigController {
 	  prevChecksum = prevContents.checksum
 	}
       } else {
-	status = 400
+	status = 409
 	msg = "Document has no signature: ${docboxref}"
       }
     } else {

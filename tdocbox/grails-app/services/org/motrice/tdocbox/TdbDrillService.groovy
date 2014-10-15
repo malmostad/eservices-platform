@@ -1,6 +1,7 @@
 package org.motrice.tdocbox
 
 import com.budjb.requestbuilder.RequestBuilder
+import com.budjb.requestbuilder.ResponseStatusException
 
 /**
  * Service for invoking the REST methods of DocBox.
@@ -12,7 +13,7 @@ class TdbDrillService {
   TdbCase perform(TdbSuite suite, TdbDrill drill, TdbCase cs) {
     if (log.debugEnabled) log.debug "perform << ${drill?.debug}"
     def urlString = TdbMethod.createUrl(drill, cs)
-    if (log.debugEnabled) log.debug "HTTP [[ ${urlString}"
+    if (log.debugEnabled) log.debug "HTTP ${drill?.verb} [[ ${urlString}"
 
     // In this case we do not use the pretty DSL format.
     def builder = new RequestBuilder()
@@ -21,12 +22,17 @@ class TdbDrillService {
     builder = modeConfig(builder, drill)
 
     try {
-      cs = doPerform(builder, drill, cs)
+      cs = doPerform(builder, suite, drill, cs)
+    } catch (ResponseStatusException exc) {
+      if (log.debugEnabled) log.debug "HTTP ${exc.status} ]] ${exc.content}"
+      cs = suite.createCase(cs)
+      cs.addTextItem("${drill.name}_exception", exc.message, true)
+      cs.addTextItem("${drill.name}_result", exc.content)
+      cs.save()
     } catch (Exception exc) {
-      if (log.debugEnabled) log.debug "HTTP EXC ]] ${exc.message}"
-      cs = drill.createCase(cs)
-      cs.addTextItem("${drill.name}_exception", exc.message)
-      cs.exception = exc.message
+      if (log.debugEnabled) log.debug "HTTP EXC ]] ${exc}"
+      cs = suite.createCase(cs)
+      cs.addTextItem("${drill.name}_exception", exc.message, true)
       cs.save()
     }
 
@@ -56,7 +62,9 @@ class TdbDrillService {
     return builder
   }
 
-  private TdbCase doPerform(RequestBuilder builder, TdbDrill drill, TdbCase cs) {
+  private TdbCase doPerform(RequestBuilder builder,
+			    TdbSuite suite, TdbDrill drill, TdbCase cs)
+  {
     def result = null
 
     // Perform the invocation
@@ -81,16 +89,16 @@ class TdbDrillService {
     switch (drill.mode.id) {
     case TdbMode.PARSE_MODE_ID:
       msg = "${result?.size()} entries"
-      cs = storeTextResultMap(drill, cs, result)
+      cs = storeTextResultMap(suite, drill, cs, result)
     break
     case TdbMode.TEXT_MODE_ID:
-      cs = drill.createCase(cs)
+      cs = suite.createCase(cs)
       msg = "${result.size()} characters"
       cs.addTextItem("${drill.name}_result", result)
       cs.save()
     break
     case TdbMode.BINARY_MODE_ID:
-      cs = drill.createCase(cs)
+      cs = suite.createCase(cs)
       msg = "${result.size()} bytes"
       cs.addBinaryItem("${drill.name}_result", result)
       cs.save()
@@ -104,8 +112,8 @@ class TdbDrillService {
     return cs
   }
 
-  private storeTextResultMap(TdbDrill drill, TdbCase cs, result) {
-    cs = drill.createCase(cs)
+  private storeTextResultMap(TdbSuite suite, TdbDrill drill, TdbCase cs, result) {
+    cs = suite.createCase(cs)
     result.each {entry ->
       String name = "${drill.name}_${entry.key}"
       cs.addTextItem(name, entry.value as String)

@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException
 class TdbSuiteController {
 
   def tdbDrillService
+  def setupService
   
   static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -37,6 +38,7 @@ class TdbSuiteController {
   }
 
   def run(Long id) {
+    setupService.initialize()
     def tdbSuiteObj = TdbSuite.get(id)
     if (!tdbSuiteObj) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbSuite.label', default: 'TdbSuite'), id])
@@ -49,7 +51,11 @@ class TdbSuiteController {
       cs = tdbDrillService.perform(tdbSuiteObj, drill, cs)
     }
 
-    render(view: 'show', model: [tdbSuiteObj: tdbSuiteObj])
+    if (cs) {
+      redirect(controller: 'TdbCase', action: 'show', id: cs.id)
+    } else {
+      render(view: 'show', model: [tdbSuiteObj: tdbSuiteObj])
+    }
   }
 
   def show(Long id) {

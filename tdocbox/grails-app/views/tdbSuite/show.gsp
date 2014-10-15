@@ -13,6 +13,8 @@
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 	<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
 	<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
+	<g:set var="tdbSuiteId" value="${tdbSuiteObj?.id}"/>
+	<li><g:link class="list" controller="tdbCase" action="list" params="[tdbSuiteId:tdbSuiteId]"><g:message code="tdbCase.list.label"/></g:link></li>
       </ul>
     </div>
     <div id="show-tdbSuite" class="content scaffold-show" role="main">
@@ -21,36 +23,28 @@
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
       <ol class="property-list tdbSuite">
-	
 	<g:if test="${tdbSuiteObj?.name}">
 	  <li class="fieldcontain">
 	    <span id="name-label" class="property-label"><g:message code="tdbSuite.name.label" default="Name" /></span>
-	    
 	    <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${tdbSuiteObj}" field="name"/></span>
-	    
 	  </li>
 	</g:if>
-	
 	<g:if test="${tdbSuiteObj?.description}">
 	  <li class="fieldcontain">
 	    <span id="description-label" class="property-label"><g:message code="tdbSuite.description.label" default="Description" /></span>
-	    
 	    <span class="property-value" aria-labelledby="description-label"><g:fieldValue bean="${tdbSuiteObj}" field="description"/></span>
-	    
 	  </li>
 	</g:if>
-	
 	<g:if test="${tdbSuiteObj?.drills}">
 	  <li class="fieldcontain">
 	    <span id="drills-label" class="property-label"><g:message code="tdbSuite.drills.label" default="Drills" /></span>
-	    
 	    <g:each in="${tdbSuiteObj.drills}" var="d">
-	      <span class="property-value" aria-labelledby="drills-label"><g:link controller="tdbDrill" action="show" id="${d.id}">${d?.encodeAsHTML()}</g:link></span>
+	      <span class="property-value" aria-labelledby="drills-label">
+		<g:link controller="tdbDrill" action="show" id="${d.id}">${d?.encodeAsHTML()}</g:link> (${d?.method?.encodeAsHTML()})
+	      </span>
 	    </g:each>
-	    
 	  </li>
 	</g:if>
-	
       </ol>
       <g:form>
 	<fieldset class="buttons">

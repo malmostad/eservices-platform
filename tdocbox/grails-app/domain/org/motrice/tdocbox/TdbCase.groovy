@@ -7,8 +7,8 @@ class TdbCase implements Comparable {
   // Creation timestamp
   Date timeStamp
 
-  // Drill from which this case originates.
-  TdbDrill drill
+  // Originating suite
+  TdbSuite suite
 
   // Exception message if the case crashed.
   String exception
@@ -20,15 +20,20 @@ class TdbCase implements Comparable {
     exception nullable: true, maxSize: 400
   }
 
-  static createCase(TdbDrill drill) {
+  static createCase(TdbSuite suite) {
     def now = new Date()
-    new TdbCase(timeStamp: now, drill: drill)
+    new TdbCase(timeStamp: now, suite: suite)
+  }
+
+  TdbCase addTextItem(String itemName, String itemText, boolean exceptionFlag) {
+    def item = TdbItem.createTextItem(itemName, itemText)
+    if (exceptionFlag) exception = itemText
+    addToItems(item)
+    return this
   }
 
   TdbCase addTextItem(String itemName, String itemText) {
-    def item = TdbItem.createTextItem(itemName, itemText)
-    addToItems(item)
-    return this
+    addTextItem(itemName, itemText, false)
   }
 
   TdbCase addBinaryItem(String itemName, byte[] itemBytes) {

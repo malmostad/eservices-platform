@@ -12,7 +12,6 @@
       <ul>
 	<li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
 	<li><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
-	<li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
       </ul>
     </div>
     <div id="show-tdbItem" class="content scaffold-show" role="main">
@@ -45,18 +44,23 @@
 	    <span class="property-value" aria-labelledby="bytes-label">${tdbItemObj?.bytes?.size()} bytes</span>
 	  </li>
 	</g:if>
-	<g:if test="${tdbItemObj?.case}">
+	<g:if test="${tdbItemObj?.checksum}">
 	  <li class="fieldcontain">
-	    <span id="case-label" class="property-label"><g:message code="tdbItem.case.label" default="Case" /></span>
-	    <span class="property-value" aria-labelledby="case-label"><g:link controller="tdbCase" action="show" id="${tdbItemObj?.case?.id}">${tdbItemObj?.case?.encodeAsHTML()}</g:link></span>
+	    <span id="checksum-label" class="property-label"><g:message code="tdbItem.checksum.label" default="Checksum" /></span>
+	    <span class="property-value" aria-labelledby="checksum-label"><g:fieldValue bean="${tdbItemObj}" field="checksum"/></span>
+	  </li>
+	</g:if>
+	<g:if test="${tdbItemObj?.tcase}">
+	  <li class="fieldcontain">
+	    <span id="tcase-label" class="property-label"><g:message code="tdbItem.tcase.label" default="Tcase" /></span>
+	    <span class="property-value" aria-labelledby="tcase-label"><g:link controller="tdbTcase" action="show" id="${tdbItemObj?.tcase?.id}">${tdbItemObj?.tcase?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>
       <g:form>
 	<fieldset class="buttons">
 	  <g:hiddenField name="id" value="${tdbItemObj?.id}" />
-	  <g:link class="edit" action="edit" id="${tdbItemObj?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
+	  <g:link class="download" action="downloadItem" id="${tdbItemObj?.id}"><g:message code="default.button.download.label" default="Download" /></g:link>
 	</fieldset>
       </g:form>
     </div>
