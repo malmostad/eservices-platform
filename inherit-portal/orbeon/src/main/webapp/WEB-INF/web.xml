@@ -22,7 +22,7 @@
     </context-param>
     <context-param>
         <param-name>oxf.resources.priority.0.oxf.resources.filesystem.sandbox-directory</param-name>
-        <param-value>/home/teamcity/TeamCity/buildAgent/work/a10c1ad5cb41f8ca/src/resources-local</param-value>
+        <param-value>/home/teamcity/TeamCity/buildAgent/work/da2a3a9789afdbe/src/resources-local</param-value>
     </context-param>
     <context-param>
         <param-name>oxf.resources.priority.1</param-name>
@@ -30,7 +30,7 @@
     </context-param>
     <context-param>
         <param-name>oxf.resources.priority.1.oxf.resources.filesystem.sandbox-directory</param-name>
-        <param-value>/home/teamcity/TeamCity/buildAgent/work/a10c1ad5cb41f8ca/src/test/resources</param-value>
+        <param-value>/home/teamcity/TeamCity/buildAgent/work/da2a3a9789afdbe/src/test/resources</param-value>
     </context-param>
     <context-param>
         <param-name>oxf.resources.priority.2</param-name>
@@ -38,7 +38,7 @@
     </context-param>
     <context-param>
         <param-name>oxf.resources.priority.2.oxf.resources.filesystem.sandbox-directory</param-name>
-        <param-value>/home/teamcity/TeamCity/buildAgent/work/a10c1ad5cb41f8ca/src/resources</param-value>
+        <param-value>/home/teamcity/TeamCity/buildAgent/work/da2a3a9789afdbe/src/resources</param-value>
     </context-param>-->
     <!-- End filesystem resource manager (development mode) -->
     <!--Web application resource manager for resources-->
@@ -58,7 +58,7 @@
     </context-param>
     <context-param>
         <param-name>oxf.resources.priority.4.oxf.resources.filesystem.sandbox-directory</param-name>
-        <param-value>/home/teamcity/TeamCity/buildAgent/work/a10c1ad5cb41f8ca/src/resources-packaged</param-value>
+        <param-value>/home/teamcity/TeamCity/buildAgent/work/da2a3a9789afdbe/src/resources-packaged</param-value>
     </context-param>-->
     <!-- End filesystem resource manager (development mode) -->
     <!--Classloader resource manager-->
@@ -176,11 +176,11 @@
         <!--Set main processor-->
         <init-param>
             <param-name>oxf.main-processor.name</param-name>
-            <param-value>{http://www.orbeon.com/oxf/processors}page-flow</param-value>
+            <param-value>{http://www.orbeon.com/oxf/processors}pipeline</param-value>
         </init-param>
         <init-param>
-            <param-name>oxf.main-processor.input.controller</param-name>
-            <param-value>oxf:/page-flow.xml</param-value>
+            <param-name>oxf.main-processor.input.config</param-name>
+            <param-value>oxf:/config/prologue-servlet.xpl</param-value>
         </init-param>
         <!--Set error processor-->
         <init-param>
@@ -216,29 +216,6 @@
         <param-value>oxf:/apps/context/servlet-destroyed.xpl</param-value>
     </init-param>-->
         <!-- End servlet listener processors -->
-    </servlet>
-    <!--This is the XForms Server servlet-->
-    <servlet>
-        <servlet-name>orbeon-xforms-server-servlet</servlet-name>
-        <servlet-class>org.orbeon.oxf.servlet.OrbeonServlet</servlet-class>
-        <!--Set main processor-->
-        <init-param>
-            <param-name>oxf.main-processor.name</param-name>
-            <param-value>{http://www.orbeon.com/oxf/processors}pipeline</param-value>
-        </init-param>
-        <init-param>
-            <param-name>oxf.main-processor.input.config</param-name>
-            <param-value>oxf:/ops/xforms/xforms-server.xpl</param-value>
-        </init-param>
-        <!--Set error processor-->
-        <init-param>
-            <param-name>oxf.error-processor.name</param-name>
-            <param-value>{http://www.orbeon.com/oxf/processors}pipeline</param-value>
-        </init-param>
-        <init-param>
-            <param-name>oxf.error-processor.input.config</param-name>
-            <param-value>oxf:/ops/xforms/xforms-server-error.xpl</param-value>
-        </init-param>
     </servlet>
     <!--This is the XForms Renderer servlet, used to deploy Orbeon Forms as a separate WAR-->
     <servlet>
@@ -311,10 +288,6 @@
     <servlet-mapping>
         <servlet-name>orbeon-main-servlet</servlet-name>
         <url-pattern>/</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>orbeon-xforms-server-servlet</servlet-name>
-        <url-pattern>/xforms-server/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>orbeon-renderer-servlet</servlet-name>
