@@ -53,7 +53,7 @@
 	<g:if test="${tdbItemObj?.tcase}">
 	  <li class="fieldcontain">
 	    <span id="tcase-label" class="property-label"><g:message code="tdbItem.tcase.label" default="Tcase" /></span>
-	    <span class="property-value" aria-labelledby="tcase-label"><g:link controller="tdbTcase" action="show" id="${tdbItemObj?.tcase?.id}">${tdbItemObj?.tcase?.encodeAsHTML()}</g:link></span>
+	    <span class="property-value" aria-labelledby="tcase-label"><g:link controller="tdbCase" action="show" id="${tdbItemObj?.tcase?.id}">${tdbItemObj?.tcase?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
       </ol>

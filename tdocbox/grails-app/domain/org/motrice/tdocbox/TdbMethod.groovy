@@ -40,14 +40,18 @@ class TdbMethod {
 		 'Set or get document signature')
     createMethod(VALIDATE_SIG_ID, VALIDATE_SIG_URL,
 		 'Validate signature')
+    createMethod(GET_METADATA_ID, GET_METADATA_URL,
+		 'Get document metadata by docboxRef')
+    createMethod(GET_METADATA_BY_F_ID, GET_METADATA_BY_F_URL,
+		 'Get document metadata by form data uuid')
   }
 
   static String createUrl(TdbDrill drill, TdbCase cs) {
     def method = TdbMethod.get(drill.method.id)
-    cs? method.url(drill.map, cs.map) : method.url(drill.map, null)
+    method.url(drill.queryString, drill.map, cs?.map)
   }
 
-  String url(Map locals, Map globals) {
+  String url(String queryString, Map locals, Map globals) {
     def prefixProp = TdbProperty.findByName(TdbProperty.DOCBOX_REST_PREFIX)
     if (!prefixProp) {
       def msg = "URL prefix not found"
@@ -62,7 +66,8 @@ class TdbMethod {
 
     // Run the template engine twice to allow for one level of indirection.
     def engine = new groovy.text.SimpleTemplateEngine()
-    def url = engine.createTemplate(urlPattern).make(binding).toString()
+    String pattern = queryString? "${urlPattern}?${queryString}" : urlPattern
+    def url = engine.createTemplate(pattern).make(binding).toString()
     url = engine.createTemplate(url).make(binding).toString()
     return "${prefixProp.value}/${url}"
   }
@@ -81,7 +86,11 @@ class TdbMethod {
   static final GET_DOC_BY_DOCBOXREF_URL = 'doc/core/${docboxref}'
   static final SET_GET_SIGNATURE_ID = 5
   static final SET_GET_SIGNATURE_URL = 'sig/core/${docboxref}'
-  static final VALIDATE_SIG_ID = 5
+  static final VALIDATE_SIG_ID = 6
   static final VALIDATE_SIG_URL = 'sig/validation/${docboxref}'
+  static final GET_METADATA_ID = 7
+  static final GET_METADATA_URL = 'doc/meta/${docboxref}'
+  static final GET_METADATA_BY_F_ID = 8
+  static final GET_METADATA_BY_F_URL = 'meta/byformdata/${formDataUuid}'
 
 }

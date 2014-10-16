@@ -18,11 +18,11 @@ $PREFIX/sig/validation/$docboxref GET: validate the last signature
 
 --------------
 
-$PREFIX/doc/orig/$docboxref GET: get original document data (not just Orbeon forms)
-
 $PREFIX/doc/meta/$docboxref GET: get document metadata
 
-$PREFIX/doc/pdfa/$uuid PUT: store a PDF/A document in DocBox
+$PREFIX/meta/byformdata/$formDataUuid[?step=$stepNo] GET: get document metadata
+
+--------------
 
 $PREFIX/sig/request/$docboxref ????? med mera PUT: issue a sign request
 
@@ -31,6 +31,10 @@ $PREFIX/sig/request/$docboxref?transaction=$uuid GET: get the state of a signing
 $PREFIX/sig/scheme/$id GET: get details of a signing scheme
 
 $PREFIX/sig/scheme/all GET: get a list of signing schemes
+
+$PREFIX/doc/orig/$docboxref GET: get original document data (not just Orbeon forms)
+
+$PREFIX/doc/pdfa/$uuid PUT: store a PDF/A document in DocBox
 
 ---------------
 

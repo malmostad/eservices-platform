@@ -178,6 +178,9 @@ class DocService {
     return docStep
   }
 
+  /**
+   * Given a form data uuid, find the latest document step.
+   */
   BoxDocStep findStepByUuid(String uuid) {
     findStepByUuid(uuid, null)
   }

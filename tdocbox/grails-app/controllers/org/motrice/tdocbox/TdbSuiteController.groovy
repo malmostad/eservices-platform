@@ -47,8 +47,10 @@ class TdbSuiteController {
     }
 
     def cs = null
-    tdbSuiteObj.drills.each {drill ->
+    // Use "find" to break the iteration on exception
+    tdbSuiteObj.drills.find {drill ->
       cs = tdbDrillService.perform(tdbSuiteObj, drill, cs)
+      return cs?.exception
     }
 
     if (cs) {

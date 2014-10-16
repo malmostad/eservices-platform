@@ -23,6 +23,8 @@
  */
 package org.motrice.docbox.doc
 
+import grails.converters.*
+
 import org.motrice.docbox.DocData
 import org.motrice.docbox.Util
 import org.motrice.docbox.DocBoxException
@@ -143,6 +145,45 @@ class RestDocController {
     }
 
     return contentsResponse(docStep, params.item)
+  }
+
+  /**
+   * Get document metadata given a docboxRef
+   */
+  def metaDataGet(String docboxref) {
+    if (log.debugEnabled) log.debug "META: ${Util.clean(params)}, ${request.forwardURI}"
+    def docStep = docService.findStepByRef(docboxref)
+    if (docStep) {
+      response.status = 200
+      def meta = docStep.meta
+      if (log.debugEnabled) log.debug "metaDataGet: ${meta}"
+      render meta as JSON
+    } else {
+      response.status = 404
+    }
+  }
+
+  /**
+   * Get document metadata given a docboxRef
+   */
+  def metaByFormData(String uuid) {
+    if (log.debugEnabled) log.debug "META BY FORMDATA: ${Util.clean(params)}, ${request.forwardURI}"
+    def docStep = null
+    if (params.step) {
+      def stepNumber = params.step as Integer
+      docStep = docService.findStepByUuid(uuid, stepNumber)
+    } else {
+      docStep = docService.findStepByUuid(uuid)
+    }
+
+    if (docStep) {
+      response.status = 200
+      def meta = docStep.meta
+      if (log.debugEnabled) log.debug "metaDataGet: ${meta}"
+      render meta as JSON
+    } else {
+      response.status = 404
+    }
   }
 
   private contentsResponse(BoxDocStep docStep, String itemName) {

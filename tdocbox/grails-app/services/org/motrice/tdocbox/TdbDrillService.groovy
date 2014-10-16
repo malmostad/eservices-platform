@@ -26,13 +26,19 @@ class TdbDrillService {
     } catch (ResponseStatusException exc) {
       if (log.debugEnabled) log.debug "HTTP ${exc.status} ]] ${exc.content}"
       cs = suite.createCase(cs)
-      cs.addTextItem("${drill.name}_exception", exc.message, true)
-      cs.addTextItem("${drill.name}_result", exc.content)
+      cs.addTextItem("${drill.name}_HTTP_STATUS", String.valueOf(exc.status))
+      cs.addTextItem("${drill.name}_EXCEPTION", exc.message, true)
+      def content = exc.content
+      if (content instanceof Map) {
+	cs = storeTextResultMap(suite, drill, cs, content)
+      } else {
+	cs.addTextItem("${drill.name}_RESULT", String.valueOf(exc.content))
+      }
       cs.save()
     } catch (Exception exc) {
       if (log.debugEnabled) log.debug "HTTP EXC ]] ${exc}"
       cs = suite.createCase(cs)
-      cs.addTextItem("${drill.name}_exception", exc.message, true)
+      cs.addTextItem("${drill.name}_EXCEPTION", exc.message, true)
       cs.save()
     }
 
@@ -66,7 +72,7 @@ class TdbDrillService {
 			    TdbSuite suite, TdbDrill drill, TdbCase cs)
   {
     def result = null
-
+    def nanos = System.nanoTime()
     // Perform the invocation
     switch (drill.verb.id) {
     case TdbHttpVerb.GET_ID:
@@ -80,10 +86,11 @@ class TdbDrillService {
       result = builder.post()
     break
     default:
-    def msg = "Drill contains invalid verb ${drill?.verb?.id}"
-    throw new ServiceException(msg)
+      def msg = "Drill contains invalid verb ${drill?.verb?.id}"
+      throw new ServiceException(msg)
     }
 
+    nanos = System.nanoTime() - nanos
     // Pick up the result
     String msg = null
     switch (drill.mode.id) {
@@ -100,12 +107,17 @@ class TdbDrillService {
     case TdbMode.BINARY_MODE_ID:
       cs = suite.createCase(cs)
       msg = "${result.size()} bytes"
-      cs.addBinaryItem("${drill.name}_result", result)
+      cs.addBinaryItem("${drill.name}_RESULT", result)
       cs.save()
     break
     default:
       msg = "Drill contains invalid mode ${drill?.mode?.id}"
       throw new ServiceException(msg)
+    }
+
+    // Record elapsed milliseconds
+    if (cs) {
+      cs.addTextItem("${drill.name}_MILLIS", String.format('%01.3g', nanos/1000000.0d))
     }
 
     if (log.debugEnabled) log.debug "perform ]] ${msg}"

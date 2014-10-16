@@ -13,6 +13,9 @@ class TdbDrill implements Comparable {
   // The method to invoke
   TdbMethod method
 
+  // Optional query string
+  String queryString
+
   SortedSet parameters
   static belongsTo = [suite: TdbSuite]
   static hasMany = [parameters: TdbParameter]
@@ -21,6 +24,7 @@ class TdbDrill implements Comparable {
     verb nullable: false
     mode nullable: false
     method nullable: false
+    queryString nullable: true, maxSize: 400
     parameters nullable: true
   }
 

@@ -27,6 +27,9 @@ package org.motrice.docbox.doc
  * A form converted to PDF
  */
 class BoxDocStep implements Comparable {
+  // Date format for metadata
+  private static final DFMT = 'yyyy-MM-dd HH:mm'
+
   // Step number
   Integer step
 
@@ -55,6 +58,16 @@ class BoxDocStep implements Comparable {
     signCount range: 0..12
     dateCreated nullable: true
     lastUpdated nullable: true
+  }
+
+  /**
+   * Get metadata as a Map
+   */
+  Map getMeta() {
+    def map = [docboxRef: docboxRef, docNo: docNo, stepNo: step,
+    created: dateCreated.format(DFMT), signCount: signCount]
+    map.putAll(doc.meta)
+    return map
   }
 
   /**
