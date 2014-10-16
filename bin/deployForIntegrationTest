@@ -25,7 +25,8 @@ response=$(${POSTGRESSERVICE} status)
 if [[ ${response} != "Running clusters"* ]]
 then
   echo "Postgres not running?"
-  exit 1
+  # TODO this is not workong in ubuntu 14.04
+  # exit 1
 fi
 
 APACHE2SERVICE=/etc/init.d/apache2
@@ -37,7 +38,8 @@ response=$(${APACHE2SERVICE} status)
 if [[ ${response} != "Apache2 is running"* ]]
 then
   echo "Apache2 not running?"
-  exit 1
+  # TODO this is not workong in ubuntu 14.04
+  # exit 1
 fi
 
 
@@ -89,20 +91,15 @@ then
   exit 1
 fi
 
-LDAP_PORT="1389"
-RESPONSE=$(nmap localhost -p ${LDAP_PORT} | grep ${LDAP_PORT} | grep -v closed |  tr -d \[:blank:\])
-if [ "${RESPONSE}" != "" ]
-then
-  echo "LDAP port ${LDAP_PORT} already in use?"
-  exit 1
-fi
-
 # create a new one 
 DEPLOYMENTNAME="${HOME}/motrice"`date  +%Y%m%d%H%M`
 cp current_config.sh current_config.sh.orig 
 cat current_config.sh.orig | sed  s%'CONTAINER_ROOT=.*'%CONTAINER_ROOT=${DEPLOYMENTNAME}%g > current_config.sh
 ./create-new-deploy-environment-motrice.sh  
 ./deploy-motrice-platform.sh
+ERRORSTATUS=$?
+# give the tomcat some time to start before being stoped by jenkins 
+sleep 60
 popd 
 
 exit ${ERRORSTATUS}
