@@ -22,8 +22,9 @@
 # e-mail: info _at_ motrice.se 
 # mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
 # phone: +46 8 641 64 14 
+DIRNAME=`dirname $0`
+. ${DIRNAME}/test_common.sh
 
-. test_common.sh
 function usage() {
 echo "Usage: $0 -u USERNAME -p PASSWORD"
 }
