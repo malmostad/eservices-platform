@@ -23,33 +23,17 @@
 # mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
 # phone: +46 8 641 64 14 
 
+. test_common.sh
 function usage() {
 echo "Usage: $0 -u USERNAME -p PASSWORD"
 }
 
- 
-function cleanUpInbox() {
-
-echo "cleaning up in inbox "
-echo ${COMMANDOCLEAN}
-nloops=3   # number of users tasks : registrering - handlägging - expediering 
-for i in `seq 1 ${nloops} `;
-do 
-  echo "cleaning up step ${i} "
-  ${COMMANDOCLEAN}
-done 
-}
-
+readSettings
 
 
 function loadInbox() {
 # load a number of activites 
 LOOP=10 
-TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCreateCases.jmx 
-if [ ! -f ${TESTPLAN} ]; then
-  echo "Missing file TESTPLAN=${TESTPLAN}"
-   exit 1;
-fi
 
 COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=1 -Jcasename='CreateCases' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK} -Jloop=${LOOP}"
 echo ${COMMANDO}
@@ -86,28 +70,8 @@ fi
 
 
 
-# The host under test.
-HOST=localhost
  
 CASENAME="inbox" 
-JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
-OUTPUTDIR=`pwd`/jmeterResults
-OUTPUTSLASK=`pwd`/slask
-TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
- 
-TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
-COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"
-
-if [ ! -f ${JMETER} ]; then
-  echo "Missing file JMETER=${JMETER}"
-   exit 1;
-fi
-
-if [ ! -f ${TESTCLEANPLAN} ]; then
-  echo "Missing file TESTCLEANPLAN=${TESTCLEANPLAN}"
-   exit 1;
-fi
-
 
 # first clean up inbox 
 cleanUpInbox 
@@ -117,12 +81,13 @@ loadInbox
 
 LOOP=3
 LOOP=11
+# TODO  this overrides the setting and HOST and PORT are not used 
 TESTPLAN=${TESTPLANDIRECTORY}/TestPlanReadInbox.jmx
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
 for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100
 do
-  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
+  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS   -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST   -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
   echo ${COMMANDO}
   ${COMMANDO}
 done
@@ -140,5 +105,5 @@ ${PLOTSCRIPT} ${OUTPUTDIR}/${CASENAME}/*jtl
 
 echo "results are found in   ${OUTPUTDIR}/${CASENAME}   "
 
-display ${OUTPUTDIR}/${CASENAME}/_site_mycases_inbox.png     & 
+display ${OUTPUTDIR}/${CASENAME}/_site_komin_mycases_inbox.png  & 
 exit $? 

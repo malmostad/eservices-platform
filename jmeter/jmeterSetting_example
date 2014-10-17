@@ -1,0 +1,21 @@
+# which host to test
+HOST="spunk.malmo.se"
+# 
+PROTOCOL="https"
+# corresponding port 
+PORT="443"
+# start forn for the process
+STARTFORM="demo-ansokan--v003"
+# path to jmeter command 
+JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
+# path to the results 
+OUTPUTDIR=`pwd`/jmeterResults
+# path to temporary files
+OUTPUTSLASK=`pwd`/slask
+# path to where the testplans are stored 
+TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
+# jmeter testplan for doing all tasks in inbox 
+TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
+# jmeter testplan for creating new cases   
+TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCreateCases.jmx 
+

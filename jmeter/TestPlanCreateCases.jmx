@@ -45,7 +45,7 @@
             </elementProp>
             <elementProp name="host" elementType="Argument">
               <stringProp name="Argument.name">host</stringProp>
-              <stringProp name="Argument.value">${__P(host,eminburk.malmo.se)}</stringProp>
+              <stringProp name="Argument.value">${__P(host,spunk.malmo.se)}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="casename" elementType="Argument">
@@ -90,7 +90,7 @@
             </elementProp>
             <elementProp name="startform" elementType="Argument">
               <stringProp name="Argument.name">startform</stringProp>
-              <stringProp name="Argument.value">${__P(startform,demo-ansokan--v002)}</stringProp>
+              <stringProp name="Argument.value">${__P(startform,demo-ansokan--v003)}</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
           </collectionProp>

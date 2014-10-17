@@ -28,36 +28,9 @@ echo "Usage: $0 -u USERNAME -p PASSWORD"
 }
 
 
-function cleanUpInbox() {
-
-echo "cleaning up in inbox "
-echo ${COMMANDOCLEAN}
-nloops=3   # number of users tasks : registrering - handlägging - expediering 
-for i in `seq 1 ${nloops} `;
-do 
-  echo "cleaning up step ${i} "
-  ${COMMANDOCLEAN}
-done 
-}
-
-
 
 # load a number of activites 
 LOOP=10 
-JMETERSETTINGS="${HOME}/workspaces/inheritsource-develop/pawap/jmeter/jmeterSetting_deploy" 
-if test -f "${JMETERSETTINGS}" 
-then 
-   echo "reading ${JMETERSETTINGS}" 
-   source  ${JMETERSETTINGS}
-else
-   echo "using defaults"
-   # The host under test.
-   HOST="eminburk.malmo.se"
-   PROTOCOL="https"
-   PORT="443"
-   STARTFORM="demo-ansokan--v002"
-fi 
-
 
 # A username.
 USER=""
@@ -86,26 +59,6 @@ if [ -z "$PASS" ] ; then
 fi
  
  
-JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
-OUTPUTDIR=`pwd`/jmeterResults
-OUTPUTSLASK=`pwd`/slask
-TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
- 
-TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
-COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Jhost=$HOST -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"
-
-# 
-if [ ! -f ${JMETER} ]; then
-  echo "Missing file JMETER=${JMETER}"
-   exit 1;
-fi
-
-if [ ! -f ${TESTCLEANPLAN} ]; then
-  echo "Missing file TESTCLEANPLAN=${TESTCLEANPLAN}"
-   exit 1;
-fi
-
-
 # first clean up inbox 
 cleanUpInbox 
 
@@ -117,7 +70,6 @@ if [ ! -f ${TESTPLAN} ]; then
    exit 1;
 fi
 
-LOOP=3
 LOOP=11
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
 for thread_count in 001 002 
@@ -144,5 +96,5 @@ ${PLOTSCRIPT} ${OUTPUTDIR}/${CASENAME}/*jtl
 
 echo "results are found in   ${OUTPUTDIR}/${CASENAME}   "
 
-display ${OUTPUTDIR}/${CASENAME}/_orbeon_fr_start_demo-ansokan--v002_edit_ef08e823-78f3-4c25-a744-31e9958c05ae.png    & 
+# display ${OUTPUTDIR}/${CASENAME}/_orbeon_fr_start_demo-ansokan--v002_edit_ef08e823-78f3-4c25-a744-31e9958c05ae.png    & 
 exit $? 
