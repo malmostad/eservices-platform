@@ -46,7 +46,7 @@ function startTomcatContainer () {
   esac
 
   pushd ${CONTAINER_ROOT}
-    echo "Starting container $1..."
+    echo "Starting container $1 at  ${CONTAINER_ROOT} ..."
     cd ${1}/bin/
     ./startup.sh 
     getPidByPort SERVICE_PID ${CURRENT_PORT}
@@ -70,7 +70,7 @@ function shutdownTomcatContainer () {
     pushd ${CONTAINER_ROOT}
     if [ -n "$2" ] 
     then 
-	echo "Shutting down service $1, pid: " $2
+	echo "Shutting down service $1 at  ${CONTAINER_ROOT}, pid: " $2
 	cd ${1}/bin/
 	./shutdown.sh
 	sleep 1
@@ -199,6 +199,13 @@ function startContainers() {
     done
 }
 
+function cleanLogs() {
+  echo "removing logs"
+    for i in  ${ESERVICE}  ${KSERVICE}  ${CMSSERVICE}
+    do
+      rm $CONTAINER_ROOT/${i}/logs/*
+    done
+}
 function restartContainers() {
   echo "Shutting down containers"
   shutdownContainers
@@ -228,6 +235,10 @@ case "$1" in
 
   status )
     listContainers
+  ;;
+
+  removelogs )
+    cleanLogs
   ;;
 
   restart )
