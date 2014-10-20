@@ -62,6 +62,7 @@ if [ -z "$PASS" ] ; then
 fi
  
  
+COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTSLASK}"
 # first clean up inbox 
 cleanUpInbox 
 

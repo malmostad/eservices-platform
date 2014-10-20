@@ -29,18 +29,25 @@ function usage() {
 echo "Usage: $0 -u USERNAME -p PASSWORD"
 }
 
-readSettings
 
 
 function loadInbox() {
 # load a number of activites 
 LOOP=10 
 
-COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=1 -Jcasename='CreateCases' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK} -Jloop=${LOOP}"
-echo ${COMMANDO}
-${COMMANDO}
+# for thread_count in 001 002 004 010 050 100
+for thread_count in 001 002 004 
+do
+  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTDIR} -Jstartform=${STARTFORM} -Jloop=${LOOP}"
+  echo ${COMMANDO}
+  ${COMMANDO}
+
+  # clean up between the tests 
+  # cleanUpInbox 
+done
 }
 
+readSettings
 # A username.
 USER=""
  
@@ -74,6 +81,7 @@ fi
  
 CASENAME="inbox" 
 
+COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST -JoutputDir=${OUTPUTSLASK}"
 # first clean up inbox 
 cleanUpInbox 
 
@@ -82,13 +90,13 @@ loadInbox
 
 LOOP=3
 LOOP=11
-# TODO  this overrides the setting and HOST and PORT are not used 
-TESTPLAN=${TESTPLANDIRECTORY}/TestPlanReadInbox.jmx
+TESTPLANREAD=${TESTPLANDIRECTORY}/TestPlanReadInbox.jmx
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
+#for thread_count in 001 002  
 for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100
 do
-  COMMANDO="${JMETER} -n -t ${TESTPLAN} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS   -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST   -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
+  COMMANDO="${JMETER} -n -t ${TESTPLANREAD} -Jthreads=$thread_count -Jcasename=$CASENAME -Juser=$USER -Jpassword=$PASS   -Jport=$PORT -Jprotocol=$PROTOCOL -Jhost=$HOST   -JoutputDir=${OUTPUTDIR} -Jloop=${LOOP}"
   echo ${COMMANDO}
   ${COMMANDO}
 done
