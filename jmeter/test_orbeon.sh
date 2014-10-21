@@ -29,6 +29,8 @@ function usage() {
 echo "Usage: $0 -u USERNAME -p PASSWORD"
 }
 
+readSettings
+
 # A username.
 USER=""
  
