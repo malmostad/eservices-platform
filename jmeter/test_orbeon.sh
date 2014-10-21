@@ -64,6 +64,7 @@ CASENAME="orbeon"
 LOOP=11
 # TODO  this overrides the setting and HOST and PORT are not used 
 TESTPLAN=${TESTPLANDIRECTORY}/TestPlanOrbeon.jmx
+CASENAME="Orbeon" 
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
 for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100

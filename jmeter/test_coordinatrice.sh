@@ -61,6 +61,7 @@ LOOP=11
 
 # TODO  this overrides the setting and HOST and PORT are not used 
 TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCoordinatrice.jmx
+CASENAME="Coordinatrice" 
 
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
 for thread_count in 001 004 010 
