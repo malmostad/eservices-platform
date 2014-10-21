@@ -70,6 +70,15 @@ class SigResult implements Comparable {
   }
 
   /**
+   * Is this request still being processed?
+   */
+  boolean isInProcess() {
+    def now = new Date()
+    !faultStatus && progressStatus?.active &&
+    (now.time - dateCreated.time) < SignService.MAX_COLLECT_AGE_MILLIS
+  }
+
+  /**
    * Get the creation timestamp as a formatted string.
    */
   String getCreatedFmt() {
@@ -90,12 +99,12 @@ class SigResult implements Comparable {
    */
   Map toMap() {
     ['class': SigResult.class.name, dateCreated: dateCreated,
-    service: tcase?.service?.toString(),
+    service: scheme?.service?.toString(),
     transactionId: transactionId, orderRef: orderRef,
-    autoStartToken: autoStartToken, displayName: displayName?.toString(),
-    policy: policy?.toString(), personalIdNo: personalIdNo ?: '',
+    autoStartToken: autoStartToken, personalIdNo: personalIdNo ?: '',
     progressStatus: progressStatus?.toString(), faultStatus: faultStatus?.toString(),
-    signature: signature?.size() ?: null]
+    docboxRefIn: docboxRefIn, docboxRefOut: docboxRefOut,
+    signature: signature?.size() ?: 0]
   }
 
   String toString() {

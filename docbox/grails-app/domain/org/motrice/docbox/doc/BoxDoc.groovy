@@ -55,6 +55,18 @@ class BoxDoc implements Comparable {
     lastUpdated nullable: true
   }
 
+  /**
+   * Get metadata as a Map
+   */
+  Map getMeta() {
+    def map = [formDataUuid: formDataUuid]
+    steps.each {step ->
+      map[String.format('step_%02d', step.step)] = step.docboxRef
+    }
+
+    return map
+  }
+
   String display() {
     "${docNo} (${formDataUuid})"
   }

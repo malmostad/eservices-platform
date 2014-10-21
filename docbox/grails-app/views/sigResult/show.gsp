@@ -74,6 +74,18 @@
 	    <span class="property-value" aria-labelledby="personalIdNo-label"><g:fieldValue bean="${sigResultInst}" field="personalIdNo"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${sigResultInst?.docboxRefIn}">
+	  <li class="fieldcontain">
+	    <span id="docboxRefIn-label" class="property-label"><g:message code="sigResult.docboxRefIn.label" default="DocboxRef In" /></span>
+	    <span class="property-value" aria-labelledby="docboxRefIn-label"><g:fieldValue bean="${sigResultInst}" field="docboxRefIn"/></span>
+	  </li>
+	</g:if>
+	<g:if test="${sigResultInst?.docboxRefOut}">
+	  <li class="fieldcontain">
+	    <span id="docboxRefOut-label" class="property-label"><g:message code="sigResult.docboxRefOut.label" default="DocboxRef Out" /></span>
+	    <span class="property-value" aria-labelledby="docboxRefOut-label"><g:fieldValue bean="${sigResultInst}" field="docboxRefOut"/></span>
+	  </li>
+	</g:if>
 	<g:if test="${sigResultInst?.attrs}">
 	  <li class="fieldcontain">
 	    <span id="attrs-label" class="property-label"><g:message code="sigResult.attrs.label" default="Attrs" /></span>
@@ -94,7 +106,7 @@
 	  <g:hiddenField name="id" value="${sigResultInst?.id}" />
 	  <g:link class="edit" action="edit" id="${sigResultInst?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-	  <g:link class="edit" action="sign" id="${sigResultInst?.id}"><g:message code="sigResult.sign.label" default="Collect" /></g:link>
+	  <g:link class="edit" action="collect" id="${sigResultInst?.id}"><g:message code="sigResult.sign.label" default="Collect" /></g:link>
 	</fieldset>
       </g:form>
     </div>

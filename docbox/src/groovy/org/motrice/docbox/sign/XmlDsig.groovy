@@ -185,7 +185,14 @@ class XmlDsig {
     def signature = sigFact.unmarshalXMLSignature(valCtx)
 
     // Validate
-    boolean coreValidity = signature.validate(valCtx)
+    boolean coreValidity = false
+    boolean exceptionOccurred = false
+    try {
+      coreValidity = signature.validate(valCtx)
+    } catch (Exception exc) {
+      report << "Validation exception: ${exc.message}"
+      exceptionOccurred = true
+    }
 
     if (coreValidity) {
       report << "Core signature validation PASSED."
@@ -194,15 +201,17 @@ class XmlDsig {
       report << ''
     } else {
       report << "Core signature validation FAILED."
-      def sv = signature.signatureValue.validate(valCtx)
-      report << "Signature value: Validation status ${sv}"
+      if (!exceptionOccurred) {
+	def sv = signature.signatureValue.validate(valCtx)
+	report << "Signature value: Validation status ${sv}"
 
-      // Validation status of each Reference
-      // List of Reference
-      def refs = signature.signedInfo.references
-      refs.eachWithIndex {ref, idx ->
-	def valStatus = ref.validate(valCtx)
-	report << "Ref ${idx} validity: ${valStatus}"
+	// Validation status of each Reference
+	// List of Reference
+	def refs = signature.signedInfo.references
+	refs.eachWithIndex {ref, idx ->
+	  def valStatus = ref.validate(valCtx)
+	  report << "Ref ${idx} validity: ${valStatus}"
+	}
       }
     }
 

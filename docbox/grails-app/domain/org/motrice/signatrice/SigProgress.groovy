@@ -48,6 +48,10 @@ class SigProgress {
     return (idx >= 0)? SigProgress.get(idx + INITIAL_ID) : undefinedState()
   }
 
+  boolean isActive() {
+    id <= 3
+  }
+
   String toString() {
     name
   }

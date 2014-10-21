@@ -23,16 +23,23 @@
  */
 package org.motrice.docbox.doc
 
+import grails.converters.*
+
 import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.Util
 import org.motrice.docbox.sign.XmlDsig
+
+import org.motrice.signatrice.SigResult
+import org.motrice.signatrice.SigScheme
+import org.motrice.signatrice.SigTestcase
 
 class RestSigController {
   // Path to the XMLDSIG schema
   static final XMLDSIG_SCHEMA = '/xsd/xmldsig-core-schema.xsd'
 
   def docService
-  def sigService
+  def signdocService
+  def signService
 
   /**
    * Add a XML-DSIG signature to an existing document.
@@ -51,7 +58,7 @@ class RestSigController {
 
     try {
       status = 400
-      sigService.basicSignatureCheck(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
+      signdocService.basicSignatureCheck(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
       status = 409
       docStep = docService.findAndCheckByRef(docboxref)
       status = 404
@@ -60,7 +67,7 @@ class RestSigController {
 	if (pdfContents) {
 	  try {
 	    status = 200
-	    sigService.signedTextCheck(sigB64, docStep, pdfContents)
+	    signdocService.signedTextCheck(sigB64, docStep, pdfContents)
 	  } catch (DocBoxException exc) {
 	    status = 403
 	    msg = exc.message
@@ -79,7 +86,7 @@ class RestSigController {
       render(status: status, contentType: 'text/plain', text: msg)
     } else {
       def sig = new XmlDsig(sigB64, log)
-      def result = sigService.addSignature(docStep, pdfContents, sig)
+      def result = signdocService.addSignature(docStep, pdfContents, sig)
       def nextStep = result.step
       def nextContents = result.contents
 
@@ -106,7 +113,7 @@ class RestSigController {
       if (docStep.signCount > 0) {
 	pdfContents = docService.findPdfContents(docStep)
       } else {
-	status = 400
+	status = 409
 	msg = "Document has no signature: ${docboxref}"
       }
     } else {
@@ -114,14 +121,16 @@ class RestSigController {
     }
 
     def sigList = null
-    if (pdfContents) {
-      sigList = sigService.findAllSignatures(pdfContents)
-      if (sigList.empty) {
-	status = 409
-	msg = "No signature found: ${docboxref}"
+    if (!msg) {
+      if (pdfContents) {
+	sigList = signdocService.findAllSignatures(pdfContents)
+	if (sigList.empty) {
+	  status = 409
+	  msg = "No signature found: ${docboxref}"
+	}
+      } else {
+	msg = "No PDF found for ${docboxref}"
       }
-    } else {
-      msg = "No PDF found for ${docboxref}"
     }
 
     if (msg) {
@@ -146,6 +155,72 @@ class RestSigController {
   }
 
   /**
+   * Collect the outcome of a signature request.
+   * Required parameters: txid=transactionId.
+   */
+  def docSigCollect(SignCollectCommand cmd) {
+    if (log.debugEnabled) log.debug "SIG COLLECT: ${cmd}, ${request.forwardURI}"
+
+    try {
+      cmd.checkParams(request)
+    } catch (IllegalArgumentException exc) {
+      render(status: 409, contentType: 'text/plain', text: exc.message)
+      return
+    }
+
+    response.status = 200
+    render cmd?.result?.toMap() as JSON
+  }
+
+  /**
+   * Request a document to be signed.
+   * Parameters: scheme=schemeName[&personalIdNo=personnummer]
+   * The body must contain the text to be signed, Base64-encoded.
+   */
+  def docSigRequest(SignRequestCommand cmd) {
+    if (log.debugEnabled) log.debug "SIG REQUEST: ${cmd}, ${request.forwardURI}"
+
+    try {
+      cmd.checkParams(request)
+    } catch (IllegalArgumentException exc) {
+      render(status: 409, contentType: 'text/plain', text: exc.message)
+      return
+    }
+
+    def result = signService.signatureRequest(cmd)
+    response.status = 200
+    render result.toMap() as JSON
+  }
+
+  /**
+   * Test making a signature request.
+   * No document is involved.
+   * NOTE: This is an interactive version of docSigRequest, NOT a REST method.
+   */
+  def testSigRequest(Long id) {
+    if (log.debugEnabled) log.debug "TEST SIG REQUEST: ${Util.clean(params)}, ${request.forwardURI}"
+    def sigTestcaseObj = SigTestcase.get(id)
+    if (!sigTestcaseObj) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'sigTestcase.label', default: 'SigTestcase'), id])
+      redirect(action: "list")
+      return
+    }
+
+    def cmd = SignRequestCommand.createCommand(sigTestcaseObj)
+
+    try {
+      cmd.checkParams(request)
+    } catch (IllegalArgumentException exc) {
+      flash.message = exc.message
+      redirect(controller: 'sigTestcase', action: 'show', id: sigTestcaseObj.id)
+      return
+    }
+
+    def result = signService.signatureRequest(cmd)
+    redirect(controller: 'sigResult', action: 'show', id: result.id)
+  }
+
+  /**
    * Validate the last signature of a document.
    */
   def sigValidate(String docboxref) {
@@ -166,7 +241,7 @@ class RestSigController {
 	  prevChecksum = prevContents.checksum
 	}
       } else {
-	status = 400
+	status = 409
 	msg = "Document has no signature: ${docboxref}"
       }
     } else {
@@ -175,12 +250,12 @@ class RestSigController {
 
     Map outcome = null
     if (pdfContents) {
-      def sigList = sigService.findAllSignatures(pdfContents)
+      def sigList = signdocService.findAllSignatures(pdfContents)
       if (sigList.empty) {
 	status = 500
 	msg = "No signature found: ${docboxref}"
       } else {
-	outcome = sigService.validateSignature(sigList[-1])
+	outcome = signdocService.validateSignature(sigList[-1])
       }
     } else {
       msg = "No PDF found for ${docboxref}"
@@ -204,6 +279,134 @@ class RestSigController {
 	validationReport = dsig.report.join('|')
       }
     }
+  }
+
+}
+
+/**
+ * Command object for collecting the result of a signature request.
+ * Some logic added to allow using it for testing.
+ */
+class SignCollectCommand {
+  // Injected service
+  def docService
+
+  // --- PARAMETERS (SPELLING CANNOT BE CHANGED)
+
+  // DocboxRef identifying the document to sign.
+  // The document itself is not needed, included as a check.
+  String docboxref
+
+  // Transaction id identifying the original request
+  String txid
+
+  // --- END PARAMETERS
+
+  // The HTTP request
+  def httpRequest
+
+  SigResult result
+
+  /**
+   * Evaluate the parameters, get the objects where applicable.
+   */
+  def checkParams(request) {
+    httpRequest = request
+    if (!txid) throw new IllegalArgumentException("Transaction id (txid) required but missing")
+    result = SigResult.findByTransactionIdAndDocboxRefIn(txid, docboxref)
+    if (!result) {
+      def msg = "Transaction not found (${txid}) or does not match docboxRef (${docboxref})"
+      throw new IllegalArgumentException(msg)
+    }
+  }
+
+  def getRemoteAddr() {
+    httpRequest?.remoteAddr
+  }
+
+  String toString() {
+    "[SignCollect: ${txid}, ${docboxref}]"
+  }
+}
+
+/**
+ * Command object for a signature request.
+ * Some logic added to allow using it for testing.
+ */
+class SignRequestCommand {
+  // Injected service
+  def docService
+
+  // --- PARAMETERS (SPELLING CANNOT BE CHANGED)
+
+  // DocboxRef identifying the document to sign
+  String docboxref
+
+  // Name of scheme to use for the request
+  String scheme
+
+  // Personal id number (personnummer), optional request parameter
+  String personalId
+
+  // --- END PARAMETERS
+
+  // Flag to indicate testing.
+  // The text to be signed is taken from the test case, not from the request.
+  // Data binding prevented by making it private.
+  private Boolean testWithoutDocument
+
+  // Document object
+  BoxDocStep docStep
+
+  // Scheme object
+  SigScheme schemeObj
+
+  // Request body, Base64-encoded
+  String bodyB64
+
+  // The HTTP request
+  def httpRequest
+
+  // Transaction id
+  String transactionId
+
+  /**
+   * Create from a test case (without data binding).
+   */
+  static SignRequestCommand createCommand(SigTestcase testCase) {
+    new SignRequestCommand(scheme: testCase.scheme.name,
+    personalId: testCase.personalIdNo,
+    schemeObj: testCase.scheme,
+    bodyB64: testCase.encodedVisibleText,
+    testWithoutDocument: true)	     
+  }
+
+  /**
+   * Evaluate the parameters, get the objects where applicable.
+   */
+  def checkParams(request) {
+    httpRequest = request
+    if (testWithoutDocument) {
+      docStep = null
+    } else {
+      bodyB64 = request.reader.text
+      docStep = docService.findStepByRef(docboxref)
+      if (!docStep) throw new IllegalArgumentException("Document not found: ${docboxref}")
+    }
+    schemeObj = SigScheme.findByName(scheme)
+    if (!schemeObj) throw new IllegalArgumentException("Scheme not found: ${scheme}")
+  }
+
+  def getRemoteAddr() {
+    httpRequest?.remoteAddr
+  }
+
+  boolean isTestOnly() {
+    testWithoutDocument
+  }
+
+  String toString() {
+    "[SignRequest: ${docStep ?: docboxref}, scheme ${schemeObj ?: scheme}, pers id ${personalId}]"
   }
 
 }

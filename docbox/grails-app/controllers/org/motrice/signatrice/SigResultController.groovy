@@ -56,7 +56,7 @@ class SigResultController {
     [sigResultInst: sigResultInst]
   }
 
-  def sign(Long id) {
+  def collect(Long id) {
     def sigResultInst = SigResult.get(id)
     if (!sigResultInst) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'sigScheme.label', default: 'SigScheme'), id])

@@ -2,7 +2,6 @@ package org.motrice.signatrice;
 
 /**
  * Exception used in services in order to cause a transaction rollback.
- * No extra properties, but needed for specific exception handling.
  */
 public class ServiceException extends RuntimeException {
     // Transaction id if applicable
