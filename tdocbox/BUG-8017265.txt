@@ -1,0 +1,22 @@
+http://bugs.java.com/bugdatabase/view_bug.do?bug_id=8017265
+
+Java 7u21 is ok, but with later releases signature validation ends with
+"Cannot resolve element with ID bidSignedData"
+
+The previous code which arbitrarily searched for ID references by the
+name of "Id" has been removed because it was insecure and is subject to
+XML Signature wrapping attacks.
+
+There are 3 potential workarounds that you can apply:
+
+1. Use a validating schema which will register the elements with ID references.
+
+2. Register the ID elements with the DOMValidateContext.setIdAttributeNS
+method before validating the signature
+
+3. Implement a custom URIDereferencer which can find these references
+and override the builtin URIDereferencer with the
+DOMValidateContext.setURIDereferencer method.
+
+We will open a separate doc bug to have the tutorial fixed.
+http://docs.oracle.com/cd/E17802_01/webservices/webservices/docs/1.6/tutorial/doc/XMLDigitalSignatureAPI8.html

@@ -49,7 +49,7 @@ class PdfService {
 
   def grailsApplication
   def docService
-  def sigService
+  def signdocService
 
   private static final UNKNOWN_MOTRICE_SITE_NAME = '***Okänd***'
 
@@ -87,7 +87,7 @@ class PdfService {
   BoxContents generatePdfa(DocData docData, BoxDocStep docStep, boolean debug) {
     def formData = new FormData(docData.dataItem.text)
     def formDef = new FormDef(docData.formDef.text, localSiteName())
-    def formatSpec = sigService.pdfFormatName()
+    def formatSpec = signdocService.pdfFormatName()
     formDef.build(docData, docStep, formatSpec, log)
     if (log.debugEnabled) log.debug formDef.dump()
     createPreview(docStep, formDef, formData)
@@ -200,9 +200,9 @@ class PdfService {
       // Insert form data into the generated PDF
       def pdfBytes = null
       try {
-	pdfBytes = sigService.pdfPostProcess(pdfFile, docData, docContents.xref)
+	pdfBytes = signdocService.pdfPostProcess(pdfFile, docData, docContents.xref)
       } catch (Exception exc) {
-	log.error "SigService.pdfPostProcess: ${exc.message}"
+	log.error "SigndocService.pdfPostProcess: ${exc.message}"
 	def sw = new StringWriter()
 	def pw = new PrintWriter(sw)
 	exc.printStackTrace(pw)

@@ -96,6 +96,11 @@ class EnvService {
 		       grailsApplication.metadata.'app.version' ?: null)
     list << configItem('config.item.siteName',
 		       grailsApplication.config.motrice.site.name ?: null)
+    def strictProp = grailsApplication.config.docbox.signed.text.check.strict
+    boolean lenientFlag = strictProp == 'false'
+    list << configItem('config.item.strict.checking', lenientFlag? 'Off':'Strict')
+    list << configItem('config.item.qrcode.base.url',
+		       grailsApplication.config.docbox.signed.doc.base.url ?: null)
     packageItem(list)
     def item = configItem('config.item.dataSource',
 			  grailsApplication.config.dataSource.url ?: null)

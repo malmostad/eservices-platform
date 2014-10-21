@@ -33,11 +33,20 @@ class UrlMappings {
     "/rest/doc/byformdata/$uuid"(controller: 'RestDoc') {
       action = [GET: 'formDataGet']
     }
+    "/rest/meta/byformdata/$uuid"(controller: 'RestDoc') {
+      action = [GET: 'metaByFormData']
+    }
     "/rest/doc/core/$docboxref"(controller: 'RestDoc') {
       action = [GET: 'docboxRefGet']
     }
+    "/rest/doc/meta/$docboxref"(controller: 'RestDoc') {
+      action = [GET: 'metaDataGet']
+    }
     "/rest/sig/core/$docboxref"(controller: 'RestSig') {
       action = [GET: 'docboxSigGet', POST: 'docboxSigPut']
+    }
+    "/rest/sig/request/$docboxref"(controller: 'RestSig') {
+      action = [GET: 'docSigCollect', POST: 'docSigRequest']
     }
     "/rest/sig/validation/$docboxref"(controller: 'RestSig') {
       action = [GET: 'sigValidate']

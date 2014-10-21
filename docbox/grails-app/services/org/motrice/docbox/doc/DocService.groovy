@@ -178,6 +178,9 @@ class DocService {
     return docStep
   }
 
+  /**
+   * Given a form data uuid, find the latest document step.
+   */
   BoxDocStep findStepByUuid(String uuid) {
     findStepByUuid(uuid, null)
   }
@@ -265,12 +268,9 @@ class DocService {
    */
   private byte[] nextId() {
     def bytes = new byte[4]
-    synchronized(RNG) {
-      RNG.nextBytes(bytes)
-    }
-
+    RNG.nextBytes(bytes)
     // Limit to 30 bits
-    bytes[0] &= 0x03
+    bytes[0] &= 0x3F
     return bytes
   }
 
