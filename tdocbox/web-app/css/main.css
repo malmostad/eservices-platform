@@ -252,6 +252,14 @@ input, select, textarea {
 	padding: 0.2em 0.4em;
 }
 
+.fieldcontain input.wide, .fieldcontain textarea.wide {
+        width: 70%;
+}
+
+.fieldcontain input.narrow {
+        width: 10%;
+}
+
 select {
 	padding: 0.2em 0.2em 0.2em 0;
 }

@@ -26,12 +26,6 @@
 	    <span class="property-value" aria-labelledby="service-label"><g:link controller="sigService" action="show" id="${sigSchemeObj?.service?.id}">${sigSchemeObj?.service?.encodeAsHTML()}</g:link></span>
 	  </li>
 	</g:if>
-	<g:if test="${sigSchemeObj?.personalIdNo}">
-	  <li class="fieldcontain">
-	    <span id="personalIdNo-label" class="property-label"><g:message code="sigScheme.personalIdNo.label" default="Personal Id No" /></span>
-	    <span class="property-value" aria-labelledby="personalIdNo-label"><g:fieldValue bean="${sigSchemeObj}" field="personalIdNo"/></span>
-	  </li>
-	</g:if>
 	<g:if test="${sigSchemeObj?.displayName}">
 	  <li class="fieldcontain">
 	    <span id="displayName-label" class="property-label"><g:message code="sigScheme.displayName.label" default="Display Name" /></span>
@@ -50,12 +44,6 @@
 	    <span class="property-value" aria-labelledby="dateCreated-label"><g:formatDate date="${sigSchemeObj?.dateCreated}" /></span>
 	  </li>
 	</g:if>
-	<g:if test="${sigSchemeObj?.userVisibleText}">
-	  <li class="fieldcontain">
-	    <span id="userVisibleText-label" class="property-label"><g:message code="sigScheme.userVisibleText.label" default="User Visible Text" /></span>
-	    <span class="property-value" aria-labelledby="userVisibleText-label"><g:fieldValue bean="${sigSchemeObj}" field="userVisibleText"/></span>
-	  </li>
-	</g:if>
 	<g:if test="${sigSchemeObj?.results}">
 	  <li class="fieldcontain">
 	    <span id="results-label" class="property-label"><g:message code="sigScheme.results.label" default="Results" /></span>
@@ -70,7 +58,6 @@
 	  <g:hiddenField name="id" value="${sigSchemeObj?.id}" />
 	  <g:link class="edit" action="edit" id="${sigSchemeObj?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-	  <g:link class="edit" action="sign" id="${sigSchemeObj?.id}"><g:message code="sigScheme.sign.label" default="Sign" /></g:link>
 	</fieldset>
       </g:form>
     </div>

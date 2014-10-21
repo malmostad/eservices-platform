@@ -22,6 +22,10 @@
       <g:if test="${flash.message}">
 	<div class="message" role="status">${flash.message}</div>
       </g:if>
+      <g:set var="displayUrl" value="${testRun?.displayUrl}"/>
+      <g:if test="${displayUrl}">
+	<iframe src="${displayUrl}" height=50 width=100></iframe>
+      </g:if>
       <ol class="property-list tdbSuite">
 	<g:if test="${tdbSuiteObj?.name}">
 	  <li class="fieldcontain">
@@ -33,14 +37,6 @@
 	  <li class="fieldcontain">
 	    <span id="description-label" class="property-label"><g:message code="tdbSuite.description.label" default="Description" /></span>
 	    <span class="property-value" aria-labelledby="description-label"><g:fieldValue bean="${tdbSuiteObj}" field="description"/></span>
-	  </li>
-	</g:if>
-	<g:if test="${tdbSuiteObj?.chainedSuite}">
-	  <li class="fieldcontain">
-	    <span id="suite-label" class="property-label"><g:message code="tdbDrill.chained.suite.label" default="Chained Suite" /></span>
-	    <span class="property-value" aria-labelledby="suite-label">
-	      <g:link controller="tdbSuite" action="show" id="${tdbSuiteObj?.chainedSuite?.id}">${tdbSuiteObj?.chainedSuite?.encodeAsHTML()}
-	    </g:link></span>
 	  </li>
 	</g:if>
 	<g:if test="${tdbSuiteObj?.drills}">
@@ -59,7 +55,13 @@
 	  <g:hiddenField name="id" value="${tdbSuiteObj?.id}" />
 	  <g:link class="edit" action="edit" id="${tdbSuiteObj?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
 	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
-	  <g:link class="run" action="run" id="${tdbSuiteObj?.id}"><g:message code="default.button.run.label" default="Run" /></g:link>
+	  <g:if test="${chainedSuite}">
+	    <g:set var="prevTestRun" value="${testRun?.id}" />
+	    <g:link class="run" action="run" id="${chainedSuite?.id}" params="[prevTestRun:prevTestRun]"><g:message code="default.button.continue.label" default="Continue" /></g:link>
+	  </g:if>
+	  <g:else>
+	    <g:link class="run" action="run" id="${tdbSuiteObj?.id}"><g:message code="default.button.run.label" default="Run" /></g:link>
+	  </g:else>
 	</fieldset>
       </g:form>
     </div>

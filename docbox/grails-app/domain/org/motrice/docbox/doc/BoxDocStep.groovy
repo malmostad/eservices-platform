@@ -93,7 +93,13 @@ class BoxDocStep implements Comparable {
   }
 
   boolean equals(Object obj) {
-    (obj instanceof BoxDocStep) && ((BoxDocStep)obj).docNo == docNo
+    boolean result = false
+    if (obj instanceof BoxDocStep) {
+      def other = (BoxDocStep)obj
+      result = docNo == other.docNo
+    }
+
+    return result
   }
 
   // Comparison based on document number and step

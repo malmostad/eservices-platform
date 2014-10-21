@@ -23,10 +23,12 @@ class TdbSuiteController {
   }
 
   def create() {
+    if (log.debugEnabled) log.debug "CREATE << ${params}"
     [tdbSuiteObj: new TdbSuite(params)]
   }
 
   def save() {
+    if (log.debugEnabled) log.debug "SAVE << ${params}"
     def tdbSuiteObj = new TdbSuite(params)
     if (!tdbSuiteObj.save(flush: true)) {
       render(view: "create", model: [tdbSuiteObj: tdbSuiteObj])
@@ -37,7 +39,13 @@ class TdbSuiteController {
     redirect(action: "show", id: tdbSuiteObj.id)
   }
 
+  /**
+   * Run a test suite.
+   * A parameter named prevTestRun (a TdbCase id) may be present.
+   * In such case this suite continues a preceding test run.
+   */
   def run(Long id) {
+    if (log.debugEnabled) log.debug "RUN << ${id}, params: ${params}"
     setupService.initialize()
     def tdbSuiteObj = TdbSuite.get(id)
     if (!tdbSuiteObj) {
@@ -46,15 +54,41 @@ class TdbSuiteController {
       return
     }
 
+    if (log.debugEnabled) log.debug "run << ${id} : ${tdbSuiteObj}"
+
+    // Perform all the drills of the suite in the order determined by their names.
+    // The outer try-catch is for catching exceptions in the test machinery itself.
     def cs = null
-    // Use "find" to break the iteration on exception
-    tdbSuiteObj.drills.find {drill ->
-      cs = tdbDrillService.perform(tdbSuiteObj, drill, cs)
-      return cs?.exception
+    // If this suite is chained from a previous one, get the test run.
+    if (params.prevTestRun) {
+      cs = TdbCase.get(params.prevTestRun)
+      // Reset the display url to avoid another display.
+      if (cs) {
+	cs.displayUrl = null
+	cs.save()
+      }
+    }
+    try {
+      // Use "find" to break the iteration on exception, i.e. if a REST invocation
+      // returns a HTTP status not in the 2xx range.
+      // There is no other way to break out of a Groovy iteration!
+      tdbSuiteObj.drills.find {drill ->
+	cs = tdbDrillService.perform(tdbSuiteObj, drill, cs)
+	return cs?.exception
+      }
+    } catch (ServiceException exc) {
+      flash.message = exc.message
+      render(view: 'show', model: [tdbSuiteObj: tdbSuiteObj])
+      return
     }
 
-    if (cs) {
+    if (cs?.exception) {
+      flash.message = cs.exception
       redirect(controller: 'TdbCase', action: 'show', id: cs.id)
+    } else if (cs?.displayUrl) {
+      render(view: 'display', model: [tdbSuiteObj: tdbSuiteObj, testRun: cs, chainedSuite: tdbSuiteObj?.chainedSuite])
+    } else if (cs) {
+      redirect(controller: 'tdbCase', action: 'show', id: cs.id)
     } else {
       render(view: 'show', model: [tdbSuiteObj: tdbSuiteObj])
     }
@@ -72,6 +106,7 @@ class TdbSuiteController {
   }
 
   def edit(Long id) {
+    if (log.debugEnabled) log.debug "EDIT << ${id}, ${params}"
     def tdbSuiteObj = TdbSuite.get(id)
     if (!tdbSuiteObj) {
       flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbSuite.label', default: 'TdbSuite'), id])

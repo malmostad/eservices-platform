@@ -33,6 +33,12 @@
 	    <span class="property-value" aria-labelledby="exception-label"><g:fieldValue bean="${tdbCaseObj}" field="exception"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${tdbCaseObj?.displayUrl}">
+	  <li class="fieldcontain">
+	    <span id="displayUrl-label" class="property-label"><g:message code="tdbCase.displayUrl.label" default="Display Url" /></span>
+	    <span class="property-value" aria-labelledby="displayUrl-label"><g:fieldValue bean="${tdbCaseObj}" field="displayUrl"/></span>
+	  </li>
+	</g:if>
 	<g:if test="${tdbCaseObj?.suite}">
 	  <li class="fieldcontain">
 	    <span id="suite-label" class="property-label"><g:message code="tdbCase.suite.label" default="Suite" /></span>

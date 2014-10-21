@@ -268,12 +268,9 @@ class DocService {
    */
   private byte[] nextId() {
     def bytes = new byte[4]
-    synchronized(RNG) {
-      RNG.nextBytes(bytes)
-    }
-
+    RNG.nextBytes(bytes)
     // Limit to 30 bits
-    bytes[0] &= 0x03
+    bytes[0] &= 0x3F
     return bytes
   }
 

@@ -12,6 +12,12 @@
   </label>
   <g:textArea name="exception" cols="40" rows="5" maxlength="400" value="${tdbCaseObj?.exception}"/>
 </div>
+<div class="fieldcontain ${hasErrors(bean: tdbCaseObj, field: 'displayUrl', 'error')} ">
+  <label for="displayUrl">
+    <g:message code="tdbCase.displayUrl.label" default="Display Url" />
+  </label>
+  <g:textArea name="displayUrl" cols="40" rows="5" maxlength="400" value="${tdbCaseObj?.displayUrl}"/>
+</div>
 <div class="fieldcontain ${hasErrors(bean: tdbCaseObj, field: 'suite', 'error')} required">
   <label for="suite">
     <g:message code="tdbCase.suite.label" default="Suite" />

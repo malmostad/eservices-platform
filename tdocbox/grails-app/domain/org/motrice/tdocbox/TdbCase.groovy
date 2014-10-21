@@ -13,16 +13,28 @@ class TdbCase implements Comparable {
   // Exception message if the case crashed.
   String exception
 
+  // Display url, if any
+  String displayUrl
+
   SortedSet items
   static hasMany = [items: TdbItem]
   static constraints = {
     timeStamp unique: true
     exception nullable: true, maxSize: 400
+    displayUrl nullable: true
+  }
+  static mapping = {
+    displayUrl type: 'text'
   }
 
   static createCase(TdbSuite suite) {
     def now = new Date()
     new TdbCase(timeStamp: now, suite: suite)
+  }
+
+  TdbCase addDisplayItem(String itemName, String itemText) {
+    displayUrl = itemText
+    return addTextItem(itemName, itemText)
   }
 
   TdbCase addTextItem(String itemName, String itemText, boolean exceptionFlag) {

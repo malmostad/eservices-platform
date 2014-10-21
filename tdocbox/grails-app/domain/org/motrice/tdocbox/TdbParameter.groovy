@@ -10,6 +10,9 @@ class TdbParameter implements Comparable {
   // Parameter value
   String value
 
+  // Should the parameter value be Base64-encoded?
+  Boolean b64Encode
+
   // Parameter description
   String description
 
@@ -17,10 +20,15 @@ class TdbParameter implements Comparable {
   static constraints = {
     name nullable: false, maxSize: 64
     value nullable: true
+    b64Encode nullable: true
     description nullable: true, maxSize: 400
   }
   static mapping = {
     value type: 'text'
+  }
+
+  String getValueEncoded() {
+    b64Encode? value.getBytes('UTF-8').encodeBase64().toString() : value
   }
 
   String toString() {

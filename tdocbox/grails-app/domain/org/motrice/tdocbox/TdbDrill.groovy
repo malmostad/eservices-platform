@@ -16,6 +16,9 @@ class TdbDrill implements Comparable {
   // Optional query string
   String queryString
 
+  // Optional delay before execution (seconds)
+  Float delay
+
   SortedSet parameters
   static belongsTo = [suite: TdbSuite]
   static hasMany = [parameters: TdbParameter]
@@ -25,6 +28,7 @@ class TdbDrill implements Comparable {
     mode nullable: false
     method nullable: false
     queryString nullable: true, maxSize: 400
+    delay nullable: true
     parameters nullable: true
   }
 
@@ -34,7 +38,7 @@ class TdbDrill implements Comparable {
   static final PARAM_Q = 'from TdbParameter as p where p.drill.id=? and p.name=?'
   String getBody() {
     def bodyParam = TdbParameter.find(PARAM_Q, [this.id, 'BODY'])
-    return bodyParam?.value
+    return bodyParam?.valueEncoded
   }
 
   /**
@@ -43,7 +47,7 @@ class TdbDrill implements Comparable {
   Map getMap() {
     def map = [:]
     parameters.each {param ->
-      map[param.name] = param.value
+      map[param.name] = param.valueEncoded
     }
     return map
   }

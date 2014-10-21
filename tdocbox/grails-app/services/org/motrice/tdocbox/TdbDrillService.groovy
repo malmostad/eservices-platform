@@ -10,12 +10,52 @@ class TdbDrillService {
   // All methods are transactional (actually the default)
   static transactional = true
 
+  /**
+   * Execute a drill.
+   */
   TdbCase perform(TdbSuite suite, TdbDrill drill, TdbCase cs) {
     if (log.debugEnabled) log.debug "perform << ${drill?.debug}"
-    def urlString = TdbMethod.createUrl(drill, cs)
-    if (log.debugEnabled) log.debug "HTTP ${drill?.verb} [[ ${urlString}"
+    // Sleep for a while if the drill has delay.
+    // The delay is not included in the timing.
+    if (drill.delay) {
+      try {
+	Thread.sleep(drill.delay * 1000.0f as Long)
+      } catch (InterruptedException exc) {
+	Thread.currentThread().interrupt()
+      }
+    }
 
-    // In this case we do not use the pretty DSL format.
+    return drill.method.displayMethod? performDisplayMethod(suite, drill, cs) :
+    performRestMethod(suite, drill, cs)
+  }
+
+  TdbCase performDisplayMethod(TdbSuite suite, TdbDrill drill, TdbCase cs) {
+    if (log.debugEnabled) log.debug "performDisplayMethod << Case: ${cs}"
+    def urlString = null
+    try {
+      urlString = TdbMethod.createAbsoluteUrl(drill, cs)
+    } catch (MissingPropertyException exc) {
+      throw new ServiceException("Value missing for variable '${exc.property}'")
+    }
+
+    cs = suite.createCase(cs)
+    String itemName = "${drill.name}_DISPLAY"
+    cs.addDisplayItem(itemName, urlString)
+    if (log.debugEnabled) log.debug "performDisplayMethod: ${itemName} = ${urlString}"
+    return cs
+  }
+
+  TdbCase performRestMethod(TdbSuite suite, TdbDrill drill, TdbCase cs) {
+    if (log.debugEnabled) log.debug "performRestMethod << ${cs? cs : 'Case(null)'}"
+    def urlString = null
+    try {
+      urlString = TdbMethod.createUrl(drill, cs)
+    } catch (MissingPropertyException exc) {
+      throw new ServiceException("Value missing for variable '${exc.property}'")
+    }
+
+    if (log.debugEnabled) log.debug "HTTP ${drill?.verb} [[ ${urlString}"
+    // There is also a pretty DSL format that we don't use...
     def builder = new RequestBuilder()
     builder.uri = urlString
     // Configure relative the invocation mode

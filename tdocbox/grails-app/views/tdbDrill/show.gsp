@@ -51,6 +51,12 @@
 	    <span class="property-value" aria-labelledby="queryString-label"><g:fieldValue bean="${tdbDrillObj}" field="queryString"/></span>
 	  </li>
 	</g:if>
+	<g:if test="${tdbDrillObj?.delay}">
+	  <li class="fieldcontain">
+	    <span id="delay-label" class="property-label"><g:message code="tdbDrill.delay.label" default="Delay" /></span>
+	    <span class="property-value" aria-labelledby="delay-label"><g:fieldValue bean="${tdbDrillObj}" field="delay"/></span>
+	  </li>
+	</g:if>
 	<g:if test="${tdbDrillObj?.parameters}">
 	  <li class="fieldcontain">
 	    <span id="parameters-label" class="property-label"><g:message code="tdbDrill.parameters.label" default="Parameters" /></span>

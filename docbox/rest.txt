@@ -24,9 +24,10 @@ $PREFIX/meta/byformdata/$formDataUuid[?step=$stepNo] GET: get document metadata
 
 --------------
 
-$PREFIX/sig/request/$docboxref ????? med mera PUT: issue a sign request
+$PREFIX/sig/request/$docboxref ????? med mera POST: issue a sign request
+?scheme=scheme[&personalId=personalIdNo]
 
-$PREFIX/sig/request/$docboxref?transaction=$uuid GET: get the state of a signing transaction
+$PREFIX/sig/request/$docboxref?txid=$transaction? GET: get the state of a signing transaction
 
 $PREFIX/sig/scheme/$id GET: get details of a signing scheme
 

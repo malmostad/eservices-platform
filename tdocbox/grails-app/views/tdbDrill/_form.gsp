@@ -30,7 +30,13 @@
   <label for="queryString">
     <g:message code="tdbDrill.queryString.label" default="Query String" />
   </label>
-  <g:textField name="queryString" maxlength="400" value="${tdbDrillObj?.queryString}"/>
+  <g:textField class="wide" name="queryString" maxlength="400" value="${tdbDrillObj?.queryString}"/>
+</div>
+<div class="fieldcontain ${hasErrors(bean: tdbDrillObj, field: 'delay', 'error')} ">
+  <label for="delay">
+    <g:message code="tdbDrill.delay.label" default="Delay" />
+  </label>
+  <g:textField class="narrow" name="delay" maxlength="400" value="${tdbDrillObj?.delay}"/>
 </div>
 <div class="fieldcontain ${hasErrors(bean: tdbDrillObj, field: 'parameters', 'error')} ">
   <label for="parameters">
@@ -50,6 +56,5 @@
     <g:message code="tdbDrill.suite.label" default="Suite" />
     <span class="required-indicator">*</span>
   </label>
-  <g:select id="suite" name="suite.id" from="${org.motrice.tdocbox.TdbSuite.list()}" optionKey="id" required="" value="${tdbDrillObj?.suite?.id}" class="many-to-one"/>
+  <g:select id="suite" name="suite.id" from="${org.motrice.tdocbox.TdbSuite.list()}" optionKey="id" required="" value="${tdbSuiteObj?.id}" class="many-to-one"/>
 </div>
-

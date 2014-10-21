@@ -4,99 +4,101 @@ import org.springframework.dao.DataIntegrityViolationException
 
 class TdbDrillController {
 
-    static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+  static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-    def index() {
-        redirect(action: "list", params: params)
+  def index() {
+    redirect(action: "list", params: params)
+  }
+
+  def list(Integer max) {
+    params.max = Math.min(max ?: 10, 100)
+    [tdbDrillObjList: TdbDrill.list(params), tdbDrillObjTotal: TdbDrill.count()]
+  }
+
+  def create() {
+    if (log.debugEnabled) log.debug "CREATE << ${params}"
+    [tdbDrillObj: new TdbDrill(params), tdbSuiteObj: params.tdbSuite]
+  }
+
+  def save() {
+    def tdbDrillObj = new TdbDrill(params)
+    if (!tdbDrillObj.save(flush: true)) {
+      render(view: "create", model: [tdbDrillObj: tdbDrillObj])
+      return
     }
 
-    def list(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
-        [tdbDrillObjList: TdbDrill.list(params), tdbDrillObjTotal: TdbDrill.count()]
+    flash.message = message(code: 'default.created.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), tdbDrillObj.id])
+    redirect(action: "show", id: tdbDrillObj.id)
+  }
+
+  def show(Long id) {
+    def tdbDrillObj = TdbDrill.get(id)
+    if (!tdbDrillObj) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
+      redirect(action: "list")
+      return
     }
 
-    def create() {
-        [tdbDrillObj: new TdbDrill(params)]
+    [tdbDrillObj: tdbDrillObj]
+  }
+
+  def edit(Long id) {
+    if (log.debugEnabled) log.debug "EDIT << ${id}, ${params}"
+    def tdbDrillObj = TdbDrill.get(id)
+    if (!tdbDrillObj) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
+      redirect(action: "list")
+      return
     }
 
-    def save() {
-        def tdbDrillObj = new TdbDrill(params)
-        if (!tdbDrillObj.save(flush: true)) {
-            render(view: "create", model: [tdbDrillObj: tdbDrillObj])
-            return
-        }
+    [tdbDrillObj: tdbDrillObj, tdbSuiteObj: tdbDrillObj?.suite]
+  }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), tdbDrillObj.id])
-        redirect(action: "show", id: tdbDrillObj.id)
+  def update(Long id, Long version) {
+    def tdbDrillObj = TdbDrill.get(id)
+    if (!tdbDrillObj) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
+      redirect(action: "list")
+      return
     }
 
-    def show(Long id) {
-        def tdbDrillObj = TdbDrill.get(id)
-        if (!tdbDrillObj) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
-            redirect(action: "list")
-            return
-        }
-
-        [tdbDrillObj: tdbDrillObj]
+    if (version != null) {
+      if (tdbDrillObj.version > version) {
+	tdbDrillObj.errors.rejectValue("version", "default.optimistic.locking.failure",
+				       [message(code: 'tdbDrill.label', default: 'TdbDrill')] as Object[],
+				       "Another user has updated this TdbDrill while you were editing")
+	render(view: "edit", model: [tdbDrillObj: tdbDrillObj])
+	return
+      }
     }
 
-    def edit(Long id) {
-        def tdbDrillObj = TdbDrill.get(id)
-        if (!tdbDrillObj) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
-            redirect(action: "list")
-            return
-        }
+    tdbDrillObj.properties = params
 
-        [tdbDrillObj: tdbDrillObj]
+    if (!tdbDrillObj.save(flush: true)) {
+      render(view: "edit", model: [tdbDrillObj: tdbDrillObj])
+      return
     }
 
-    def update(Long id, Long version) {
-        def tdbDrillObj = TdbDrill.get(id)
-        if (!tdbDrillObj) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
-            redirect(action: "list")
-            return
-        }
+    flash.message = message(code: 'default.updated.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), tdbDrillObj.id])
+    redirect(action: "show", id: tdbDrillObj.id)
+  }
 
-        if (version != null) {
-            if (tdbDrillObj.version > version) {
-                tdbDrillObj.errors.rejectValue("version", "default.optimistic.locking.failure",
-                          [message(code: 'tdbDrill.label', default: 'TdbDrill')] as Object[],
-                          "Another user has updated this TdbDrill while you were editing")
-                render(view: "edit", model: [tdbDrillObj: tdbDrillObj])
-                return
-            }
-        }
-
-        tdbDrillObj.properties = params
-
-        if (!tdbDrillObj.save(flush: true)) {
-            render(view: "edit", model: [tdbDrillObj: tdbDrillObj])
-            return
-        }
-
-        flash.message = message(code: 'default.updated.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), tdbDrillObj.id])
-        redirect(action: "show", id: tdbDrillObj.id)
+  def delete(Long id) {
+    def tdbDrillObj = TdbDrill.get(id)
+    if (!tdbDrillObj) {
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
+      redirect(action: "list")
+      return
     }
 
-    def delete(Long id) {
-        def tdbDrillObj = TdbDrill.get(id)
-        if (!tdbDrillObj) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
-            redirect(action: "list")
-            return
-        }
-
-        try {
-            tdbDrillObj.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
-            redirect(action: "list")
-        }
-        catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
-            redirect(action: "show", id: id)
-        }
+    try {
+      tdbDrillObj.delete(flush: true)
+      flash.message = message(code: 'default.deleted.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
+      redirect(action: "list")
     }
+    catch (DataIntegrityViolationException e) {
+      flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'tdbDrill.label', default: 'TdbDrill'), id])
+      redirect(action: "show", id: id)
+    }
+  }
 }

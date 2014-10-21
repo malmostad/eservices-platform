@@ -10,11 +10,16 @@ class TdbSuite implements Comparable {
   // A free text description of the suite.
   String description
 
+  // If the suite ends with a display method, generate a link
+  // to the chained suite.
+  TdbSuite chainedSuite
+
   SortedSet drills
   static hasMany = [drills: TdbDrill]
   static constraints = {
     name nullable: false, maxSize: 40, unique: true
     description nullable: true, maxSize: 400
+    chainedSuite nullable: true
   }
 
   TdbCase createCase() {

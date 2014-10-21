@@ -1,9 +1,13 @@
 package org.motrice.signatrice
 
+import java.nio.ByteBuffer
+import java.security.SecureRandom
 import java.sql.Timestamp
 
 import org.apache.commons.logging.LogFactory
 import grails.converters.JSON
+
+import org.motrice.docbox.doc.SignRequestCommand
 
 import org.motrice.signatrice.cgi.AuthenticateRequestType
 import org.motrice.signatrice.cgi.CollectRequestType
@@ -24,16 +28,19 @@ import org.motrice.signatrice.cgi.SignRequestType
  * Calls methods in 
  */
 class SignService {
+  // Stuff for generating transaction id.
+  // Should be ok, it is thread-safe.
+  static RNG = new SecureRandom()
   // Format string for transaction id
-  static final String TXID_FORMAT = 'MOT-%06d'
+  static final String TXID_FORMAT = 'MOT-%08d'
 
   // Provider name needed by CGI. The only one defined so far.
   static final String PROVIDER = 'bankid'
 
   // Min and max SigResult age for calling Collect
   static final Long SECOND = 1000L
-  private static final Long MIN_COLLECT_AGE_MILLIS = 3 * SECOND
-  private static final Long MAX_COLLECT_AGE_MILLIS = 190 * SECOND
+  static final Long MIN_COLLECT_AGE_MILLIS = 3 * SECOND
+  static final Long MAX_COLLECT_AGE_MILLIS = 190 * SECOND
   
   private static final log = LogFactory.getLog(this)
 
@@ -60,30 +67,31 @@ class SignService {
    * Send a sign request, return a newly created SigResult containing
    * the return values, or throw a ServiceException.
    */
-  SigResult sign(SigScheme testcase, request) {
-    if (log.debugEnabled) log.debug "sign << ${testcase} from ${request.remoteAddr}"
-    def transactionId = generateTransactionId()
+  SigResult signatureRequest(SignRequestCommand cmd) {
+    if (log.debugEnabled) log.debug "signatureRequest << ${cmd}"
+    cmd.transactionId = generateTransactionId()
     def result = null
     try {
-      def orderResponse = doSign(testcase, transactionId, request)
+      def orderResponse = doSign(cmd)
       result = new SigResult(transactionId: orderResponse.transactionId,
       orderRef: orderResponse.orderRef,
       autoStartToken: orderResponse.autoStartToken,
-      displayName: testcase.displayName,
-      policy: testcase.policy,
-      personalIdNo: testcase.personalIdNo,
+      displayName: cmd.schemeObj.displayName,
+      policy: cmd.schemeObj.policy,
+      personalIdNo: cmd.personalId,
+      docboxRefIn: cmd.docboxref,
       progressStatus: SigProgress.initialState())
       result.dateCreated = new Date()
 
       // Add the new result to the test case
-      testcase.addToResults(result).save()
+      cmd.schemeObj.addToResults(result).save()
     } catch (GrpFault fault) {
       if (log.debugEnabled) log.debug "sign EXCEPTION ${fault}"
       def info = fault.faultInfo
       String faultMsg = "${info?.faultStatus?.value()}: ${info.detailedDescription}"
-      auditService.logSignEvent(transactionId, true, 'Sign request failed', faultMsg,
-				StackTracer.trace(fault), request)
-      throw new ServiceException(faultMsg, transactionId, fault)
+      auditService.logSignEvent(cmd.transactionId, true, 'Sign request failed', faultMsg,
+				StackTracer.trace(fault), cmd.request)
+      throw new ServiceException(faultMsg, cmd.transactionId, fault)
     }
     if (log.debugEnabled) log.debug "sign >> ${result}"
     return result
@@ -92,20 +100,20 @@ class SignService {
   /**
    * The details of a signing request
    */
-  private OrderResponseType doSign(SigScheme testcase, String transactionId, request) {
-    def service = new GrpService(testcase.service.serviceUrl, testcase.service.qname)
+  private OrderResponseType doSign(SignRequestCommand cmd) {
+    def service = new GrpService(cmd.schemeObj.service.serviceUrl, cmd.schemeObj.service.qname)
     def of = new ObjectFactory()
     def signReq = of.createSignRequestType()
-    signReq.personalNumber = testcase.personalIdNo
-    signReq.policy = testcase.policy as String
-    signReq.displayName = testcase.displayName as String
-    signReq.transactionId = transactionId
+    signReq.personalNumber = cmd.personalId
+    signReq.policy = cmd.schemeObj.policy as String
+    signReq.displayName = cmd.schemeObj.displayName as String
+    signReq.transactionId = cmd.transactionId
     signReq.provider = PROVIDER
     def endUserInfo = of.createEndUserInfoType()
     endUserInfo.type = "IP_ADDR"
-    endUserInfo.value = request.remoteAddr
+    endUserInfo.value = cmd.remoteAddr
     signReq.endUserInfo << endUserInfo
-    signReq.userVisibleData = testcase.encodedVisibleText
+    signReq.userVisibleData = cmd.bodyB64
     def port = service.grpServiceServletPort
     port.sign(signReq)
   }
@@ -114,8 +122,12 @@ class SignService {
    * Generate and assign a pseudo-random transaction id
    */
   private String generateTransactionId() {
-    Integer rand = Math.random() * 10000000.0D
-    String.format(TXID_FORMAT, rand)
+    def bytes = new byte[4]
+    RNG.nextBytes(bytes)
+    // Limit to 27 bits
+    bytes[0] &= 0x07
+    def buf = ByteBuffer.wrap(bytes)
+    String.format(TXID_FORMAT, buf.getInt())
   }
 
   // Candidate SigResults with hardwired progess status id:s
@@ -138,7 +150,7 @@ class SignService {
     // Find the service of all candidates
     def serviceSet = new TreeSet()
     candidates.each {candidate ->
-      serviceSet.add(candidate.tcase.service)
+      serviceSet.add(candidate.scheme.service)
     }
 
     def portMap = createPortMap(serviceSet)
@@ -208,7 +220,7 @@ class SignService {
     collectReq.displayName = candidate.displayName.name
     collectReq.transactionId = candidate.transactionId
     collectReq.orderRef = candidate.orderRef
-    def serviceId = candidate.tcase.service.id
+    def serviceId = candidate.scheme.service.id
     def port = portMap[serviceId].port
     port.collect(collectReq)
   }

@@ -17,38 +17,13 @@ class SigScheme implements Comparable {
   // Predefined policies for test only
   SigPolicy policy
 
-  // Swedish personal identity number (12 digits)
-  String personalIdNo
-
-  // Text to be signed
-  String userVisibleText
-
-  // Transient abbreviation of the visible text
-  String abbrVisibleText
-
   SortedSet results
   static belongsTo = [service: SigService]
-  static hasMany = [results: SigResult]
-  static mapping = {
-    userVisibleText type: 'text'
-  }
+  static hasMany = [results: SigResult, testCases: SigTestcase]
   static constraints = {
-    name size: 1..120
-    dateCreated nullable: true, unique: true
-    personalIdNo maxSize: 12, nullable: true
+    name size: 1..120, unique: true
+    dateCreated nullable: true
     results nullable: true
-  }
-  static transients = ['abbrVisibleText', 'encodedVisibleText', 'uname']
-
-  String getAbbrVisibleText() {
-    (userVisibleText.length() > 24)? userVisibleText.substring(0, 22) + '...' : userVisibleText
-  }
-
-  /**
-   * Encode the visible text as required by the GPR API
-   */
-  String getEncodedVisibleText() {
-    userVisibleText.getBytes('UTF-8').encodeBase64()
   }
 
   /**
