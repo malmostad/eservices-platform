@@ -22,12 +22,14 @@
 # e-mail: info _at_ motrice.se 
 # mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
 # phone: +46 8 641 64 14 
+DIRNAME=`dirname $0`
+. ${DIRNAME}/test_common.sh
 
 function usage() {
 echo "Usage: $0 -u USERNAME -p PASSWORD"
 }
 
- 
+readSettings
 
 # A username.
 USER=""
@@ -59,26 +61,12 @@ fi
 
 
 
-# The host under test.
-HOST=localhost
- 
 CASENAME="orbeon" 
-JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
-OUTPUTDIR=`pwd`/jmeterResults
-OUTPUTSLASK=`pwd`/slask
-TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
-TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
- 
 
-if [ ! -f ${JMETER} ]; then
-  echo "Missing file JMETER=${JMETER}"
-   exit 1;
-fi
-
-
-LOOP=3
 LOOP=11
+# TODO  this overrides the setting and HOST and PORT are not used 
 TESTPLAN=${TESTPLANDIRECTORY}/TestPlanOrbeon.jmx
+CASENAME="Orbeon" 
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
 for thread_count in 001 002 004 010 
 # for thread_count in 001 002 004 010 050 100

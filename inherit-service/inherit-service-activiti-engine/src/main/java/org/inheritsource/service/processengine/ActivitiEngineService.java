@@ -166,34 +166,37 @@ public class ActivitiEngineService {
 	
 	public List<InboxTaskItem> getUserInbox(Locale locale, String userId) {
 		List<InboxTaskItem> result = new ArrayList<InboxTaskItem>();
-		List<Group> groups = engine.getIdentityService().createGroupQuery().groupMember(userId).list();
-		List<String> groupsStr = new ArrayList<String>();
-		for (Group group : groups) {
-			groupsStr.add(group.getId());
-		}
 		
-		List<Task> groupCandidateTasks = null;
-		if (! groupsStr.isEmpty()) {
-			groupCandidateTasks = engine.getTaskService().createTaskQuery().taskCandidateGroupIn(groupsStr).list();
-		} else {
-			groupCandidateTasks = new ArrayList<Task>();
-		}
-		
-		List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).				
-				orderByTaskCreateTime().asc().list();
-		
-		// exclude duplicate tasks when merging		
-		for (Task t : groupCandidateTasks) {
-			if ( !tasks.contains(t) ) {
-				tasks.add(t);
+		if (userId != null) {
+			List<Group> groups = engine.getIdentityService().createGroupQuery().groupMember(userId).list();
+			List<String> groupsStr = new ArrayList<String>();
+			for (Group group : groups) {
+				groupsStr.add(group.getId());
 			}
+			
+			List<Task> groupCandidateTasks = null;
+			if (! groupsStr.isEmpty()) {
+				groupCandidateTasks = engine.getTaskService().createTaskQuery().taskCandidateGroupIn(groupsStr).list();
+			} else {
+				groupCandidateTasks = new ArrayList<Task>();
+			}
+			
+			List<Task> tasks = engine.getTaskService().createTaskQuery().taskInvolvedUser(userId).				
+					orderByTaskCreateTime().asc().list();
+			
+			// exclude duplicate tasks when merging		
+			for (Task t : groupCandidateTasks) {
+				if ( !tasks.contains(t) && (userId.equals(t.getAssignee()) || (t.getAssignee()==null) || t.getAssignee().trim().length()==0)  ) {
+					tasks.add(t);
+				}
+			}
+		
+			result = taskList2InboxTaskItemList(tasks, locale, userId);
+			
+			result.addAll(formEngine.getPendingStartFormInstances(userId, locale));
+			
+			Collections.sort(result);
 		}
-	
-		result = taskList2InboxTaskItemList(tasks, locale, userId);
-		
-		result.addAll(formEngine.getPendingStartFormInstances(userId, locale));
-		
-		Collections.sort(result);
 		
 		return result;
 	}

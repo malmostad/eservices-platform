@@ -1,60 +1,53 @@
 <!--
-    Motrice.org Orbeon properties-local.xml file. Please follow the instructions here:
+    This file is an empty template for your own properties-local.xml file. Please follow the instructions here:
+
     http://wiki.orbeon.com/forms/doc/developer-guide/configuration-properties
 -->
 <properties xmlns:xs="http://www.w3.org/2001/XMLSchema"
             xmlns:oxf="http://www.orbeon.com/oxf/processors">
-  
-  <property as="xs:string" name="oxf.fr.default-language.*.*" value="sv"/>
-  
+
    <property as="xs:string" name="oxf.fr.css.custom.uri.*.*" value="/config/malmo.css"/>
 
-  <property
+   <property
       as="xs:string"
       name="oxf.fr.persistence.provider.*.*.*"
       value="exist"/>
-  
-  <property 
-      as="xs:anyURI" 
-      name="oxf.fr.persistence.exist.uri" 
-      value="/fr/service/exist"/>
 
-  <property 
+    <property 
       as="xs:anyURI" 
       name="oxf.fr.persistence.exist.exist-uri" 
       value="http://orbeon:orb@localhost:8080/exist/rest/db/orbeon-pe/fr"/>
 
-  <property as="xs:string" name="oxf.fr.detail.buttons.*.*" value="clear save-draft workflow-send"/>
-  <property as="xs:string" name="oxf.fr.detail.buttons.anonymous.*" value="workflow-send"/>
-  <property as="xs:string" name="oxf.fr.detail.buttons.miljoforvaltningen.anmalan-hemkompostering" value="workflow-send"/>
+    <property as="xs:string" name="oxf.fr.detail.buttons.*.*" value="clear save-draft send-motrice"/>
+    <property as="xs:string" name="oxf.fr.detail.buttons.view.*.*" value=""/>
+    <property as="xs:string" name="oxf.fr.detail.buttons.malmo.*" value="clear save-final"/>
+
+
+    <property
+	as="xs:string"
+	name="oxf.fr.detail.process.send-motrice.*.*"
+	value="require-uploads
+	       then require-valid
+               then save
+ 	       then navigate(uri=&quot;http://localhost:8080/site/mycases/form/confirmdispatcher?document={xxf:instance('fr-parameters-instance')/document}&quot;)
+	       recover error-message(&quot;database-error&quot;)"/>
   
-  <property as="xs:string" name="oxf.fr.detail.buttons.malmo.*" value="clear save-final"/>
+    <property
+  as="xs:string"
+  name="oxf.fr.resource.*.*.en.buttons.send-motrice"
+  value="Send"/>
 
-  <property as="xs:string" name="oxf.fr.detail.buttons.view.*.*" value=""/>
-  <property as="xs:string" name="oxf.fr.detail.submit.buttons.*.*" value="go"/>
+    <property
+  as="xs:string"
+  name="oxf.fr.resource.*.*.sv.buttons.send-motrice"
+  value="Skicka"/>
 
-  <property as="xs:anyURI" name="oxf.fr.detail.send.success.uri.*.*"
-          value="http://localhost:8080/site/mycases/form/confirmdispatcher"/>
-  <property as="xs:string" name="oxf.fr.detail.send.success.method.*.*" value="get"/>
-
-
-  <!-- HTTP method to use to navigate to the error page -->
-  <property as="xs:string" name="oxf.fr.detail.send.error.method.*.*" value="get"/>
-
-<!--   
-  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.send" value="Skicka"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.clear" value="Rensa"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.save-draft" value="Spara"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.sv.detail.buttons.save-final" value="Spara"/>
   
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.send" value="Skicka"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.clear" value="Rensa"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.save-draft" value="Spara"/>
-  <property as="xs:string" name="oxf.fr.resource.*.*.en.detail.buttons.save-final" value="Spara"/>
- -->
- 
-  <property as="xs:boolean" name="oxf.fr.noscript-link.*.*" value="false"/>
-  
-  <!--  no orbeon logotype in forms  -->
-  <property as="xs:anyURI" name="oxf.fr.default-logo.uri.*.*" value=""/>
+     <!--  no orbeon logotype in forms  -->
+     <property as="xs:anyURI" name="oxf.fr.default-logo.uri.*.*" value=""/>
+
+     <!-- XForms engine activity -->
+     <category name="org.orbeon.oxf.xforms.processor.XFormsServer">
+       <priority value="info"/>
+     </category>
 </properties>

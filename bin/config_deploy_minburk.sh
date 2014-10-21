@@ -1,7 +1,7 @@
 #!/bin/bash
 # Setting of maven test flag
-MVN_SKIP_TEST=false
 MVN_SKIP_TEST=true
+MVN_SKIP_TEST=false
 
 # ROOT of build directory
 #BUILD_DIR=${HOME}/workspaces/motrice/pawap

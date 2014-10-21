@@ -22,41 +22,12 @@
 # e-mail: info _at_ motrice.se 
 # mail: Motrice AB, Långsjövägen 8, SE-131 33 NACKA, SWEDEN 
 # phone: +46 8 641 64 14 
-
+DIRNAME=`dirname $0`
+. ${DIRNAME}/test_common.sh
 function usage() {
 echo "Usage: $0 -u USERNAME -p PASSWORD"
 }
-
-
-function cleanUpInbox() {
-
-echo "cleaning up in inbox "
-echo ${COMMANDOCLEAN}
-nloops=3   # number of users tasks : registrering - handlägging - expediering 
-for i in `seq 1 ${nloops} `;
-do 
-  echo "cleaning up step ${i} "
-  ${COMMANDOCLEAN}
-done 
-}
-
-
-
-# load a number of activites 
-LOOP=1 
-JMETERSETTINGS="${HOME}/workspaces/inheritsource-develop/pawap/jmeter/jmeterSetting_deploy" 
-if test -f "${JMETERSETTINGS}" 
-then 
-   echo "reading ${JMETERSETTINGS}" 
-   source  ${JMETERSETTINGS}
-else
-   echo "using defaults"
-   # The host under test.
-   HOST="eminburk.malmo.se"
-   PROTOCOL="https"
-   PORT="443"
-   STARTFORM="demo-ansokan--v002"
-fi 
+readSettings
 
 # A username.
 USER=""
@@ -85,38 +56,10 @@ if [ -z "$PASS" ] ; then
 fi
  
  
-JMETER=${HOME}/jmeter/bin/jmeter.sh
-JMETER=${HOME}/jmeter/apache-jmeter-2.11/bin/jmeter.sh
-OUTPUTDIR=`pwd`/jmeterResults
-OUTPUTSLASK=`pwd`/slask
-TESTPLANDIRECTORY=${HOME}/workspaces/inheritsource-develop/pawap/jmeter
-TESTCLEANPLAN=${TESTPLANDIRECTORY}/TestPlanDoAllInInbox.jmx 
-COMMANDOCLEAN="${JMETER} -n -t ${TESTCLEANPLAN} -Jthreads=1 -Jcasename='DoAllInInbox' -Juser=$USER -Jpassword=$PASS -JoutputDir=${OUTPUTSLASK}"
 
-# 
-if [ ! -f ${JMETER} ]; then
-  echo "Missing file JMETER=${JMETER}"
-   exit 1;
-fi
-
-if [ ! -f ${TESTCLEANPLAN} ]; then
-  echo "Missing file TESTCLEANPLAN=${TESTCLEANPLAN}"
-   exit 1;
-fi
-
-
-# first clean up inbox 
-####cleanUpInbox 
-
-TESTPLAN=${TESTPLANDIRECTORY}/TestPlanCreateCases.jmx 
 CASENAME="CreateCases" 
 
-if [ ! -f ${TESTPLAN} ]; then
-  echo "Missing file TESTPLAN=${TESTPLAN}"
-   exit 1;
-fi
 
-LOOP=11
 LOOP=1
 /bin/rm  ${OUTPUTDIR}/${CASENAME}/*jtl
 for thread_count in 001 

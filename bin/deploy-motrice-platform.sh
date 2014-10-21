@@ -179,8 +179,8 @@ if mvn -DskipTests=${MVN_SKIP_TEST} clean install
 then
     echo "Executing mvn -DskipTests=true clean install - patched for eservicetest..."
 else
-    echo "Compilation failed. Aborting execution"
     ERRORSTATUS=$?
+    echo "Compilation failed. Aborting execution"
     exit $ERRORSTATUS
 fi
 
@@ -191,8 +191,8 @@ then
     echo "Creating eservicetest snapshot distribution tar.gz..."
     mv target/inherit-portal-1.01.00-SNAPSHOT-distribution.tar.gz target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
 else
-    echo "Building of snapshot distribution failed. Aborting execution"
     ERRORSTATUS=$?
+    echo "Building of snapshot distribution failed. Aborting execution"
     exit $ERRORSTATUS
 fi
 popd
