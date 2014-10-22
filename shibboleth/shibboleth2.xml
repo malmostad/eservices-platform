@@ -280,7 +280,7 @@
         <MetadataProvider type="XML" uri="https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0"
               backingFilePath="federation-metadata.xml" reloadInterval="7200">
             <!-- tostman   <MetadataFilter type="RequireValidUntil" maxValidityInterval="2419200"/>  -->     
-             <MetadataFilter type="Signature" certificate="logica.pem"/>
+             <!-- <MetadataFilter type="Signature" certificate="logica.pem"/>  --> 
          </MetadataProvider>
 
         <!-- Example of locally maintained metadata. -->
