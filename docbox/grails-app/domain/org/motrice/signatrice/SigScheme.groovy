@@ -26,6 +26,18 @@ class SigScheme implements Comparable {
     results nullable: true
   }
 
+  boolean isDefaultScheme() {
+    SigDefaultScheme.isCurrentDefault(this)
+  }
+
+  /**
+   * The flagged name get an asterisk at the end if the scheme is the current
+   * default scheme.
+   */
+  String getFlaggedName() {
+    defaultScheme? "${name} *" : name
+  }
+
   /**
    * uname is a unique name composed of the common name and the creation timestamp
    */
@@ -34,7 +46,7 @@ class SigScheme implements Comparable {
   }
 
   String toString() {
-    name + ' ' + dateCreated.format('yyyy-MM-dd HH:mm')
+    "${name} [${dateCreated.format('yyyy-MM-dd HH:mm')}]"
   }
 
   //-------------------- Comparable --------------------

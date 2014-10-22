@@ -112,6 +112,9 @@ class SigSchemeController {
     }
 
     try {
+      // If you try to delete the current default scheme there will be a constraint violation exception.
+      // It is managed properly, but the stack trace appears on the console.
+      // The bug is that there is an unnecessary stack trace. Seems to be fixed in later Grails versions.
       sigSchemeObj.delete(flush: true)
       flash.message = message(code: 'default.deleted.message', args: [message(code: 'sigScheme.label', default: 'SigScheme'), id])
       redirect(action: "list")

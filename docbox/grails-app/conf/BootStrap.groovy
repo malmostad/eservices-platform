@@ -22,6 +22,7 @@
  * phone: +46 8 641 64 14
  */
 
+import org.motrice.signatrice.SigDefaultScheme
 import org.motrice.signatrice.SigDisplayname
 import org.motrice.signatrice.SigPolicy
 import org.motrice.signatrice.SigProgress
@@ -29,6 +30,7 @@ import org.motrice.signatrice.SigService
 
 class BootStrap {
     def init = {servletContext ->
+      SigDefaultScheme.createDefaultScheme()
       SigDisplayname.createDisplaynames()
       SigPolicy.createPolicies()
       SigService.createPredefinedServices()

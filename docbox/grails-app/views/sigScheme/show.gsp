@@ -17,7 +17,7 @@
 	<g:if test="${sigSchemeObj?.name}">
 	  <li class="fieldcontain">
 	    <span id="name-label" class="property-label"><g:message code="sigScheme.name.label" default="Name" /></span>
-	    <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${sigSchemeObj}" field="name"/></span>
+	    <span class="property-value" aria-labelledby="name-label"><g:fieldValue bean="${sigSchemeObj}" field="flaggedName"/></span>
 	  </li>
 	</g:if>
 	<g:if test="${sigSchemeObj?.service}">
