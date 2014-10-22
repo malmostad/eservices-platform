@@ -68,15 +68,23 @@ CREATE TABLE sig_scheme
   service_id bigint NOT NULL,
   CONSTRAINT sig_scheme_pkey PRIMARY KEY (id),
   CONSTRAINT fkc3f998d3415b5ee1 FOREIGN KEY (service_id)
-      REFERENCES sig_service (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
+      REFERENCES sig_service (id),
   CONSTRAINT fkc3f998d358e990e6 FOREIGN KEY (display_name_id)
-      REFERENCES sig_displayname (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
+      REFERENCES sig_displayname (id),
   CONSTRAINT fkc3f998d35ebf6253 FOREIGN KEY (policy_id)
-      REFERENCES sig_policy (id) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
+      REFERENCES sig_policy (id),
   CONSTRAINT sig_scheme_name_key UNIQUE (name)
+);
+
+CREATE TABLE sig_default_scheme
+(
+  id bigint NOT NULL,
+  version bigint NOT NULL,
+  default_scheme_id bigint,
+  last_updated timestamp without time zone,
+  CONSTRAINT sig_default_scheme_pkey PRIMARY KEY (id),
+  CONSTRAINT fkfcde5691aa9c5cf5 FOREIGN KEY (default_scheme_id)
+      REFERENCES sig_scheme (id)
 );
 
 CREATE TABLE sig_testcase

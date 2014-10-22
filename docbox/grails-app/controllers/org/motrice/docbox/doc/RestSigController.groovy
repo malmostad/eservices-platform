@@ -29,6 +29,7 @@ import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.Util
 import org.motrice.docbox.sign.XmlDsig
 
+import org.motrice.signatrice.SigDefaultScheme
 import org.motrice.signatrice.SigResult
 import org.motrice.signatrice.SigScheme
 import org.motrice.signatrice.SigTestcase
@@ -393,7 +394,8 @@ class SignRequestCommand {
       docStep = docService.findStepByRef(docboxref)
       if (!docStep) throw new IllegalArgumentException("Document not found: ${docboxref}")
     }
-    schemeObj = SigScheme.findByName(scheme)
+    if (scheme) scheme = scheme.trim()
+    schemeObj = scheme? SigScheme.findByName(scheme) : SigDefaultScheme.current()
     if (!schemeObj) throw new IllegalArgumentException("Scheme not found: ${scheme}")
   }
 

@@ -35,6 +35,7 @@
 	  <li><g:link controller="sigService" action="create"><g:message code="sigService.create.menu"/></g:link></li>
 	  <li><g:link controller="sigScheme" action="list"><g:message code="sigScheme.list.menu"/></g:link></li>
 	  <li><g:link controller="sigScheme" action="create"><g:message code="sigScheme.create.menu"/></g:link></li>
+	  <li><g:link controller="sigDefaultScheme" action="show" id="1"><g:message code="sigDefaultScheme.show.menu"/></g:link></li>
 	  <li><g:link controller="sigTestcase" action="list"><g:message code="sigTestcase.list.menu"/></g:link></li>
 	  <li><g:link controller="sigTestcase" action="create"><g:message code="sigTestcase.create.menu"/></g:link></li>
 	  <li><g:link controller="sigResult" action="list"><g:message code="sigResult.list.menu"/></g:link></li>

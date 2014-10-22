@@ -26,7 +26,7 @@
 	<tbody>
 	  <g:each in="${sigSchemeObjList}" status="i" var="sigSchemeObj">
 	    <tr class="${(i % 2) == 0 ? 'even' : 'odd'}">
-	      <td><g:link action="show" id="${sigSchemeObj.id}">${fieldValue(bean: sigSchemeObj, field: "name")}</g:link></td>
+	      <td><g:link action="show" id="${sigSchemeObj.id}"><g:fieldValue bean="${sigSchemeObj}" field="flaggedName"/></g:link></td>
 	      <td>${sigSchemeObj?.service?.alias}</td>
 	      <td>${fieldValue(bean: sigSchemeObj, field: "displayName")}</td>
 	      <td>${fieldValue(bean: sigSchemeObj, field: "policy")}</td>
