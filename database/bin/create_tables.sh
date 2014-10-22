@@ -25,6 +25,7 @@ su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.create.mig
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/activiti.postgres.create.engine.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/activiti.postgres.create.history.sql"'
 su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/activiti.postgres.create.identity.sql"'
+su -c 'sh -c "./execute_file.sh ${DB_NAME} ../create/motrice.postgres.basedata.sql"'
 
 #
 # postgres user owns the created tables. Change ownership to DB_USER for all tables
