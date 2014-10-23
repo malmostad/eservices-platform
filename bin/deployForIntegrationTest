@@ -11,6 +11,9 @@ if [ $# != 0 ]
 then
  usage $0
 fi
+
+. current_config.sh
+
 pushd $HOME/workspaces/inheritsource-develop/pawap/bin 
 
 
@@ -96,6 +99,15 @@ DEPLOYMENTNAME="${HOME}/motrice"`date  +%Y%m%d%H%M`
 cp current_config.sh current_config.sh.orig 
 cat current_config.sh.orig | sed  s%'CONTAINER_ROOT=.*'%CONTAINER_ROOT=${DEPLOYMENTNAME}%g > current_config.sh
 ./create-new-deploy-environment-motrice.sh  
+ERRORSTATUS=$?
+if [ ${ERRORSTATUS} -ne 0 ]
+then
+    exit ${ERRORSTATUS}
+fi
+# remove tomcat tar file 
+rm tmp/downloads/${TOMCAT_TGZ}
+
+# run deploy script 
 ./deploy-motrice-platform.sh
 ERRORSTATUS=$?
 # give the tomcat some time to start before being stoped by jenkins 
