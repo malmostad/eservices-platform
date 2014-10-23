@@ -12,10 +12,10 @@ then
  usage $0
 fi
 
-. current_config.sh
 
 pushd $HOME/workspaces/inheritsource-develop/pawap/bin 
 
+. current_config.sh
 
 # Check some dependencies 
 POSTGRESSERVICE=/etc/init.d/postgresql
