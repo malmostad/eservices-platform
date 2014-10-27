@@ -23,7 +23,6 @@
  */
 package org.motrice.docbox.doc
 
-import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.DocData
 import org.motrice.docbox.form.PxdFormdefVer
 import org.motrice.docbox.form.PxdItem
@@ -36,6 +35,7 @@ import org.motrice.docbox.pdf.Options
 import org.motrice.docbox.pdf.Processor
 import org.motrice.docbox.pdf.Section
 import org.motrice.docbox.pdf.Tag
+import org.motrice.signatrice.ServiceException
 
 // The only way to create a logger with a predictable name?
 import org.apache.commons.logging.LogFactory
@@ -152,7 +152,7 @@ class PdfService {
   /**
    * Convert a DocBook XML PxdItem, generating a PDF PxdItem
    * Add the new Pdf PxdItem to the data
-   * Return the new contents or throw a DocBoxException on failure
+   * Return the new contents or throw a ServiceException on failure
    * Throwing a RuntimeException will roll back the transaction
    */
   private BoxContents docbookXmlToPdf(BoxDocStep docStep, DocData docData,
@@ -244,7 +244,7 @@ class PdfService {
     processor.cleanUp()
     if (excMsg) {
       log.error "Pdf conversion FAILS: ${excMsg}"
-      throw new DocBoxException(excMsg)
+      throw new ServiceException('DOCBOX.106', excMsg)
     }
 
     if (log.debugEnabled) log.debug "docbookXmlToPdf >> ${pdf}"

@@ -119,6 +119,8 @@ CREATE TABLE sig_result
   scheme_id bigint NOT NULL,
   signature text,
   transaction_id character varying(32),
+  finish_conflict character varying(400),
+  sig_tstamp timestamp without time zone,
   CONSTRAINT sig_result_pkey PRIMARY KEY (id),
   CONSTRAINT fkc2662b4b58e990e6 FOREIGN KEY (display_name_id)
       REFERENCES sig_displayname (id),

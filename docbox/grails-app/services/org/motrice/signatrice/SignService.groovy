@@ -24,8 +24,7 @@ import org.motrice.signatrice.cgi.Property
 import org.motrice.signatrice.cgi.SignRequestType
 
 /**
- * Does the signing.
- * Calls methods in 
+ * Methods related to acquiring a signature from a signature provider.
  */
 class SignService {
   // Stuff for generating transaction id.
@@ -36,11 +35,6 @@ class SignService {
 
   // Provider name needed by CGI. The only one defined so far.
   static final String PROVIDER = 'bankid'
-
-  // Min and max SigResult age for calling Collect
-  static final Long SECOND = 1000L
-  static final Long MIN_COLLECT_AGE_MILLIS = 3 * SECOND
-  static final Long MAX_COLLECT_AGE_MILLIS = 190 * SECOND
   
   private static final log = LogFactory.getLog(this)
 
@@ -56,7 +50,7 @@ class SignService {
       result = service?.serviceUrl?.text
     } catch (Exception exc) {
       if (log.debugEnabled) log.debug "checkService EXCEPTION: ${exc}"
-      throw new ServiceException(exc.message)
+      throw new ServiceException('DOCBOX.107', exc.message)
     }
 
     if (log.debugEnabled) log.debug "checkService >> ${result.size()}"
@@ -89,9 +83,9 @@ class SignService {
       if (log.debugEnabled) log.debug "sign EXCEPTION ${fault}"
       def info = fault.faultInfo
       String faultMsg = "${info?.faultStatus?.value()}: ${info.detailedDescription}"
+      throw new ServiceException('DOCBOX.108', faultMsg, cmd.transactionId, fault)
       auditService.logSignEvent(cmd.transactionId, true, 'Sign request failed', faultMsg,
-				StackTracer.trace(fault), cmd.request)
-      throw new ServiceException(faultMsg, cmd.transactionId, fault)
+				StackTracer.trace(fault), cmd.httpRequest)
     }
     if (log.debugEnabled) log.debug "sign >> ${result}"
     return result
@@ -133,7 +127,8 @@ class SignService {
   // Candidate SigResults with hardwired progess status id:s
   // The max age limit should not be necessary but is a guard
   // against infinite repetition in case there is a problem.
-  private static String COLLECT_Q = 'from SigResult r where ' +
+  // The condition must agree with the SigResult.inProcess condition.
+  private static final String COLLECT_Q = 'from SigResult r where ' +
     'r.dateCreated between ? and ? and r.progressStatus.id in (1, 2, 3) and ' +
     'faultStatus is null'
 
@@ -142,8 +137,9 @@ class SignService {
    */
   def collectAll() {
     def now = new Date()
-    def beg = new Timestamp(now.time - MAX_COLLECT_AGE_MILLIS)
-    def end = new Timestamp(now.time - MIN_COLLECT_AGE_MILLIS)
+    // Age window for collection
+    def beg = new Timestamp(now.time - SigResult.MAX_COLLECT_AGE_MILLIS)
+    def end = new Timestamp(now.time - SigResult.MIN_COLLECT_AGE_MILLIS)
     def candidates = SigResult.findAll(COLLECT_Q, [beg, end])
     if (log.debugEnabled && candidates?.size() > 0) log.debug "collect candidates: ${candidates?.size()}"
 
@@ -186,9 +182,13 @@ class SignService {
       def collectResponse = doCollect(candidate, portMap)
       def progressStatus = SigProgress.lookup(collectResponse?.progressStatus?.value())
       if (log.debugEnabled) log.debug "collect RESPONSE ${candidate}: ${progressStatus}"
+
+      // Update progress status if there is a change
       if (progressStatus && progressStatus.id != candidate.progressStatus.id) {
 	candidate.progressStatus = progressStatus
       }
+
+      // Attach any and all response attributes
       def props = collectResponse.attributes
       if (props) {
 	props.each {prop ->
@@ -196,9 +196,12 @@ class SignService {
 	  candidate.addToAttrs(dbProp)
 	}
       }
+
+      // Store the signature if there is one
       def signature = collectResponse?.signature
       if (signature) {
 	candidate.signature = signature
+	candidate.sigTstamp = new Date()
 	String resultString = candidate.toMap() as JSON
 	auditService.logSignEvent(candidate?.transactionId, 'Signature created',
 				  resultString, null)

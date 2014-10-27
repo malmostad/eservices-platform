@@ -27,9 +27,9 @@ import grails.converters.*
 
 import org.motrice.docbox.DocData
 import org.motrice.docbox.Util
-import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.form.PxdFormdefVer
 import org.motrice.docbox.form.PxdItem
+import org.motrice.signatrice.ServiceException
 
 class RestDocController {
   private final static Integer CONFLICT_STATUS = 409
@@ -61,8 +61,8 @@ class RestDocController {
 	try {
 	  pdfContents = pdfService.generatePdfa(docData, docStep, log.debugEnabled)
 	  status = 201
-	} catch (DocBoxException exc) {
-	  pdfContents = exc.message
+	} catch (ServiceException exc) {
+	  pdfContents = exc.canonical
 	  status = CONFLICT_STATUS
 	}
       }

@@ -143,7 +143,7 @@ log4j = {
 
     error  'org.codehaus.groovy.grails.web.mapping'        // URL mapping
 
-    debug 'org.motrice.docbox.doc', 'grails.app.controllers', 'grails.app.jobs', 'org.motrice.docbox.EnvService', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService', 'org.motrice.signatrice.SignService', 'org.motrice.signatrice.audit.AuditService'
+    error 'org.motrice.docbox.doc', 'grails.app.controllers', 'grails.app.jobs', 'org.motrice.docbox.EnvService', 'org.motrice.docbox.doc.DocService', 'org.motrice.docbox.doc.PdfService', 'org.motrice.docbox.doc.SigService', 'org.motrice.signatrice.SignService', 'org.motrice.signatrice.audit.AuditService'
 
 }
 
