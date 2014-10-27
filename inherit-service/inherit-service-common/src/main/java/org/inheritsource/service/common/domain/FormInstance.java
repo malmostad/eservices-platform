@@ -27,6 +27,7 @@ package org.inheritsource.service.common.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 
 public class FormInstance implements Serializable {
 	
@@ -57,6 +58,8 @@ public class FormInstance implements Serializable {
 	Date submitted = null;
 	
 	UserInfo submittedBy = null;
+	
+	HashMap<String, Object> attributes = new HashMap<String, Object>();
 
 	public FormInstance() {
 		super();
@@ -292,6 +295,14 @@ public class FormInstance implements Serializable {
 		this.submittedBy = submittedBy;
 	}
 
+	public HashMap<String, Object> getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(HashMap<String, Object> attributes) {
+		this.attributes = attributes;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -299,6 +310,8 @@ public class FormInstance implements Serializable {
 		result = prime * result + ((actUri == null) ? 0 : actUri.hashCode());
 		result = prime * result
 				+ ((actinstId == null) ? 0 : actinstId.hashCode());
+		result = prime * result
+				+ ((attributes == null) ? 0 : attributes.hashCode());
 		result = prime * result + ((dataUri == null) ? 0 : dataUri.hashCode());
 		result = prime * result
 				+ ((definitionKey == null) ? 0 : definitionKey.hashCode());
@@ -337,6 +350,11 @@ public class FormInstance implements Serializable {
 			if (other.actinstId != null)
 				return false;
 		} else if (!actinstId.equals(other.actinstId))
+			return false;
+		if (attributes == null) {
+			if (other.attributes != null)
+				return false;
+		} else if (!attributes.equals(other.attributes))
 			return false;
 		if (dataUri == null) {
 			if (other.dataUri != null)
@@ -398,16 +416,14 @@ public class FormInstance implements Serializable {
 
 	@Override
 	public String toString() {
-		return "FormInstance [page=" + page + ", getRelativePageLink()=" 
-				+ getRelativePageLink() + ", viewUrl=" + viewUrl
+		return "FormInstance [page=" + page + ", viewUrl=" + viewUrl
 				+ ", viewUrlExternal=" + viewUrlExternal + ", editUrl="
 				+ editUrl + ", editUrlExternal=" + editUrlExternal
 				+ ", dataUri=" + dataUri + ", definitionKey=" + definitionKey
 				+ ", typeId=" + typeId + ", instanceId=" + instanceId
 				+ ", actUri=" + actUri + ", actinstId=" + actinstId
 				+ ", submitted=" + submitted + ", submittedBy=" + submittedBy
-				+ "]";
+				+ ", attributes=" + attributes + "]";
 	}
-
 
 }

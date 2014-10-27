@@ -31,7 +31,10 @@ import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
+import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.DocBoxFormData;
+import org.inheritsource.service.common.domain.UserInfo;
+import org.inheritsource.service.form.SignStartFormTaskHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,31 +47,80 @@ public class SignForm extends Form  {
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
 		super.doBeforeRender(request, response);
 		
+		/*
+		 * There is three possibly states of sign form
+		 * 1. No signing request initiated. (viewtype=signform, error="")
+		 * 2. Perform a sign request. There is a text parameter with the text to sign
+		 *     a) invalid text (somone else has probably modified/signed the document => retry)
+		 *     	  (viewtype=signform, error="textconflict")
+		 *     b) equal text => perform sign request
+		 *     	  (sucessfully performed sign request => viewtype=pendingsignreq
+		 *         failed to perform signing request => viewtype=signform, error="failedsignreq")
+		 * 3. Signing request is already initiated. There is a motriceFormSignTransactionId 
+		 *    local task variable and attribute in the form instance. Waiting for signature.
+		 *    (viewtype=pendingsignreq)
+		 * 4. The sign task is completed (viewtype=signeddocument, error="")
+		 * 
+		 * If signing fails the motriceFormSignTransactionId task variable _must_ be removed 
+		 */
+		
+		String text = getPublicRequestParameter(request, "text"); 
+
 		ActivityInstanceItem activity = (ActivityInstanceItem)request.getAttribute("activity");
+		UserInfo user = (UserInfo)request.getAttribute("user");
+		
+		String viewtype = "signform";
+		String error = "";
+		
+		if (activity instanceof ActivityInstanceLogItem) {
+			// activity already performed => state 4
+			viewtype="signeddocument";
+		}
+		else {
+			Object transactionId = activity.getAttributes().get(SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID);
+			if (transactionId != null) {
+				// there is a pending signature request => state 3
+				viewtype = "pendingsignreq";
+			}
+			else {
+				
+				DocBoxFormData docBoxFormData = engine.getDocBoxFormDataToSign(activity, request.getLocale());
 
-		DocBoxFormData docBoxFormData = engine.getDocBoxFormDataToSign(activity, request.getLocale());
-
-		String pdfUrl = docBoxFormData.getDocUri();
-		
-		String docNo = docBoxFormData.getDocNo();
-		String pdfChecksum = docBoxFormData.getCheckSum();
-		String docboxRef = docBoxFormData.getDocboxRef();
-		String signText = docBoxFormData.getSignText();
-		
-		StringBuffer responseUrl = request.getRequestURL();
-		responseUrl.append("/confirm?docboxRef=");
-		responseUrl.append(docboxRef);  // reference to the document to sign
-		responseUrl.append("&docNo=");
-		responseUrl.append(docNo);      // document no of the document to sign
-		responseUrl.append("&instance_id=");
-		responseUrl.append(activity.getInstanceId());  // motrice form instance id FormEngine.FORM_INSTANCEID to the sign activity
-		 // the instance id will be used by SignFormConfirm to find the signing activity 
-		
-		request.setAttribute("pdfUrl", pdfUrl);
-		request.setAttribute("docNo", docNo);
-		request.setAttribute("pdfChecksum", pdfChecksum);
-		request.setAttribute("signText", signText);
-		request.setAttribute("responseUrl", responseUrl.toString());
+				if (docBoxFormData != null) {
+					String pdfUrl = docBoxFormData.getDocUri();
+					
+					String docNo = docBoxFormData.getDocNo();
+					String pdfChecksum = docBoxFormData.getCheckSum();
+					String docboxRef = docBoxFormData.getDocboxRef();
+					String signText = docBoxFormData.getSignText();
+				
+					if (text!=null && text.trim().length()>0) {
+						if (text.equals(signText)) {
+							// state 2b
+							if (this.getEngine().getActivitiEngineService().createSignRequestOfForm(activity.getInstanceId(), user.getUuid(), docBoxFormData)) {
+								viewtype = "pendingsignreq";
+							}
+							else {
+								error = "failedsignreq";
+							}
+							
+						}
+						else {
+							// state 2a
+							error = "textconflict";
+						}
+					} 
+				
+					request.setAttribute("pdfUrl", pdfUrl);
+					request.setAttribute("docNo", docNo);
+					request.setAttribute("pdfChecksum", pdfChecksum);
+					request.setAttribute("signText", signText);     
+				}
+			}
+		}
+				
+		request.setAttribute("viewtype", viewtype);
+		request.setAttribute("errDescription", error);
 	}
 	
 }

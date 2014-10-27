@@ -348,21 +348,8 @@ public class TaskFormService {
 		return result;
 	}
 
-
-
-
-	/**
-	 * submit form
-	 * 
-	 * @param docId
-	 * @param userId 
-	 * @param newDocId Replace docId with a new one on submit. 
-	 * @return confirmation form instance. null if submission fails.
-	 */
-	public FormInstance submitActivityForm(String docId, String userId) throws Exception {
-		return submitActivityForm(docId, userId, null);
-	}
-			
+	
+	/*
 	public FormInstance submitSignForm(String formInstanceId, String userId, String docboxRef, String signature) throws Exception {
 		DocBoxFacade docBox = new DocBoxFacade();
         DocBoxFormData docBoxFormData = docBox.addDocBoxSignature(docboxRef, signature);
@@ -378,7 +365,7 @@ public class TaskFormService {
 			}
         }
 		return signedForm;
-	}
+	}*/
 
 	/*
 	 *
@@ -418,14 +405,14 @@ public class TaskFormService {
 	 * @param newDocId Replace docId with a new one on submit. 
 	 * @return confirmation form instance. null if submission fails.
 	 */
-	public FormInstance submitActivityForm(String docId, String userId, DocBoxFormData docBoxFormData)
+	public FormInstance submitActivityForm(String docId, String userId)
 			throws Exception {
 		FormInstance formInstance;
 		
 		// TODO, när userId är null 1) kolla om det finns i formulärdata i xpath angiven av startformdef 2) anonymous om startformdef tillåter anonym
-		log.info("submitActivityForm docId=" + docId + " userId=" + userId + " docBoxFormData=" + docBoxFormData);
+		log.info("submitActivityForm docId=" + docId + " userId=" + userId);
 		try {
-			formInstance = activitiEngineService.submitForm(docId, userId, docBoxFormData);
+			formInstance = activitiEngineService.submitForm(docId, userId);
 			if (formInstance == null) {
 
 				// maybe a start form

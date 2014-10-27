@@ -94,6 +94,7 @@ import org.inheritsource.service.coordinatrice.CoordinatriceFacade;
 import org.inheritsource.service.delegates.DelegateUtil;
 import org.inheritsource.service.docbox.DocBoxFacade;
 import org.inheritsource.service.form.FormEngine;
+import org.inheritsource.service.form.SignStartFormTaskHandler;
 import org.inheritsource.service.identity.IdentityService;
 import org.inheritsource.taskform.engine.persistence.TaskFormDb;
 import org.joda.time.DateTime;
@@ -1051,12 +1052,38 @@ public class ActivitiEngineService {
 		return getActivityWorkflowInfo(taskId);
 	}
 
-	public FormInstance submitForm(String formInstanceId, String userId, DocBoxFormData docBoxFormData) {
+	public FormInstance submitForm(String formInstanceId, String userId) {
 		FormInstance result = null;
 		Task task = engine.getTaskService().createTaskQuery().taskVariableValueEquals(FormEngine.FORM_INSTANCEID, formInstanceId).singleResult();
 		
 		if (task != null) {
 			
+			Map<String, Object> variables = new HashMap<String, Object>();
+			if (executeTask(task.getId(), variables, userId)) {
+				HistoricTaskInstance historicTask = getEngine().getHistoryService().createHistoricTaskInstanceQuery().taskId(task.getId()).includeTaskLocalVariables().singleResult();
+				
+				ActivityInstanceLogItem initialInstance = new ActivityInstanceLogItem();	
+				result=formEngine.getHistoricFormInstance(historicTask, userId, initialInstance);
+			}
+		}
+		return result;
+	}
+	
+	public boolean createSignRequestOfForm(String formInstanceId, String userId, DocBoxFormData docBoxFormData) {
+		boolean result = true;
+		
+		// TODO call docbox REST api and if anything goes wrong.... set result = false;
+		
+		String transactionId ="TODOdocboxrestresult.transactionId";
+		Task task = engine.getTaskService().createTaskQuery().taskVariableValueEquals(FormEngine.FORM_INSTANCEID, formInstanceId).singleResult();		
+		engine.getTaskService().setVariableLocal(task.getId(), SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID, transactionId);
+		
+		
+		/*
+		FormInstance result = null;
+		Task task = engine.getTaskService().createTaskQuery().taskVariableValueEquals(FormEngine.FORM_INSTANCEID, formInstanceId).singleResult();
+		
+		if (task != null) {			
 			Map<String, Object> variables = new HashMap<String, Object>();
 			if (docBoxFormData != null) {
 				
@@ -1080,8 +1107,26 @@ public class ActivitiEngineService {
 				result=formEngine.getHistoricFormInstance(historicTask, userId, initialInstance);
 			}
 		}
+		*/
 		return result;
 	}
+	
+	public void pollCompletedSignRequest() {
+		// TODO 
+		List<Task> tasks = engine.getTaskService().createTaskQuery().taskVariableValueLike(SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID, "%").includeTaskLocalVariables().list();
+
+		for (Task task : tasks) {
+			// poll docbox for signature
+			
+			String transactionId = (String)task.getTaskLocalVariables().get(SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID);
+			
+			// om fel i signatur... => engine.getTaskService().removeVariable(task.getId(), SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID);
+		
+			// om lyckat => execute task med tillhörande act 
+			
+		}
+	}
+
 	
 	public String startProcess(String processDefinitionId, Map<String,Object> variables, String userId) {
 		String processInstanceId = null;

@@ -29,12 +29,15 @@ package org.inheritsource.service.form;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.task.Task;
+import org.inheritsource.service.common.domain.DocBoxFormData;
 import org.inheritsource.service.common.domain.FormInstance;
 import org.inheritsource.taskform.engine.persistence.entity.ActivityFormDefinition;
 
 public class SignStartFormTaskHandler extends TaskFormHandler {
 
 	public static final String PAGE = "signform";
+
+	public static final String FORM_SIGN_TRANSACTION_ID = "motriceFormSignTransactionId";
 	
 	@Override
 	public FormInstance getPendingFormInstance(FormInstance form, Task task,
@@ -42,6 +45,7 @@ public class SignStartFormTaskHandler extends TaskFormHandler {
 		form.setPage(PAGE);
 
 		// common local task variables should be loaded already by FormEngine 
+		appendSignAttributes(task, form);
 		
 		calcUris(form);
 		
@@ -139,5 +143,13 @@ public class SignStartFormTaskHandler extends TaskFormHandler {
 		form.setEditUrlExternal(null);
 		form.setViewUrl(null);
 		form.setViewUrlExternal(null);
+	}
+	
+	private void appendSignAttributes(Task task, FormInstance form) {
+		Object transactionId = task.getTaskLocalVariables().get(FORM_SIGN_TRANSACTION_ID);
+		if (transactionId != null) {
+			// TODO fråga håkan vilka vi ska hålla i processmotorn
+			form.getAttributes().put(FORM_SIGN_TRANSACTION_ID, transactionId);
+		}
 	}
 }

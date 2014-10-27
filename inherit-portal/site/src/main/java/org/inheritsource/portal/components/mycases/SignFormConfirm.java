@@ -38,6 +38,7 @@ import org.inheritsource.service.docbox.DocBoxFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO Obsolete class => remove
 public class SignFormConfirm extends MyCasesBaseComponent {
 
 	public static final String ORBEON_PERSISTENCE_API_BASE_URL = "/orbeon/fr/service/exist/crud/";
@@ -82,7 +83,7 @@ public class SignFormConfirm extends MyCasesBaseComponent {
 
 		FormInstance signedForm = null;
 		try {
-			signedForm = engine.submitSignForm(instanceId, userUuid, docboxRef, signature);
+			//signedForm = engine.submitSignForm(instanceId, userUuid, docboxRef, signature);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
