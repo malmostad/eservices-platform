@@ -27,6 +27,8 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.TextDocument"--%>
 
+	<p>${errDescription} ${viewtype} aaaa</p>
+
 <c:choose>
 	<c:when test="${empty document}">
 		<tag:pagenotfound />
@@ -51,6 +53,15 @@
 			<hst:html hippohtml="${document.html}" />
 		</c:if>
 
+<c:choose>
+	<c:when test="${viewtype eq 'pendingsignreq'}">
+      TODO badboll och ladda om den här sidan automagisktmed en regelbundenhet men posta inte om text
+	</c:when>
+	<c:when test="${viewtype eq 'signeddocument'}">
+	  redan signerat TODO länka till handlingen
+	</c:when>
+	<c:otherwise>
+	
 		<table>
 		  <thead>
 		    <tr>
@@ -66,11 +77,19 @@
 		  </tbody>
 		</table>					    
 
-		<form method="post" action="https://idp.test.malmo.se/wa/auth?authmech=e-id-signer">
+		
+		
+		<form method="post" action="signform">
 			<input type="hidden" name="text" value="${signText}" />
-			<input type="hidden" name="location" value="${responseUrl}" /> <input
-				type="submit" value="G&aring; till signering"/>
+			<input type="hidden" name="instanceId" value="${activity.instanceId}" />
+     		<input type="hidden" name="actinstId"  value="${activity.actinstId}" />
+			
+			<input type="submit" value="G&aring; till signering"/>
 		</form>
+
+	</c:otherwise>
+</c:choose>
+
 
 	</c:otherwise>
 </c:choose>

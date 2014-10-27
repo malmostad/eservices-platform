@@ -17,7 +17,7 @@ import org.activiti.engine.test.ActivitiRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-public class ProcessTestServeringsTillStand {
+public class ProcessTestServeringsTillstand {
 
 	private String filename = "/home/tostman/workspace20140410/pawap/inherit-service/inherit-service-activiti-engine/src/main/resources/ServeringsTillstand.bpmn";
 
