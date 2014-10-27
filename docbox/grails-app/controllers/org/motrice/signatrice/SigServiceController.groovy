@@ -62,7 +62,8 @@ class SigServiceController {
       response.setHeader('Content-Disposition', "attachment; filename=${fileName}")
       response.outputStream << wsdl.getBytes('UTF-8')
     } catch (ServiceException exc) {
-      if (log.debugEnabled) log.debug "check EXCEPTION: ${exc}"
+      if (log.debugEnabled) log.debug "check EXCEPTION: ${exc} (${exc?.canonical})"
+      flash.message = message(code: exc.docboxCode)
       redirect(action: 'show', id: sigServiceInst.id)
     }
   }

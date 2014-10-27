@@ -83,26 +83,6 @@ class SigSchemeController {
     redirect(action: "show", id: sigSchemeObj.id)
   }
 
-  def sign(Long id) {
-    if (log.debugEnabled) log.debug "SIGN ${params}"
-    def sigSchemeInst = SigScheme.get(id)
-    if (!sigSchemeInst) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'sigScheme.label', default: 'SigScheme'), id])
-      redirect(action: "list")
-      return
-    }
-
-    def result = null
-    try {
-      result = signService.sign(sigSchemeInst, request)
-      if (result && !result.save()) log.error "Test case ${sigSchemeInst} save: ${result.errors.allErrors.join(', ')}"
-      redirect(controller: 'sigResult', action: 'show', id: result.id)
-    } catch (ServiceException exc) {
-      flash.message = "Sign request failed. ${exc.message}"
-      redirect(controller: 'sigScheme', action: 'show', id: id)
-    }
-  }
-
   def delete(Long id) {
     def sigSchemeObj = SigScheme.get(id)
     if (!sigSchemeObj) {

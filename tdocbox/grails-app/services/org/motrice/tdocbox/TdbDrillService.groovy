@@ -19,6 +19,7 @@ class TdbDrillService {
     // The delay is not included in the timing.
     if (drill.delay) {
       try {
+	// Seconds (Float) to millis (Long).
 	Thread.sleep(drill.delay * 1000.0f as Long)
       } catch (InterruptedException exc) {
 	Thread.currentThread().interrupt()

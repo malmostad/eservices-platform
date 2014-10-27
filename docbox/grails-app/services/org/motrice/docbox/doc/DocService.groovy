@@ -29,8 +29,8 @@ import java.util.UUID
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.util.CrockfordBase32
+import org.motrice.signatrice.ServiceException
 
 // The only way to create a logger with a predictable name?
 import org.apache.commons.logging.LogFactory
@@ -106,7 +106,7 @@ class DocService {
    */
   BoxContents createContents(BoxDocStep step, String name, String format) {
     def contents = new BoxContents(name: name, format: format)
-    step.addToContents(contents)
+    step.addToContents(contents).save()
     return contents
   }
 
@@ -157,28 +157,6 @@ class DocService {
   }
 
   /**
-   * Find a doc step, given a docboxRef, and check that it is the latest step
-   * Return BoxDocStep if found, otherwise null
-   * Throws an exception if there are later doc steps
-   */
-  BoxDocStep findAndCheckByRef(String docboxRef) {
-    if (log.debugEnabled) log.debug "findAndCheckByRef << ${docboxRef}"
-    def docStep = BoxDocStep.findByDocboxRef(docboxRef)
-    if (docStep) {
-      def q = 'select count(id) from BoxDocStep s where s.doc.id=? and s.step > ?'
-      def list = BoxDocStep.executeQuery(q, [docStep.doc.id, docStep.step])
-      Integer count = list[0]
-      if (count > 0) {
-	def msg = "Doc step ${docStep.docNo} has ${count} later steps"
-	log.error msg
-	throw new DocBoxException(msg)
-      }
-    }
-    if (log.debugEnabled) log.debug "findAndCheckByRef >> ${docStep}"
-    return docStep
-  }
-
-  /**
    * Given a form data uuid, find the latest document step.
    */
   BoxDocStep findStepByUuid(String uuid) {
@@ -217,6 +195,62 @@ class DocService {
 
   BoxContents findPdfContents(BoxDocStep docStep) {
     findContents(docStep, null)
+  }
+
+  BoxContents findPdfContentsExc(BoxDocStep docStep) {
+    def pdfContents = findPdfContents(docStep)
+    if (!pdfContents) {
+      def msg = "PDF contents not found for document ref ${docStep.docboxRef}"
+      throw new ServiceException('DOCBOX.111', msg)
+    }
+
+    return pdfContents
+  }
+
+  /**
+   * Find a document step and its PDF contents.
+   * Throw ServiceException if not found.
+   * Return a map with the following entries:
+   * docStep: the document step (BoxDocStep)
+   * pdfContents: the PDF contents (BoxContents)
+   */
+  Map findPdfByRef(String docboxRef, Boolean requireLatest) {
+    if (log.debugEnabled) log.debug "findPdfByRef << ${docboxRef}, ${requireLatest}"
+    def docStep = findStepByRef(docboxRef)
+    if (!docStep) {
+      def msg = "Document not found with ref ${docboxRef}"
+      throw new ServiceException('DOCBOX.110', msg)
+    } else if (requireLatest) {
+      requireLatestStep(docStep)
+    }
+
+    def pdfContents = findPdfContentsExc(docStep)
+    def result = [docStep: docStep, pdfContents: pdfContents]
+    if (log.debugEnabled) log.debug "findPdfByRef >> ${result}"
+    return result
+  }
+
+  /**
+   * Find without requiring that the document step is the latest.
+   */
+  Map findPdfByRef(String docboxRef) {
+    findPdfByRef(docboxRef, false)
+  }
+
+  /**
+   * Check that a given document step is currently the latest step.
+   * docStep must be the document step to examine and must not be null.
+   * Throws ServiceException on conflict.
+   */
+  private requireLatestStep(BoxDocStep docStep) {
+    def q = 'select count(id) from BoxDocStep s where s.doc.id=? and s.step > ?'
+    def list = BoxDocStep.executeQuery(q, [docStep.doc.id, docStep.step])
+    Integer count = list[0]
+    if (count > 0) {
+      def msg = "Doc step ${docStep.docNo} has ${count} later steps"
+      if (log.debugEnabled) log.debug "requireLatestStep EXC: ${msg}"
+      throw new ServiceException('DOCBOX.105', msg)
+    }
   }
 
   BoxContents findContents(BoxDocStep docStep, String itemName) {

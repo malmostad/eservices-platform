@@ -25,18 +25,18 @@ package org.motrice.docbox.doc
 
 import grails.converters.*
 
-import org.motrice.docbox.DocBoxException
 import org.motrice.docbox.Util
 import org.motrice.docbox.sign.XmlDsig
 
+import org.motrice.docbox.doc.BoxContents
+
+import org.motrice.signatrice.ServiceException
 import org.motrice.signatrice.SigDefaultScheme
 import org.motrice.signatrice.SigResult
 import org.motrice.signatrice.SigScheme
 import org.motrice.signatrice.SigTestcase
 
 class RestSigController {
-  // Path to the XMLDSIG schema
-  static final XMLDSIG_SCHEMA = '/xsd/xmldsig-core-schema.xsd'
 
   def docService
   def signdocService
@@ -47,55 +47,48 @@ class RestSigController {
    * @param docboxref identifies the document step where the sig is added
    * Returns 200 on success, 404 if the document step was not found,
    * 409 on concurrent update conflict.
-   * XXX TBD: This is a dummy
    */
   def docboxSigPut(String docboxref) {
     if (log.debugEnabled) log.debug "SIGPUT: ${Util.clean(params)}, ${request.forwardURI}"
-    Integer status = 404
     def docStep = null
     def pdfContents = null
     def msg = null
+    // The body must contain the Base64-encoded signature to add.
     def sigB64 = request.reader.text
 
+    // Check input before proceeding.
     try {
-      status = 400
-      signdocService.basicSignatureCheck(sigB64, servletContext.getResourceAsStream(XMLDSIG_SCHEMA))
-      status = 409
-      docStep = docService.findAndCheckByRef(docboxref)
-      status = 404
-      if (docStep) {
-	pdfContents = docService.findPdfContents(docStep)
-	if (pdfContents) {
-	  try {
-	    status = 200
-	    signdocService.signedTextCheck(sigB64, docStep, pdfContents)
-	  } catch (DocBoxException exc) {
-	    status = 403
-	    msg = exc.message
-	  }
-	} else {
-	  msg = "PDF contents not found for ${docStep?.docNo}"
-	}
-      } else {
-	msg = "DocStep not found for ${docboxref}"
-      }
-    } catch (DocBoxException exc) {
-      msg = exc.message
+      signdocService.basicSignatureCheck(sigB64)
+      def docs = docService.findPdfByRef(docboxref, true)
+      docStep = docs.docStep
+      pdfContents = docs.pdfContents
+      signdocService.signatureSignedTextCheck(sigB64, docStep, pdfContents)
+    } catch (ServiceException exc) {
+      msg = exc.canonical
     }
 
     if (msg) {
-      render(status: status, contentType: 'text/plain', text: msg)
+      // Any conflict leads to status 409
+      render(status: 409, contentType: 'text/plain', text: msg)
     } else {
       def sig = new XmlDsig(sigB64, log)
-      def result = signdocService.addSignature(docStep, pdfContents, sig)
-      def nextStep = result.step
-      def nextContents = result.contents
+      def addition = signdocService.addSignature(docStep, pdfContents, sig)
+      def nextStep = addition.step
+      def pdf = addition.step
+      try {
+	pdf.save(failOnError: true)
+	nextStep.save(failOnError: true)
+      } catch (Exception exc) {
+	msg = "DOCBOX.115|${exc.message}"
+	render(status: 409, contentType: 'text/plain', text: msg)
+	return
+      }
 
       render(status: 200, contentType: 'text/json') {
 	docboxRef = nextStep.docboxRef
 	docNo = nextStep.docNo
 	signCount = nextStep.signCount
-	checkSum = nextContents.checksum
+	checkSum = addition.checksum
       }
     }
   }
@@ -105,39 +98,23 @@ class RestSigController {
    */
   def docboxSigGet(String docboxref) {
     if (log.debugEnabled) log.debug "SIGGET: ${Util.clean(params)}, ${request.forwardURI}"
+    def docStep = null
     def pdfContents = null
     String msg = null
-    Integer status = 404
 
-    def docStep = docService.findStepByRef(docboxref)
-    if (docStep) {
-      if (docStep.signCount > 0) {
-	pdfContents = docService.findPdfContents(docStep)
-      } else {
-	status = 409
-	msg = "Document has no signature: ${docboxref}"
-      }
-    } else {
-      msg = "Document step not found: ${docboxref}"
-    }
-
-    def sigList = null
-    if (!msg) {
-      if (pdfContents) {
-	sigList = signdocService.findAllSignatures(pdfContents)
-	if (sigList.empty) {
-	  status = 409
-	  msg = "No signature found: ${docboxref}"
-	}
-      } else {
-	msg = "No PDF found for ${docboxref}"
-      }
+    try {
+      def docs = docService.findPdfByRef(docboxref, true)
+      docStep = docs.docStep
+      pdfContents = docs.pdfContents
+      if (docStep.signCount == 0) msg = "DOCBOX.112|Document has no signature: ${docboxref}"
+    } catch (ServiceException exc) {
+      msg = exc.canonical
     }
 
     if (msg) {
-      render(status: status, contentType: 'text/plain', text: msg)
+      render(status: 409, contentType: 'text/plain', text: msg)
     } else {
-      status = 200
+      def sigList = signdocService.findAllSignatures(pdfContents)
       def sigContentList = sigList.collect {sigDict ->
 	def xmlSig = new XmlDsig(sigDict.signature, log)
 	[signedDoc: sigDict.docNo,
@@ -145,7 +122,7 @@ class RestSigController {
 	signedText: xmlSig.signedText,
 	signedBy: xmlSig.firstCert.subjectX500Principal.toString()]
       }
-      render(status: status, contentType: 'text/json') {
+      render(status: 200, contentType: 'text/json') {
 	docboxRef = docStep.docboxRef
 	docNo = docStep.docNo
 	signCount = docStep.signCount
@@ -164,8 +141,8 @@ class RestSigController {
 
     try {
       cmd.checkParams(request)
-    } catch (IllegalArgumentException exc) {
-      render(status: 409, contentType: 'text/plain', text: exc.message)
+    } catch (ServiceException exc) {
+      render(status: 409, contentType: 'text/plain', text: exc.canonical)
       return
     }
 
@@ -183,8 +160,8 @@ class RestSigController {
 
     try {
       cmd.checkParams(request)
-    } catch (IllegalArgumentException exc) {
-      render(status: 409, contentType: 'text/plain', text: exc.message)
+    } catch (ServiceException exc) {
+      render(status: 409, contentType: 'text/plain', text: exc.canonical)
       return
     }
 
@@ -226,49 +203,47 @@ class RestSigController {
    */
   def sigValidate(String docboxref) {
     if (log.debugEnabled) log.debug "VALIDATE: ${Util.clean(params)}, ${request.forwardURI}"
+    def docStep = null
     def pdfContents = null
     def sigBase64 = null
+    def prevChecksum = null
     String msg = null
-    Integer status = 404
 
-    def docStep = docService.findStepByRef(docboxref)
-    def prevChecksum
-    if (docStep) {
+    try {
+      def docs = docService.findPdfByRef(docboxref, true)
+      docStep = docs.docStep
+      pdfContents = docs.pdfContents
+
       if (docStep.signCount > 0) {
-	pdfContents = docService.findPdfContents(docStep)
 	def prevStep = docService.findPredecessor(docStep)
 	if (prevStep) {
-	  def prevContents = docService.findPdfContents(prevStep)
+	  def prevContents = docService.findPdfContentsExc(prevStep)
 	  prevChecksum = prevContents.checksum
 	}
       } else {
-	status = 409
-	msg = "Document has no signature: ${docboxref}"
+	msg = "DOCBOX.112|Document has no signature: ${docboxref}"
       }
-    } else {
-      msg = "Document step not found: ${docboxref}"
+    } catch (ServiceException exc) {
+      msg = exc.canonical
     }
 
     Map outcome = null
-    if (pdfContents) {
+    if (!msg) {
       def sigList = signdocService.findAllSignatures(pdfContents)
       if (sigList.empty) {
-	status = 500
-	msg = "No signature found: ${docboxref}"
+	msg = "DOCBOX.112|No signature found: ${docboxref}"
       } else {
 	outcome = signdocService.validateSignature(sigList[-1])
       }
-    } else {
-      msg = "No PDF found for ${docboxref}"
     }
 
     if (msg) {
-      render(status: status, contentType: 'text/plain', text: msg)
+      render(status: 409, contentType: 'text/plain', text: msg)
     } else {
       XmlDsig dsig = outcome.sigData
       def coreSigValidation = outcome.coreValid
       def certsValidation = outcome.certValid
-      status = (coreSigValidation && certsValidation)? 200 : 409
+      def status = (coreSigValidation && certsValidation)? 200 : 409
       render(status: status, contentType: 'text/json') {
 	docboxRef = docStep.docboxRef
 	docNo = docStep.docNo
@@ -313,11 +288,11 @@ class SignCollectCommand {
    */
   def checkParams(request) {
     httpRequest = request
-    if (!txid) throw new IllegalArgumentException("Transaction id (txid) required but missing")
+    if (!txid) throw new ServiceException("DOCBOX.113|Transaction id (txid) required but missing")
     result = SigResult.findByTransactionIdAndDocboxRefIn(txid, docboxref)
     if (!result) {
-      def msg = "Transaction not found (${txid}) or does not match docboxRef (${docboxref})"
-      throw new IllegalArgumentException(msg)
+      def msg = "DOCBOX.114|Transaction not found (${txid}) or does not match docboxRef (${docboxref})"
+      throw new ServiceException(msg)
     }
   }
 
@@ -337,6 +312,7 @@ class SignCollectCommand {
 class SignRequestCommand {
   // Injected service
   def docService
+  def signdocService
 
   // --- PARAMETERS (SPELLING CANNOT BE CHANGED)
 
@@ -359,10 +335,13 @@ class SignRequestCommand {
   // Document object
   BoxDocStep docStep
 
+  // PDF contents
+  BoxContents pdfContents
+
   // Scheme object
   SigScheme schemeObj
 
-  // Request body, Base64-encoded
+  // Request body, the text to be signed, Base64-encoded
   String bodyB64
 
   // The HTTP request
@@ -384,6 +363,8 @@ class SignRequestCommand {
 
   /**
    * Evaluate the parameters, get the objects where applicable.
+   * Several checks are made now and omitted in the Collect call.
+   * Throws ServiceException on conflict.
    */
   def checkParams(request) {
     httpRequest = request
@@ -391,9 +372,14 @@ class SignRequestCommand {
       docStep = null
     } else {
       bodyB64 = request.reader.text
-      docStep = docService.findStepByRef(docboxref)
-      if (!docStep) throw new IllegalArgumentException("Document not found: ${docboxref}")
+      // Include flag for checking that this is the latest document step
+      def docs = docService.findPdfByRef(docboxref, true)
+      docStep = docs.docStep
+      pdfContents = docs.pdfContents
+      def signedText = new String(bodyB64.decodeBase64(), 'UTF-8')
+      signdocService.literalSignedTextCheck(signedText, docStep, pdfContents)
     }
+
     if (scheme) scheme = scheme.trim()
     schemeObj = scheme? SigScheme.findByName(scheme) : SigDefaultScheme.current()
     if (!schemeObj) throw new IllegalArgumentException("Scheme not found: ${scheme}")

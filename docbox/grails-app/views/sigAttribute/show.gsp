@@ -29,10 +29,10 @@
 	    <span id="value-label" class="property-label"><g:message code="sigAttribute.value.label" default="Value" /></span>
 	    <span class="property-value" aria-labelledby="value-label">
 	      <g:if test="${decodedValue}">
-		<g:textArea name="sigAttribute-value" value="${decodedValue}"/>
+		<g:textArea class="wide" name="sigAttribute-value" value="${decodedValue}"/>
 	      </g:if>
 	      <g:else>
-		<g:textArea name="sigAttribute-value" value="${sigAttributeInst?.value?.encodeAsHTML()}"/>
+		<g:textArea class="wide" name="sigAttribute-value" value="${sigAttributeInst?.value?.encodeAsHTML()}"/>
 	      </g:else>
 	    </span>
 	  </li>

@@ -23,12 +23,17 @@
  */
 package org.motrice.docbox.doc
 
-import org.motrice.docbox.DocBoxException
+import java.sql.Timestamp
+
+import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
+
 import org.motrice.docbox.DocData
 import org.motrice.docbox.pdf.PdfFormdataDict
 import org.motrice.docbox.sign.PdfSignatureDict
 import org.motrice.docbox.sign.XmlDsig
 import org.motrice.docbox.util.Exxtractor
+import org.motrice.signatrice.ServiceException
+import org.motrice.signatrice.SigResult
 
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
@@ -71,6 +76,10 @@ import org.springframework.transaction.annotation.Transactional
  * The class had to be renamed after name clash with Signatrice domain SigService.
  */
 class SigndocService {
+  // Path to the XMLDSIG schema
+  // In the project this file lives in docbox/web-app/xsd/
+  static final XMLDSIG_SCHEMA = '/xsd/xmldsig-core-schema.xsd'
+
   private static final log = LogFactory.getLog(this)
   static final String PDF_FORMAT_PAT = 'http://motrice.org/spec/docbox/%s/pdf'
 
@@ -85,8 +94,15 @@ class SigndocService {
   def grailsApplication
   def docService
 
+  /**
+   * Add a signature to a document step.
+   * Return a map with the following entries:
+   * step: a new BoxDocStep object
+   * pdf: the new PDF contents
+   * checksum: the checksum of the new BoxContents object
+   */
   @Transactional
-  def addSignature(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
+  Map addSignature(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
     // Create the docboxRef for the next step
     def nextRef = UUID.randomUUID().toString()
     def bytes = addPage(docStep, pdfContents, sig, nextRef)
@@ -94,7 +110,7 @@ class SigndocService {
     def nextContents = docService.createPdfContents(nextStep)
     nextContents.assignStream(bytes, true)
     if (log.debugEnabled) log.debug "addSignature: ${nextContents}"
-    return [step: nextStep, contents: nextContents]
+    return [step: nextStep, pdf: nextContents, checksum: nextContents.checksum]
   }
 
   /**
@@ -369,11 +385,13 @@ class SigndocService {
 
   /**
    * Check signature syntax and that the signed text matches this document.
-   * Throw DocBoxException on failure, silent otherwise.
+   * Throw ServiceException on failure, silent otherwise.
    */
-  def basicSignatureCheck(String sigBase64, InputStream schemaStream) {
+  def basicSignatureCheck(String sigBase64) {
     if (log.debugEnabled) log.debug "basicSignatureCheck << (${sigBase64?.length()} chars)"
     def factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema")
+    // We need the signature XML schema. It is an app resource.
+    def schemaStream = SCH.servletContext.getResourceAsStream(XMLDSIG_SCHEMA)
     def schemaSource = new StreamSource(schemaStream)
     def schema = factory.newSchema(schemaSource)
     def validator = schema.newValidator()
@@ -382,44 +400,83 @@ class SigndocService {
       validator.validate(sigSource)
     } catch (SAXParseException exc) {
       if (log.debugEnabled) log.debug "basicSignatureCheck >> FAIL ${exc}"
-      throw new DocBoxException(exc.message)
+      throw new ServiceException('DOCBOX.101', exc.message)
     }
 
     if (log.debugEnabled) log.debug "basicSignatureCheck >> OK"
   }
 
   /**
-   * Check that the signed text contains two fields, a document number and
-   * a checksum.
+   * Given a signature (a Base64-encoded text), check that its signed text
+   * contains two fields, a document number and a checksum.
    * The check is not done if the config property
    * 'docbox.signed.text.strict.check' is 'false'.
+   * Throws ServiceException if conflict.
+   * sigBase64 must be a Base64-encoded XML DSIG signature.
+   * It should have passed basic checking before calling this method.
    */
-  def signedTextCheck(String sigBase64, BoxDocStep docStep, BoxContents pdfContents) {
-    def strictProp = grailsApplication.config.docbox.signed.text.check.strict
-    boolean lenientFlag = strictProp == 'false'
-    if (lenientFlag) {
-      if (log.debugEnabled) log.debug "signedTextCheck: LENIENT"
+  def signatureSignedTextCheck(String sigBase64, BoxDocStep docStep,
+			       BoxContents pdfContents)
+  {
+    if (isLenient()) {
+      if (log.debugEnabled) log.debug "signatureSignedTextCheck: LENIENT"
     } else {
-      def sig = new XmlDsig(sigBase64, log)
-      def extr = new Exxtractor(sig.signedText)
-      def fieldList = extr.extract()
-      if (log.debugEnabled) log.debug "signedTextCheck: STRICT ${fieldList}"
-      if (fieldList.size() != 2) {
-	exc("2 fields expected in signed text, got ${fieldList.size()}")
+      def sig = null
+      try {
+	sig = new XmlDsig(sigBase64, log)
+	doStrictCheckSignedText(sig.signedText, docStep, pdfContents)
+      } catch (javax.xml.crypto.dsig.XMLSignatureException exc) {
+	exc('DOCBOX.109', exc?.cause?.message)
       }
-
-      boolean docNumberFound = fieldList.find {it == docStep.docNo}
-      boolean checksumFound = fieldList.find {it == pdfContents.checksum}
-      if (!docNumberFound) exc('Document number not found in signed text')
-      if (!checksumFound) exc('Checksum not found in signed text')
     }
 
-    if (log.debugEnabled) log.debug "signedTextCheck >> VALIDATED"
+    if (log.debugEnabled) log.debug "signatureSignedTextCheck >> VALIDATED"
   }
 
-  private exc(String message) {
-    if (log.debugEnabled) log.debug "EXCEPTION: ${message}"
-    throw new DocBoxException(message)
+  /**
+   * Given a text, check that it contains two fields, a document number and a checksum.
+   * Otherwise as above.
+   * The signed text must be plain text, NOT Base64-encoded.
+   */
+  def literalSignedTextCheck(String signedText, BoxDocStep docStep,
+			     BoxContents pdfContents)
+  {
+    if (isLenient()) {
+      if (log.debugEnabled) log.debug "literalSignedTextCheck: LENIENT"
+    } else {
+      doStrictCheckSignedText(signedText, docStep, pdfContents)
+    }
+
+    if (log.debugEnabled) log.debug "literalSignedTextCheck >> VALIDATED"
+  }
+
+  private exc(String docboxCode, String message) {
+    if (log.debugEnabled) log.debug "EXCEPTION(${docboxCode}): ${message}"
+    throw new ServiceException(docboxCode, message)
+  }
+
+  /**
+   * Is DocBox configured for lenient checking?
+   */
+  private boolean isLenient() {
+    def strictProp = grailsApplication.config.docbox.signed.text.check.strict
+    return strictProp == 'false'
+  }
+
+  private doStrictCheckSignedText(String signedText, BoxDocStep docStep,
+				BoxContents pdfContents)
+  {
+    def extr = new Exxtractor(signedText)
+    def fieldList = extr.extract()
+    if (log.debugEnabled) log.debug "doStrictCheckSignedText: STRICT ${fieldList}"
+    if (fieldList.size() != 2) {
+      exc('DOCBOX.102', "2 fields expected in signed text, got ${fieldList.size()}")
+    }
+
+    boolean docNumberFound = fieldList.find {it == docStep.docNo}
+    boolean checksumFound = fieldList.find {it == pdfContents.checksum}
+    if (!docNumberFound) exc('DOCBOX.103', 'Document number not found in signed text')
+    if (!checksumFound) exc('DOCBOX.104', 'Checksum not found in signed text')
   }
 
   /**
@@ -441,6 +498,57 @@ class SigndocService {
 
   def validateSignature(PdfSignatureDict dict) {
     validateSignature(dict.signature)
+  }
+
+  // Query to pick up SigResults to be post-processed and finished.
+  // The query must agree with the SigResult.readyForFinish condition.
+  private static final String PP_Q = 'from SigResult r where ' +
+    'r.finishConflict is null and docboxRefOut is null and ' +
+    'r.sigTstamp between ? and ?'
+
+  /**
+   * Post-process all signature requests limited by a time window.
+   * Executed periodically by quartz through PostprocessJob.
+   */
+  def sigPostProcessAll() {
+    def now = new Date()
+    // Age window for post-processing
+    def beg = new Timestamp(now.time - SigResult.MAX_FINISH_AGE_MILLIS)
+    def end = new Timestamp(now.time - SigResult.MIN_FINISH_AGE_MILLIS)
+    //if (log.debugEnabled) log.debug "post-process interval: ${beg}..${end}"
+    def candidates = SigResult.findAll(PP_Q, [beg, end])
+    if (log.debugEnabled && candidates?.size() > 0) log.debug "collect candidates: ${candidates?.size()}"
+    candidates.each {candidate ->
+      sigPostProcess(candidate)
+    }
+  }
+
+  /**
+   * Periodically executed by the PostprocessJob.
+   * Inserts the signature obtained previously and creates a new document step.
+   */
+  def sigPostProcess(SigResult item) {
+    if (log.debugEnabled) log.debug "postProcess << ${item}"
+    try {
+      basicSignatureCheck(item.signature)
+      def docs = docService.findPdfByRef(item.docboxRefIn, true)
+      def docStep = docs.docStep
+      def pdfContents = docs.pdfContents
+      signatureSignedTextCheck(item.signature, docStep, pdfContents)
+      def sig = new XmlDsig(item.signature, log)
+      def addition = addSignature(docStep, pdfContents, sig)
+      item.docboxRefOut = addition.step.docboxRef
+      if (log.debugEnabled) log.debug "postProcess >> ${addition?.step}"
+    } catch (ServiceException exc) {
+      item.docboxRefOut = null
+      item.finishConflict = exc.canonical
+       if (log.debugEnabled) log.debug "postProcess EXC: ${exc.canonical}"
+    } catch (Exception exc) {
+      item.finishConflict = exc.message
+      if (log.debugEnabled) log.debug "postProcess EXC: ${exc.message}"
+    }
+
+    if (!item.save()) log.error "post-process ${item} save: ${item.errors.allErrors.join(', ')}"
   }
 
 }

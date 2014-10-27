@@ -44,6 +44,12 @@
 	    <span class="property-value" aria-labelledby="faultStatus-label">${sigResultInst?.faultStatus?.encodeAsHTML()}</span>
 	  </li>
 	</g:if>
+	<g:if test="${sigResultInst?.finishConflict}">
+	  <li class="fieldcontain">
+	    <span id="finishConflict-label" class="property-label"><g:message code="sigResult.finishConflict.label" default="Display Name" /></span>
+	    <span class="property-value" aria-labelledby="finishConflict-label">${sigResultInst?.finishConflict?.encodeAsHTML()}</span>
+	  </li>
+	</g:if>
 	<g:if test="${sigResultInst?.displayName}">
 	  <li class="fieldcontain">
 	    <span id="displayName-label" class="property-label"><g:message code="sigResult.displayName.label" default="Display Name" /></span>
@@ -94,6 +100,12 @@
 	    </g:each>
 	  </li>
 	</g:if>
+	<g:if test="${sigResultInst?.sigTstamp}">
+	  <li class="fieldcontain">
+	    <span id="sigTstamp-label" class="property-label"><g:message code="sigResult.sigTstamp.label" default="Date Created" /></span>
+	    <span class="property-value" aria-labelledby="sigTstamp-label"><g:tstampsec date="${sigResultInst?.sigTstamp}" /></span>
+	  </li>
+	</g:if>
 	<g:if test="${sigResultInst?.signature}">
 	  <li class="fieldcontain">
 	    <span id="signature-label" class="property-label"><g:message code="sigResult.signature.label" default="Signature" /></span>
@@ -104,8 +116,6 @@
       <g:form>
 	<fieldset class="buttons">
 	  <g:hiddenField name="id" value="${sigResultInst?.id}" />
-	  <g:link class="edit" action="edit" id="${sigResultInst?.id}"><g:message code="default.button.edit.label" default="Edit" /></g:link>
-	  <g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" />
 	  <g:link class="edit" action="collect" id="${sigResultInst?.id}"><g:message code="sigResult.sign.label" default="Collect" /></g:link>
 	</fieldset>
       </g:form>
