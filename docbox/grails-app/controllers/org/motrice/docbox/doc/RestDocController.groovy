@@ -152,15 +152,15 @@ class RestDocController {
    */
   def metaDataGet(String docboxref) {
     if (log.debugEnabled) log.debug "META: ${Util.clean(params)}, ${request.forwardURI}"
-    def docStep = docService.findStepByRef(docboxref)
-    if (docStep) {
-      response.status = 200
-      def meta = docStep.meta
-      if (log.debugEnabled) log.debug "metaDataGet: ${meta}"
-      render meta as JSON
-    } else {
-      response.status = 404
+    def docStep = null
+    try {
+      docStep = docService.findStepByRefExc(docboxref)
+    } catch (ServiceException exc) {
+      render(status: 404, text: exc.canonical, contentType: 'text/plain', encoding: 'UTF-8')
+      return
     }
+
+    return metadataResponse(docStep, params.item)
   }
 
   /**
@@ -169,21 +169,20 @@ class RestDocController {
   def metaByFormData(String uuid) {
     if (log.debugEnabled) log.debug "META BY FORMDATA: ${Util.clean(params)}, ${request.forwardURI}"
     def docStep = null
-    if (params.step) {
-      def stepNumber = params.step as Integer
-      docStep = docService.findStepByUuid(uuid, stepNumber)
-    } else {
-      docStep = docService.findStepByUuid(uuid)
+    try {
+      if (params.step) {
+	def stepNumber = params.step as Integer
+	docStep = docService.findStepByUuidExc(uuid, stepNumber)
+      } else {
+	docStep = docService.findStepByUuidExc(uuid)
+      }
+    } catch (ServiceException exc) {
+      render(status: 404, text: exc.canonical, contentType: 'text/plain', encoding: 'UTF-8')
+      return
     }
 
-    if (docStep) {
-      response.status = 200
-      def meta = docStep.meta
-      if (log.debugEnabled) log.debug "metaDataGet: ${meta}"
-      render meta as JSON
-    } else {
-      response.status = 404
-    }
+    if (log.debugEnabled) log.debug "metaByFormData: ${docStep}"
+    return metadataResponse(docStep, params.item)
   }
 
   private contentsResponse(BoxDocStep docStep, String itemName) {
@@ -207,6 +206,30 @@ class RestDocController {
     } else {
       response.status = 404
     }
+  }
+
+  /**
+   * Respond with metadata.
+   */
+  private metadataResponse(BoxDocStep docStep, String itemName) {
+    def contents = itemName? docService.findContents(docStep, itemName) : null
+    def contentsMeta = [:]
+    if (itemName) {
+      if (contents) {
+	contentsMeta.itemName = itemName
+	contentsMeta.itemFormat = contents.format
+	contentsMeta.itemChecksum = contents.checksum
+	contentsMeta.itemSize = contents.size
+      } else {
+	contentsMeta.itemConflict = "DOCBOX.117|Contents not found for item name ${itemName}"
+      }
+    }
+
+    def meta = docStep.meta
+    meta.putAll(contentsMeta)
+    if (log.debugEnabled) log.debug "metadataResponse: ${meta}"
+    response.status = 200
+    render meta as JSON
   }
 
 }
