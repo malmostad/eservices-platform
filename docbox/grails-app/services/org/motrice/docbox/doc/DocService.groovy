@@ -106,7 +106,7 @@ class DocService {
    */
   BoxContents createContents(BoxDocStep step, String name, String format) {
     def contents = new BoxContents(name: name, format: format)
-    step.addToContents(contents).save()
+    step.addToContents(contents)
     return contents
   }
 

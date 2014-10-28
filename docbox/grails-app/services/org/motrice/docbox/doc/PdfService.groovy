@@ -212,7 +212,7 @@ class PdfService {
       }
 
       pdf.assignStream(pdfBytes, true)
-      if (!pdf.save(insert: true)) {
+      if (!pdf.save()) {
 	log.error "BoxContents (pdf) save: ${pdf.errors.allErrors.join(',')}"
       }
     }

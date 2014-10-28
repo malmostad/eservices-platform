@@ -45,7 +45,7 @@ class RestDocController {
    * 200 if it already existed, 404 if the form was not found.
    */
   def formDataPut(String uuid) {
-    if (log.debugEnabled) log.debug "FORM PUT: ${Util.clean(params)}, ${request.forwardURI}"
+    if (log.debugEnabled) log.debug "FORM PUT << ${Util.clean(params)}, ${request.forwardURI}"
     Integer status = 404
 
     // Does the document exist?
@@ -69,6 +69,7 @@ class RestDocController {
     }
 
     if (docStep && pdfContents && status < 300) {
+      if (log.debugEnabled) log.debug "FORM PUT >> ${status}: ${docStep}, ${pdfContents}"
       render(status: status, contentType: 'text/json') {
 	formDataUuid = uuid
 	docboxRef = docStep.docboxRef
@@ -77,6 +78,7 @@ class RestDocController {
 	checkSum = pdfContents.checksum
       }
     } else if (status == CONFLICT_STATUS) {
+      if (log.debugEnabled) log.debug "FORM PUT CONFLICT >> ${status}: ${pdfContents}"
       render(status: status, contentType: 'text/json') {
 	formDataUuid = uuid
 	conflictMessage = pdfContents
