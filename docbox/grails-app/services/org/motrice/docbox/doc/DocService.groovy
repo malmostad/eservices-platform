@@ -156,6 +156,16 @@ class DocService {
     return docStep
   }
 
+  BoxDocStep findStepByRefExc(String docboxRef) {
+    def docStep = findStepByRef(docboxRef)
+    if (!docStep) {
+      def msg = "Document step not found with docboxRef ${docboxRef}"
+      throw new ServiceException('DOCBOX.110', msg)
+    }
+
+    return docStep
+  }
+
   /**
    * Given a form data uuid, find the latest document step.
    */
@@ -181,6 +191,21 @@ class DocService {
     }
 
     if (log.debugEnabled) log.debug "findStepByUuid >> ${docStep}"
+    return docStep
+  }
+
+  BoxDocStep findStepByUuidExc(String uuid) {
+    findStepByUuidExc(uuid, null)
+  }
+
+  BoxDocStep findStepByUuidExc(String uuid, Integer stepNumber) {
+    def docStep = findStepByUuid(uuid, stepNumber)
+    if (!docStep) {
+      def msg = "Document step not found with formDataUuid ${uuid}"
+      if (stepNumber) msg += " and step number ${stepNumber}"
+      throw new ServiceException('DOCBOX.116', msg)
+    }
+
     return docStep
   }
 
