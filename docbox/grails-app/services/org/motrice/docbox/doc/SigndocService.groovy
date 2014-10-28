@@ -76,6 +76,8 @@ import org.springframework.transaction.annotation.Transactional
  * The class had to be renamed after name clash with Signatrice domain SigService.
  */
 class SigndocService {
+  static transactional = true
+
   // Path to the XMLDSIG schema
   // In the project this file lives in docbox/web-app/xsd/
   static final XMLDSIG_SCHEMA = '/xsd/xmldsig-core-schema.xsd'
@@ -101,7 +103,6 @@ class SigndocService {
    * pdf: the new PDF contents
    * checksum: the checksum of the new BoxContents object
    */
-  @Transactional
   Map addSignature(BoxDocStep docStep, BoxContents pdfContents, XmlDsig sig) {
     // Create the docboxRef for the next step
     def nextRef = UUID.randomUUID().toString()
@@ -527,7 +528,7 @@ class SigndocService {
    * Periodically executed by the PostprocessJob.
    * Inserts the signature obtained previously and creates a new document step.
    */
-  def sigPostProcess(SigResult item) {
+  private sigPostProcess(SigResult item) {
     if (log.debugEnabled) log.debug "postProcess << ${item}"
     try {
       basicSignatureCheck(item.signature)
