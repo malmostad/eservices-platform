@@ -188,8 +188,8 @@ class RestSigController {
 
     try {
       cmd.checkParams(request)
-    } catch (IllegalArgumentException exc) {
-      flash.message = exc.message
+    } catch (ServiceException exc) {
+      flash.message = exc.canonical
       redirect(controller: 'sigTestcase', action: 'show', id: sigTestcaseObj.id)
       return
     }
@@ -382,7 +382,7 @@ class SignRequestCommand {
 
     if (scheme) scheme = scheme.trim()
     schemeObj = scheme? SigScheme.findByName(scheme) : SigDefaultScheme.current()
-    if (!schemeObj) throw new IllegalArgumentException("Scheme not found: ${scheme}")
+    if (!schemeObj) throw new ServiceException('DOCBOX.118', "Scheme not found: ${scheme}")
   }
 
   def getRemoteAddr() {
