@@ -135,7 +135,7 @@ class BoxContents {
   }
 
   String toString() {
-    "[Contents ${id}/${name} (${step?.docNo}): ${format}/${size}]"
+    "[Contents(${step?.docNo}) ${id}/${name}: ${format}/${size}]"
   }
 
 }

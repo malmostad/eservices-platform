@@ -87,7 +87,7 @@ class SignService {
       auditService.logSignEvent(cmd.transactionId, true, 'Sign request failed', faultMsg,
 				StackTracer.trace(fault), cmd.httpRequest)
     }
-    if (log.debugEnabled) log.debug "sign >> ${result}"
+    if (log.debugEnabled) log.debug "sign >> ${result?.toMap()}"
     return result
   }
 
