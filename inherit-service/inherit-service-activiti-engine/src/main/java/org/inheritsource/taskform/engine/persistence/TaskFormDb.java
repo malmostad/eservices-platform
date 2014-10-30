@@ -480,6 +480,23 @@ public class TaskFormDb {
 		return tag;
 	} 
 	
+	public String getUserSerialByUuid(String uuid) {
+		String result = null;
+		Session session = HibernateUtil.getSessionFactory().openSession();
+		try {
+			UserEntity user = getUserByUuid(session, uuid);
+			if (user != null) {
+				result = user.getSerial();
+			}
+		}
+		catch (Exception e) {
+			log.error("uuid=[" + uuid + "] Exception: " + e.toString());
+		}
+		finally {
+			session.close();
+		}
+		return result;
+	}
 	
 	public UserInfo getUserByUuid(String uuid) {
 		UserInfo result = null;
