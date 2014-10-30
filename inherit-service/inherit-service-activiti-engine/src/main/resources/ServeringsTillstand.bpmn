@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
   <process id="serveringsTillstand" name="Serveringstillstand" isExecutable="true">
-    <startEvent id="startevent1" name="Start">
+    <startEvent id="startevent1" name="Start" activiti:initiator="initiator">
       <extensionElements>
         <activiti:formProperty id="startevent1_section1_bolagstyp" type="string" required="true"></activiti:formProperty>
       </extensionElements>
     </startEvent>
-    <userTask id="usertask2" name="Registrering" activiti:candidateUsers="admin" activiti:candidateGroups="Registrator">
+    <userTask id="usertaskRegistration" name="Registrering" activiti:candidateUsers="admin" activiti:candidateGroups="Registrator">
       <extensionElements>
         <activiti:formProperty id="Registrering_section_1_applicationstatus" default="one" required="true"></activiti:formProperty>
         <activiti:taskListener event="create" class="org.inheritsource.service.delegates.TaskMessageListener"></activiti:taskListener>
@@ -14,7 +14,7 @@
       </extensionElements>
     </userTask>
     <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway" default="flow5"></exclusiveGateway>
-    <sequenceFlow id="flow4" sourceRef="usertask2" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="usertaskRegistration" targetRef="exclusivegateway2"></sequenceFlow>
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
     <sequenceFlow id="flow5" sourceRef="exclusivegateway2" targetRef="parallelgateway1"></sequenceFlow>
     <userTask id="usertask4" name="Polismyndigheten" activiti:candidateUsers="admin" activiti:candidateGroups="Registrator"></userTask>
@@ -42,21 +42,19 @@
     <sequenceFlow id="flow19" sourceRef="usertask7" targetRef="callForenkladDelgivning"></sequenceFlow>
     <endEvent id="endevent2" name="End"></endEvent>
     <sequenceFlow id="flow20" sourceRef="callForenkladDelgivning" targetRef="endevent2"></sequenceFlow>
-    <sequenceFlow id="flow23" sourceRef="exclusivegateway2" targetRef="endevent3">
-      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${Registrering_section_1_applicationstatus== 'one'}]]></conditionExpression>
-    </sequenceFlow>
     <endEvent id="endevent3" name="End"></endEvent>
-    <scriptTask id="scripttask1" name="Script Task 1" scriptFormat="groovy" activiti:autoStoreVariables="false">
-      <script>
-				out:println "bolagstyp         "+ startevent1_section1_bolagstyp ;
-               </script>
-    </scriptTask>
-    <sequenceFlow id="flow24" sourceRef="startevent1" targetRef="scripttask1">
+    <sequenceFlow id="flow24" sourceRef="startevent1" targetRef="usertaskSignStartform">
       <extensionElements>
         <activiti:executionListener event="take" class="org.inheritsource.service.delegates.CreateVariablesFlowListener"></activiti:executionListener>
       </extensionElements>
     </sequenceFlow>
-    <sequenceFlow id="flow25" sourceRef="scripttask1" targetRef="usertask2"></sequenceFlow>
+    <sequenceFlow id="flow25" sourceRef="usertaskSignStartform" targetRef="usertaskRegistration"></sequenceFlow>
+    <userTask id="usertask8" name="User Task" activiti:assignee="${initiator}"></userTask>
+    <sequenceFlow id="flow26" sourceRef="exclusivegateway2" targetRef="usertask8">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${Registrering_section_1_applicationstatus== 'one'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow27" sourceRef="usertask8" targetRef="endevent3"></sequenceFlow>
+    <userTask id="usertaskSignStartform" name="Signera ansökan" activiti:assignee="${motriceStartFormAssignee}"></userTask>
     <textAnnotation id="textannotation1">
       <text>Ansökan om serveringstillstånd</text>
     </textAnnotation>
@@ -69,7 +67,7 @@
       <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
         <omgdc:Bounds height="35.0" width="35.0" x="100.0" y="150.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="usertask2" id="BPMNShape_usertask2">
+      <bpmndi:BPMNShape bpmnElement="usertaskRegistration" id="BPMNShape_usertaskRegistration">
         <omgdc:Bounds height="55.0" width="105.0" x="415.0" y="141.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
@@ -100,16 +98,19 @@
         <omgdc:Bounds height="35.0" width="35.0" x="1310.0" y="150.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
-        <omgdc:Bounds height="35.0" width="35.0" x="568.0" y="17.0"></omgdc:Bounds>
+        <omgdc:Bounds height="35.0" width="35.0" x="568.0" y="420.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape bpmnElement="scripttask1" id="BPMNShape_scripttask1">
+      <bpmndi:BPMNShape bpmnElement="usertask8" id="BPMNShape_usertask8">
+        <omgdc:Bounds height="55.0" width="105.0" x="533.0" y="250.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertaskSignStartform" id="BPMNShape_usertaskSignStartform">
         <omgdc:Bounds height="55.0" width="105.0" x="180.0" y="140.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation1" id="BPMNShape_textannotation1">
         <omgdc:Bounds height="50.0" width="100.0" x="110.0" y="90.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape bpmnElement="textannotation2" id="BPMNShape_textannotation2">
-        <omgdc:Bounds height="50.0" width="100.0" x="482.0" y="10.0"></omgdc:Bounds>
+        <omgdc:Bounds height="50.0" width="100.0" x="469.0" y="413.0"></omgdc:Bounds>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
         <omgdi:waypoint x="520.0" y="168.0"></omgdi:waypoint>
@@ -159,10 +160,6 @@
         <omgdi:waypoint x="1265.0" y="167.0"></omgdi:waypoint>
         <omgdi:waypoint x="1310.0" y="167.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
-        <omgdi:waypoint x="585.0" y="149.0"></omgdi:waypoint>
-        <omgdi:waypoint x="585.0" y="52.0"></omgdi:waypoint>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
         <omgdi:waypoint x="135.0" y="167.0"></omgdi:waypoint>
         <omgdi:waypoint x="180.0" y="167.0"></omgdi:waypoint>
@@ -170,6 +167,14 @@
       <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
         <omgdi:waypoint x="285.0" y="167.0"></omgdi:waypoint>
         <omgdi:waypoint x="415.0" y="168.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="585.0" y="189.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0" y="250.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="585.0" y="305.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0" y="420.0"></omgdi:waypoint>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
