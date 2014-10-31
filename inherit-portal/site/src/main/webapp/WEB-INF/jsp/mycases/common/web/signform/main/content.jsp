@@ -28,7 +28,7 @@
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.TextDocument"--%>
 
 	<p>${errDescription} ${viewtype} aaaa</p>
-
+    <p>text ${text} signText ${signText} </p>
 <c:choose>
 	<c:when test="${empty document}">
 		<tag:pagenotfound />
@@ -55,7 +55,8 @@
 
 <c:choose>
 	<c:when test="${viewtype eq 'pendingsignreq'}">
-      TODO badboll och ladda om den här sidan automagisktmed en regelbundenhet men posta inte om text
+     TODO ladda om den här sidan automagisktmed en regelbundenhet men posta inte om text
+         <img id="badboll" src='/site/images/ajax-loader.gif' />
 	</c:when>
 	<c:when test="${viewtype eq 'signeddocument'}">
 	  redan signerat TODO länka till handlingen
