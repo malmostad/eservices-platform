@@ -117,6 +117,24 @@ public class DocBoxFacade {
 		return label;
 	}
 
+	public JSONObject checkOutcomeSignatureRequest(String docboxRef, String transactionId) {
+		JSONObject result = null;
+		try {
+			ClientConfig config = new DefaultClientConfig();
+			Client client = Client.create(config);
+			WebResource service = client
+					.resource("http://localhost:8080/docbox/rest/sig/request/");
+			String response = service.path(docboxRef)
+					.queryParam("txid", transactionId) // transaction in doc but txid in implementation
+					.accept(MediaType.APPLICATION_JSON)
+					.get(String.class);
+			result = new JSONObject(response);
+		} catch (Exception e) {
+			log.error("Exception: {}", e.toString());
+		}
+		return result;
+	}
+			
 	public JSONObject requestDocBoxSignature(String docBoxRef,
 			String signTextBase64, String personalnumber) {
 		JSONObject response = null;

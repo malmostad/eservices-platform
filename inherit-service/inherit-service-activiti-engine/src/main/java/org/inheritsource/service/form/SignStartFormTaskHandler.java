@@ -38,6 +38,7 @@ public class SignStartFormTaskHandler extends TaskFormHandler {
 	public static final String PAGE = "signform";
 
 	public static final String FORM_SIGN_TRANSACTION_ID = "motriceFormSignTransactionId";
+	public static final String FORM_SIGN_DOCBOXREF = "motriceFormSignDocboxRef";
 	
 	@Override
 	public FormInstance getPendingFormInstance(FormInstance form, Task task,

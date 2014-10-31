@@ -81,6 +81,8 @@ public class SignForm extends Form  {
 			if (transactionId != null) {
 				// there is a pending signature request => state 3
 				viewtype = "pendingsignreq";
+				
+				this.engine.getActivitiEngineService().pollCompletedSignRequest();
 			}
 			else {
 				

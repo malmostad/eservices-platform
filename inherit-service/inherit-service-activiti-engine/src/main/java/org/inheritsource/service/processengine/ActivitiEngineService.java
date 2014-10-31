@@ -1294,6 +1294,10 @@ public class ActivitiEngineService {
 				SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID,
 				transactionId);
 		
+		engine.getTaskService().setVariableLocal(task.getId(),
+				SignStartFormTaskHandler.FORM_SIGN_DOCBOXREF,
+				docBoxRef);
+
 		
 		/*
 		 * FormInstance result = null; Task task =
@@ -1333,6 +1337,9 @@ public class ActivitiEngineService {
 
 	public void pollCompletedSignRequest() {
 		// TODO
+		
+		DocBoxFacade docBox = new DocBoxFacade();
+		
 		List<Task> tasks = engine
 				.getTaskService()
 				.createTaskQuery()
@@ -1343,9 +1350,40 @@ public class ActivitiEngineService {
 		for (Task task : tasks) {
 			// poll docbox for signature
 
+			String docboxRef = (String) task.getTaskLocalVariables().get(
+					SignStartFormTaskHandler.FORM_SIGN_DOCBOXREF);
 			String transactionId = (String) task.getTaskLocalVariables().get(
 					SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID);
-
+			JSONObject json = docBox.checkOutcomeSignatureRequest(docboxRef, transactionId);
+			
+			if (json != null && json.getBoolean("processingComplete")) {
+				
+				if (json.getBoolean("success")) {
+					Map<String, Object> variables = new HashMap<String, Object>();
+					String docboxRefOut = json.getString("docboxRefOut");
+					String taskDocActVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_ACT_URI, task.getId());
+					if (docboxRefOut!= null && docboxRefOut.trim().length()>0) { 
+						String taskDocRefVarName = DelegateUtil.calcTaskVariableName(FormEngine.FORM_DOCBOXREF, task.getId()); 
+						variables.put(taskDocRefVarName, docboxRefOut); 
+						variables.put(taskDocActVarName, docboxBaseUrl + docboxRefOut); 
+					} 
+					
+					// look up signing user. TODO think about internal user that can be even external users
+					String personalIdNo = json.getString("personalIdNo");
+					String userId = UserInfo.ANONYMOUS_UUID;
+					UserInfo user = taskFormDb.getUserBySerial(personalIdNo);
+					if (user != null) {
+						userId = user.getUuid();
+					}
+					executeTask(task.getId(), variables, userId);
+				}
+				else {
+					// failed sign - clean up temorary stored variables from sign request
+					engine.getTaskService().removeVariableLocal(task.getId(), SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID);
+					engine.getTaskService().removeVariableLocal(task.getId(), SignStartFormTaskHandler.FORM_SIGN_DOCBOXREF);
+				}
+				
+			}
 			// om fel i signatur... =>
 			// engine.getTaskService().removeVariable(task.getId(),
 			// SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID);
