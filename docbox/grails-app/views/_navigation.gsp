@@ -41,9 +41,9 @@
 	  <li><g:link controller="sigResult" action="list"><g:message code="sigResult.list.menu"/></g:link></li>
 	</ul>
     </li>
-    <li><g:link controller="auditRecord" action="list"><g:message code="auditRecord.main.menu"/></g:link>
+    <li><g:link controller="audEventRecord" action="list"><g:message code="audEventRecord.main.menu"/></g:link>
 	<ul class="submenu">
-	  <li><g:link controller="auditRecord" action="list"><g:message code="auditRecord.list.menu"/></g:link></li>
+	  <li><g:link controller="audEventRecord" action="list"><g:message code="audEventRecord.list.menu"/></g:link></li>
 	</ul>
     </li>
     <li><g:link controller="env" action="showconfig"><g:message code="config.menu"/></g:link>

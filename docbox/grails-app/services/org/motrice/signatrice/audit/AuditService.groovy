@@ -1,111 +1,107 @@
 package org.motrice.signatrice.audit
 
-import org.apache.commons.logging.LogFactory
+import org.motrice.signatrice.ServiceException
 
+/**
+ * Methods for adding an event record to the audit log.
+ * The *Event methods are all silent, they swallow any exceptions.
+ */
 class AuditService {
   static transactional = true
 
-  private static final log = LogFactory.getLog(this)
-
-  def logCreateEvent(String label, String description, String details, request) {
-    doLogEvent(label, AuditRecord.CREATE_EVENT_TYPE, null, description,
-	       details, null, request)
+  def createEvent(args, request) {
+    silentlyAddRecord(args, AudEventRecord.CREATE_EVENT_TYPE, request?.remoteAddr)
   }
 
-  def logCreateEvent(String label, Boolean failure, String description, String details,
-		     String stackTrace, request)
-  {
-    doLogEvent(label, AuditRecord.CREATE_EVENT_TYPE, failure, description,
-	       details, stackTrace, request)
+  def updateEvent(args, request) {
+    silentlyAddRecord(args, AudEventRecord.UPDATE_EVENT_TYPE, request?.remoteAddr)
   }
 
-  def logUpdateEvent(String label, String description, String details, request) {
-    doLogEvent(label, AuditRecord.UPDATE_EVENT_TYPE, null, description,
-	       details, null, request)
+  def deleteEvent(args, request) {
+    silentlyAddRecord(args, AudEventRecord.DELETE_EVENT_TYPE, request?.remoteAddr)
   }
 
-  def logUpdateEvent(String label, Boolean failure, String description, String details,
-		     String stackTrace, request)
-  {
-    doLogEvent(label, AuditRecord.UPDATE_EVENT_TYPE, failure, description,
-	       details, stackTrace, request)
+  def errorEvent(args, request) {
+    silentlyAddRecord(args, AudEventRecord.ERROR_EVENT_TYPE, request?.remoteAddr)
   }
 
-  def logDeleteEvent(String label, String description, String details, request) {
-    doLogEvent(label, AuditRecord.DELETE_EVENT_TYPE, null, description,
-	       details, null, request)
+  def signEvent(args, request) {
+    silentlyAddRecord(args, AudEventRecord.SIGNATURE_EVENT_TYPE, request?.remoteAddr)
   }
 
-  def logDeleteEvent(String label, Boolean failure, String description, String details,
-		     String stackTrace, request)
-  {
-    doLogEvent(label, AuditRecord.DELETE_EVENT_TYPE, failure, description,
-	       details, stackTrace, request)
+  def authNEvent(args, request) {
+    silentlyAddRecord(args, AudEventRecord.AUTHENTICATION_EVENT_TYPE, request?.remoteAddr)
   }
 
-  def logErrorEvent(String label, String description, String details, request) {
-    doLogEvent(label, AuditRecord.ERROR_EVENT_TYPE, null, description,
-	       details, null, request)
+  def authZEvent(args, request) {
+    silentlyAddRecord(args, AudEventRecord.AUTHORIZATION_EVENT_TYPE, request?.remoteAddr)
   }
 
-  def logErrorEvent(String label, Boolean failure, String description, String details,
-		    String stackTrace, request)
-  {
-    doLogEvent(label, AuditRecord.ERROR_EVENT_TYPE, failure, description,
-	       details, stackTrace, request)
+  /**
+   * Add an event record.
+   * args must be a Map of name/value pairs (String/String),
+   * eventType must be an event type (long form),
+   * request must be an HTTP request.
+   * Throws ServiceException on conflict.
+   */
+  AudEventRecord addRecord(args, String eventType, request) {
+    if (log.debugEnabled) log.debug "addRecord << ${eventType}"
+    def code = AudEventRecord.toCode(eventType)
+    if (!code) {
+      def msg = "Unknown event type '${eventType}'"
+      throw new ServiceException('AUDIT.171', msg)
+    }
+
+    return doAddRecord(args, code, request?.remoteAddr)
   }
 
-  def logSignEvent(String label, String description, String details, request) {
-    doLogEvent(label, AuditRecord.SIGNATURE_EVENT_TYPE, null, description,
-	       details, null, request)
+  /**
+   * A wrapper around doAddRecord to catch all exceptions
+   */
+  private silentlyAddRecord(args, String eventCode, String remoteAddr) {
+    try {
+      doAddRecord(args, eventCode, remoteAddr)
+    } catch (ServiceException exc) {
+      log.error "Failed to add event record: ${exc.canonical}"
+    } catch (Exception exc) {
+      log.error "Failed to add event record: ${exc.message}"
+    }
   }
 
-  def logSignEvent(String label, Boolean failure, String description, String details,
-		    String stackTrace, request)
-  {
-    doLogEvent(label, AuditRecord.SIGNATURE_EVENT_TYPE, failure, description,
-	       details, stackTrace, request)
-  }
+  /**
+   * Add an event record.
+   * Throw ServiceException on conflict.
+   */
+  private AudEventRecord doAddRecord(args, String eventCode, String remoteAddr) {
+    if (!(args && (args instanceof Map))) {
+      def msg = "Arguments cannot be interpreted as a Map"
+      throw new ServiceException('AUDIT.173', msg)
+    }
 
-  def logAuthNEvent(String label, String description, String details, request) {
-    doLogEvent(label, AuditRecord.AUTHENTICATION_EVENT_TYPE, null, description,
-	       details, null, request)
-  }
-
-  def logAuthNEvent(String label, Boolean failure, String description, String details,
-		    String stackTrace, request)
-  {
-    doLogEvent(label, AuditRecord.AUTHENTICATION_EVENT_TYPE, failure, description,
-	       details, stackTrace, request)
-  }
-
-  def logAuthZEvent(String label, String description, String details, request) {
-    doLogEvent(label, AuditRecord.AUTHORIZATION_EVENT_TYPE, null, description,
-	       details, null, request)
-  }
-
-  def logAuthZEvent(String label, Boolean failure, String description, String details,
-		    String stackTrace, request)
-  {
-    doLogEvent(label, AuditRecord.AUTHORIZATION_EVENT_TYPE, failure, description,
-	       details, stackTrace, request)
-  }
-
-  private doLogEvent(String label, String eventType, Boolean failure, String description,
-		     String details, String stackTrace, request)
-  {
-    if (log.debugEnabled) log.debug "Audit ${eventType}/${description} ${failure?'FAILURE':'ok'}"
-    def record = new AuditRecord(label: label, eventType: eventType, failure: failure,
-    description: description, remoteAddr: request?.remoteAddr,
-    details: details, stackTrace: stackTrace)
+    // A description string is mandatory
+    if (!args.description) throw new ServiceException('AUDIT.174', 'Event description missing')
+    // Some properties should not be set from the outside
+    args.eventType = eventCode
+    args.dateCreated = null
+    if (args.failure instanceof String) {
+      args.failure = args.failure.equalsIgnoreCase("true")
+    }
+    args.remoteAddr = remoteAddr
+    AudEventRecord record = args
     
-    // Safely save the record. Careful to never throw an exception.
+    // Save the record
     try {
       record.save(flush: true, failOnError: true)
     } catch (Throwable thr) {
       log.error('INTERNAL CONFLICT in event logging, info follows', thr)
-      log.error record as String
+      log.error record.toCompleteString()
+      def msg = "Could not save event record: ${candidate.errors.allErrors.join(', ')}"
+      log.error "doAddRecord EXC: ${msg}"
+      throw new ServiceException('AUDIT.175', msg)
     }
+
+    if (log.debugEnabled) log.debug "addRecord >> ${record}"
+    return record
   }
 
 }

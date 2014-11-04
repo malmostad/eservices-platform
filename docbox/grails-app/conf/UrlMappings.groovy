@@ -51,6 +51,9 @@ class UrlMappings {
     "/rest/sig/validation/$docboxref"(controller: 'RestSig') {
       action = [GET: 'sigValidate']
     }
+    "/rest/audit/log/$eventtype"(controller: 'AudEventRecord') {
+      action = [PUT: 'createAudit']
+    }
 
     "/$controller/$action?/$id?"{
       constraints {

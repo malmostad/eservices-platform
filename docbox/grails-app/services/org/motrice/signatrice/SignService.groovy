@@ -5,7 +5,6 @@ import java.security.SecureRandom
 import java.sql.Timestamp
 
 import org.apache.commons.logging.LogFactory
-import grails.converters.JSON
 
 import org.motrice.docbox.doc.SignRequestCommand
 
@@ -83,9 +82,10 @@ class SignService {
       if (log.debugEnabled) log.debug "sign EXCEPTION ${fault}"
       def info = fault.faultInfo
       String faultMsg = "${info?.faultStatus?.value()}: ${info.detailedDescription}"
+      def args = [description: 'Sign request failed', label: cmd.transactionId, failure: true,
+      details: faultMsg, stackTrace: StackTracer.trace(fault)]
+      auditService.signEvent(args, cmd.httpRequest)
       throw new ServiceException('DOCBOX.108', faultMsg, cmd.transactionId, fault)
-      auditService.logSignEvent(cmd.transactionId, true, 'Sign request failed', faultMsg,
-				StackTracer.trace(fault), cmd.httpRequest)
     }
     if (log.debugEnabled) log.debug "sign >> ${result?.toMap()}"
     return result
@@ -202,9 +202,9 @@ class SignService {
       if (signature) {
 	candidate.signature = signature
 	candidate.sigTstamp = new Date()
-	String resultString = candidate.toMap() as JSON
-	auditService.logSignEvent(candidate?.transactionId, 'Signature created',
-				  resultString, null)
+	def args = [description: 'Signature created', label: candidate?.transactionId,
+	details: candidate.toMap().toMapString()]
+	auditService.signEvent(args, null)
       }
     } catch (GrpFault fault) {
       if (log.debugEnabled) log.debug "collect FAULT ${candidate}: ${faultToString(fault)}"

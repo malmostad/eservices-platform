@@ -2,6 +2,22 @@
 -- SIGNATRICE TABLES, NOW PART OF DOCBOX
 --
 
+CREATE TABLE aud_event_record
+(
+  id bigint NOT NULL,
+  version bigint NOT NULL,
+  date_created timestamp without time zone,
+  description character varying(80) NOT NULL,
+  details text,
+  event_type character varying(8) NOT NULL,
+  failure boolean,
+  label character varying(60),
+  remote_addr character varying(40),
+  stack_trace text,
+  user_ref character varying(80),
+  CONSTRAINT aud_event_record_pkey PRIMARY KEY (id)
+);
+
 CREATE TABLE sig_displayname
 (
   id bigint NOT NULL,
@@ -145,3 +161,4 @@ CREATE TABLE sig_attribute
   CONSTRAINT fkdcc550ae29ef673 FOREIGN KEY (result_id)
       REFERENCES sig_result (id)
 );
+
