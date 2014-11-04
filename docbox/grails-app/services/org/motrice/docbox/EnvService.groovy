@@ -26,7 +26,7 @@ package org.motrice.docbox
 import org.apache.commons.logging.LogFactory
 
 import org.motrice.docbox.form.PxdItem
-import org.motrice.signatrice.audit.AuditRecord
+import org.motrice.signatrice.audit.AudEventRecord
 
 /**
  * Methods for checking the environment
@@ -125,7 +125,7 @@ class EnvService {
       dbItem = configItem('config.audit.datasource',
 			  grailsApplication.config.dataSource_audit.url ?: null)
       try {
-	def rcount = AuditRecord.count()
+	def rcount = AudEventRecord.count()
 	dbItem.state = STATE_OPERATIONAL
 	list << dbItem
       } catch (Exception exc) {

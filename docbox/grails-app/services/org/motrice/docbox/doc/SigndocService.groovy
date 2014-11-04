@@ -25,6 +25,7 @@ package org.motrice.docbox.doc
 
 import java.sql.Timestamp
 
+import grails.converters.JSON
 import org.codehaus.groovy.grails.web.context.ServletContextHolder as SCH
 
 import org.motrice.docbox.DocData
@@ -34,6 +35,7 @@ import org.motrice.docbox.sign.XmlDsig
 import org.motrice.docbox.util.Exxtractor
 import org.motrice.signatrice.ServiceException
 import org.motrice.signatrice.SigResult
+import org.motrice.signatrice.StackTracer
 
 import com.itextpdf.text.Element
 import com.itextpdf.text.Font
@@ -95,6 +97,7 @@ class SigndocService {
 
   def grailsApplication
   def docService
+  def auditService
 
   /**
    * Add a signature to a document step.
@@ -111,6 +114,9 @@ class SigndocService {
     def nextContents = docService.createPdfContents(nextStep)
     nextContents.assignStream(bytes, true)
     if (log.debugEnabled) log.debug "addSignature: ${nextContents}"
+    def args = [description: 'Signature added to document', label: nextStep?.docNo,
+    details: sig?.firstCert?.subjectX500Principal?.toString()]
+    auditService.signEvent(args, null)
     return [step: nextStep, pdf: nextContents, checksum: nextContents.checksum]
   }
 
@@ -537,6 +543,7 @@ class SigndocService {
       def pdfContents = docs.pdfContents
       signatureSignedTextCheck(item.signature, docStep, pdfContents)
       def sig = new XmlDsig(item.signature, log)
+      // This method adds to the audit log
       def addition = addSignature(docStep, pdfContents, sig)
       item.docboxRefOut = addition.step.docboxRef
       if (log.debugEnabled) log.debug "postProcess >> ${addition?.step}"
@@ -544,9 +551,15 @@ class SigndocService {
       item.docboxRefOut = null
       item.finishConflict = exc.canonical
        if (log.debugEnabled) log.debug "postProcess EXC: ${exc.canonical}"
+       def args = [description: 'Failed to add signature to document', failure: true,
+       details: item?.toMap() as JSON, stackTrace: StackTracer.trace(exc)]
+       auditService.signEvent(args, null)
     } catch (Exception exc) {
       item.finishConflict = exc.message
       if (log.debugEnabled) log.debug "postProcess EXC: ${exc.message}"
+       def args = [description: 'Failed to add signature to document', failure: true,
+       details: item?.toMap() as JSON, stackTrace: StackTracer.trace(exc)]
+       auditService.signEvent(args, null)
     }
 
     if (!item.save()) log.error "post-process ${item} save: ${item.errors.allErrors.join(', ')}"
