@@ -91,6 +91,15 @@ class SigResult implements Comparable {
   }
 
   /**
+   * Assign a signature.
+   * The signature must be a Base64-encoded text.
+   */
+  def assignSignature(String sigBase64) {
+    signature = sigBase64
+    sigTstamp = new Date()
+  }
+
+  /**
    * Is this request still being processed for getting a signature?
    * NOTE: This method is mainly for documentation, it is probably
    * never called.
@@ -122,7 +131,8 @@ class SigResult implements Comparable {
   boolean isProcessingComplete() {
     def now = new Date()
     faultStatus || finishConflict || docboxRefOut ||
-    (sigTstamp && (now.time - sigTstamp.time) > MAX_FINISH_AGE_MILLIS)
+    (sigTstamp && (now.time - sigTstamp.time) > MAX_FINISH_AGE_MILLIS) ||
+    (sigTstamp == null && (now.time - dateCreated.time) > MAX_COLLECT_AGE_MILLIS) 
   }
 
   /**
