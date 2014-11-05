@@ -200,8 +200,7 @@ class SignService {
       // Store the signature if there is one
       def signature = collectResponse?.signature
       if (signature) {
-	candidate.signature = signature
-	candidate.sigTstamp = new Date()
+	candidate.assignSignature(signature)
 	def args = [description: 'Signature created', label: candidate?.transactionId,
 	details: candidate.toMap().toMapString()]
 	auditService.signEvent(args, null)
