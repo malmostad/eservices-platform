@@ -68,20 +68,20 @@ function installInContainer () {
 	    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-eservices.tar.gz
 	    cd webapps
 	    rm -fr cms site orbeon exist docbox coordinatrice
-	     # deploy cms at cmsservice and coordinatrice only at kservice and share the same JCR
-	    rm cms.war coordinatrice.war
-	elif [[ "$1" == "${KSERVICE}" ]]
-        then
-	    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
-	    cd webapps
-	    rm -fr cms site orbeon exist docbox coordinatrice
-            rm cms.war 
-        elif  [[ "$1" == "${CMSSERVICE}" ]]
-        then
-	    tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
-	    cd webapps
-	    rm -fr site orbeon exist docbox coordinatrice cms  restrice
-            rm site.war orbeon.war exist.war docbox.war coordinatrice.war restrice.war
+	##tostman      # deploy cms at cmsservice and coordinatrice only at kservice and share the same JCR
+	##tostman     rm cms.war coordinatrice.war
+	##tostman elif [[ "$1" == "${KSERVICE}" ]]
+        ##tostman then
+	##tostman     tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
+	##tostman     cd webapps
+	##tostman     rm -fr cms site orbeon exist docbox coordinatrice
+        ##tostman     rm cms.war 
+        ##tostman elif  [[ "$1" == "${CMSSERVICE}" ]]
+        ##tostman then
+	##tostman     tar xzfv ${BUILD_DIR}/inherit-portal/target/inherit-portal-1.01.00-SNAPSHOT-distribution-kservices.tar.gz
+	##tostman     cd webapps
+	##tostman     rm -fr site orbeon exist docbox coordinatrice cms  restrice
+        ##tostman     rm site.war orbeon.war exist.war docbox.war coordinatrice.war restrice.war
         else
   	  echo "Unknown Directory ${CONTAINER_ROOT}/$1. Halting."
 	  exit 1
@@ -99,8 +99,8 @@ function restartContainer () {
 
   case $1 in
     ${ESERVICE} )   CURRENT_PORT=${ESERVICE_PORT}   ;;
-    ${KSERVICE} )   CURRENT_PORT=${KSERVICE_PORT}   ;;
-    ${CMSSERVICE} ) CURRENT_PORT=${CMSSERVICE_PORT} ;;
+    ##tostman ${KSERVICE} )   CURRENT_PORT=${KSERVICE_PORT}   ;;
+    ##tostman ${CMSSERVICE} ) CURRENT_PORT=${CMSSERVICE_PORT} ;;
     *) echo "Unknown Service, halting..." ; exit 1 ;;
   esac
 
@@ -139,33 +139,39 @@ then
 fi
 
 echo "CONTAINER_ROOT/ESERVICE: $CONTAINER_ROOT/$ESERVICE"
-echo "CONTAINER_ROOT/KSERVICE: $CONTAINER_ROOT/$KSERVICE"
-echo "CONTAINER_ROOT/CMSSERVICE: $CONTAINER_ROOT/$CMSSERVICE"
+##tostman echo "CONTAINER_ROOT/KSERVICE: $CONTAINER_ROOT/$KSERVICE"
+##tostman echo "CONTAINER_ROOT/CMSSERVICE: $CONTAINER_ROOT/$CMSSERVICE"
 
-if [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${KSERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${CMSSERVICE} ]
+##tostman if [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${KSERVICE} ] || [ ! -d ${CONTAINER_ROOT}/${CMSSERVICE} ]
+if [ ! -d ${CONTAINER_ROOT}/${ESERVICE} ] 
 then
-    echo "Either of ${CONTAINER_ROOT}/${ESERVICE} ${CONTAINER_ROOT}/${KSERVICE} or ${CONTAINER_ROOT}/${CMSSERVICE} do not exist, aborting execution of $0"
+    echo "${CONTAINER_ROOT}/${ESERVICE}  do not exist, aborting execution of $0"
+    ##tostman echo "Either of ${CONTAINER_ROOT}/${ESERVICE} ${CONTAINER_ROOT}/${KSERVICE} or ${CONTAINER_ROOT}/${CMSSERVICE} do not exist, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
 
 echo "ESERVICE_PORT: $ESERVICE_PORT"
-echo "KSERVICE_PORT: $KSERVICE_PORT"
-echo "CMSSERVICE_PORT: $CMSSERVICE_PORT"
+##tostman echo "KSERVICE_PORT: $KSERVICE_PORT"
+##tostman echo "CMSSERVICE_PORT: $CMSSERVICE_PORT"
 
-if [ -z "${ESERVICE_PORT}" ] || [ -z "${KSERVICE_PORT}" ] || [ -z "${CMSSERVICE_PORT}" ]
+##tostman  if [ -z "${ESERVICE_PORT}" ] || [ -z "${KSERVICE_PORT}" ] || [ -z "${CMSSERVICE_PORT}" ]
+if [ -z "${ESERVICE_PORT}" ] 
 then
-    echo "Either of parameters ESERVICE_PORT or KSERVICE_PORT or CMSSERVICE_PORTunset, aborting execution of $0"
+    echo "Parameter ESERVICE_PORT unset, aborting execution of $0"
+    #tostman echo "Either of parameters ESERVICE_PORT or KSERVICE_PORT or CMSSERVICE_PORTunset, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
 
 echo "ESERVICEPATCH: $ESERVICEPATCH"
-echo "KSERVICEPATCH: $KSERVICEPATCH"
+##tostman echo "KSERVICEPATCH: $KSERVICEPATCH"
 
-if [ -z "${ESERVICEPATCH}" ] || [ -z "${KSERVICEPATCH}" ]
+##tostman if [ -z "${ESERVICEPATCH}" ] || [ -z "${KSERVICEPATCH}" ]
+if [ -z "${ESERVICEPATCH}"  ]
 then
-    echo "Either of parameters ESERVICEPATCH or KSERVICEPATCH unset, aborting execution of $0"
+    echo "Parameters ESERVICEPATCH unset, aborting execution of $0"
+    ##tostman echo "Either of parameters ESERVICEPATCH or KSERVICEPATCH unset, aborting execution of $0"
     ERRORSTATUS=1
     exit $ERRORSTATUS
 fi
@@ -183,59 +189,59 @@ then
                                                              # when $PROPERTIES_LOCAL_BEFOREPATCH is renamed
                                                              # back to properties-local.xml in step 8
     if ${ESERVICE_SSL}; then
-	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/https:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
+	sed -e "s/http:\/\/localhost:8080\/site\/confirmdispatcher/https:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
     else
-	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
+	sed -e "s/http:\/\/localhost:8080\/site\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
     fi
 
-    if ${KSERVICE_SSL}; then
-	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/https:\/\/${KSERVICE_HOST}:${KSERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
-    else
-	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${KSERVICE_HOST}:${KSERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
-    fi
-    mv properties-local.xml.eservicepatch properties-local.xml
-    popd
-else
-    echo "Directory ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
-    ERRORSTATUS=1
-    exit $ERRORSTATUS
-fi
+#tostman NOTE     if ${KSERVICE_SSL}; then
+#tostman NOTE 	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/https:\/\/${KSERVICE_HOST}:${KSERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
+#tostman NOTE     else
+#tostman NOTE 	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${KSERVICE_HOST}:${KSERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.kservicepatch
+#tostman NOTE     fi
+#tostman NOTE     mv properties-local.xml.eservicepatch properties-local.xml
+#tostman NOTE     popd
+#tostman NOTE else
+#tostman NOTE     echo "Directory ${BUILD_DIR}/inherit-portal/orbeon/src/main/webapp/WEB-INF/resources/config does not exist. Aborting execution"
+#tostman NOTE     ERRORSTATUS=1
+#tostman NOTE     exit $ERRORSTATUS
+#tostman NOTE fi
 
-# 2b. Patching web.xml - Including OpenAM filter in site.war for eservicetest and kservicetest
-if ${WITH_OPENAM}
-then
-  if [ -f  ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml ]
-  then
-      pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
-      mv web.xml $SITE_WEB_XML_BEFOREPATCH
-      cp $SITE_WEB_XML_BEFOREPATCH web.xml  # thereby conserving mod date of web.xml
-					    # when $SITE_WEB_XML_BEFOREPATCH is renamed
-					    # back to web.xml in step 8b
-      sed -i -e 's/\(OPENAM_FILTER_BEGIN.*$\)/\1 -->/g' -e 's/\(^.*OPENAM_FILTER_END\)/<!-- \1/g' web.xml
-      popd
-  else
-      echo "File ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml does not exist. Aborting execution"
-      ERRORSTATUS=1
-      exit $ERRORSTATUS
-  fi
-fi
+#tostman NOTE # 2b. Patching web.xml - Including OpenAM filter in site.war for eservicetest and kservicetest
+#tostman NOTE if ${WITH_OPENAM}
+#tostman NOTE then
+#tostman NOTE   if [ -f  ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml ]
+#tostman NOTE   then
+#tostman NOTE       pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+#tostman NOTE       mv web.xml $SITE_WEB_XML_BEFOREPATCH
+#tostman NOTE       cp $SITE_WEB_XML_BEFOREPATCH web.xml  # thereby conserving mod date of web.xml
+#tostman NOTE 					    # when $SITE_WEB_XML_BEFOREPATCH is renamed
+#tostman NOTE 					    # back to web.xml in step 8b
+#tostman NOTE       sed -i -e 's/\(OPENAM_FILTER_BEGIN.*$\)/\1 -->/g' -e 's/\(^.*OPENAM_FILTER_END\)/<!-- \1/g' web.xml
+#tostman NOTE       popd
+#tostman NOTE   else
+#tostman NOTE       echo "File ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/web.xml does not exist. Aborting execution"
+#tostman NOTE       ERRORSTATUS=1
+#tostman NOTE       exit $ERRORSTATUS
+#tostman NOTE   fi
+#tostman NOTE fi
 
-# 2c. Patching hst-config.properties - changing to rmi for access to hipporepository
-if [ -f  ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/hst-config.properties ]
-then
-    pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
-    mv hst-config.properties $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH
-    cp $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH hst-config.properties  # thereby conserving mod date of
-                                          # hst-config.properties when $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH
-                                          # is renamed back to hst-config.properties in step 8c
-    sed -i -e 's/=\s\+vm:\/\//= rmi:\/\/127.0.0.1:1099\/hipporepository/g' hst-config.properties
-    popd
-else
-    echo "File ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/hst-config.properties does not exist. Aborting execution"
-    ERRORSTATUS=1
-    exit $ERRORSTATUS
-fi
-
+#tostman NOTE # 2c. Patching hst-config.properties - changing to rmi for access to hipporepository
+#tostman NOTE if [ -f  ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/hst-config.properties ]
+#tostman NOTE then
+#tostman NOTE     pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+#tostman NOTE     mv hst-config.properties $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH
+#tostman NOTE     cp $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH hst-config.properties  # thereby conserving mod date of
+#tostman NOTE                                           # hst-config.properties when $SITE_HST_CONFIG_PROPERTIES_BEFOREPATCH
+#tostman NOTE                                           # is renamed back to hst-config.properties in step 8c
+#tostman NOTE     sed -i -e 's/=\s\+vm:\/\//= rmi:\/\/127.0.0.1:1099\/hipporepository/g' hst-config.properties
+#tostman NOTE     popd
+#tostman NOTE else
+#tostman NOTE     echo "File ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF/hst-config.properties does not exist. Aborting execution"
+#tostman NOTE     ERRORSTATUS=1
+#tostman NOTE     exit $ERRORSTATUS
+#tostman NOTE fi
+fi 
 # 3. Build eservice-platform
 if [ -z ${MVN_SKIP_TEST} ] 
 then 
@@ -308,12 +314,12 @@ fi
 
 # 8b. Restore original web.xml.beforepatch  to original state. Necessary to make step 2b
 #     (patching web.xml of site.war) work correctly next time script is run
-if ${WITH_OPENAM}
-then
-  pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
-    mv $SITE_WEB_XML_BEFOREPATCH web.xml
-  popd
-fi
+#tostman if ${WITH_OPENAM}
+#tostman then
+#tostman   pushd ${BUILD_DIR}/inherit-portal/site/src/main/webapp/WEB-INF
+#tostman     mv $SITE_WEB_XML_BEFOREPATCH web.xml
+#tostman   popd
+#tostman fi
 
 # 8c. Restore original hst-config.properties.beforepatch to original state. Necessary to
 #      make step 2c (patching hst-config.properties of site.war) work correctly next time
@@ -330,19 +336,19 @@ cd ${ESERVICE}/bin/
 getPidByPort ESERVICE_PID ${ESERVICE_PORT}
 shutdownContainer "${ESERVICE_PID}"
 
-if ${WITH_KSERVICES}
-then
-    cd ../../${KSERVICE}/bin/
-    getPidByPort KSERVICE_PID ${KSERVICE_PORT}
-    shutdownContainer "${KSERVICE_PID}"
-fi
+#tostman if ${WITH_KSERVICES}
+#tostman then
+#tostman     cd ../../${KSERVICE}/bin/
+#tostman     getPidByPort KSERVICE_PID ${KSERVICE_PORT}
+#tostman     shutdownContainer "${KSERVICE_PID}"
+#tostman fi
 
-if ${WITH_CMSSERVICES}
-then
-    cd ../../${CMSSERVICE}/bin/
-    getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
-    shutdownContainer "${CMSSERVICE_PID}"
-fi
+#tostman if ${WITH_CMSSERVICES}
+#tostman then
+#tostman     cd ../../${CMSSERVICE}/bin/
+#tostman     getPidByPort CMSSERVICE_PID ${CMSSERVICE_PORT}
+#tostman     shutdownContainer "${CMSSERVICE_PID}"
+#tostman fi
 
 popd
 
@@ -356,19 +362,19 @@ fi
 echo "Installing wars in ${ESERVICE} container"
 installInContainer ${ESERVICE}
 
-# 11. Install on kservice container
-if ${WITH_KSERVICES}
-then
-  echo "Installing wars in ${KSERVICE} container"
-  installInContainer ${KSERVICE}
-fi
-
-# 12   Install on cmsservice container
-if ${WITH_CMSSERVICES}
-then
-  echo "Installing wars in ${CMSSERVICE} container"
-  installInContainer ${CMSSERVICE}
-fi
+#tostman # 11. Install on kservice container
+#tostman if ${WITH_KSERVICES}
+#tostman then
+#tostman   echo "Installing wars in ${KSERVICE} container"
+#tostman   installInContainer ${KSERVICE}
+#tostman fi
+#tostman 
+#tostman # 12   Install on cmsservice container
+#tostman if ${WITH_CMSSERVICES}
+#tostman then
+#tostman   echo "Installing wars in ${CMSSERVICE} container"
+#tostman   installInContainer ${CMSSERVICE}
+#tostman fi
 
 # 13. Clean up content repositories
 echo "Clean up content repository..."
@@ -381,24 +387,25 @@ popd
 #popd
 
 # 14. Restart containers
-#pushd ${CONTAINER_ROOT}
 
 if ${WITH_OPENDJ}
 then
+  pushd ${CONTAINER_ROOT}
   $CONTAINER_ROOT/opendj/bin/stop-ds
   $CONTAINER_ROOT/opendj/bin/start-ds
+  popd
 fi
 
 restartContainer ${ESERVICE}
 
-if ${WITH_KSERVICES}
-then
-  restartContainer ${KSERVICE}
-fi
-
-if ${WITH_CMSSERVICES}
-then
-  restartContainer ${CMSSERVICE}
-fi
+#tostman if ${WITH_KSERVICES}
+#tostman then
+#tostman   restartContainer ${KSERVICE}
+#tostman fi
+#tostman 
+#tostman if ${WITH_CMSSERVICES}
+#tostman then
+#tostman   restartContainer ${CMSSERVICE}
+#tostman fi
 
 exit ${ERRORSTATUS}

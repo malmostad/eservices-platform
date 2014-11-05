@@ -162,9 +162,9 @@ then
                                                              # when $PROPERTIES_LOCAL_BEFOREPATCH is renamed
                                                              # back to properties-local.xml in step 8
     if ${ESERVICE_SSL}; then
-	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/https:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
+	sed -e "s/http:\/\/localhost:8080\/site\/confirmdispatcher/https:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
     else
-	sed -e "s/http:\/\/localhost:8080\/site\/mycases\/form\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/mycases\/form\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
+	sed -e "s/http:\/\/localhost:8080\/site\/confirmdispatcher/http:\/\/${ESERVICE_HOST}:${ESERVICE_EXTERNAL_PORT}\/site\/confirmdispatcher/g" properties-local.xml > properties-local.xml.eservicepatch
     fi
 
    mv properties-local.xml.eservicepatch properties-local.xml
