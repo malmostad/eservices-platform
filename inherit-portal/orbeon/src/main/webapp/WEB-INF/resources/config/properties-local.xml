@@ -29,7 +29,7 @@
 	value="require-uploads
 	       then require-valid
                then save
- 	       then navigate(uri=&quot;http://localhost:8080/site/mycases/form/confirmdispatcher?document={xxf:instance('fr-parameters-instance')/document}&quot;)
+ 	       then navigate(uri=&quot;http://localhost:8080/site/confirmdispatcher?document={xxf:instance('fr-parameters-instance')/document}&quot;)
 	       recover error-message(&quot;database-error&quot;)"/>
   
     <property
