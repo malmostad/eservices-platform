@@ -120,7 +120,8 @@ $(document).ready(function() {
               ORBEON.xforms.Init.document();
             } 
           } 
-          window.dispatchEvent(new Event('resize'));
+          //window.dispatchEvent(new Event('resize'));
+          $(window).resize();
         }); 
         
       }
