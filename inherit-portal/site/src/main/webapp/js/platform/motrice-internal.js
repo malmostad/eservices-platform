@@ -82,14 +82,14 @@ $(".motrice-comment-btn-ok").click(function(event) {
 		refreshCommentFeed(data);
 	});
 	
-	$(this).siblings("input[name='comment']").attr("value", "");
+	$(this).siblings("input[name='comment']").val("");
 	$(this).siblings(".motrice-comment-field-controls").hide();
 	$(this).hide();
 });
 
 $(".motrice-comment-btn-cancel").click(function(event) {
 	event.preventDefault();
-	$(this).siblings("input[name='comment']").attr("value", "");
+	$(this).siblings("input[name='comment']").val("");
 	$(this).siblings(".motrice-comment-field-controls").hide();
 	$(this).hide();
 });
@@ -145,7 +145,7 @@ $(".motrice-activity-candidates-details").click(function(event) {
 
 	$('a.toggle-view-list').click(function(event) {
 	    event.preventDefault();
-		var list = $(this).siblings('ul.toggle-view-list');
+		var list = $(this).siblings('ul.toggle-view-list,input.toggle-view-list');
 		if (list.is(':hidden')) {
 			list.slideDown('200');
 			$(this).siblings("a.toggle-view-list").show();

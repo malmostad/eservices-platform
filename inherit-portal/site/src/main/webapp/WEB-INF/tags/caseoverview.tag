@@ -104,22 +104,25 @@
 	   </c:choose>
 		
 	</div>		
-	<br/>
-	   <strong><fmt:message key="mycases.commentFeed.lbl"/></strong>
+	
 			<form action="/site/restservices/site-ajax/addComment" id="addCommentForm" class="motrice-add-comment siteAjaxForm">
+
+						
+						<a href="0" class="toggle-view-list toggle-view-list-show">Kommentarer <i class="fa fa-chevron-circle-down"></i></a>
+						<a href="0" class="toggle-view-list toggle-view-list-hide motrice-initial-hidden">D&ouml;lj kommentarer <i class="fa fa-chevron-circle-up"></i></a>
+						<br/>
+
 							<input type="hidden" name="activityInstanceUuid" value="${activity.activityInstanceUuid}" /> 
-							<input type="text" name="comment" placeholder="<fmt:message key="mycases.addcomment.lbl"/>"	class="text ui-widget-content ui-corner-all malmo-form motrice-comment-field" />
+							<input type="text" name="comment" placeholder="<fmt:message key="mycases.addcomment.lbl"/>"	class="text ui-widget-content ui-corner-all malmo-form toggle-view-list motrice-initial-hidden motrice-comment-field" />
 							<input type="hidden" name="language" value="sv" /> 
 							<input type="hidden" name="country" value="SE" /> 
 							<button class="btn btn-primary motrice-comment-field-controls motrice-comment-btn-ok motrice-initial-hidden"><fmt:message key="mycases.addcomment.btnok.lbl"/></button>
 							<button class="btn btn-default motrice-comment-field-controls motrice-comment-btn-cancel motrice-initial-hidden"><fmt:message key="mycases.addcomment.btncancel.lbl"/></button>
 			
-						<ul id="lastcomments" class="motrice-comment-list">
+						<ul id="lastcomments" class="toggle-view-list motrice-initial-hidden motrice-comment-list">
 							<li>Laddar ärendets kommentarer...</li>
 						</ul>			
 						
-						<a href="0" class="toggle-view-list toggle-view-list-show">Kommentarer <i class="fa fa-chevron-circle-down"></i></a>
-						<a href="0" class="toggle-view-list toggle-view-list-hide motrice-initial-hidden">D&ouml;lj kommentarer <i class="fa fa-chevron-circle-up"></i></a>
 						
 						<ul id="commentfeed" class="commentfeed toggle-view-list motrice-initial-hidden motrice-comment-list">
 						</ul>		
