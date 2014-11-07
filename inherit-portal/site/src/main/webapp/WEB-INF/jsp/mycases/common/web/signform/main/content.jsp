@@ -27,8 +27,6 @@
 <%@ include file="/WEB-INF/jspf/htmlTags.jspf"%>
 <%--@elvariable id="document" type="org.inheritsource.portal.beans.TextDocument"--%>
 
-	<p>${errDescription} ${viewtype} aaaa</p>
-    <p>text ${text} signText ${signText} </p>
 <c:choose>
 	<c:when test="${empty document}">
 		<tag:pagenotfound />
@@ -55,11 +53,31 @@
 
 <c:choose>
 	<c:when test="${viewtype eq 'pendingsignreq'}">
-     TODO ladda om den här sidan automagisktmed en regelbundenhet men posta inte om text
+         <form class="motricesignpoll" method="post" action="signform">
+			<input type="hidden" name="instanceId" value="${activity.instanceId}" />
+     		<input type="hidden" name="actinstId"  value="${activity.actinstId}" />
+			
+			<input type="submit" value="Ladda om"/>
+		</form>
+         
          <img id="badboll" src='/site/images/ajax-loader.gif' />
 	</c:when>
 	<c:when test="${viewtype eq 'signeddocument'}">
-	  redan signerat TODO länka till handlingen
+		 <c:choose>
+			  <c:when test="${empty activity or empty activity.actUri}">
+			  	<p><fmt:message key="mycases.noformtoload.lbl"/></p>
+			  </c:when>
+			  <c:otherwise>
+				<p><a href="${activity.actUri}"><fmt:message key="mycases.download.lbl"/></a>&nbsp;<fmt:message key="mycases.signedAct.lbl"/></p>		
+			  </c:otherwise>
+		</c:choose>
+				
+		<c:if test="${not empty nextTask}">
+			<p>
+				<fmt:message key="mycases.nextactivity.lbl"/>&nbsp; <a href="../${nextTask.relativePageLink}">${nextTask.activityLabel}</a>&nbsp;<fmt:message key="mycases.in"/>&nbsp; ${nextTask.processLabel}. 
+			</p>
+		</c:if>	  
+	  
 	</c:when>
 	<c:otherwise>
 	

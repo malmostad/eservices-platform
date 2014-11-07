@@ -19,6 +19,12 @@ function siteAjaxPost(url, postdata, processSuccess ) {
 
 $(document).ready(function() {
 	
+	if ($('.motricesignpoll').length>0) {
+		setInterval(function(){
+			$('.motricesignpoll').submit();
+		}, 5000);
+	}
+	
 	/*
 	 * generic toggle view content with list items and jquery
 	 */

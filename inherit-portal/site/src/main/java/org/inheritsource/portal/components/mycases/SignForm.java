@@ -27,12 +27,15 @@
 package org.inheritsource.portal.components.mycases;
 
 
+import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
+import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.inheritsource.service.common.domain.ActivityInstanceItem;
 import org.inheritsource.service.common.domain.ActivityInstanceLogItem;
 import org.inheritsource.service.common.domain.DocBoxFormData;
+import org.inheritsource.service.common.domain.InboxTaskItem;
 import org.inheritsource.service.common.domain.UserInfo;
 import org.inheritsource.service.form.SignStartFormTaskHandler;
 import org.slf4j.Logger;
@@ -47,6 +50,7 @@ public class SignForm extends Form  {
     public void doBeforeRender(final HstRequest request, final HstResponse response) throws HstComponentException {
 		super.doBeforeRender(request, response);
 		
+		HippoBean document = (HippoBean)request.getAttribute("document");
 		/*
 		 * There is three possibly states of sign form
 		 * 1. No signing request initiated. (viewtype=signform, error="")
@@ -63,6 +67,23 @@ public class SignForm extends Form  {
 		 * 
 		 * If signing fails the motriceFormSignTransactionId task variable _must_ be removed 
 		 */
+		HippoBean pendingSignDocument = null;
+   		String pendingSignDocumentPath = getMount(request).getCanonicalContentPath() + "/mycases/sign-document-pending";
+		try {
+			pendingSignDocument = (HippoBean) getObjectBeanManager(request).getObject(pendingSignDocumentPath);
+		} catch (ObjectBeanManagerException e) {
+			// TODO Auto-generated catch block
+			log.error("Error while searching for activity guide with path=[{}] Exception: {}" ,pendingSignDocumentPath , e.toString());
+		}
+		
+		HippoBean confirmSignDocument = null;
+   		String confirmSignDocumentPath = getMount(request).getCanonicalContentPath() + "/mycases/sign-document-confirm";
+		try {
+			confirmSignDocument = (HippoBean) getObjectBeanManager(request).getObject(confirmSignDocumentPath);
+		} catch (ObjectBeanManagerException e) {
+			// TODO Auto-generated catch block
+			log.error("Error while searching for activity guide with path=[{}] Exception: {}" ,confirmSignDocumentPath , e.toString());
+		}
 		
 		String text = getPublicRequestParameter(request, "text"); 
 
@@ -75,14 +96,21 @@ public class SignForm extends Form  {
 		if (activity instanceof ActivityInstanceLogItem) {
 			// activity already performed => state 4
 			viewtype="signeddocument";
+			document = confirmSignDocument;
+			
+			InboxTaskItem nextTask = null;
+			if (!UserInfo.ANONYMOUS_UUID.equals(user.getUuid())) {
+		        nextTask = engine.getNextActivityInstanceItemByDocId(activity, request.getLocale(), user.getUuid());
+			}
+			request.setAttribute("nextTask", nextTask);
+			
 		}
 		else {
 			Object transactionId = activity.getAttributes().get(SignStartFormTaskHandler.FORM_SIGN_TRANSACTION_ID);
 			if (transactionId != null) {
 				// there is a pending signature request => state 3
 				viewtype = "pendingsignreq";
-				
-				this.engine.getActivitiEngineService().pollCompletedSignRequest();
+				document = pendingSignDocument;
 			}
 			else {
 				
@@ -101,6 +129,7 @@ public class SignForm extends Form  {
 							// state 2b
 							if (this.getEngine().getActivitiEngineService().createSignRequestOfForm(activity.getInstanceId(), user.getUuid(), docBoxFormData)) {
 								viewtype = "pendingsignreq";
+								document = pendingSignDocument; 
 							}
 							else {
 								error = "failedsignreq";
@@ -121,6 +150,7 @@ public class SignForm extends Form  {
 			}
 		}
 				
+		request.setAttribute("document", document);
 		request.setAttribute("viewtype", viewtype);
 		request.setAttribute("errDescription", error);
 	}

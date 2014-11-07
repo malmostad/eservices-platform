@@ -1,9 +1,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 			   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
 			   http://www.springframework.org/schema/context
-			   http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+			   http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+			   http://www.springframework.org/schema/task
+        	   http://www.springframework.org/schema/task/spring-task-3.2.xsd">
 
   <context:annotation-config />
 
@@ -149,5 +153,15 @@
   </bean>
     
   <bean id="simplifiedServiceMessageDelegate" class="org.inheritsource.service.delegates.SimplifiedServiceMessageDelegate"/>
+
+  <bean id="pollSignatureScheduler" class="org.inheritsource.service.docbox.PollSignatureScheduler">
+    <property name="activitiEngineService" ref="activitiEngineService" />
+  </bean>
+  
+  <task:scheduler id="motriceScheduler" pool-size="10"/>
+  
+  <task:scheduled-tasks scheduler="motriceScheduler">
+	<task:scheduled ref="pollSignatureScheduler" method="run" cron="*/5 * * * * *" />
+  </task:scheduled-tasks>
   
 </beans>
