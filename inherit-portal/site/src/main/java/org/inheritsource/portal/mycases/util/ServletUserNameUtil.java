@@ -25,6 +25,7 @@
 
 package org.inheritsource.portal.mycases.util;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Enumeration;
 
@@ -82,11 +83,12 @@ public class ServletUserNameUtil {
 			// to make the mapping in the attribute-*.xml to the same attribute name for the different IdPs.
 			String Subject_SerialNumber = (String) request
 					.getAttribute("Subject_SerialNumber");
-			String gn = (String) request.getAttribute("GivenName");
-			String sn = (String) request.getAttribute("Subject_Surname");
+			// String gn = (String) request.getAttribute("GivenName");
+		        String gn = getAttributeShibboleth("GivenName" , request) ; 
+                        String sn = getAttributeShibboleth("Subject_Surname" , request) ;
 			//String sn_id = (String) request.getAttribute("sn_id");
 			String sn_id = null ; 
-			String cn = (String) request.getAttribute("Subject_CommonName");
+			String cn =  getAttributeShibboleth("Subject_CommonName" , request) ;  
 			log.info("Subject_SerialNumber = " + Subject_SerialNumber + " gn = "
 					+ gn + " sn = " + sn + " cn = " + cn);
 			result = engine.getUserBySerial(Subject_SerialNumber, gn, sn,
@@ -99,12 +101,7 @@ public class ServletUserNameUtil {
 			// Different IdPs might privide different attributes, it probable
 			// makes sence
 			// to make the mapping in the attribute-*.xml to the same attribute name for the different IdPs.
-			/// String Subject_SerialNumber = (String) request
-		/// 			.getAttribute("Subject_SerialNumber");
-		/// 	String gn = (String) request.getAttribute("GivenName");
-		/// 	String sn = (String) request.getAttribute("Subject_Surname");
-		/// 	String sn_id = (String) request.getAttribute("sn_id");
-			String cn = (String) request.getAttribute("Subject_CommonName");
+			String cn =  getAttributeShibboleth("Subject_CommonName" , request) ;  
 			log.info(" cn = " + cn);
 		        String userBaseDn 	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.userBaseDn");
 		        String baseDn      	  = ConfigUtil.getConfigProperties().getProperty("userDirectoryService.baseDn");
@@ -184,53 +181,68 @@ public class ServletUserNameUtil {
 
 			}
 		}
-			log.info("request.getAttribute(GivenName) = "
-					+ request.getAttribute("GivenName"));
-			log.info("request.getAttribute(sn_id) = "
-					+ request.getAttribute("sn_id"));
-			log.info("request.getAttribute(SecurityLevelDescription) = "
-					+ request.getAttribute("SecurityLevelDescription"));
-			log.info("request.getAttribute(Subject_CountryName) = "
-					+ request.getAttribute("Subject_CountryName"));
-			log.info("request.getAttribute(Subject_CommonName) = "
-					+ request.getAttribute("Subject_CommonName"));
-			log.info("request.getAttribute(CertificateSerialNumber) = "
-					+ request.getAttribute("CertificateSerialNumber"));
-			log.info("request.getAttribute(dateOfBirth) = "
-					+ request.getAttribute("dateOfBirth"));
-			log.info("request.getAttribute(Subject_OrganisationName) = "
-					+ request.getAttribute("Subject_OrganisationName"));
-			log.info("request.getAttribute(Issuer_OrganizationName) = "
-					+ request.getAttribute("Issuer_OrganizationName"));
-			log.info("request.getAttribute(sn_type) = "
-					+ request.getAttribute("sn_type"));
-			log.info("request.getAttribute(Subject_Surname) = "
-					+ request.getAttribute("Subject_Surname"));
-			log.info("request.getAttribute(Subject_SerialNumber) = "
-					+ request.getAttribute("Subject_SerialNumber"));
+			log.info("request.getAttribute(GivenName) = {} "
+					, getAttributeShibboleth("GivenName", request));
+			log.info("request.getAttribute(sn_id) = {} "
+					, getAttributeShibboleth("sn_id", request));
+			log.info("request.getAttribute(SecurityLevelDescription) = {} "
+					, getAttributeShibboleth("SecurityLevelDescription", request));
+			log.info("request.getAttribute(Subject_CountryName) = {} ", 
+					getAttributeShibboleth("Subject_CountryName", request));
+			log.info("request.getAttribute(Subject_CommonName) = {} "
+					, getAttributeShibboleth("Subject_CommonName", request));
+			log.info("request.getAttribute(CertificateSerialNumber) = {} "
+					, getAttributeShibboleth("CertificateSerialNumber", request));
+			log.info("request.getAttribute(dateOfBirth) = {} "
+					, getAttributeShibboleth("dateOfBirth", request));
+			log.info("request.getAttribute(Subject_OrganisationName) = {} "
+					, getAttributeShibboleth("Subject_OrganisationName", request));
+			log.info("request.getAttribute(Issuer_OrganizationName) = {} "
+					, getAttributeShibboleth("Issuer_OrganizationName", request));
+			log.info("request.getAttribute(sn_type) = {} "
+					, getAttributeShibboleth("sn_type", request));
+			log.info("request.getAttribute(Subject_Surname) = {} "
+					, getAttributeShibboleth("Subject_Surname", request));
+			log.info("request.getAttribute(Subject_SerialNumber) = {} "
+					, getAttributeShibboleth("Subject_SerialNumber", request));
 			log.info("request.getAttribute(Gender) = "
-					+ request.getAttribute("Gender"));
-			log.info("request.getAttribute(ValidationOcspResponse) = "
-					+ request.getAttribute("ValidationOcspResponse"));
-			log.info("request.getAttribute(SecurityLevel) = "
-					+ request.getAttribute("SecurityLevel"));
-			log.info("request.getAttribute(Issuer_CommonName) = "
-					+ request.getAttribute("Issuer_CommonName"));
-			log.info("request.getAttribute(age) = "
-					+ request.getAttribute("age"));
-			log.info("request.getAttribute(affiliation) = "
-					+ request.getAttribute("affiliation"));
-			log.info("request.getAttribute(entitlement) = "
-					+ request.getAttribute("entitlement"));
-			log.info("request.getAttribute(eppn) = "
-					+ request.getAttribute("eppn"));
-			log.info("request.getAttribute(persistent-id) = "
-					+ request.getAttribute("persistent-id"));
-			log.info("request.getAttribute(telephoneNumber) = "
-					+ request.getAttribute("telephoneNumber"));
-			log.info("request.getAttribute(unscoped-affiliation) = "
-					+ request.getAttribute("unscoped-affiliation"));
-		return result;
+					, getAttributeShibboleth("Gender", request));
+			log.info("request.getAttribute(ValidationOcspResponse, request) = {} "
+					, getAttributeShibboleth("ValidationOcspResponse", request));
+			log.info("request.getAttribute(SecurityLevel) = {} "
+					, getAttributeShibboleth("SecurityLevel", request));
+			log.info("request.getAttribute(Issuer_CommonName) = {} "
+					, getAttributeShibboleth("Issuer_CommonName", request));
+			log.info("request.getAttribute(age) = {} "
+					, getAttributeShibboleth("age", request));
+			log.info("request.getAttribute(affiliation) = {} "
+					, getAttributeShibboleth("affiliation", request));
+			log.info("request.getAttribute(entitlement) = {} "
+					, getAttributeShibboleth("entitlement", request));
+			log.info("request.getAttribute(eppn) = {} "
+					, getAttributeShibboleth("eppn", request));
+			log.info("request.getAttribute(persistent-id) = {} "
+					, getAttributeShibboleth("persistent-id", request));
+			log.info("request.getAttribute(telephoneNumber) = {} "
+					, getAttributeShibboleth("telephoneNumber", request));
+			log.info("request.getAttribute(unscoped-affiliation) = {} "
+					, getAttributeShibboleth("unscoped-affiliation", request));
+			return result;
 	}
-
+		static String getAttributeShibboleth(String name, final  HttpServletRequest request)
+		{
+			//Encoding issue. See 
+			//https://wiki.shibboleth.net/confluence/display/SHIB2/NativeSPAttributeAccess
+			String value =  (String) request.getAttribute(name);
+                        if (value != null)  {
+			try {
+				value= new String( value.getBytes("ISO-8859-1"), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}}
+		return value  ;	
+		}
+		
+	
 }
