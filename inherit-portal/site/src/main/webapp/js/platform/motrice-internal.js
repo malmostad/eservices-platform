@@ -153,6 +153,7 @@ $(".motrice-activity-candidates-details").click(function(event) {
 		} else {
 			list.slideUp('200');
 			$(this).siblings("a.toggle-view-list").show();
+			$(this).siblings(".motrice-comment-field-controls").hide();
 			$(this).hide();
 		}
 	});
