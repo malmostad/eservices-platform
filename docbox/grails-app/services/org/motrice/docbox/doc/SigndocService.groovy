@@ -34,6 +34,7 @@ import org.motrice.docbox.sign.PdfSignatureDict
 import org.motrice.docbox.sign.XmlDsig
 import org.motrice.docbox.util.Exxtractor
 import org.motrice.signatrice.ServiceException
+import org.motrice.signatrice.SigCustomElement
 import org.motrice.signatrice.SigResult
 import org.motrice.signatrice.StackTracer
 
@@ -496,8 +497,9 @@ class SigndocService {
    */
   def validateSignature(String sigBase64) {
     def sig = new XmlDsig(sigBase64, log)
+    def customElements = collectCustomElements()
     def map = [:]
-    map.coreValid = sig.validateSignature()
+    map.coreValid = sig.validateSignature(customElements)
     map.certValid = sig.validateCertificates()
     map.sigData = sig
     return map
@@ -505,6 +507,23 @@ class SigndocService {
 
   def validateSignature(PdfSignatureDict dict) {
     validateSignature(dict.signature)
+  }
+
+  /**
+   * Collect all custom elements.
+   * Return a map.
+   * Key: element name (String).
+   * Value: id attribute name (String)
+   */
+  private Map collectCustomElements() {
+    def list = SigCustomElement.list()
+    // Convert to map.
+    def map = [:]
+    list.each {customElement ->
+      map[customElement.elementName] = customElement.idAttrName
+    }
+
+    return map
   }
 
   // Query to pick up SigResults to be post-processed and finished.

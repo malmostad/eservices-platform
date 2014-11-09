@@ -49,6 +49,7 @@
     <li><g:link controller="env" action="showconfig"><g:message code="config.menu"/></g:link>
 	<ul class="submenu">
 	  <li><g:link controller="env" action="showconfig"><g:message code="config.show.menu"/></g:link></li>
+	  <li><g:link controller="sigCustomElement" action="list" id="1"><g:message code="sigCustomElement.list.menu"/></g:link></li>
 	</ul>
     </li>
   </ul>

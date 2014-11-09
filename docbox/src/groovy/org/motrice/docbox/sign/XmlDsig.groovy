@@ -125,9 +125,12 @@ class XmlDsig {
   /**
    * Validate the signature
    * SIDE EFFECT: sets the certChain field, add text lines to report
+   * @param customElements must contain all elements that may occur in a signature
+   * with a custom id attribute.
    * @return boolean, did validation succeed?
    */
-  def validateSignature() {
+  def validateSignature(Map customElements) {
+    if (log.debugEnabled) log.debug "validateSignature << ${customElements}"
     // Create the document to be validated
     def is = new ByteArrayInputStream(signatureXml)
     def dbf = DocumentBuilderFactory.newInstance()
@@ -138,15 +141,6 @@ class XmlDsig {
     } catch (Exception exc) {
       throw new XMLSignatureException('Problem parsing XML signature. ', exc)
     }
-
-    // Find the Signature element
-    def nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, 'Signature')
-    if (nl.length == 0) {
-      throw new XMLSignatureException('Cannot find Signature element')
-    }
-
-    // There can only be one signature, so pick it
-    def signatureElement = nl.item(0)
 
     // DOM XMLSignatureFactory to be used to unmarshal the document
     // containing the XMLSignature
@@ -159,7 +153,9 @@ class XmlDsig {
     // Get the public key from the first certificate = end user certificate by convention
     def cert = getFirstCert()
     def pubKey = cert.publicKey
-    return doSigValidate(sigFact, signatureElement, pubKey)
+    def result = doSigValidate(sigFact, doc, pubKey, customElements)
+    if (log.debugEnabled) log.debug "validateSignature >> ${result}"
+    return result
   }
 
   // DOM gets in the way
@@ -176,10 +172,30 @@ class XmlDsig {
    * SIDE EFFECT: Add lines to the validation report
    * RETURN validation outcome (true or false)
    */
-  private boolean doSigValidate(XMLSignatureFactory sigFact, signatureElement, pubKey) {
+  private boolean doSigValidate(XMLSignatureFactory sigFact, doc, pubKey,
+				Map customElements)
+  {
+    // Find the Signature element
+    def nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, 'Signature')
+    if (nl.length == 0) {
+      throw new XMLSignatureException('Cannot find Signature element')
+    }
+
+    // There can only be one signature, so pick it
+    def signatureElement = nl.item(0)
+
     // Create a DOMValidateContext
     // In this case we assume the key to use is contained in a certificate chain
     def valCtx = new DOMValidateContext(pubKey, signatureElement)
+
+    // Register elements with a custom id attribute.
+    customElements?.each {elementName, idAttrName ->
+      def list = doc.getElementsByTagName(elementName)
+      if (list.length > 0) {
+	def element = list.item(0)
+	valCtx.setIdAttributeNS(element, null, idAttrName)
+      }
+    }
 
     // Unmarshal the XMLSignature
     def signature = sigFact.unmarshalXMLSignature(valCtx)
@@ -189,8 +205,10 @@ class XmlDsig {
     boolean exceptionOccurred = false
     try {
       coreValidity = signature.validate(valCtx)
+      if (log.debugEnabled) log.debug "doSigValidate.coreValidity: ${coreValidity}"
     } catch (Exception exc) {
       report << "Validation exception: ${exc.message}"
+      if (log.debugEnabled) log.debug "doSigValidate EXC: ${exc}"
       exceptionOccurred = true
     }
 

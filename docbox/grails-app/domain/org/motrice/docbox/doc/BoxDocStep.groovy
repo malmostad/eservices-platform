@@ -55,7 +55,7 @@ class BoxDocStep implements Comparable {
     step range: 0..999
     docNo maxSize: 16
     docboxRef maxSize: 200
-    signCount range: 0..12
+    signCount range: 0..29
     dateCreated nullable: true
     lastUpdated nullable: true
   }
