@@ -162,3 +162,11 @@ CREATE TABLE sig_attribute
       REFERENCES sig_result (id)
 );
 
+CREATE TABLE sig_custom_element
+(
+  id bigint NOT NULL,
+  version bigint NOT NULL,
+  element_name character varying(40) NOT NULL,
+  id_attr_name character varying(180) NOT NULL,
+  CONSTRAINT sig_custom_element_pkey PRIMARY KEY (id)
+);
