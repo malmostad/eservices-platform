@@ -569,16 +569,18 @@ class SigndocService {
     } catch (ServiceException exc) {
       item.docboxRefOut = null
       item.finishConflict = exc.canonical
-       if (log.debugEnabled) log.debug "postProcess EXC: ${exc.canonical}"
-       def args = [description: 'Failed to add signature to document', failure: true,
-       details: item?.toMap() as JSON, stackTrace: StackTracer.trace(exc)]
-       auditService.signEvent(args, null)
+      if (log.debugEnabled) log.debug "postProcess EXC: ${exc.canonical}"
+      def details = (item?.toMap() as JSON)?.toString() ?: '*NULL*'
+      def args = [description: 'Failed to add signature to document', failure: true,
+      details: details, stackTrace: StackTracer.trace(exc)]
+      auditService.signEvent(args, null)
     } catch (Exception exc) {
       item.finishConflict = exc.message
       if (log.debugEnabled) log.debug "postProcess EXC: ${exc.message}"
-       def args = [description: 'Failed to add signature to document', failure: true,
-       details: item?.toMap() as JSON, stackTrace: StackTracer.trace(exc)]
-       auditService.signEvent(args, null)
+      def details = (item?.toMap() as JSON)?.toString() ?: '*NULL*'
+      def args = [description: 'Failed to add signature to document', failure: true,
+      details: details, stackTrace: StackTracer.trace(exc)]
+      auditService.signEvent(args, null)
     }
 
     if (!item.save()) log.error "post-process ${item} save: ${item.errors.allErrors.join(', ')}"

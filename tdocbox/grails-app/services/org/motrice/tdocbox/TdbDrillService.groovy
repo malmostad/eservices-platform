@@ -120,6 +120,7 @@ class TdbDrillService {
       result = builder.get()
     break
     case TdbHttpVerb.PUT_ID:
+      builder.body = drill.body
       result = builder.put()
     break
     case TdbHttpVerb.POST_ID:
