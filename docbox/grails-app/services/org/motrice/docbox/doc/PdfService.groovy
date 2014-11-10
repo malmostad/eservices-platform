@@ -51,7 +51,7 @@ class PdfService {
   def docService
   def signdocService
 
-  private static final UNKNOWN_MOTRICE_SITE_NAME = '***Okänd***'
+  static final UNKNOWN_MOTRICE_SITE_NAME = '***Okänd***'
 
   /**
    * Retrieve all database objects relevant for a form instance.

@@ -216,7 +216,7 @@ class SigndocService {
    * Pick up the Motrice site name, or a default text.
    */
   private String localSiteName() {
-    grailsApplication.config.motrice.site.name ?: UNKNOWN_MOTRICE_SITE_NAME
+    grailsApplication.config.motrice.site.name ?: PdfService.UNKNOWN_MOTRICE_SITE_NAME
   }
 
   /**
