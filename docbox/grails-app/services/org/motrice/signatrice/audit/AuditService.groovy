@@ -1,5 +1,7 @@
 package org.motrice.signatrice.audit
 
+import org.apache.commons.logging.LogFactory
+
 import org.motrice.signatrice.ServiceException
 
 /**
@@ -8,6 +10,8 @@ import org.motrice.signatrice.ServiceException
  */
 class AuditService {
   static transactional = true
+  
+  private static final log = LogFactory.getLog(this)
 
   def createEvent(args, request) {
     silentlyAddRecord(args, AudEventRecord.CREATE_EVENT_TYPE, request?.remoteAddr)
@@ -73,7 +77,7 @@ class AuditService {
    * Throw ServiceException on conflict.
    */
   private AudEventRecord doAddRecord(args, String eventCode, String remoteAddr) {
-    if (!(args && (args instanceof Map))) {
+    if (!(args != null && (args instanceof Map))) {
       def msg = "Arguments cannot be interpreted as a Map"
       throw new ServiceException('AUDIT.173', msg)
     }
