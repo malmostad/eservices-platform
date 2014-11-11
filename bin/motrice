@@ -1,0 +1,73 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          motrice
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: 
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+# Author: Foo Bar <foobar@motrice.se>
+#
+# Please remove the "Author" lines above and replace them
+# with your own name if you copy and modify this script.
+
+#
+DESC="Motrice BPM  Server"
+d_start() {
+  START=${CONTAINER_ROOT}/${ESERVICE}/bin/startup.sh
+  if [ ! -f ${START} ]; then
+     echo "Error in configuration file " 
+     echo "${START} not found" 
+     exit 1;
+  fi
+  su -c  ${START} ${MOTRICEUSER}
+}
+
+d_stop() {
+  STOP=${CONTAINER_ROOT}/${ESERVICE}/bin/shutdown.sh
+  if [ ! -f ${STOP} ]; then
+     echo "Error in configuration file " 
+     echo "${STOP} not found" 
+     exit 1;
+  fi
+  su -c  ${STOP} ${MOTRICEUSER}
+}
+
+
+MOTRICECONF='/usr/local/etc/motrice/motrice.conf' 
+if [ ! -f ${MOTRICECONF} ]; then
+  echo "Missing configuration file Not installed?" 
+   exit 1;
+fi
+. ${MOTRICECONF}
+
+case $1 in
+        start)
+        echo -n "Starting $DESC: $NAME"
+        d_start
+        echo "."
+        ;;
+        stop)
+        echo -n "Stopping $DESC: $NAME"
+        d_stop
+        echo "."
+        ;;
+        restart)
+        echo -n "Restarting $DESC: $NAME"
+        d_stop
+        sleep 1
+        d_start
+        echo "."
+        ;;
+        *)
+        echo "usage: $NAME {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit 0
+

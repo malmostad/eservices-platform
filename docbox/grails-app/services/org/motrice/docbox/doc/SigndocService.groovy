@@ -34,6 +34,7 @@ import org.motrice.docbox.sign.PdfSignatureDict
 import org.motrice.docbox.sign.XmlDsig
 import org.motrice.docbox.util.Exxtractor
 import org.motrice.signatrice.ServiceException
+import org.motrice.signatrice.SigCustomElement
 import org.motrice.signatrice.SigResult
 import org.motrice.signatrice.StackTracer
 
@@ -215,7 +216,7 @@ class SigndocService {
    * Pick up the Motrice site name, or a default text.
    */
   private String localSiteName() {
-    grailsApplication.config.motrice.site.name ?: UNKNOWN_MOTRICE_SITE_NAME
+    grailsApplication.config.motrice.site.name ?: PdfService.UNKNOWN_MOTRICE_SITE_NAME
   }
 
   /**
@@ -496,8 +497,9 @@ class SigndocService {
    */
   def validateSignature(String sigBase64) {
     def sig = new XmlDsig(sigBase64, log)
+    def customElements = collectCustomElements()
     def map = [:]
-    map.coreValid = sig.validateSignature()
+    map.coreValid = sig.validateSignature(customElements)
     map.certValid = sig.validateCertificates()
     map.sigData = sig
     return map
@@ -505,6 +507,23 @@ class SigndocService {
 
   def validateSignature(PdfSignatureDict dict) {
     validateSignature(dict.signature)
+  }
+
+  /**
+   * Collect all custom elements.
+   * Return a map.
+   * Key: element name (String).
+   * Value: id attribute name (String)
+   */
+  private Map collectCustomElements() {
+    def list = SigCustomElement.list()
+    // Convert to map.
+    def map = [:]
+    list.each {customElement ->
+      map[customElement.elementName] = customElement.idAttrName
+    }
+
+    return map
   }
 
   // Query to pick up SigResults to be post-processed and finished.
@@ -550,16 +569,18 @@ class SigndocService {
     } catch (ServiceException exc) {
       item.docboxRefOut = null
       item.finishConflict = exc.canonical
-       if (log.debugEnabled) log.debug "postProcess EXC: ${exc.canonical}"
-       def args = [description: 'Failed to add signature to document', failure: true,
-       details: item?.toMap() as JSON, stackTrace: StackTracer.trace(exc)]
-       auditService.signEvent(args, null)
+      if (log.debugEnabled) log.debug "postProcess EXC: ${exc.canonical}"
+      def details = (item?.toMap() as JSON)?.toString() ?: '*NULL*'
+      def args = [description: 'Failed to add signature to document', failure: true,
+      details: details, stackTrace: StackTracer.trace(exc)]
+      auditService.signEvent(args, null)
     } catch (Exception exc) {
       item.finishConflict = exc.message
       if (log.debugEnabled) log.debug "postProcess EXC: ${exc.message}"
-       def args = [description: 'Failed to add signature to document', failure: true,
-       details: item?.toMap() as JSON, stackTrace: StackTracer.trace(exc)]
-       auditService.signEvent(args, null)
+      def details = (item?.toMap() as JSON)?.toString() ?: '*NULL*'
+      def args = [description: 'Failed to add signature to document', failure: true,
+      details: details, stackTrace: StackTracer.trace(exc)]
+      auditService.signEvent(args, null)
     }
 
     if (!item.save()) log.error "post-process ${item} save: ${item.errors.allErrors.join(', ')}"

@@ -51,6 +51,8 @@ class TdbMethod {
 		 'Display and start Bankid for a PC')
     createMethod(SHOW_BID_MOBILE_ID, SHOW_BID_MOBILE_URL,
 		 'Display and start Bankid for a mobile device')
+    createMethod(WRITE_EVENT_RECORD_ID, WRITE_EVENT_RECORD_URL,
+		 'Write an event record to the audit log')
   }
 
   static String createAbsoluteUrl(TdbDrill drill, TdbCase cs) {
@@ -120,6 +122,9 @@ class TdbMethod {
   static final GET_METADATA_BY_F_URL = 'meta/byformdata/${formDataUuid}'
   static final REQUEST_COLLECT_SIG_ID = 9
   static final REQUEST_COLLECT_SIG_URL = 'sig/request/${docboxRef}'
+  static final WRITE_EVENT_RECORD_ID = 10
+  static final WRITE_EVENT_RECORD_URL = 'audit/log/${eventtype}'
+
   // Show methods
   static final SHOW_BID_PC_ID = 1000
   static final SHOW_BID_PC_URL = 'bankid:///?autostarttoken=${autostart}&redirect=${returnurl}'
