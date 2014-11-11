@@ -27,12 +27,14 @@ package org.inheritsource.service.delegates;
 
 import java.util.Date;
 import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.regex.Pattern;
 
 import javax.mail.Message;
-
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -81,7 +83,18 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		String messageText = (String) props.get("mail.text.messageText");
 		String siteUri = (String) props.get("site.base.uri");
 		String SMTPSERVER = (String) props.get("mail.smtp.host");
-		String SMTPport   = (String) props.get("mail.smtp.port");
+		String SMTPportString = (String) props.get("mail.smtp.port");
+
+		int smtpPort = Integer.valueOf(SMTPportString); 
+		String	username = "";  String	password = "" ; 
+		
+			// SSL port 465 
+		if (smtpPort == 465) { 
+		username = (String) props.get("mail.smtp.username");
+		password = (String) props.get("mail.smtp.password");
+		}
+	
+		
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
 		String inbox = "";
@@ -112,7 +125,8 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 			} else {
 				try {
 					to = service.getMyProfile(recipientUserId).getEmail();
-					sendEmail(to, from, messageSubject, messageText, SMTPSERVER,SMTPport);
+					sendEmail(to, from, messageSubject, messageText,
+							SMTPSERVER, smtpPort, 	username , 	password );
 				} catch (Exception e) {
 					log.error(e.toString());
 
@@ -133,7 +147,8 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 	}
 
 	private static void sendEmail(String to, String from,
-			String messageSubject, String messageText, String SMTPSERVER,String SMTPport) {
+			String messageSubject, String messageText, String SMTPSERVER,
+			int smtpPort,final String username , final String password ) {
 		log.info("to: {}", to);
 		// check email address
 		// might like to replace this with EmailValidator from apache.commons
@@ -150,11 +165,26 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		// Setup mail server
 		Properties mailprops = new Properties();
 		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
-		mailprops.setProperty("mail.smtp.port", SMTPport);
-
+		mailprops.setProperty("mail.smtp.port", Integer.toString(smtpPort));
+		// mailprops.setProperty( , value) ;
 		try {
+			Session session = null;
+			if (smtpPort == 465) {
+				// SSL 
+				mailprops.setProperty("mail.smtp.socketFactory.port", "465");
+				mailprops.setProperty("mail.smtp.socketFactory.class",
+						"javax.net.ssl.SSLSocketFactory");
+				mailprops.setProperty("mail.smtp.auth", "true");
+	
+				session = Session.getInstance(mailprops	,		new javax.mail.Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(username,password);
+					}
+				});
+			} else {
+				session = Session.getInstance(mailprops);
+			}
 
-			Session session = Session.getInstance(mailprops);
 			// Create a default MimeMessage object.
 			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from.replaceAll("\\+", " ")));
@@ -194,46 +224,52 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		System.out.println("Hello World!");
 		// some tests to see the impact of Swedish letters
 		// in string in java from the properties
-	
-		// Setup mail server
-		Properties mailprops = new Properties();
 
-		String SMTPSERVER = "localhost" ;
-		String SMTPport = "1025" ;
-		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
-		mailprops.setProperty("mail.smtp.port", SMTPport);
-		
+
+
+
+
+
 		Properties props = ConfigUtil.getConfigProperties();
 
+//  SSL  : uncomment and configure
+//		final String username = "username@gmail.com";
+//		final String password = "password";		
+//		String SMTPSERVER = "smtp.gmail.com";
+//		int smtpPort = 465;
+	
+	// local debug server	
+		final String username = "";
+		final String password = "";		
+		String SMTPSERVER = "localhost";
+		int smtpPort = 1025;
+		
+		
+		
 		String from = (String) props.get("mail.text.from");
 
 		String to = "none@nowhere.com";
-	
-
 
 		String messageTaskSubject = (String) props
 				.get("mail.text.messageTaskSubject");
-		String messageSubject = (String) props
-				.get("mail.text.messageSubject");
+		String messageSubject = (String) props.get("mail.text.messageSubject");
 		String messageText = (String) props.get("mail.text.messageText");
-		String messageTaskText = (String) props.get("mail.text.messageTaskText");
+		String messageTaskText = (String) props
+				.get("mail.text.messageTaskText");
 		String siteUri = (String) props.get("site.base.uri");
 		String inbox = (String) props.get("site.base.public");
-		String inbox2 = (String) props.get("site.base.intranet");	
-		
-		
+		String inbox2 = (String) props.get("site.base.intranet");
 
 		if ((siteUri != null) && (inbox != null)) {
 			messageText = messageText + " " + siteUri + "/" + inbox;
 		}
-		
 
 		if ((siteUri != null) && (inbox != null)) {
-			messageTaskText = messageTaskText  + " " + siteUri + "/" + inbox2;
+			messageTaskText = messageTaskText + " " + siteUri + "/" + inbox2;
 		}
-			
 
-		sendEmail(to, from, messageSubject+" / "+messageTaskSubject, messageText+" \n"+messageTaskText , SMTPSERVER, SMTPport);
+		sendEmail(to, from, messageSubject + " / " + messageTaskSubject,
+				messageText + " \n" + messageTaskText, SMTPSERVER, smtpPort, username, 	password);
 
 	}
 

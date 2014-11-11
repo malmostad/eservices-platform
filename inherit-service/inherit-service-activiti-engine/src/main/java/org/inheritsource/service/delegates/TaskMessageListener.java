@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import java.util.regex.Pattern;
 
 import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -83,23 +84,31 @@ public class TaskMessageListener implements TaskListener {
 		if (mText == null || mText.trim().length() == 0) {
 			mText = "Du har ett ärende i din inkorg ";
 		}
-		
-		String messageText= "";
-	        messageText= mText ; 	
-		
-		
+
+		String messageText = "";
+		messageText = mText;
+
 		String siteUri = (String) props.get("site.base.uri");
 		String SMTPSERVER = (String) props.get("mail.smtp.host");
-		String SMTPport   = (String) props.get("mail.smtp.port");
+		String SMTPportString = (String) props.get("mail.smtp.port");
+		int smtpPort = Integer.valueOf(SMTPportString);
+		
+		String username = "";
+		String password = "";
+		// SSL port 465
+		if (smtpPort == 465) {
+			username = (String) props.get("mail.smtp.username");
+			password = (String) props.get("mail.smtp.password");
+		}
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
 		String inbox = (String) props.get("site.base.intranet");
 
-
 		String taskName = execution.getName();
-		String processDefinitionId = execution.getProcessDefinitionId() ; 
+		String processDefinitionId = execution.getProcessDefinitionId();
 
-		messageText = messageText + "( " + taskName + " , " + processDefinitionId   + ")\n";
+		messageText = messageText + "( " + taskName + " , "
+				+ processDefinitionId + ")\n";
 		if ((siteUri != null) && (inbox != null)) {
 			messageText = messageText + " " + siteUri + "/" + inbox;
 		}
@@ -132,7 +141,8 @@ public class TaskMessageListener implements TaskListener {
 					to = user.getMail();
 					if (to != null) {
 						sendEmail(to, from, messageSubject, messageText,
-								siteUri, inbox, SMTPSERVER,SMTPport);
+								siteUri, inbox, SMTPSERVER, smtpPort, username,
+								password);
 
 					}
 				}
@@ -202,7 +212,8 @@ public class TaskMessageListener implements TaskListener {
 						to = user.getMail();
 						if (to != null) {
 							sendEmail(to, from, messageSubject, messageText,
-									siteUri, inbox, SMTPSERVER, SMTPport);
+									siteUri, inbox, SMTPSERVER, smtpPort,
+									username, password);
 
 						}
 
@@ -216,8 +227,10 @@ public class TaskMessageListener implements TaskListener {
 		return;
 	}
 
-	private static void sendEmail(String to, String from, String messageSubject,
-			String messageText, String siteUri, String inbox, String SMTPSERVER, String SMTPport) {
+	private static void sendEmail(String to, String from,
+			String messageSubject, String messageText, String siteUri,
+			String inbox, String SMTPSERVER, int smtpPort,
+			final String username, final String password) {
 		log.info("to: " + to);
 		// check email address
 		// might like to replace this with EmailValidator from apache.commons
@@ -236,11 +249,27 @@ public class TaskMessageListener implements TaskListener {
 		// Setup mail server
 		Properties mailprops = new Properties();
 		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
-		mailprops.setProperty("mail.smtp.port", SMTPport);
+		mailprops.setProperty("mail.smtp.port", Integer.toString(smtpPort));
 
 		try {
+			Session session = null;
+			if (smtpPort == 465) {
+				// SSL
+				mailprops.setProperty("mail.smtp.socketFactory.port", "465");
+				mailprops.setProperty("mail.smtp.socketFactory.class",
+						"javax.net.ssl.SSLSocketFactory");
+				mailprops.setProperty("mail.smtp.auth", "true");
 
-			Session session = Session.getInstance(mailprops);
+				session = Session.getInstance(mailprops,
+						new javax.mail.Authenticator() {
+							protected PasswordAuthentication getPasswordAuthentication() {
+								return new PasswordAuthentication(username,
+										password);
+							}
+						});
+			} else {
+				session = Session.getInstance(mailprops);
+			}
 			// Create a default MimeMessage object.
 			MimeMessage message = new MimeMessage(session);
 			message.setFrom(new InternetAddress(from.replaceAll("\\+", " ")));
@@ -264,34 +293,51 @@ public class TaskMessageListener implements TaskListener {
 
 	private static final Pattern rfc2822 = Pattern
 			.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
+
 	public static void main(String[] args) {
 		System.out.println("Hello World!");
 		// some tests to see the impact of Swedish letters
 		// in string in java from the properties
-	
+
 		// Setup mail server
 		Properties mailprops = new Properties();
 
-		String SMTPSERVER = "localhost" ;
-		// String SMTPport = "1025" ;
-		
-		
+	
 		Properties props = ConfigUtil.getConfigProperties();
 
 		String from = (String) props.get("mail.text.from");
-		String SMTPport =  (String) props.get("mail.smtp.port");
-		String to = "none@nowhere.com";
-	
-		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
-		mailprops.setProperty("mail.smtp.port", SMTPport);
+		String SMTPportString = (String) props.get("mail.smtp.port");
+		System.out.println("SMTPportString = " + SMTPportString);
+
 		
 
-		String messageSubject = "main subject" ; 
-		String messageText = "Message Text from main TaskMessageListener";
+	//  SSL  : uncomment and configure
+	//		final String username = "username@gmail.com";
+        //			final String password = "password";		
+//			String SMTPSERVER = "smtp.gmail.com";
+//			int smtpPort = 465;
+		// local debug server	
+			final String username = "";
+			final String password = "";		
+			String SMTPSERVER = "localhost";
+			int smtpPort = 1025;
+			String to = "none@nowhere.com";
 			
+		
+		
+		
+	//	int smtpPort = Integer.valueOf(SMTPportString);
+		System.out.println(" smtpPort= " + smtpPort);
+		
+		
+//		String username = "";
+//		String password = "";
 
-		sendEmail(to, from, messageSubject, messageText , "","", SMTPSERVER, SMTPport);
+		String messageSubject = "main subject";
+		String messageText = "Message Text from main TaskMessageListener";
 
+		sendEmail(to, from, messageSubject, messageText, "", "", SMTPSERVER,
+				smtpPort, username, password);
 
-}
+	}
 }
