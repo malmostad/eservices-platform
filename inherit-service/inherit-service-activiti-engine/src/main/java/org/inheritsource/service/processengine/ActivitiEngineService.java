@@ -1298,6 +1298,10 @@ public class ActivitiEngineService {
 				SignStartFormTaskHandler.FORM_SIGN_DOCBOXREF,
 				docBoxRef);
 
+		engine.getTaskService().setVariableLocal(task.getId(),
+				SignStartFormTaskHandler.FORM_SIGN_FINGERPRINT,
+				docBoxFormData.getCheckSum());
+
 		
 		/*
 		 * FormInstance result = null; Task task =
@@ -2697,6 +2701,14 @@ public class ActivitiEngineService {
 		return tag;
 	}
 
+	public DocBoxFormData getDocBoxFormData(
+			String docBoxRef, Locale locale) {
+		DocBoxFacade docBox = new DocBoxFacade();
+		DocBoxFormData docBoxFormData = null;
+
+		return null; // TODO
+	}
+	
 	public DocBoxFormData getDocBoxFormDataToSign(
 			ActivityInstanceItem activity, Locale locale) {
 		DocBoxFacade docBox = new DocBoxFacade();
@@ -2767,7 +2779,7 @@ public class ActivitiEngineService {
 			if (docBoxFormData != null) {
 				String signText = "Härmed undertecknar jag " + assetLabelToSign
 						+ " med dokumentnummer [" + docBoxFormData.getDocNo()
-						+ "] och kontrollsumman ["
+						+ "] som har det digitala fingeravtrycket ["
 						+ docBoxFormData.getCheckSum() + "].";
 
 				docBoxFormData.setDocUri(docboxBaseUrl
