@@ -4688,7 +4688,7 @@ fortskrida.&lt;/p&gt;
         <sv:value>hippotranslation:translated</sv:value>
       </sv:property>
       <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>19aed03f-ef5b-45a8-9973-e2000c3e0cb0</sv:value>
+        <sv:value>f9ad9a6b-2eb5-4501-bd91-3f87556e7196</sv:value>
       </sv:property>
       <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
         <sv:value>live</sv:value>
@@ -4713,13 +4713,13 @@ fortskrida.&lt;/p&gt;
         <sv:value>2013-09-19T14:05:19.846+02:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-        <sv:value>2013-10-29T15:21:11.281+01:00</sv:value>
+        <sv:value>2014-11-11T16:49:53.508+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
         <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-        <sv:value>2014-11-07T09:40:58.401+01:00</sv:value>
+        <sv:value>2014-11-11T16:49:57.848+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippotranslation:id" sv:type="String">
         <sv:value>2d433ef6-d5b0-4258-9d0c-1b2560a09f83</sv:value>
@@ -4746,9 +4746,9 @@ fortskrida.&lt;/p&gt;
           <sv:value>&lt;html&gt;
 &lt;body&gt;
 
-&lt;p&gt;Kontrollera att dokumenten nedan är korrekta. En elektronisk signatur är
-juridiskt bindande. Tryck på knappen "Gå till signering" för att skriva under
-med BankId.&lt;/p&gt;
+&lt;p&gt;Kontrollera att dokumentet nedan är korrekt. Tryck på knappen "Gå till
+signering" för att underteckna med e-legitimation. En elektronisk signatur är
+juridiskt bindande.&lt;/p&gt;
 
 &lt;/body&gt;
 &lt;/html&gt;</sv:value>
@@ -4787,7 +4787,7 @@ med BankId.&lt;/p&gt;
         <sv:value>hippotranslation:translated</sv:value>
       </sv:property>
       <sv:property sv:name="jcr:uuid" sv:type="String">
-        <sv:value>091c9db1-4759-4fc8-93bf-c410eab71600</sv:value>
+        <sv:value>30579373-8aaa-43bf-af34-cf4d3970ccc6</sv:value>
       </sv:property>
       <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
         <sv:value>live</sv:value>
@@ -4812,13 +4812,13 @@ med BankId.&lt;/p&gt;
         <sv:value>2014-11-05T16:38:01.860+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
-        <sv:value>2014-11-07T09:40:15.682+01:00</sv:value>
+        <sv:value>2014-11-11T17:26:34.308+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
         <sv:value>admin</sv:value>
       </sv:property>
       <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
-        <sv:value>2014-11-07T09:40:24.131+01:00</sv:value>
+        <sv:value>2014-11-11T17:26:37.731+01:00</sv:value>
       </sv:property>
       <sv:property sv:name="hippotranslation:id" sv:type="String">
         <sv:value>913ddbc7-8940-4e06-a987-04268379f145</sv:value>
@@ -4845,10 +4845,8 @@ med BankId.&lt;/p&gt;
           <sv:value>&lt;html&gt;
 &lt;body&gt;
 
-&lt;p&gt;Slutför signeringen med din e-legitimation. Godgända legitiationer är BankID,
-mobilt BankID, Telia, osv&lt;/p&gt;
-
-&lt;p&gt; &lt;/p&gt;
+&lt;p&gt;Slutför signeringen med din e-legitimation. Godkända legitimationer är BankID
+på fil, BankID på kort, Moblit BankID, samt Nordea e-legitimation.&lt;/p&gt;
 
 &lt;/body&gt;
 &lt;/html&gt;</sv:value>
@@ -4946,6 +4944,108 @@ mobilt BankID, Telia, osv&lt;/p&gt;
 &lt;body&gt;
 
 &lt;p&gt;Den signerade handlingen kan laddas ned och sparas.&lt;/p&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</sv:value>
+        </sv:property>
+      </sv:node>
+    </sv:node>
+  </sv:node>
+  <sv:node sv:name="what-is-a-digital-fingerprint">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+      <sv:value>hippo:handle</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+      <sv:value>hippo:hardhandle</sv:value>
+      <sv:value>hippo:translated</sv:value>
+    </sv:property>
+    <sv:property sv:name="jcr:uuid" sv:type="String">
+      <sv:value>24329e40-15d6-424c-bbad-c7f42dfba5be</sv:value>
+    </sv:property>
+    <sv:node sv:name="hippo:translation">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hippo:translation</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:language" sv:type="String">
+        <sv:value/>
+      </sv:property>
+      <sv:property sv:name="hippo:message" sv:type="String">
+        <sv:value>Vad är ett digitalt fingeravtryck</sv:value>
+      </sv:property>
+    </sv:node>
+    <sv:node sv:name="what-is-a-digital-fingerprint">
+      <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>inheritportal:textdocument</sv:value>
+      </sv:property>
+      <sv:property sv:name="jcr:mixinTypes" sv:type="Name" sv:multiple="true">
+        <sv:value>hippo:harddocument</sv:value>
+        <sv:value>hippotranslation:translated</sv:value>
+      </sv:property>
+      <sv:property sv:name="jcr:uuid" sv:type="String">
+        <sv:value>5cb717bf-716b-4853-b602-ac94aa23cac9</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:availability" sv:type="String" sv:multiple="true">
+        <sv:value>live</sv:value>
+        <sv:value>preview</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippo:related___pathreference" sv:type="String">
+        <sv:value>mycases/what-is-a-digital-fingerprint</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostd:holder" sv:type="String">
+        <sv:value>admin</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostd:state" sv:type="String">
+        <sv:value>published</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostd:stateSummary" sv:type="String">
+        <sv:value>live</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostdpubwf:createdBy" sv:type="String">
+        <sv:value>admin</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostdpubwf:creationDate" sv:type="Date">
+        <sv:value>2014-11-11T16:50:52.510+01:00</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostdpubwf:lastModificationDate" sv:type="Date">
+        <sv:value>2014-11-11T17:18:16.979+01:00</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostdpubwf:lastModifiedBy" sv:type="String">
+        <sv:value>admin</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippostdpubwf:publicationDate" sv:type="Date">
+        <sv:value>2014-11-11T17:18:21.721+01:00</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippotranslation:id" sv:type="String">
+        <sv:value>1621c721-1ab4-4f65-91ca-01e186a825cb</sv:value>
+      </sv:property>
+      <sv:property sv:name="hippotranslation:locale" sv:type="String">
+        <sv:value>sv</sv:value>
+      </sv:property>
+      <sv:property sv:name="inheritportal:summary" sv:type="String">
+        <sv:value/>
+      </sv:property>
+      <sv:property sv:name="inheritportal:title" sv:type="String">
+        <sv:value>Vad är ett digitalt fingeravtryck?</sv:value>
+      </sv:property>
+      <sv:node sv:name="hippotranslation:translations">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippotranslation:translations</sv:value>
+        </sv:property>
+      </sv:node>
+      <sv:node sv:name="inheritportal:body">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+          <sv:value>hippostd:html</sv:value>
+        </sv:property>
+        <sv:property sv:name="hippostd:content" sv:type="String">
+          <sv:value>&lt;html&gt;
+&lt;body&gt;
+
+&lt;p&gt;Ett digitalt fingeravtryck är en matematiskt framräknad text som i praktiken
+kan användas för att verifiera dokumentets äkthet. Det är det digitala
+fingeravtrycket som undertecknas och när man kan påvisa ett dokument med samma
+fingeravtryck så är det juridiskt bindande att det är detsamma som att det
+dokumentet har signerats. Det finns ingen känd metod för att skapa ett annat
+dokument med samma fingeravtryck.&lt;/p&gt;
 
 &lt;/body&gt;
 &lt;/html&gt;</sv:value>
