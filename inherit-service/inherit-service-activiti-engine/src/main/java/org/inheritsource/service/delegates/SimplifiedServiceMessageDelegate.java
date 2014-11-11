@@ -85,16 +85,14 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		String SMTPSERVER = (String) props.get("mail.smtp.host");
 		String SMTPportString = (String) props.get("mail.smtp.port");
 
-		int smtpPort = Integer.valueOf(SMTPportString); 
-		String	username = "";  String	password = "" ; 
-		
-			// SSL port 465 
-		if (smtpPort == 465) { 
+		int smtpPort = Integer.valueOf(SMTPportString);
+		String username = "";
+		String password = "";
+
+		// SSL port 465 or TLS port 587
 		username = (String) props.get("mail.smtp.username");
 		password = (String) props.get("mail.smtp.password");
-		}
-	
-		
+
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
 		String inbox = "";
@@ -126,7 +124,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 				try {
 					to = service.getMyProfile(recipientUserId).getEmail();
 					sendEmail(to, from, messageSubject, messageText,
-							SMTPSERVER, smtpPort, 	username , 	password );
+							SMTPSERVER, smtpPort, username, password);
 				} catch (Exception e) {
 					log.error(e.toString());
 
@@ -148,7 +146,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 
 	private static void sendEmail(String to, String from,
 			String messageSubject, String messageText, String SMTPSERVER,
-			int smtpPort,final String username , final String password ) {
+			int smtpPort, final String username, final String password) {
 		log.info("to: {}", to);
 		// check email address
 		// might like to replace this with EmailValidator from apache.commons
@@ -170,19 +168,35 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		try {
 			Session session = null;
 			if (smtpPort == 465) {
-				// SSL 
+				// SSL
 				mailprops.setProperty("mail.smtp.socketFactory.port", "465");
 				mailprops.setProperty("mail.smtp.socketFactory.class",
 						"javax.net.ssl.SSLSocketFactory");
 				mailprops.setProperty("mail.smtp.auth", "true");
-	
-				session = Session.getInstance(mailprops	,		new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(username,password);
-					}
-				});
+
+				session = Session.getInstance(mailprops,
+						new javax.mail.Authenticator() {
+							protected PasswordAuthentication getPasswordAuthentication() {
+								return new PasswordAuthentication(username,
+										password);
+							}
+						});
 			} else {
-				session = Session.getInstance(mailprops);
+				if (smtpPort == 587) {
+                                        // TLS 
+					mailprops.setProperty("mail.smtp.auth", "true");
+					mailprops.setProperty("mail.smtp.starttls.enable", "true");
+					mailprops.setProperty("mail.smtp.port", "587");
+					session = Session.getInstance(mailprops,
+							new javax.mail.Authenticator() {
+								protected PasswordAuthentication getPasswordAuthentication() {
+									return new PasswordAuthentication(username,
+											password);
+								}
+							});
+				} else {
+					session = Session.getInstance(mailprops);
+				}
 			}
 
 			// Create a default MimeMessage object.
@@ -225,27 +239,20 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		// some tests to see the impact of Swedish letters
 		// in string in java from the properties
 
-
-
-
-
-
 		Properties props = ConfigUtil.getConfigProperties();
 
-//  SSL  : uncomment and configure
-//		final String username = "username@gmail.com";
-//		final String password = "password";		
-//		String SMTPSERVER = "smtp.gmail.com";
-//		int smtpPort = 465;
-	
-	// local debug server	
+		// SSL : uncomment and configure
+		// final String username = "username@gmail.com";
+		// final String password = "password";
+		// String SMTPSERVER = "smtp.gmail.com";
+		// int smtpPort = 465;
+
+		// local debug server
 		final String username = "";
-		final String password = "";		
+		final String password = "";
 		String SMTPSERVER = "localhost";
 		int smtpPort = 1025;
-		
-		
-		
+
 		String from = (String) props.get("mail.text.from");
 
 		String to = "none@nowhere.com";
@@ -269,7 +276,8 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		}
 
 		sendEmail(to, from, messageSubject + " / " + messageTaskSubject,
-				messageText + " \n" + messageTaskText, SMTPSERVER, smtpPort, username, 	password);
+				messageText + " \n" + messageTaskText, SMTPSERVER, smtpPort,
+				username, password);
 
 	}
 

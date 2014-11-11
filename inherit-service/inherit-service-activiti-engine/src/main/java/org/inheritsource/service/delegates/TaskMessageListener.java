@@ -92,14 +92,13 @@ public class TaskMessageListener implements TaskListener {
 		String SMTPSERVER = (String) props.get("mail.smtp.host");
 		String SMTPportString = (String) props.get("mail.smtp.port");
 		int smtpPort = Integer.valueOf(SMTPportString);
-		
+
 		String username = "";
 		String password = "";
-		// SSL port 465
-		if (smtpPort == 465) {
-			username = (String) props.get("mail.smtp.username");
-			password = (String) props.get("mail.smtp.password");
-		}
+		// SSL port 465 or  TLS port 587 
+		username = (String) props.get("mail.smtp.username");
+		password = (String) props.get("mail.smtp.password");
+
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
 		String inbox = (String) props.get("site.base.intranet");
@@ -268,7 +267,21 @@ public class TaskMessageListener implements TaskListener {
 							}
 						});
 			} else {
-				session = Session.getInstance(mailprops);
+				if (smtpPort == 587) {  // TLS 
+					mailprops.setProperty("mail.smtp.auth", "true");
+					mailprops.setProperty("mail.smtp.starttls.enable", "true");
+					mailprops.setProperty("mail.smtp.port", "587");
+					session = Session.getInstance(mailprops,
+							new javax.mail.Authenticator() {
+								protected PasswordAuthentication getPasswordAuthentication() {
+									return new PasswordAuthentication(username,
+											password);
+								}
+							});
+				} else {
+
+					session = Session.getInstance(mailprops);
+				}
 			}
 			// Create a default MimeMessage object.
 			MimeMessage message = new MimeMessage(session);
@@ -302,36 +315,29 @@ public class TaskMessageListener implements TaskListener {
 		// Setup mail server
 		Properties mailprops = new Properties();
 
-	
 		Properties props = ConfigUtil.getConfigProperties();
 
 		String from = (String) props.get("mail.text.from");
 		String SMTPportString = (String) props.get("mail.smtp.port");
 		System.out.println("SMTPportString = " + SMTPportString);
 
-		
+		// SSL : uncomment and configure
+		// final String username = "username@gmail.com";
+		// final String password = "password";
+		// String SMTPSERVER = "smtp.gmail.com";
+		// int smtpPort = 465;
+		// local debug server
+		final String username = "";
+		final String password = "";
+		String SMTPSERVER = "localhost";
+		int smtpPort = 1025;
+		String to = "none@nowhere.com";
 
-	//  SSL  : uncomment and configure
-	//		final String username = "username@gmail.com";
-        //			final String password = "password";		
-//			String SMTPSERVER = "smtp.gmail.com";
-//			int smtpPort = 465;
-		// local debug server	
-			final String username = "";
-			final String password = "";		
-			String SMTPSERVER = "localhost";
-			int smtpPort = 1025;
-			String to = "none@nowhere.com";
-			
-		
-		
-		
-	//	int smtpPort = Integer.valueOf(SMTPportString);
+		// int smtpPort = Integer.valueOf(SMTPportString);
 		System.out.println(" smtpPort= " + smtpPort);
-		
-		
-//		String username = "";
-//		String password = "";
+
+		// String username = "";
+		// String password = "";
 
 		String messageSubject = "main subject";
 		String messageText = "Message Text from main TaskMessageListener";
