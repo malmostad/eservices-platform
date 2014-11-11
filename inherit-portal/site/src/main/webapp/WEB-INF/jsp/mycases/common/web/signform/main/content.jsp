@@ -56,8 +56,6 @@
          <form class="motricesignpoll" method="post" action="signform">
 			<input type="hidden" name="instanceId" value="${activity.instanceId}" />
      		<input type="hidden" name="actinstId"  value="${activity.actinstId}" />
-			
-			<input type="submit" value="Ladda om"/>
 		</form>
          
          <img id="badboll" src='/site/images/ajax-loader.gif' />
