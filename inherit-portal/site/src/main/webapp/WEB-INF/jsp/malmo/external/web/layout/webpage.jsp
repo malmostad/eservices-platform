@@ -38,6 +38,7 @@
 	<!-- motrice css -->
 	<hst:headContributions categoryExcludes="scripts" />
     <hst:link var='link' path='/css/style.css'/>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel='stylesheet' href='${link}' type='text/css'/>
     <link rel='stylesheet' href='<hst:link path="/css/platform/inherit-platform.css"/>' type='text/css'/>
     <link rel='stylesheet' href='<hst:link path="/css/motrice-public.css"/>' type='text/css'/>

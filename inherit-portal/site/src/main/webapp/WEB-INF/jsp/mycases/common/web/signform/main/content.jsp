@@ -83,18 +83,29 @@
 		  <thead>
 		    <tr>
 		      <th>Dokument</th>
-		      <th>Kontrollsumma</th>
+		      <th>Digitalt fingeravtryck</th>
 		    </tr>
 		  </thead>
 		  <tbody>
 		    <tr>
-		    	<td><a href="${pdfUrl}">${docNo}</a></td>
+		    	<td><a href="${pdfUrl}" title="H&auml;mta dokumentet f&ouml;r att kontrollera att det är &ouml;verensst&auml;mmande med det som skall undertecknas">${docNo}</a></td>
 		    	<td>${pdfChecksum}</td>
 		    </tr>
 		  </tbody>
 		</table>					    
 
 		
+		<c:if test="${not empty whatIsADigitalFingerprint}">
+		${whatIsADigitalFingerprint.title} &nbsp;<a href="0" class="toggle-view-div">Visa<i class="fa fa-chevron-circle-down"></i></a>
+		<a href="0" class="toggle-view-div motrice-initial-hidden">D&ouml;lj<i class="fa fa-chevron-circle-up"></i></a>
+		<div class="toggle-view-div motrice-initial-hidden">
+			<p>${whatIsADigitalFingerprint.summary}</p>
+			<hst:html hippohtml="${whatIsADigitalFingerprint.html}" />
+		</c:if>
+		
+		
+		</div>
+		<p></p>
 		
 		<form method="post" action="signform">
 			<input type="hidden" name="text" value="${signText}" />
@@ -103,6 +114,8 @@
 			
 			<input type="submit" value="G&aring; till signering"/>
 		</form>
+		
+		
 
 	</c:otherwise>
 </c:choose>
