@@ -17,6 +17,10 @@ function siteAjaxPost(url, postdata, processSuccess ) {
 	   });
 	};
 
+function reflow(elt){
+    console.log(elt.offsetHeight);
+}
+
 $(document).ready(function() {
 	
 	if ($('.motricesignpoll').length>0) {
@@ -120,8 +124,7 @@ $(document).ready(function() {
               ORBEON.xforms.Init.document();
             } 
           } 
-          //window.dispatchEvent(new Event('resize'));
-          $(window).resize();
+          window.dispatchEvent(new Event('resize')); // native js does not work in IE9 and IE10
         }); 
         
       }

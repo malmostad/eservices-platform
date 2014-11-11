@@ -55,6 +55,7 @@
   
   <script src='//assets.malmo.se/external/v4/malmo.js'></script>  
  
+  <script type='text/javascript' src='<hst:link path="/js/jquery-ui-1.11.1.custom/jquery-ui.min.js"/>'></script>
   <script type='text/javascript' src='<hst:link path="/js/platform/inherit-platform.js"/>'></script>
   <hst:headContributions categoryIncludes="scripts"/>
   
