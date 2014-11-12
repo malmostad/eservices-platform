@@ -31,15 +31,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.regex.Pattern;
-
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
 import org.activiti.engine.delegate.JavaDelegate;
 import org.activiti.engine.delegate.DelegateExecution;
 import org.inheritsource.service.common.util.ConfigUtil;
@@ -67,8 +58,6 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 				+ execution.getCurrentActivityName() + " in process "
 				+ execution.getProcessInstanceId() + " at " + new Date());
 
-		Boolean isPublic = true; // NOTE
-
 		String recipientUserId = (String) execution.getEngineServices()
 				.getRuntimeService()
 				.getVariable(execution.getId(), PROC_VAR_RECIPIENT_USER_ID);
@@ -85,17 +74,28 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		String SMTPSERVER = (String) props.get("mail.smtp.host");
 		String SMTPportString = (String) props.get("mail.smtp.port");
 
-		int smtpPort = Integer.valueOf(SMTPportString);
+		int smtpPort = 25;
+		try {
+			smtpPort = Integer.parseInt(SMTPportString);
+		} catch (NumberFormatException e) {
+			log.info("Illegal value of SMTPportString: {}", SMTPportString);
+			e.printStackTrace();
+		}
+
 		String username = "";
 		String password = "";
 
 		// SSL port 465 or TLS port 587
 		username = (String) props.get("mail.smtp.username");
 		password = (String) props.get("mail.smtp.password");
-
+		// String authMecanisms ="DIGEST-MD5" ;
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
 		String inbox = "";
+		String authMecanisms = (String) props.get("mail.smtp.authMecanisms");
+		if ((authMecanisms != null) && (!(authMecanisms.equals("DIGEST-MD5")))) {
+			authMecanisms = null;
+		}
 
 		if (messageText == null || messageText.trim().length() == 0) {
 			messageText = "Du har ett beslut i din inkorg ";
@@ -111,113 +111,27 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		}
 
 		log.info("Email to: {}", recipientUserId);
-		if (isPublic) {
-			inbox = (String) props.get("site.base.public");
-			// read from configuration
-			log.info("siteUri:{}", siteUri);
-			log.info("inbox:{}", inbox);
 
-			if (service == null) {
-				log.error("failed to get service, unable to determine emailadress ");
-				return;
-			} else {
-				try {
-					to = service.getMyProfile(recipientUserId).getEmail();
-					sendEmail(to, from, messageSubject, messageText,
-							SMTPSERVER, smtpPort, username, password);
-				} catch (Exception e) {
-					log.error(e.toString());
+		inbox = (String) props.get("site.base.public");
+		// read from configuration
+		log.info("siteUri:{}", siteUri);
+		log.info("inbox:{}", inbox);
 
-				}
-			}
-
-		} else {
-			// inbox = (String) props.get("site.base.intranet");
-			// read from ldap
-
-			log.error("ldap connection not implemented, unable to determine emailadress ");
-
-			// send email in separate method
-
-		}
-
-		return;
-	}
-
-	private static void sendEmail(String to, String from,
-			String messageSubject, String messageText, String SMTPSERVER,
-			int smtpPort, final String username, final String password) {
-		log.info("to: {}", to);
-		// check email address
-		// might like to replace this with EmailValidator from apache.commons
-		if (!rfc2822.matcher(to).matches()) {
-			log.error("Invalid address");
+		if (service == null) {
+			log.error("failed to get service, unable to determine emailadress ");
 			return;
-		}
+		} else {
+			try {
+				to = service.getMyProfile(recipientUserId).getEmail();
+				SendMail.send(to, from, messageSubject, messageText,
+						SMTPSERVER, smtpPort, authMecanisms, username, password);
+			} catch (Exception e) {
+				log.error(e.toString());
 
-		log.info("SMTPSERVER:{}", SMTPSERVER);
-
-		log.info("Email subject: {}", messageSubject);
-		log.info("Email text: {}", messageText);
-
-		// Setup mail server
-		Properties mailprops = new Properties();
-		mailprops.setProperty("mail.smtp.host", SMTPSERVER);
-		mailprops.setProperty("mail.smtp.port", Integer.toString(smtpPort));
-		// mailprops.setProperty( , value) ;
-		try {
-			Session session = null;
-			if (smtpPort == 465) {
-				// SSL
-				mailprops.setProperty("mail.smtp.socketFactory.port", "465");
-				mailprops.setProperty("mail.smtp.socketFactory.class",
-						"javax.net.ssl.SSLSocketFactory");
-				mailprops.setProperty("mail.smtp.auth", "true");
-
-				session = Session.getInstance(mailprops,
-						new javax.mail.Authenticator() {
-							protected PasswordAuthentication getPasswordAuthentication() {
-								return new PasswordAuthentication(username,
-										password);
-							}
-						});
-			} else {
-				if (smtpPort == 587) {
-                                        // TLS 
-					mailprops.setProperty("mail.smtp.auth", "true");
-					mailprops.setProperty("mail.smtp.starttls.enable", "true");
-					mailprops.setProperty("mail.smtp.port", "587");
-					session = Session.getInstance(mailprops,
-							new javax.mail.Authenticator() {
-								protected PasswordAuthentication getPasswordAuthentication() {
-									return new PasswordAuthentication(username,
-											password);
-								}
-							});
-				} else {
-					session = Session.getInstance(mailprops);
-				}
 			}
-
-			// Create a default MimeMessage object.
-			MimeMessage message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(from.replaceAll("\\+", " ")));
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(
-					to));
-
-			message.setSubject(messageSubject.replaceAll("\\+", " "));
-			message.setText(messageText.replaceAll("\\+", " "));
-
-			// Send message
-			log.info("EmailToInitiator: Sending message to " + to
-					+ " via smtpserver: " + SMTPSERVER);
-			log.info((String) message.getContent());
-			Transport.send(message);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-		return;
 
+		return;
 	}
 
 	// work around app context
@@ -230,9 +144,6 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 	}
 
 	private static ApplicationContext context;
-
-	private static final Pattern rfc2822 = Pattern
-			.compile("^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$");
 
 	public static void main(String[] args) {
 		System.out.println("Hello World!");
@@ -255,7 +166,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 
 		String from = (String) props.get("mail.text.from");
 
-		String to = "none@nowhere.com";
+		String to = "none@nowhereorsomewhere.com";
 
 		String messageTaskSubject = (String) props
 				.get("mail.text.messageTaskSubject");
@@ -266,7 +177,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		String siteUri = (String) props.get("site.base.uri");
 		String inbox = (String) props.get("site.base.public");
 		String inbox2 = (String) props.get("site.base.intranet");
-
+		String authMecanisms = "DIGEST-MD5";
 		if ((siteUri != null) && (inbox != null)) {
 			messageText = messageText + " " + siteUri + "/" + inbox;
 		}
@@ -275,9 +186,9 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 			messageTaskText = messageTaskText + " " + siteUri + "/" + inbox2;
 		}
 
-		sendEmail(to, from, messageSubject + " / " + messageTaskSubject,
+		SendMail.send(to, from, messageSubject + " / " + messageTaskSubject,
 				messageText + " \n" + messageTaskText, SMTPSERVER, smtpPort,
-				username, password);
+				authMecanisms, username, password);
 
 	}
 
