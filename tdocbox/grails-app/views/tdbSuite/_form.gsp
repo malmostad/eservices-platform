@@ -9,7 +9,7 @@
   <label for="description">
     <g:message code="tdbSuite.description.label" default="Description" />
   </label>
-  <g:textArea name="description" cols="40" rows="5" maxlength="400" value="${tdbSuiteObj?.description}"/>
+  <g:textArea name="description" class="wide" maxlength="400" value="${tdbSuiteObj?.description}"/>
 </div>
 <div class="fieldcontain ${hasErrors(bean: tdbDrillObj, field: 'chainedSuite', 'error')} required">
   <label for="chainedSuite">
