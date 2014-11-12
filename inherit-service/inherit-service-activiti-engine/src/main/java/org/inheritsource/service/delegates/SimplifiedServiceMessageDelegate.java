@@ -53,10 +53,14 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 
 	public void execute(DelegateExecution execution) throws Exception {
 		TaskFormService service = (TaskFormService) context.getBean("engine");
-
+                try {
 		log.info("SimplifiedServiceMessageDelegate called from "
 				+ execution.getCurrentActivityName() + " in process "
 				+ execution.getProcessInstanceId() + " at " + new Date());
+                } catch (Exception e) {
+		log.info("SimplifiedServiceMessageDelegate called at +" + new Date() + " catch ..." );
+
+                }
 
 		String recipientUserId = (String) execution.getEngineServices()
 				.getRuntimeService()
