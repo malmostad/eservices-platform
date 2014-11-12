@@ -41,10 +41,10 @@
 
 <c:choose>
   <c:when test="${empty user}">
-	Ej inloggad  <a href="/site/login/form">Logga in</a>
+	Ej inloggad  
   </c:when>
   <c:otherwise>
-	Inloggad som: ${user.label} <a href="/site/logout">Logga ut</a>
+	Inloggad som: ${user.label} 
 	<input id="motrice-auth-user-uuid" type="hidden" name="motrice-auth-user-uuid" value="${user.uuid}"/>
   </c:otherwise>
 </c:choose>

@@ -28,10 +28,10 @@
 
 <c:choose>
   <c:when test="${empty user}">
-	Ej inloggad  <a href="/site/login/form">Logga in</a>
+	Ej inloggad  
   </c:when>
   <c:otherwise>
-	Inloggad som: ${user.label} <a href="/site/logout">Logga ut</a>
+	Inloggad som: ${user.label} 
   </c:otherwise>
 </c:choose>
 
