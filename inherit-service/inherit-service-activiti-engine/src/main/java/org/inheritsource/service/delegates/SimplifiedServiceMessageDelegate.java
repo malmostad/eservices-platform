@@ -91,7 +91,7 @@ public class SimplifiedServiceMessageDelegate implements JavaDelegate,
 		// String authMecanisms ="DIGEST-MD5" ;
 		String from = (String) props.get("mail.text.from");
 		String to = "none@nowhere.com";
-		String inbox = "";
+		String inbox = (String) props.get("site.base.public");
 		String authMecanisms = (String) props.get("mail.smtp.authMecanisms");
 		if ((authMecanisms != null) && (!(authMecanisms.equals("DIGEST-MD5")))) {
 			authMecanisms = null;
