@@ -12,6 +12,5 @@ import org.junit.*
 class TdbHttpVerbTests {
 
     void testSomething() {
-       fail "Implement me"
     }
 }

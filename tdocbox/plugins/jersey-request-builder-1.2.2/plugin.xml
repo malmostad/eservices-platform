@@ -1,0 +1,28 @@
+<plugin name='jersey-request-builder' version='1.2.2' grailsVersion='2.0 &gt; *'>
+  <author>Bud Byrd</author>
+  <authorEmail>bud.byrd@gmail.com</authorEmail>
+  <title>Jersey Request Builder Plugin</title>
+  <description>Provides the Jersey client library and a builder to simplify use of the library.</description>
+  <documentation>http://budjb.github.io/grails-jersey-request-builder/doc/manual/index.html</documentation>
+  <type>JerseyRequestBuilderGrailsPlugin</type>
+  <resources>
+    <resource>DefaultJerseyRequestBuilderConfig</resource>
+  </resources>
+  <repositories>
+    <repository name='grailsCentral' url='http://grails.org/plugins' />
+    <repository name='http://repo.grails.org/grails/core' url='http://repo.grails.org/grails/core/' />
+    <repository name='mavenCentral' url='http://repo1.maven.org/maven2/' />
+    <repository name='http://repository.codehaus.org' url='http://repository.codehaus.org/' />
+    <repository name='http://repository.jboss.org/maven2' url='http://repository.jboss.org/maven2/' />
+  </repositories>
+  <dependencies>
+    <compile>
+      <dependency group='com.sun.jersey' name='jersey-client' version='1.8' />
+      <dependency group='com.sun.jersey' name='jersey-core' version='1.8' />
+      <dependency group='com.sun.jersey' name='jersey-server' version='1.8' />
+    </compile>
+  </dependencies>
+  <plugins />
+  <runtimePluginRequirements />
+  <behavior />
+</plugin>
