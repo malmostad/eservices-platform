@@ -17,6 +17,10 @@ function siteAjaxPost(url, postdata, processSuccess ) {
 	   });
 	};
 
+function reflow(elt){
+    console.log(elt.offsetHeight);
+}
+
 $(document).ready(function() {
 	
 	if ($('.motricesignpoll').length>0) {
@@ -94,6 +98,20 @@ $(document).ready(function() {
 	});
 	*/
 	
+	$('a.toggle-view-div').click(function(event) {
+	    event.preventDefault();
+		var divNode = $(this).siblings('div.toggle-view-div');
+		if (divNode.is(':hidden')) {
+			divNode.slideDown('200');
+			$(this).siblings("a.toggle-view-div").show();
+			$(this).hide();
+		} else {
+			divNode.slideUp('200');
+			$(this).siblings("a.toggle-view-div").show();
+			$(this).hide();
+		}
+	});
+	
 	/*
 	 * load url into iframe in a toggle view
 	 */
@@ -120,8 +138,7 @@ $(document).ready(function() {
               ORBEON.xforms.Init.document();
             } 
           } 
-          //window.dispatchEvent(new Event('resize'));
-          $(window).resize();
+          window.dispatchEvent(new Event('resize')); // native js does not work in IE9 and IE10
         }); 
         
       }

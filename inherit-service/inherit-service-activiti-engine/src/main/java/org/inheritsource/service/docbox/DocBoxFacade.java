@@ -130,6 +130,8 @@ public class DocBoxFacade {
 					.get(String.class);
 			result = new JSONObject(response);
 		} catch (Exception e) {
+			log.error("docboxRef: {}", docboxRef);
+			log.error("transactionId: {}", transactionId);
 			log.error("Exception: {}", e.toString());
 		}
 		return result;

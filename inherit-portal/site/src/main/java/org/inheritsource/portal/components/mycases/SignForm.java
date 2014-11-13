@@ -75,6 +75,16 @@ public class SignForm extends Form  {
 			// TODO Auto-generated catch block
 			log.error("Error while searching for activity guide with path=[{}] Exception: {}" ,pendingSignDocumentPath , e.toString());
 		}
+	
+		HippoBean whatIsADigitalFingerprint = null;
+   		String whatIsADigitalFingerprintPath = getMount(request).getCanonicalContentPath() + "/mycases/what-is-a-digital-fingerprint";
+		try {
+			whatIsADigitalFingerprint = (HippoBean) getObjectBeanManager(request).getObject(whatIsADigitalFingerprintPath);
+		} catch (ObjectBeanManagerException e) {
+			// TODO Auto-generated catch block
+			log.error("Error while searching for activity guide with path=[{}] Exception: {}" ,whatIsADigitalFingerprintPath , e.toString());
+		}
+
 		
 		HippoBean confirmSignDocument = null;
    		String confirmSignDocumentPath = getMount(request).getCanonicalContentPath() + "/mycases/sign-document-confirm";
@@ -153,6 +163,8 @@ public class SignForm extends Form  {
 		request.setAttribute("document", document);
 		request.setAttribute("viewtype", viewtype);
 		request.setAttribute("errDescription", error);
+		request.setAttribute("whatIsADigitalFingerprint", whatIsADigitalFingerprint);
+		
 	}
 	
 }

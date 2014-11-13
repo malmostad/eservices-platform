@@ -808,4 +808,9 @@ public class TaskFormService {
 		return activitiEngineService.getActivityInstanceLogItemToNotify(activity, locale);
 	}
 
+	public DocBoxFormData getDocBoxFormData(String docBoxRef, Locale locale) {
+		// TODO
+		return null;
+	}
+
 }

@@ -39,6 +39,7 @@ public class SignStartFormTaskHandler extends TaskFormHandler {
 
 	public static final String FORM_SIGN_TRANSACTION_ID = "motriceFormSignTransactionId";
 	public static final String FORM_SIGN_DOCBOXREF = "motriceFormSignDocboxRef";
+	public static final String FORM_SIGN_FINGERPRINT = "motriceFormSignFingerprint";
 	
 	@Override
 	public FormInstance getPendingFormInstance(FormInstance form, Task task,
