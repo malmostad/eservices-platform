@@ -121,5 +121,3 @@ log4j = {
 	   debug 'grails.app.controllers', 'grails.app.services'
 
 }
-
-tdocbox.docbox.rest.prefix = 'http://localhost:17080/docbox/rest'
