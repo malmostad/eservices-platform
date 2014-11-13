@@ -4,6 +4,7 @@ package org.motrice.tdocbox
  * A DocBox method.
  * All instances of this class are predefined.
  * A method is either a REST invocation or display a screen.
+ * The categories are referred to as "rest method" and "display method".
  */
 class TdbMethod {
   // Method URL without prefix and separating slash, but with optional placeholders
@@ -60,11 +61,13 @@ class TdbMethod {
   }
 
   static String createUrl(TdbDrill drill, TdbCase cs) {
-    // DEBUG
-    println "TdbMethod.url << ${drill}, ${cs}"
     drill?.method?.url(drill.queryString, drill.map, cs?.map, false)
   }
 
+  /**
+   * Is this a display method?
+   * 
+   */
   boolean isDisplayMethod() {
     id >= 1000
   }
@@ -104,6 +107,7 @@ class TdbMethod {
     description
   }
 
+  // Rest methods.
   static final CREATE_PDFA_FROM_ORBEON_ID = 1
   static final CREATE_PDFA_FROM_ORBEON_URL = 'doc/orbeon/${formDataUuid}'
   static final VALIDATE_ENVIRONMENT_ID = 2
@@ -125,7 +129,7 @@ class TdbMethod {
   static final WRITE_EVENT_RECORD_ID = 10
   static final WRITE_EVENT_RECORD_URL = 'audit/log/${eventtype}'
 
-  // Show methods
+  // Display methods
   static final SHOW_BID_PC_ID = 1000
   static final SHOW_BID_PC_URL = 'bankid:///?autostarttoken=${autostart}&redirect=${returnurl}'
   static final SHOW_BID_MOBILE_ID = 1001

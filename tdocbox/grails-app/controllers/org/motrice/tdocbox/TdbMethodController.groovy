@@ -11,7 +11,7 @@ class TdbMethodController {
     }
 
     def list(Integer max) {
-        params.max = Math.min(max ?: 10, 100)
+        params.max = Math.min(max ?: 15, 100)
         [tdbMethodObjList: TdbMethod.list(params), tdbMethodObjTotal: TdbMethod.count()]
     }
 

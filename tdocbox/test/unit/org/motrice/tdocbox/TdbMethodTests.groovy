@@ -12,6 +12,5 @@ import org.junit.*
 class TdbMethodTests {
 
     void testSomething() {
-       fail "Implement me"
     }
 }

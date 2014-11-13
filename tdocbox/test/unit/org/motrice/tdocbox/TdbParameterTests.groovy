@@ -12,6 +12,5 @@ import org.junit.*
 class TdbParameterTests {
 
     void testSomething() {
-       fail "Implement me"
     }
 }
