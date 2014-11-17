@@ -17,7 +17,29 @@
 # END OF CONFIG                                                #
 ################################################################
 
+function checkPackage() {
+RESPONSE=`apt-cache policy ${PACKAGE} | grep "Installed:" | cut -d : -f 2`
+# RESPONSE=`whereis ${PACKAGE} | cut -d : -f 2`
+if [ "${RESPONSE}" != "" ]
+then
+  echo "${PACKAGE} installed"
+  return 
+fi
+
+  echo "${PACKAGE} not installed"
+  exit 1 ;
+}
+
+
 ################################################################
+# Check some dependencies 
+DEPENDENCYPACKAGE="postgresql apache2 git git-man openjdk-7-jre openjdk-7-jdk maven apache2 openssl ntp apache2 libapache2-mod-shib2 slapd ldap-utils docbook-xml xsltproc fop libxml2-utils xmlstarlet fonts-liberation fonts-opensymbol docbook-xsl curl"
+for PACKAGE in ${DEPENDENCYPACKAGE}
+do 
+  checkPackage
+done 
+
+
 
 
 if ${ESERVICE_SSL}; then

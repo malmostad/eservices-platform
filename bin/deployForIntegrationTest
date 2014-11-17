@@ -6,6 +6,7 @@ function usage () {
   exit 1 ;
 }
 
+
 ERRORSTATUS=0
 if [ $# != 0 ]
 then
@@ -16,37 +17,6 @@ fi
 pushd $HOME/workspaces/inheritsource-develop/pawap/bin 
 
 . current_config.sh
-
-# Check some dependencies 
-POSTGRESSERVICE=/etc/init.d/postgresql
-if [ ! -f ${POSTGRESSERVICE} ]; then 
-  echo "Missing postgresql script. Not installed?" 
-   exit 1;
-fi
-
-response=$(${POSTGRESSERVICE} status)
-if [[ ${response} != "Running clusters"* ]]
-then
-  echo "Postgres not running?"
-  # TODO this is not workong in ubuntu 14.04
-  # exit 1
-fi
-
-APACHE2SERVICE=/etc/init.d/apache2
-if [ ! -f ${APACHE2SERVICE} ]; then 
-  echo "Missing apache2 script. Not installed?" 
-   exit 1;
-fi
-response=$(${APACHE2SERVICE} status)
-if [[ ${response} != "Apache2 is running"* ]]
-then
-  echo "Apache2 not running?"
-  # TODO this is not workong in ubuntu 14.04
-  # exit 1
-fi
-
-
-
 
 # update from git 
 git pull
