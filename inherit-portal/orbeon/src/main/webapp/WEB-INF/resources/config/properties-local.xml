@@ -8,6 +8,12 @@
 
    <property as="xs:string" name="oxf.fr.css.custom.uri.*.*" value="/config/malmo.css"/>
 
+   <property as="xs:string" 
+     name="oxf.fr.available-languages.*.*" value="sv en"/>
+
+   <property as="xs:string"
+     name="oxf.fr.default-language.*.*" value="sv"/>
+
    <property
       as="xs:string"
       name="oxf.fr.persistence.provider.*.*.*"
