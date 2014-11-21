@@ -165,7 +165,7 @@
     <level value="info"/>
   </logger>
   <logger name="org.inheritsource.service.coordinatrice.CoordinatriceFacade">
-    <level value="info"/>
+    <level value="error"/>
   </logger>
   <logger name="org.inheritsource.service.rest.server.IdentityService">
     <level value="info"/>

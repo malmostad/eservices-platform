@@ -77,7 +77,7 @@ public class CoordinatriceFacade {
 					.get(ActivityLabel.class);
 		}
 		catch (Exception e) {
-			log.error("Exception: {}" , e);
+			log.info("Exception: {}" , e);
 		}
 		return label;
 	}
@@ -117,7 +117,7 @@ public class CoordinatriceFacade {
 					.get(StartFormLabel.class);
 		}
 		catch (Exception e) {
-			log.error("Exception: {}", e);
+			log.info("Exception: {}", e);
 		}
 		return label;
 	}
@@ -195,7 +195,7 @@ public class CoordinatriceFacade {
 					.get(ProcessDefinitionState.class);
 		}
 		catch (Exception e) {
-			log.error("Exception: {}" , e.toString());
+			log.info("Exception: {}" , e.toString());
 		}
 		return state;
 	}
